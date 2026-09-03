@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bách Khoa Toàn Thư: Chuẩn 13 Cột Dữ Liệu Đối Soát SCM & Logic Vận Hành</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-light: #e0f2fe;
+      --secondary: #6366f1;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --warning: #f97316;
+      --warning-light: #fff7ed;
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.75;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Top Header */
+    .top-header {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 40%, #0f172a 100%);
+      color: #ffffff;
+      padding: 48px 24px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .badge-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .tag.gold {
+      background: #f59e0b;
+      color: #0f172a;
+      border-color: #fcd34d;
+    }
+
+    .header-title {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .header-desc {
+      font-size: 16px;
+      color: #e2e8f0;
+      max-width: 1050px;
+    }
+
+    /* Layout */
+    .layout-wrapper {
+      max-width: 1200px;
+      margin: 36px auto 100px auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      gap: 36px;
+      align-items: start;
+    }
+
+    @media (max-width: 950px) {
+      .layout-wrapper { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 24px;
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    }
+
+    .sidebar-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .toc-item a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      text-decoration: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .toc-item a:hover {
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    /* Cards */
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 18px;
+      padding: 36px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      scroll-margin-top: 24px;
+    }
+
+    .card-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card-title i {
+      color: var(--primary);
+      font-size: 24px;
+    }
+
+    /* Tables */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin: 20px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    thead { background: #f1f5f9; }
+
+    th {
+      padding: 14px 16px;
+      font-weight: 700;
+      color: #334155;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+      vertical-align: middle;
+    }
+
+    tbody tr:hover { background-color: #f8fafc; }
+
+    .pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .pill.blue { background: #e0f2fe; color: #0369a1; }
+    .pill.green { background: #dcfce7; color: #15803d; }
+    .pill.orange { background: #ffedd5; color: #c2410c; }
+    .pill.purple { background: #f3e8ff; color: #6b21a8; }
+    .pill.gold { background: #fef3c7; color: #92400e; font-weight:800; }
+
+    .formula-box {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      margin: 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.25);
+    }
+
+    .formula-title {
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #bae6fd;
+      font-weight: 700;
+    }
+
+    .formula-math {
+      font-size: 24px;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fef08a;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 30px;
+      font-size: 14px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="top-header">
+    <div class="header-container">
+      <div class="badge-bar">
+        <span class="tag gold"><i class="fa-solid fa-star"></i> CHUẨN 13 CỘT DỮ LIỆU ĐỐI SOÁT</span>
+        <span class="tag"><i class="fa-solid fa-calculator"></i> Công Thức: Cột K - Cột L</span>
+        <span class="tag"><i class="fa-solid fa-file-excel"></i> File PT 41 Cột (next.kingfood.co)</span>
+      </div>
+      <h1 class="header-title">📖 QUY CHUẨN 13 CỘT CỐT LÕI TỪ FILE PHIẾU CHUYỂN (PT)<br>VÀ CÔNG THỨC TÍNH CHÊNH LỆCH ĐỐI SOÁT SCM</h1>
+      <p class="header-desc">Từ file xuất 41 cột của hệ thống, chỉ trích xuất đúng 13 cột trọng yếu (A, C, D, H, I, J, K, L, Q, S, T, AE, AF) để tính toán chính xác tuyệt đối số chuyển, số nhận và số chênh lệch.</p>
+    </div>
+  </header>
+
+  <!-- Layout -->
+  <div class="layout-wrapper">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-title"><i class="fa-solid fa-list-check"></i> Nội Dung Quy Chuẩn</div>
+      <ul class="toc-list">
+        <li class="toc-item"><a href="#sec-formula"><i class="fa-solid fa-calculator"></i> 1. Công Thức Chênh Lệch</a></li>
+        <li class="toc-item"><a href="#sec-columns"><i class="fa-solid fa-table-columns"></i> 2. Bảng 13 Cột Chuẩn</a></li>
+        <li class="toc-item"><a href="#sec-flow"><i class="fa-solid fa-arrows-split-up-and-left"></i> 3. Quy Trình Phối Hợp HK & PT</a></li>
+        <li class="toc-item"><a href="#sec-aug27"><i class="fa-solid fa-chart-simple"></i> 4. Kết Quả Ngày 27/08/2026</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content-area">
+
+      <!-- PHẦN 1: CÔNG THỨC -->
+      <section id="sec-formula" class="card">
+        <h2 class="card-title"><i class="fa-solid fa-calculator"></i> 1. Công Thức Tính Chênh Lệch Chuẩn</h2>
+
+        <div class="formula-box">
+          <div class="formula-title">📐 CÔNG THỨC TOÁN HỌC CỐT LÕI:</div>
+          <div class="formula-math">CHÊNH LỆCH = CỘT K (Số lượng chuyển) - CỘT L (Số lượng nhận)</div>
+          <div style="font-size:14px; color:#e0f2fe;">
+            • Nếu <strong>Chênh lệch &gt; 0</strong>: Kho giao thiếu / Siêu thị nhận thiếu.<br>
+            • Nếu <strong>Chênh lệch &lt; 0</strong>: Kho giao dư / Siêu thị nhận dư.<br>
+            • Nếu <strong>Chênh lệch = 0</strong>: Giao nhận khớp 100%.
+          </div>
+        </div>
+      </section>
+
+      <!-- PHẦN 2: BẢNG 13 CỘT -->
+      <section id="sec-columns" class="card">
+        <h2 class="card-title"><i class="fa-solid fa-table-columns"></i> 2. Chi Tiết 13 Cột Cần Quan Tâm Trong File Excel 41 Cột</h2>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 12%;">Ký Hiệu Cột</th>
+                <th style="width: 10%;">Số Thứ Tự</th>
+                <th style="width: 28%;">Tên Cột Trên File Excel</th>
+                <th style="width: 25%;">Ý Nghĩa Nghiệp Vụ</th>
+                <th style="width: 25%;">Ví Dụ Trong File</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="pill gold">Cột A</span></td>
+                <td>Cột 1</td>
+                <td><strong>Ngày chuyển hàng</strong></td>
+                <td>Ngày phát sinh chuyển hàng</td>
+                <td><code>27/08/2026</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill gold">Cột C</span></td>
+                <td>Cột 3</td>
+                <td><strong>Chi nhánh chuyển</strong></td>
+                <td>Kho xuất (Đông / Mát)</td>
+                <td><code>Chill - Miền Đông - SCF...</code><br><code>Frozen - Miền Đông - SCF...</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill gold">Cột D</span></td>
+                <td>Cột 4</td>
+                <td><strong>Chi nhánh nhận</strong></td>
+                <td>Tên cửa hàng siêu thị nhận</td>
+                <td><code>KFM_HCM_BTA - 1M Đường A8...</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill blue">Cột H</span></td>
+                <td>Cột 8</td>
+                <td><strong>Mã hàng</strong></td>
+                <td>Mã Barcode SKU sản phẩm</td>
+                <td><code>8938503131810</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill blue">Cột I</span></td>
+                <td>Cột 9</td>
+                <td><strong>Tên hàng</strong></td>
+                <td>Tên đầy đủ của sản phẩm</td>
+                <td><code>ĐÀ LẠT MILK - SỮA TƯƠI...</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill blue">Cột J</span></td>
+                <td>Cột 10</td>
+                <td><strong>Đơn vị tính</strong></td>
+                <td>Đơn vị tính (ĐVT)</td>
+                <td><code>HỘP</code>, <code>KG</code>, <code>GÓI</code></td>
+              </tr>
+              <tr style="background:#f0fdf4;">
+                <td><span class="pill green" style="font-size:13px; font-weight:800;">⭐ Cột K</span></td>
+                <td><strong>Cột 11</strong></td>
+                <td><strong style="color:#15803d; font-size:15px;">Số lượng chuyển</strong></td>
+                <td><strong>Số lượng xuất kho chính thức</strong></td>
+                <td><code>5.0</code>, <code>30.0</code>, <code>150.0</code></td>
+              </tr>
+              <tr style="background:#fef2f2;">
+                <td><span class="pill red" style="font-size:13px; font-weight:800;">⭐ Cột L</span></td>
+                <td><strong>Cột 12</strong></td>
+                <td><strong style="color:#b91c1c; font-size:15px;">Số lượng nhận</strong></td>
+                <td><strong>Số lượng siêu thị thực nhận</strong></td>
+                <td><code>5.0</code>, <code>28.0</code>, <code>148.5</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill purple">Cột Q</span></td>
+                <td>Cột 17</td>
+                <td><strong>Mã chuyển hàng</strong></td>
+                <td>Mã phiếu chuyển gốc (`PT...`)</td>
+                <td><code>PT1727704</code>, <code>PT1727981</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill purple">Cột S</span></td>
+                <td>Cột 19</td>
+                <td><strong>Mã thùng</strong></td>
+                <td>Barcode mã thùng rổ/pallet</td>
+                <td><code>TRBA231190724</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill purple">Cột T</span></td>
+                <td>Cột 20</td>
+                <td><strong>Trạng thái</strong></td>
+                <td>Trạng thái phiếu chuyển</td>
+                <td><code>Đã nhận</code>, <code>Đang chuyển</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill orange">Cột AE</span></td>
+                <td>Cột 31</td>
+                <td><strong>Cần hậu kiểm</strong></td>
+                <td>Cờ đánh dấu có cần hậu kiểm không</td>
+                <td><code>Có</code> / <code>Không</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill orange">Cột AF</span></td>
+                <td>Cột 32</td>
+                <td><strong>Đã hậu kiểm</strong></td>
+                <td>Cờ đánh dấu đã hậu kiểm xong chưa</td>
+                <td><code>Có</code> / <code>Không</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PHẦN 3: QUY TRÌNH PHỐI HỢP -->
+      <section id="sec-flow" class="card">
+        <h2 class="card-title"><i class="fa-solid fa-arrows-split-up-and-left"></i> 3. Quy Trình Vận Hành Phối Hợp Giữa HK và PT</h2>
+        
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div style="background:#f8fafc; border:1px solid var(--border); border-left:5px solid #0284c7; padding:18px; border-radius:10px;">
+            <strong style="color:#0369a1; font-size:16px;"><i class="fa-solid fa-shield-halved"></i> BƯỚC 1: CỔNG KIỂM TRA ĐIỀU KIỆN (BÊN HK)</strong>
+            <p style="font-size:14.5px; color:#334155; margin-top:6px;">
+              Vào màn hình <strong>`DS phiếu hậu kiểm`</strong> để kiểm tra xem các siêu thị đã hoàn thành hậu kiểm hết 100% chưa (không còn phiếu tồn ở tab <em>`Cần hậu kiểm`</em>).
+            </p>
+          </div>
+
+          <div style="background:#f8fafc; border:1px solid var(--border); border-left:5px solid #10b981; padding:18px; border-radius:10px;">
+            <strong style="color:#15803d; font-size:16px;"><i class="fa-solid fa-file-export"></i> BƯỚC 2: XUẤT FILE DATA CHÍNH THỨC (BÊN PT)</strong>
+            <p style="font-size:14.5px; color:#334155; margin-top:6px;">
+              Sau khi HK đã hoàn tất ➡️ Vào màn hình <strong>`DS phiếu chuyển`</strong>, lọc kho `FZ02 + CL02`, chọn ngày cần đối soát và bấm <strong>`[Xuất file]`</strong> để tải file 41 cột về.
+            </p>
+          </div>
+
+          <div style="background:#f8fafc; border:1px solid var(--border); border-left:5px solid #f59e0b; padding:18px; border-radius:10px;">
+            <strong style="color:#b45309; font-size:16px;"><i class="fa-solid fa-calculator"></i> BƯỚC 3: TRÍCH XUẤT 13 CỘT VÀ TÍNH TOÁN</strong>
+            <p style="font-size:14.5px; color:#334155; margin-top:6px;">
+              Hệ thống tự động lọc 13 cột: <strong>A, C, D, H, I, J, K, L, Q, S, T, AE, AF</strong> và lấy <strong>`Cột K - Cột L`</strong> để sinh ra số liệu chênh lệch chính xác 100%!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- PHẦN 4: KẾT QUẢ NGÀY 27/08/2026 -->
+      <section id="sec-aug27" class="card">
+        <h2 class="card-title"><i class="fa-solid fa-chart-simple"></i> 4. Kết Quả Tính Toán Thực Tế Ngày 27/08/2026 Từ File Của Bạn</h2>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Kho Hàng Xuất (Cột C)</th>
+                <th>Số Phiếu PT (Cột Q)</th>
+                <th>Tổng SL Chuyển (Cột K)</th>
+                <th>Tổng SL Nhận (Cột L)</th>
+                <th>Tổng Chênh Lệch (K - L)</th>
+                <th>Số Dòng Lệch</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="pill blue">Chill - Miền Đông (Kho Mát)</span></td>
+                <td>223 phiếu</td>
+                <td><strong>107.613,00</strong></td>
+                <td><strong>106.502,62</strong></td>
+                <td><strong style="color:#b91c1c;">1.110,38</strong></td>
+                <td>470 dòng</td>
+              </tr>
+              <tr>
+                <td><span class="pill purple">Frozen - Miền Đông (Kho Đông)</span></td>
+                <td>77 phiếu</td>
+                <td><strong>15.936,00</strong></td>
+                <td><strong>15.008,00</strong></td>
+                <td><strong style="color:#b91c1c;">928,00</strong></td>
+                <td>80 dòng</td>
+              </tr>
+              <tr style="background:#f1f5f9; font-weight:800;">
+                <td>🌟 TỔNG CỘNG ĐÔNG + MÁT</td>
+                <td>300 phiếu</td>
+                <td>123.549,00</td>
+                <td>121.510,62</td>
+                <td>2.038,38</td>
+                <td>550 dòng</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <p>📚 Bách Khoa Toàn Thư Đối Soát SCM • Chuẩn 13 Cột (A, C, D, H, I, J, K, L, Q, S, T, AE, AF) & Công thức K - L • Kingfoodmart 2026</p>
+  </footer>
+
+</body>
+</html>

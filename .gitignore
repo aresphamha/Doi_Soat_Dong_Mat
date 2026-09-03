@@ -1,0 +1,24 @@
+# Python & Virtual Environments
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.tmp
+*.log
+
+# IDE & Editor settings
+.vscode/
+.idea/
+
+# OS specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Excel lock files
+~*.xlsx
+~*.xls
