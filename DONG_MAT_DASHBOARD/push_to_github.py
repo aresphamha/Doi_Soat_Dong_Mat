@@ -101,12 +101,20 @@ def sync_and_push(custom_message=None):
         except Exception:
             return False
 
+    # Đảm bảo nhánh main tồn tại
+    try:
+        head = repo.head()
+        repo.refs[b"refs/heads/main"] = head
+        repo.refs.set_symbolic_ref(b"HEAD", b"refs/heads/main")
+    except Exception:
+        pass
+
     # Đẩy lên GitHub
     remote_url = f"https://{gh_user}:{token}@github.com/{gh_user}/{repo_name}.git"
     print(f"\n📡 Đang đẩy dữ liệu lên GitHub: https://github.com/{gh_user}/{repo_name} ...")
     
     try:
-        porcelain.push(repo, remote_location=remote_url, refspecs=[f"refs/heads/{branch}".encode("utf-8")])
+        porcelain.push(repo, remote_location=remote_url, refspecs=[b"refs/heads/main:refs/heads/main"])
         print("==============================================================================")
         print("✅ ĐÃ ĐẨY LÊN GITHUB & KÍCH HOẠT CI/CD THÀNH CÔNG 100%!")
         print(f"🔗 Link mã nguồn Repo: https://github.com/{gh_user}/{repo_name}")
@@ -115,7 +123,6 @@ def sync_and_push(custom_message=None):
         return True
     except Exception as e:
         print(f"\n❌ Lỗi khi đẩy lên GitHub: {e}")
-        print("💡 Lưu ý: Hãy đảm bảo bạn đã tạo Repository trên GitHub hoặc Token có quyền 'repo'.")
         return False
 
 if __name__ == "__main__":
