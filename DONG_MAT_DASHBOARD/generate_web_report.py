@@ -29,7 +29,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
-from data.data_loader import fetch_raw_sheet_csv
+from data.data_loader import fetch_all_sources_combined, fetch_raw_sheet_csv
 from data.data_processor import process_dong_mat_dataframe
 from analytics.threshold_analytics import determine_case_destination, enrich_dataframe_with_threshold_and_status, analyze_threshold_metrics, get_daily_threshold_breakdown
 from analytics.kpi_metrics import get_monthly_summary_matrix, get_error_type_summary, get_top_discrepant_stores, get_top_discrepant_products
@@ -394,18 +394,21 @@ def compute_group_bundle(df_sub: pd.DataFrame, df_full: pd.DataFrame, threshold:
 
 
 def generate_html_report(output_file: str = "Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay.html") -> str:
-    print("⏳ Đang nạp và xử lý dữ liệu từ Google Sheets...")
-    df_raw = fetch_raw_sheet_csv()
+    print("⏳ Đang nạp và hợp nhất dữ liệu từ tất cả Google Sheets (Đông Mát & Thịt Cá)...")
+    df_raw = fetch_all_sources_combined()
     df = process_dong_mat_dataframe(df_raw)
     threshold = 100000.0
 
     df_enriched = enrich_dataframe_with_threshold_and_status(df, threshold=threshold, df_full_for_store_total=df)
 
+    df_thit_ca = df_enriched[df_enriched["Nhóm hàng"] == "THỊT CÁ"].copy()
     df_mat = df_enriched[df_enriched["Nhóm hàng"] == "MÁT"].copy()
     df_dong = df_enriched[df_enriched["Nhóm hàng"] == "ĐÔNG"].copy()
 
+    print(f"📊 Phân bổ số dòng: Thịt Cá ({len(df_thit_ca):,}), Mát ({len(df_mat):,}), Đông ({len(df_dong):,}) - Tổng ({len(df_enriched):,})")
     print("📊 Đang tính toán dữ liệu tổng hợp & bảng ma trận...")
     bundle_all = compute_group_bundle(df_enriched, df_full=df_enriched, threshold=threshold)
+    bundle_thit_ca = compute_group_bundle(df_thit_ca, df_full=df_enriched, threshold=threshold)
     bundle_mat = compute_group_bundle(df_mat, df_full=df_enriched, threshold=threshold)
     bundle_dong = compute_group_bundle(df_dong, df_full=df_enriched, threshold=threshold)
     store_prio_all = compute_store_priority_list(df_enriched)
@@ -502,6 +505,7 @@ def generate_html_report(output_file: str = "Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay
 
     json_bundles = json.dumps({
         "all": bundle_all,
+        "thit_ca": bundle_thit_ca,
         "mat": bundle_mat,
         "dong": bundle_dong,
         "store_priority_list": store_prio_all

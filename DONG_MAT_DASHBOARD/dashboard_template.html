@@ -495,6 +495,12 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
+        .group-btn.active-thit-ca {
+            background: #f43f5e;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+        }
+
         .group-btn.active-mat {
             background: #10b981;
             color: #ffffff;
@@ -2034,7 +2040,7 @@
             <div class="header-title">
                 <i class="fa-solid fa-boxes-stacked header-icon"></i>
                 <div class="header-text">
-                    <h1>BÁO CÁO ĐỐI SOÁT HÀNG ĐÔNG - MÁT</h1>
+                    <h1>BÁO CÁO ĐỐI SOÁT SCM (THỊT CÁ • ĐÔNG • MÁT)</h1>
                     <p>Hệ thống SCM • Phân tích Ngưỡng 100K theo TỔNG SIÊU THỊ / NGÀY</p>
                 </div>
             </div>
@@ -2043,14 +2049,17 @@
             <div style="display:flex; align-items:center; gap:0.65rem; flex-wrap:wrap;">
                 <!-- Group Tabs -->
                 <div class="group-switcher">
-                    <button class="group-btn active-mat" id="tab-mat" onclick="changeGroup('mat')">
-                        <i class="fa-solid fa-drumstick-bite"></i> 🥩 NHÓM HÀNG MÁT
+                    <button class="group-btn active-all" id="tab-all" onclick="changeGroup('all')">
+                        <i class="fa-solid fa-layer-group"></i> 🌟 TẤT CẢ
+                    </button>
+                    <button class="group-btn" id="tab-thit-ca" onclick="changeGroup('thit_ca')">
+                        <i class="fa-solid fa-drumstick-bite"></i> 🥩🐟 THỊT CÁ
+                    </button>
+                    <button class="group-btn" id="tab-mat" onclick="changeGroup('mat')">
+                        <i class="fa-solid fa-leaf"></i> 🥗 NHÓM HÀNG MÁT
                     </button>
                     <button class="group-btn" id="tab-dong" onclick="changeGroup('dong')">
                         <i class="fa-solid fa-snowflake"></i> ❄️ NHÓM HÀNG ĐÔNG
-                    </button>
-                    <button class="group-btn" id="tab-all" onclick="changeGroup('all')">
-                        <i class="fa-solid fa-layer-group"></i> 🌟 ĐÔNG & MÁT
                     </button>
                 </div>
 
@@ -2064,7 +2073,11 @@
             </div>
 
             <div style="display:flex; align-items:center; gap:0.65rem; flex-wrap:wrap;">
-                <!-- Link Google Sheet Thịt Cá T7+T8 (Mới) -->
+                <!-- Link Google Sheet Thịt Cá 28.08 - 09.26 (Mới) -->
+                <a href="https://docs.google.com/spreadsheets/d/1wac6iEvX8FFrmOse8Hk-6e4e7pOW840lEmjuHb5M2to/edit?gid=1422896115#gid=1422896115" target="_blank" rel="noopener noreferrer" class="action-btn" style="background:#D93025; color:#ffffff; text-decoration:none; display:inline-flex; align-items:center; gap:6px; font-weight:600;" title="Mở Google Sheet: Đối soát thịt cá tháng 28.08 - 09.26 (KFM - SCF)">
+                    <i class="fa-solid fa-file-excel"></i> <span>Sheet Thịt Cá (Mới)</span>
+                </a>
+                <!-- Link Google Sheet Thịt Cá T7+T8 -->
                 <a href="https://docs.google.com/spreadsheets/d/1LI_cqLh_-k8eJzMVHtQr52X1xwLT9U5NeTYhW6NgQlU/edit?gid=1422896115#gid=1422896115" target="_blank" rel="noopener noreferrer" class="action-btn" style="background:#0F9D58; color:#ffffff; text-decoration:none; display:inline-flex; align-items:center; gap:6px; font-weight:600;" title="Mở Google Sheet: Đối soát thịt cá tháng 7 + 8 (KFM - SCF)">
                     <i class="fa-solid fa-file-excel"></i> <span>Sheet Thịt Cá T7+T8</span>
                 </a>
@@ -3499,11 +3512,19 @@
             renderAll();
         });
 
+        let curGroup = 'all';
+
         function changeGroup(grp) {
             curGroup = grp;
-            document.getElementById('tab-mat').className = 'group-btn' + (grp === 'mat' ? ' active-mat' : '');
-            document.getElementById('tab-dong').className = 'group-btn' + (grp === 'dong' ? ' active-dong' : '');
-            document.getElementById('tab-all').className = 'group-btn' + (grp === 'all' ? ' active-all' : '');
+            const tabTc = document.getElementById('tab-thit-ca');
+            const tabMat = document.getElementById('tab-mat');
+            const tabDong = document.getElementById('tab-dong');
+            const tabAll = document.getElementById('tab-all');
+            
+            if (tabTc) tabTc.className = 'group-btn' + (grp === 'thit_ca' ? ' active-thit-ca' : '');
+            if (tabMat) tabMat.className = 'group-btn' + (grp === 'mat' ? ' active-mat' : '');
+            if (tabDong) tabDong.className = 'group-btn' + (grp === 'dong' ? ' active-dong' : '');
+            if (tabAll) tabAll.className = 'group-btn' + (grp === 'all' ? ' active-all' : '');
             populateMonthOptions();
             renderAll();
         }

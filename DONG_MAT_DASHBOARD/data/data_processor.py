@@ -74,10 +74,24 @@ def process_dong_mat_dataframe(df_raw: pd.DataFrame) -> pd.DataFrame:
             new_cols.append(c_clean)
     df.columns = new_cols
     
-    # 2. Chuẩn hóa cột ngày tháng
+    # 2. Chuẩn hóa cột ngày tháng linh hoạt (DD/MM/YYYY, MM/DD/YYYY, YYYY-MM-DD)
     date_col = next((c for c in df.columns if "Ngày" in c or "date" in c.lower()), None)
     if date_col:
-        df["Date_Parsed"] = pd.to_datetime(df[date_col], format="%d/%m/%Y", errors="coerce")
+        def _parse_dt(v):
+            if pd.isna(v) or not str(v).strip() or str(v).lower() in ["nan", "none", "null"]:
+                return pd.NaT
+            v_str = str(v).strip()
+            for fmt in ["%d/%m/%Y", "%m/%d/%Y", "%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d"]:
+                try:
+                    return pd.to_datetime(v_str, format=fmt)
+                except Exception:
+                    pass
+            try:
+                return pd.to_datetime(v_str, errors="coerce", dayfirst=True)
+            except Exception:
+                return pd.NaT
+
+        df["Date_Parsed"] = df[date_col].apply(_parse_dt)
         df["Date_Str"] = df["Date_Parsed"].dt.strftime("%d/%m/%Y").fillna(df[date_col].astype(str))
     else:
         df["Date_Parsed"] = pd.NaT
@@ -88,10 +102,21 @@ def process_dong_mat_dataframe(df_raw: pd.DataFrame) -> pd.DataFrame:
         if c != "Date_Parsed":
             df[c] = df[c].fillna("").astype(str).replace(["nan", "None", "NULL", "null", "<NA>"], "").str.strip()
             
-    # Chuẩn hóa Nhóm hàng (MÁT, ĐÔNG)
+    # Chuẩn hóa Nhóm hàng (THỊT CÁ, MÁT, ĐÔNG)
     if "Nhóm hàng" in df.columns:
-        df["Nhóm hàng"] = df["Nhóm hàng"].str.upper()
-        df["Nhóm hàng"] = df["Nhóm hàng"].apply(lambda x: "MÁT" if "MÁT" in x or "MAT" in x else ("ĐÔNG" if "ĐÔNG" in x or "DONG" in x else x))
+        def _norm_grp(x):
+            if not x or pd.isna(x):
+                return "KHÁC"
+            s = str(x).strip().upper()
+            if "THỊT" in s or "THIT" in s or "CÁ" in s or "CA" in s or "MEAT" in s or "FISH" in s:
+                return "THỊT CÁ"
+            if "MÁT" in s or "MAT" in s or "CHILL" in s:
+                return "MÁT"
+            if "ĐÔNG" in s or "DONG" in s or "FROZEN" in s:
+                return "ĐÔNG"
+            return s
+            
+        df["Nhóm hàng"] = df["Nhóm hàng"].apply(_norm_grp)
         
     # Chuẩn hóa Loại Lỗi
     if "Lỗi" in df.columns:

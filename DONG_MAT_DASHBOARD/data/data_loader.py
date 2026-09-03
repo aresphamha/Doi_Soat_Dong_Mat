@@ -15,9 +15,15 @@ except Exception:
     st = None
 
 try:
-    from config.settings import GOOGLE_SHEET_URL, REQUEST_TIMEOUT, CACHE_TTL_SECONDS
+    from config.settings import (
+        GOOGLE_SHEET_URL, GOOGLE_SHEET_THIT_CA_URL, GOOGLE_SHEET_THIT_CA_NEW_URL,
+        REQUEST_TIMEOUT, CACHE_TTL_SECONDS
+    )
 except ImportError:
-    from DONG_MAT_DASHBOARD.config.settings import GOOGLE_SHEET_URL, REQUEST_TIMEOUT, CACHE_TTL_SECONDS
+    from DONG_MAT_DASHBOARD.config.settings import (
+        GOOGLE_SHEET_URL, GOOGLE_SHEET_THIT_CA_URL, GOOGLE_SHEET_THIT_CA_NEW_URL,
+        REQUEST_TIMEOUT, CACHE_TTL_SECONDS
+    )
 
 
 def fetch_from_starrocks_db(dates=None) -> pd.DataFrame:
@@ -67,11 +73,9 @@ def fetch_from_starrocks_db(dates=None) -> pd.DataFrame:
     df = pd.read_sql(query, conn)
     conn.close()
     
-    # Chuẩn hóa kiểu dữ liệu dạng chuỗi như sheet
     for col in df.columns:
         df[col] = df[col].astype(str).str.strip()
         
-    # Bổ sung các cột mở rộng cho logic phân tích nếu chưa có
     optional_cols = {
         'KFM phản hồi': 'DONE',
         'Lỗi': 'DC giao thiếu',
@@ -91,7 +95,7 @@ def fetch_from_starrocks_db(dates=None) -> pd.DataFrame:
     return df
 
 
-def fetch_raw_sheet_csv(url: str = GOOGLE_SHEET_URL, max_retries: int = 3) -> pd.DataFrame:
+def fetch_raw_sheet_csv(url: str = GOOGLE_SHEET_URL, default_group: str = None, max_retries: int = 3) -> pd.DataFrame:
     """
     Tải trực tiếp định dạng CSV từ Google Sheet với cơ chế thử lại (Retry).
     Tự động quét tìm dòng Header chính xác.
@@ -104,7 +108,7 @@ def fetch_raw_sheet_csv(url: str = GOOGLE_SHEET_URL, max_retries: int = 3) -> pd
             content = res.content.decode("utf-8", errors="ignore")
             
             lines = content.split("\n")
-            header_idx = 1  # Mặc định dòng 2 (skip dòng 1 tổng)
+            header_idx = 1
             for idx, line in enumerate(lines[:15]):
                 if line.startswith("Ngày") or "Chi nhánh nhận" in line or "Số lượng chuyển" in line:
                     header_idx = idx
@@ -112,30 +116,77 @@ def fetch_raw_sheet_csv(url: str = GOOGLE_SHEET_URL, max_retries: int = 3) -> pd
             
             df = pd.read_csv(io.StringIO(content), skiprows=header_idx, dtype=str)
             df.columns = [str(c).strip() for c in df.columns]
+
+            # Chuẩn hóa tên cột đồng nhất
+            rename_map = {
+                "Tên Hàng": "Tên SP",
+                "Tổng kho thịt cá": "Tổng kho",
+                "Kho thịt cá": "Kho ĐÔNG MÁT"
+            }
+            df.rename(columns=rename_map, inplace=True)
+
+            if default_group:
+                df["Nhóm hàng"] = default_group
+            elif "Nhóm hàng" not in df.columns:
+                df["Nhóm hàng"] = "KHÁC"
+
             return df
         except Exception as e:
             last_err = e
             time.sleep(1.5 * attempt)
             
-    raise RuntimeError(f"Không thể kết nối đến Google Sheets sau {max_retries} lần thử: {last_err}")
+    raise RuntimeError(f"Không thể kết nối đến Google Sheet ({url}) sau {max_retries} lần thử: {last_err}")
+
+
+def fetch_all_sources_combined() -> pd.DataFrame:
+    """
+    Tải và hợp nhất toàn bộ dữ liệu từ 3 nguồn:
+    1. Sheet Đông Mát Gốc (Mát & Đông)
+    2. Sheet Thịt Cá T7+T8 (KFM - SCF)
+    3. Sheet Thịt Cá 28.08 - 09.26 (KFM - SCF) Mới
+    """
+    dfs = []
+    
+    # 1. Sheet Đông Mát Gốc
+    try:
+        print("📥 Đang tải Sheet 1/3: Đối Soát Đông Mát Gốc...")
+        df_dm = fetch_raw_sheet_csv(GOOGLE_SHEET_URL)
+        print(f"   -> Đã tải {len(df_dm):,} dòng (Đông Mát)")
+        dfs.append(df_dm)
+    except Exception as e:
+        print(f"⚠️ Lỗi tải Sheet Đông Mát: {e}")
+
+    # 2. Sheet Thịt Cá T7+T8
+    try:
+        print("📥 Đang tải Sheet 2/3: Đối Soát Thịt Cá Tháng 7 + 8...")
+        df_tc1 = fetch_raw_sheet_csv(GOOGLE_SHEET_THIT_CA_URL, default_group="THỊT CÁ")
+        print(f"   -> Đã tải {len(df_tc1):,} dòng (Thịt Cá T7+T8)")
+        dfs.append(df_tc1)
+    except Exception as e:
+        print(f"⚠️ Lỗi tải Sheet Thịt Cá T7+T8: {e}")
+
+    # 3. Sheet Thịt Cá Mới (28.08 - 09.26)
+    try:
+        print("📥 Đang tải Sheet 3/3: Đối Soát Thịt Cá 28.08 - 09.26 (Mới)...")
+        df_tc2 = fetch_raw_sheet_csv(GOOGLE_SHEET_THIT_CA_NEW_URL, default_group="THỊT CÁ")
+        print(f"   -> Đã tải {len(df_tc2):,} dòng (Thịt Cá Mới)")
+        dfs.append(df_tc2)
+    except Exception as e:
+        print(f"⚠️ Lỗi tải Sheet Thịt Cá Mới: {e}")
+
+    if not dfs:
+        raise RuntimeError("Không thể tải được dữ liệu từ bất kỳ nguồn Google Sheet nào!")
+
+    df_combined = pd.concat(dfs, ignore_index=True)
+    print(f"✅ Tổng hợp dữ liệu thành công: {len(df_combined):,} dòng trên toàn hệ thống!")
+    return df_combined
 
 
 def load_raw_data(source: str = "auto") -> pd.DataFrame:
-    """
-    Nạp dữ liệu tự động: Ưu tiên Database StarRocks nội bộ (có VPN), nếu không có VPN thì fallback sang Google Sheets.
-    """
-    if source in ("db", "starrocks", "auto"):
-        try:
-            print("🚀 Đang kết nối trực tiếp Cơ Sở Dữ Liệu StarRocks nội bộ...")
-            df = fetch_from_starrocks_db()
-            print(f"✅ Đã tải thành công {len(df):,} dòng từ Database StarRocks!")
-            return df
-        except Exception as e:
-            print(f"⚠️ Không thể kết nối Database StarRocks ({e}). Đang chuyển sang lấy từ Google Sheets...")
-    
-    return fetch_raw_sheet_csv()
+    return fetch_all_sources_combined()
 
 
 @st.cache_data(ttl=CACHE_TTL_SECONDS, show_spinner=False)
 def load_cached_raw_data() -> pd.DataFrame:
     return load_raw_data()
+

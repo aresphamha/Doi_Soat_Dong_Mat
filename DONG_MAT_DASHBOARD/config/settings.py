@@ -23,6 +23,16 @@ GOOGLE_SHEET_THIT_CA_WEB_URL = (
     "/edit?gid=1422896115#gid=1422896115"
 )
 
+# 1.3 Link Google Sheet Đối Soát Thịt Cá 28.08 - 09.26 (KFM - SCF) MỚI
+GOOGLE_SHEET_THIT_CA_NEW_URL = (
+    "https://docs.google.com/spreadsheets/d/1wac6iEvX8FFrmOse8Hk-6e4e7pOW840lEmjuHb5M2to"
+    "/export?format=csv&gid=1422896115"
+)
+GOOGLE_SHEET_THIT_CA_NEW_WEB_URL = (
+    "https://docs.google.com/spreadsheets/d/1wac6iEvX8FFrmOse8Hk-6e4e7pOW840lEmjuHb5M2to"
+    "/edit?gid=1422896115#gid=1422896115"
+)
+
 # Danh sách đầy đủ các Google Sheets nguồn
 GOOGLE_SHEETS_SOURCE_MAP = {
     "dong_mat_goc": {
@@ -34,6 +44,11 @@ GOOGLE_SHEETS_SOURCE_MAP = {
         "title": "Đối soát thịt cá tháng 7 + 8 (KFM - SCF)",
         "csv_url": GOOGLE_SHEET_THIT_CA_URL,
         "web_url": GOOGLE_SHEET_THIT_CA_WEB_URL,
+    },
+    "thit_ca_2808_0926": {
+        "title": "Đối soát thịt cá tháng 28.08 - 09.26 (KFM - SCF)",
+        "csv_url": GOOGLE_SHEET_THIT_CA_NEW_URL,
+        "web_url": GOOGLE_SHEET_THIT_CA_NEW_WEB_URL,
     }
 }
 
@@ -42,7 +57,7 @@ CACHE_TTL_SECONDS = 300  # Tự động nạp mới sau 5 phút nếu có ngư�
 REQUEST_TIMEOUT = 35
 
 # 3. Phân nhóm ngành hàng chính
-PRODUCT_GROUPS = ["Tất cả", "MÁT", "ĐÔNG"]
+PRODUCT_GROUPS = ["Tất cả", "THỊT CÁ", "MÁT", "ĐÔNG"]
 
 # 4. Danh mục phân loại Lỗi chuẩn
 ERROR_CATEGORIES = [
