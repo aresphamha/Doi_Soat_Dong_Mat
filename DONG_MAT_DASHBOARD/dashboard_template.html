@@ -2233,16 +2233,16 @@
             <div class="insights-grid">
                 <div class="insight-section">
                     <div class="insight-section-title" style="color:#38bdf8;">
-                        <i class="fa-solid fa-magnifying-glass-chart"></i> 1. Nhận Xét Chuyên Sâu Từng Nhóm Ngưỡng
+                        <i class="fa-solid fa-magnifying-glass-chart"></i> 1. Nhận Xét Chuyên Sâu Từng Nhóm Ngưỡng <span id="insight-period-tag" style="font-size:0.8rem; font-weight:600; color:#38bdf8; background:rgba(56, 189, 248, 0.15); padding:2px 8px; border-radius:12px; margin-left:6px;"></span>
                     </div>
                     <div class="insight-item danger-left" id="insight-item-over">
-                        <strong>🚨 Nhóm Trọng Yếu (ST ≥ 100k/ngày):</strong> Chiếm tới <strong>91.1% số vụ</strong> và <strong>98.2% giá trị (3.12 tỷ VNĐ)</strong>. Tiến độ xử lý đạt <strong>91.9%</strong>; hiện còn tồn <strong>2,069 vụ (~252.3 triệu VNĐ)</strong> tập trung ở các ngày cuối tháng 8 cần ưu tiên xử lý dứt điểm.
+                        <strong>🚨 Nhóm Trọng Yếu (ST ≥ 100k/ngày):</strong> Đang tải nhận xét...
                     </div>
                     <div class="insight-item success-left" id="insight-item-under">
-                        <strong>⚪ Nhóm Miễn Trừ (ST &lt; 100k/ngày):</strong> Chiếm <strong>8.9% số vụ</strong> nhưng chỉ chiếm <strong>1.8% giá trị (57.3 triệu VNĐ)</strong>. Trong đó 65.5% đã tự động quy trách nhiệm, còn lại 34.5% (19.8 triệu VNĐ) thuộc diện miễn trừ không cần tra soát tốn nhân lực.
+                        <strong>⚪ Nhóm Miễn Trừ (ST &lt; 100k/ngày):</strong> Đang tải nhận xét...
                     </div>
                     <div class="insight-item warning-left" id="insight-item-trend">
-                        <strong>📈 Biên Độ Dao Động:</strong> Số lượng vụ việc dao động mạnh từ <strong>300 đến ~2,550 vụ/ngày</strong> (đỉnh điểm vào các ngày 28-30 hàng tháng). Tỷ lệ hoàn tất các ngày tháng 7 đạt &gt;99%, trong khi các ngày gần nhất tháng 8 đang cuốn chiếu đạt từ 50% - 86%.
+                        <strong>📈 Biên Độ Dao Động:</strong> Đang tải nhận xét...
                     </div>
                 </div>
 
@@ -2250,14 +2250,14 @@
                     <div class="insight-section-title" style="color:#34d399;">
                         <i class="fa-solid fa-shield-halved"></i> 2. Đề Xuất Giải Pháp Hành Động (Action Plan)
                     </div>
-                    <div class="insight-item success-left">
-                        <strong>🎯 Giải pháp 1 (Quy tắc 80/20):</strong> Tập trung 100% nhân sự vào <strong>Bảng Danh Sách Siêu Thị Ưu Tiên P1</strong> (nhóm ST ≥ 100k đang treo) để xử lý dứt điểm công nợ còn lại trước kỳ chốt sổ.
+                    <div class="insight-item success-left" id="insight-action-1">
+                        <strong>🎯 Giải pháp 1 (Quy tắc 80/20):</strong> Đang cập nhật giải pháp...
                     </div>
-                    <div class="insight-item" style="border-left-color:#818cf8;">
-                        <strong>⚡ Giải pháp 2 (Tự động hóa Miễn trừ):</strong> Áp dụng cơ chế <em>Auto-Waive</em> (tự động kết chuyển hao hụt định mức) cho nhóm ST &lt; 100k/ngày, giúp giải phóng 80% thời gian rà soát chi tiết từng hóa đơn vụn.
+                    <div class="insight-item" style="border-left-color:#818cf8;" id="insight-action-2">
+                        <strong>⚡ Giải pháp 2 (Tự động hóa Miễn trừ):</strong> Đang cập nhật giải pháp...
                     </div>
-                    <div class="insight-item warning-left">
-                        <strong>🛡️ Giải pháp 3 (Kiểm soát Ngày Cao Điểm):</strong> Vào các ngày cao điểm giao nhận cuối tháng (khi số case vượt 1,000 vụ/ngày), bắt buộc áp dụng <em>Biên bản giao nhận điện tử tức thời</em> tại cửa xe để giảm 60% tỷ lệ sai lệch hàng ĐÔNG - MÁT.
+                    <div class="insight-item warning-left" id="insight-action-3">
+                        <strong>🛡️ Giải pháp 3 (Kiểm soát Ngày Cao Điểm):</strong> Đang cập nhật giải pháp...
                     </div>
                 </div>
             </div>
@@ -3846,6 +3846,9 @@
                 }
             }
 
+            // Cập nhật Khối Nhận Xét & Giải Pháp Hành Động Động Theo Kỳ Được Chọn
+            updateExecutiveInsights(data);
+
             // Cập nhật Khối Thống Kê Tổng Quan DC
             updateDCOverviewStats(data);
 
@@ -3862,6 +3865,76 @@
             renderValTable();
             renderQtyTable();
             renderDCTable();
+        }
+
+        function updateExecutiveInsights(data) {
+            if (!data || !data.grand_total) return;
+            const gt = data.grand_total;
+            const detMetrics = getDynamicDetailedMetrics();
+            const list = data.daily_matrix || [];
+            
+            const groupName = curGroup === 'all' ? 'Tất cả các nhóm hàng' : (curGroup === 'thit_ca' ? 'Nhóm Thịt Cá' : (curGroup === 'mat' ? 'Nhóm Hàng Mát' : 'Nhóm Hàng Đông'));
+            const periodName = curMonth === 'all' ? 'Toàn Kỳ' : (curMonth.includes('Tháng') ? curMonth : 'Tháng ' + curMonth);
+
+            const periodTagEl = document.getElementById('insight-period-tag');
+            if (periodTagEl) periodTagEl.innerText = `[${groupName} • ${periodName}]`;
+
+            const totVal = Number(gt.val_total) || 1;
+            const totCases = Number(gt.total_cases) || 1;
+
+            // 1. Nhóm Trọng Yếu (ST >= 100k)
+            const casesOver = Number(gt.cases_over_100k) || (Number(gt.cases_over_da_xl) + Number(gt.cases_over_dang_xl)) || 0;
+            const valOver = Number(gt.val_over_100k) || 0;
+            const pctCasesOver = (casesOver / totCases * 100).toFixed(1);
+            const pctValOver = (valOver / totVal * 100).toFixed(1);
+            const pctOverDone = casesOver > 0 ? (Number(gt.cases_over_da_xl) / casesOver * 100).toFixed(1) : '100.0';
+            const casesOverPending = Number(gt.cases_over_dang_xl) || 0;
+            const valOverPending = Number(gt.val_dang_xl) || 0;
+
+            const elOver = document.getElementById('insight-item-over');
+            if (elOver) {
+                elOver.innerHTML = `<strong>🚨 Nhóm Trọng Yếu (ST ≥ 100k/ngày):</strong> Chiếm tới <strong>${pctCasesOver}% số vụ (${fmtN(casesOver)} dòng)</strong> và <strong>${pctValOver}% giá trị (${fmtVND(valOver)})</strong>. Tiến độ xử lý đạt <strong>${pctOverDone}%</strong>; hiện còn tồn <strong>${fmtN(casesOverPending)} vụ (${fmtVND(valOverPending)})</strong> tại <strong>${fmtN(detMetrics.uniqueStPending)} Siêu Thị</strong> cần ưu tiên thu hồi & xử lý dứt điểm.`;
+            }
+
+            // 2. Nhóm Miễn Trừ (ST < 100k)
+            const casesUnder = Number(gt.cases_under_100k) || (Number(gt.cases_under_da_xl) + Number(gt.cases_under_khong_xl)) || 0;
+            const valUnder = Number(gt.val_under_100k) || 0;
+            const pctCasesUnder = (casesUnder / totCases * 100).toFixed(1);
+            const pctValUnder = (valUnder / totVal * 100).toFixed(1);
+            const pctUnderAuto = casesUnder > 0 ? (Number(gt.cases_under_da_xl) / casesUnder * 100).toFixed(1) : '100.0';
+            const casesUnderIgnore = Number(gt.cases_under_khong_xl) || 0;
+            const valUnderIgnore = Number(gt.val_khong_xl) || 0;
+
+            const elUnder = document.getElementById('insight-item-under');
+            if (elUnder) {
+                elUnder.innerHTML = `<strong>⚪ Nhóm Miễn Trừ (ST &lt; 100k/ngày):</strong> Chiếm <strong>${pctCasesUnder}% số vụ (${fmtN(casesUnder)} dòng)</strong> nhưng chỉ chiếm <strong>${pctValUnder}% giá trị (${fmtVND(valUnder)})</strong>. Trong đó <strong>${pctUnderAuto}%</strong> đã tự động quy trách nhiệm, còn lại <strong>${fmtN(casesUnderIgnore)} vụ (${fmtVND(valUnderIgnore)})</strong> thuộc diện miễn trừ không cần tra soát tốn nhân lực.`;
+            }
+
+            // 3. Biên độ dao động
+            const dailyCases = list.map(d => Number(d.total_cases) || 0).filter(c => c > 0);
+            const minC = dailyCases.length > 0 ? Math.min(...dailyCases) : 0;
+            const maxC = dailyCases.length > 0 ? Math.max(...dailyCases) : 0;
+            const avgC = dailyCases.length > 0 ? Math.round(dailyCases.reduce((a, b) => a + b, 0) / dailyCases.length) : 0;
+            const pctTotalDone = (Number(gt.val_da_xl) / totVal * 100).toFixed(1);
+
+            const elTrend = document.getElementById('insight-item-trend');
+            if (elTrend) {
+                elTrend.innerHTML = `<strong>📈 Biên Độ Dao Động:</strong> Trong ${periodName.toLowerCase()} có <strong>${list.length} ngày giao dịch</strong>, số vụ việc dao động từ <strong>${fmtN(minC)} đến ${fmtN(maxC)} vụ/ngày</strong> (bình quân <strong>${fmtN(avgC)} vụ/ngày</strong>). Tỷ lệ hoàn tất đối soát đạt <strong>${pctTotalDone}%</strong> giá trị chênh lệch toàn kỳ.`;
+            }
+
+            // 4. Action Plans
+            const elAct1 = document.getElementById('insight-action-1');
+            if (elAct1) {
+                elAct1.innerHTML = `<strong>🎯 Giải pháp 1 (Quy tắc 80/20):</strong> Tập trung 100% nhân sự vào <strong>${fmtN(detMetrics.uniqueStPending)} Siêu Thị Ưu Tiên P1</strong> (nhóm ST ≥ 100k đang treo ${fmtVND(valOverPending)}) để xử lý dứt điểm công nợ còn lại trong ${periodName.toLowerCase()}.`;
+            }
+            const elAct2 = document.getElementById('insight-action-2');
+            if (elAct2) {
+                elAct2.innerHTML = `<strong>⚡ Giải pháp 2 (Tự động hóa Miễn trừ):</strong> Áp dụng cơ chế <em>Auto-Waive</em> (tự động kết chuyển hao hụt định mức) cho nhóm ST &lt; 100k/ngày (${fmtN(casesUnder)} dòng • ${fmtVND(valUnder)}), giúp giải phóng 80% thời gian rà soát chi tiết từng hóa đơn vụn.`;
+            }
+            const elAct3 = document.getElementById('insight-action-3');
+            if (elAct3) {
+                elAct3.innerHTML = `<strong>🛡️ Giải pháp 3 (Kiểm soát Ngày Cao Điểm):</strong> Vào các ngày cao điểm giao nhận cuối tháng (đạt đỉnh ${fmtN(maxC)} vụ/ngày), bắt buộc áp dụng <em>Biên bản giao nhận điện tử tức thời</em> tại cửa xe để giảm thiểu tối đa tỷ lệ sai lệch ${groupName.toLowerCase()}.`;
+            }
         }
 
         function renderCharts(data) {
