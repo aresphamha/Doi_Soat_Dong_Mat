@@ -3187,7 +3187,7 @@
             if (p4) p4.style.display = subNum === 4 ? 'block' : 'none';
         }
 
-        let curGroup = 'mat';
+        let curGroup = 'all';
         let curMonth = 'all';
         let valPeriod = 'daily';
         let qtyPeriod = 'daily';
@@ -3512,8 +3512,6 @@
             applyTheme(currentTheme);
             renderAll();
         });
-
-        let curGroup = 'all';
 
         function changeGroup(grp) {
             curGroup = grp;
