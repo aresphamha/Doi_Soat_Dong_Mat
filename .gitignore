@@ -22,3 +22,9 @@ $RECYCLE.BIN/
 # Excel lock files
 ~*.xlsx
 ~*.xls
+
+# Secrets & Configs
+.github_config.json
+*.secret
+*token*
+
