@@ -3310,6 +3310,7 @@
             let stList = (BUNDLES && BUNDLES.store_priority_list) || [];
             if (curGroup === 'mat') stList = stList.filter(r => (r.group || '').includes('MÁT'));
             else if (curGroup === 'dong') stList = stList.filter(r => (r.group || '').includes('ĐÔNG'));
+            else if (curGroup === 'thit_ca') stList = stList.filter(r => (r.group || '').includes('THỊT') || (r.group || '').includes('CÁ') || (r.group || '').includes('MEAT') || (r.group || '').includes('FISH'));
             if (curMonth !== 'all') stList = stList.filter(item => item.month === curMonth);
             const dailyMatrix = (rawBundle.daily_matrix || []).filter(d => curMonth === 'all' || d.month === curMonth);
 
@@ -4615,69 +4616,38 @@
         // ----------------------------------------------------
         function updateDCOverviewStats(data) {
             const list = data.daily_matrix || [];
+            const gt = data.grand_total || {};
             
-            let totDcCases = 0, totDcVal = 0;
-            let totDongYCases = 0, totDongYVal = 0;
-            let totTuChoiCases = 0, totTuChoiVal = 0;
-            let totKiemTraCases = 0, totKiemTraVal = 0;
-            let totChuaCases = 0, totChuaVal = 0;
+            let totDcCases = gt.dc_total_cases || 0;
+            let totDcVal = gt.dc_total_val || 0;
+            let totDongYCases = gt.dc_dongy_cases || 0;
+            let totDongYVal = gt.dc_dongy_val || 0;
+            let totTuChoiCases = gt.dc_tuchoi_cases || 0;
+            let totTuChoiVal = gt.dc_tuchoi_val || 0;
+            let totKiemTraCases = gt.dc_kiemtra_cases || 0;
+            let totKiemTraVal = gt.dc_kiemtra_val || 0;
+            let totChuaCases = gt.dc_chua_cases || 0;
+            let totChuaVal = gt.dc_chua_val || 0;
 
-            const stSetTotal = new Set();
-            const stSetDongY = new Set();
-            const stSetTuChoi = new Set();
-            const stSetKiemTra = new Set();
-            const stSetChua = new Set();
-
-            let storeDaysTotal = 0, storeDaysDongY = 0, storeDaysTuChoi = 0, storeDaysKiemTra = 0, storeDaysChua = 0;
-
-            const dates = list.map(d => d.date);
-            dates.forEach(dStr => {
-                const recs = DAILY_RECORDS[dStr] || [];
-                const filteredRecs = curGroup === 'all' ? recs : recs.filter(r => (curGroup === 'mat' ? r.group.includes('MÁT') : r.group.includes('ĐÔNG')));
-                const dcRecs = filteredRecs.filter(r => r.destination === 'Kho ĐÔNG MÁT');
-
-                const dayStMap = {};
-
-                dcRecs.forEach(r => {
-                    totDcCases++;
-                    totDcVal += r.val_total || 0;
-                    stSetTotal.add(r.st);
-
-                    if (!dayStMap[r.st]) {
-                        dayStMap[r.st] = { hasTotal: true, hasDongY: false, hasTuChoi: false, hasKiemTra: false, hasChua: false };
-                    }
-
-                    if (r.dc_confirm === 'Đồng ý claim') {
-                        totDongYCases++;
-                        totDongYVal += r.val_total || 0;
-                        stSetDongY.add(r.st);
-                        dayStMap[r.st].hasDongY = true;
-                    } else if (r.dc_confirm === 'Từ chối claim') {
-                        totTuChoiCases++;
-                        totTuChoiVal += r.val_total || 0;
-                        stSetTuChoi.add(r.st);
-                        dayStMap[r.st].hasTuChoi = true;
-                    } else if (r.dc_confirm === 'Kiểm tra lại') {
-                        totKiemTraCases++;
-                        totKiemTraVal += r.val_total || 0;
-                        stSetKiemTra.add(r.st);
-                        dayStMap[r.st].hasKiemTra = true;
-                    } else {
-                        totChuaCases++;
-                        totChuaVal += r.val_total || 0;
-                        stSetChua.add(r.st);
-                        dayStMap[r.st].hasChua = true;
-                    }
+            if (curMonth !== 'all') {
+                totDcCases = 0; totDcVal = 0;
+                totDongYCases = 0; totDongYVal = 0;
+                totTuChoiCases = 0; totTuChoiVal = 0;
+                totKiemTraCases = 0; totKiemTraVal = 0;
+                totChuaCases = 0; totChuaVal = 0;
+                list.forEach(d => {
+                    totDcCases += Number(d.dc_total_cases) || 0;
+                    totDcVal += Number(d.dc_total_val) || 0;
+                    totDongYCases += Number(d.dc_dongy_cases) || 0;
+                    totDongYVal += Number(d.dc_dongy_val) || 0;
+                    totTuChoiCases += Number(d.dc_tuchoi_cases) || 0;
+                    totTuChoiVal += Number(d.dc_tuchoi_val) || 0;
+                    totKiemTraCases += Number(d.dc_kiemtra_cases) || 0;
+                    totKiemTraVal += Number(d.dc_kiemtra_val) || 0;
+                    totChuaCases += Number(d.dc_chua_cases) || 0;
+                    totChuaVal += Number(d.dc_chua_val) || 0;
                 });
-
-                Object.values(dayStMap).forEach(obj => {
-                    if (obj.hasTotal) storeDaysTotal++;
-                    if (obj.hasDongY) storeDaysDongY++;
-                    if (obj.hasTuChoi) storeDaysTuChoi++;
-                    if (obj.hasKiemTra) storeDaysKiemTra++;
-                    if (obj.hasChua) storeDaysChua++;
-                });
-            });
+            }
 
             const respCases = totDongYCases + totTuChoiCases + totKiemTraCases;
             const pctResp = totDcCases > 0 ? (respCases / totDcCases * 100) : 100.0;
@@ -4688,22 +4658,22 @@
             const elValTotal = document.getElementById('dc-stat-val-total');
             const elSubTotal = document.getElementById('dc-stat-sub-total');
             if (elValTotal) elValTotal.innerText = fmtVND(totDcVal);
-            if (elSubTotal) elSubTotal.innerText = `${fmtN(totDcCases)} dòng hàng • ${stSetTotal.size} Siêu Thị (${storeDaysTotal} lần giao)`;
+            if (elSubTotal) elSubTotal.innerText = `${fmtN(totDcCases)} dòng hàng • ${fmtN(gt.dc_st_count || 0)} Siêu Thị`;
 
             const elValDongY = document.getElementById('dc-stat-val-dongy');
             const elSubDongY = document.getElementById('dc-stat-sub-dongy');
             if (elValDongY) elValDongY.innerText = fmtVND(totDongYVal);
-            if (elSubDongY) elSubDongY.innerText = `Chiếm ${pctDongY.toFixed(1)}% • ${stSetDongY.size} Siêu Thị (${storeDaysDongY} lần giao) • ${fmtN(totDongYCases)} dòng`;
+            if (elSubDongY) elSubDongY.innerText = `Chiếm ${pctDongY.toFixed(1)}% • ${fmtN(totDongYCases)} dòng`;
 
             const elValTuChoi = document.getElementById('dc-stat-val-tuchoi');
             const elSubTuChoi = document.getElementById('dc-stat-sub-tuchoi');
             if (elValTuChoi) elValTuChoi.innerText = fmtVND(totTuChoiVal);
-            if (elSubTuChoi) elSubTuChoi.innerText = `Chiếm ${pctTuChoi.toFixed(1)}% • ${stSetTuChoi.size} Siêu Thị (${storeDaysTuChoi} lần giao) • ${fmtN(totTuChoiCases)} dòng`;
+            if (elSubTuChoi) elSubTuChoi.innerText = `Chiếm ${pctTuChoi.toFixed(1)}% • ${fmtN(totTuChoiCases)} dòng`;
 
             const elValKiemTra = document.getElementById('dc-stat-val-kiemtra');
             const elSubKiemTra = document.getElementById('dc-stat-sub-kiemtra');
             if (elValKiemTra) elValKiemTra.innerText = fmtVND(totKiemTraVal + totChuaVal);
-            if (elSubKiemTra) elSubKiemTra.innerText = `Chiếm ${pctKiemTra.toFixed(1)}% • ${stSetKiemTra.size + stSetChua.size} Siêu Thị • ${fmtN(totKiemTraCases + totChuaCases)} dòng`;
+            if (elSubKiemTra) elSubKiemTra.innerText = `Chiếm ${pctKiemTra.toFixed(1)}% • ${fmtN(totKiemTraCases + totChuaCases)} dòng`;
 
             const elValPct = document.getElementById('dc-stat-val-pct');
             const elSubPct = document.getElementById('dc-stat-sub-pct');
@@ -4793,6 +4763,7 @@
                 return window.DC_CASES_DATA.filter(r => {
                     if (curGroup === 'mat' && !r.group.includes('MÁT')) return false;
                     if (curGroup === 'dong' && !r.group.includes('ĐÔNG')) return false;
+                    if (curGroup === 'thit_ca' && !r.group.includes('THỊT') && !r.group.includes('CÁ') && !r.group.includes('MEAT') && !r.group.includes('FISH')) return false;
                     if (curMonth !== 'all' && r.month !== curMonth) return false;
                     return true;
                 });

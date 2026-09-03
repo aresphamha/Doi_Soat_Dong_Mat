@@ -81,13 +81,13 @@ def process_dong_mat_dataframe(df_raw: pd.DataFrame) -> pd.DataFrame:
             if pd.isna(v) or not str(v).strip() or str(v).lower() in ["nan", "none", "null"]:
                 return pd.NaT
             v_str = str(v).strip()
-            for fmt in ["%d/%m/%Y", "%m/%d/%Y", "%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d"]:
+            for fmt in ["%m/%d/%Y", "%m/%d/%y", "%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y"]:
                 try:
                     return pd.to_datetime(v_str, format=fmt)
                 except Exception:
                     pass
             try:
-                return pd.to_datetime(v_str, errors="coerce", dayfirst=True)
+                return pd.to_datetime(v_str, errors="coerce", dayfirst=False)
             except Exception:
                 return pd.NaT
 
