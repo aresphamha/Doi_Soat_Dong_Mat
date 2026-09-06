@@ -1,12 +1,51 @@
-# 📖 QUY CHUẨN 13 CỘT CỐT LÕI TỪ FILE PHIẾU CHUYỂN (PT)
-## VÀ CÔNG THỨC TÍNH CHÊNH LỆCH ĐỐI SOÁT SCM
-
-> **Công thức cốt lõi:**  
-> $$\text{CHÊNH LỆCH} = \text{CỘT K (Số lượng chuyển)} - \text{CỘT L (Số lượng nhận)}$$
+# 📖 QUY CHUẨN TRÍCH XUẤT DỮ LIỆU TỪ HỆ THỐNG VẬN HÀNH (PORTAL)
+## VÀ CÔNG THỨC TÍNH CHÊNH LỆCH ĐỐI SOÁT SCM ĐÔNG - MÁT
 
 ---
 
-## 📋 DANH SÁCH CHI TIẾT 13 CỘT CẦN QUAN TÂM (TRONG TỔNG 41 CỘT)
+## 🔢 1. CÔNG THỨC TÍNH CHÊNH LỆCH CHUẨN:
+
+> **📐 CÔNG THỨC TOÁN HỌC CỐT LÕI:**  
+> **`CHÊNH LỆCH = CỘT K (Số lượng chuyển) − CỘT L (Số lượng nhận)`**
+> 
+> * **Nếu Chênh lệch > 0:** Kho giao thiếu / Siêu thị nhận thiếu.
+> * **Nếu Chênh lệch < 0:** Kho giao dư / Siêu thị nhận dư.
+> * **Nếu Chênh lệch = 0:** Giao nhận khớp 100%.
+
+---
+
+## 🎯 2. CÁC BỘ LỌC BẮT BUỘC TRÊN WEB PORTAL & QUY TẮC CHUẨN:
+
+### 2.1 Bộ Lọc Trên Web Portal (`DS phiếu chuyển`):
+Đường dẫn: **`Vận hành -> Chuyển hàng -> DS phiếu chuyển -> Bấm [Bộ lọc]`**
+1. **Nơi chuyển:** Chọn **`CL02`** *(Kho Mát)* hoặc **`FZ02`** *(Kho Đông)*.
+2. **Nơi nhận:** Chọn **`Tất cả siêu thị`** *(Chỉ lấy siêu thị có tiền tố `KFM_...`)*.
+3. ⭐ **Là PT thùng rổ:** BẮT BUỘC CHỌN **`Không`** *(để loại bỏ 100% vỏ rổ, pallet rỗng)*.
+4. **Thời gian:** Chọn khoảng ngày cần đối soát ➔ Bấm **`[Áp dụng]`** ➔ Bấm **`[Xuất file]`** để tải file 41 cột về (`transfer_DDMMYYYY-HHMMSS.xlsx`).
+
+### 2.2 Quy Tắc Tính Toán Nghiệp Vụ Chuẩn:
+* **Quy tắc Số Nhận = -1:** Nếu trên hệ thống ghi nhận `SL Nhận = -1` (hoặc âm), tự động chuyển thành `0` và `Chênh lệch = SL Chuyển`.
+* **Loại bỏ Quét Thừa:** Chỉ lấy các dòng phát sinh thiếu: `SL Chuyển >= SL Nhận` và `Chênh Lệch > 0`.
+* **Dời Ngày Kho Đông:** Phiếu ngày 01/08 và 03/08 được gán về đúng ngày siêu thị nhận hàng thực tế (02/08 và 04/08).
+* **Khử Trùng Lặp x2:** Deduplicate theo `(Mã phiếu, Mã hàng, Chi nhánh)` đối với các đợt bị sync đúp.
+* 💾 **Bảng Database Tổng Hợp Chuẩn:** `krc_dm_discrepancies_ha_pham` trên StarRocks database `kfm_scm`.
+
+---
+
+## 🔄 3. QUY TRÌNH VẬN HÀNH PHỐI HỢP GIỮA HK VÀ PT:
+
+1. 🛡️ **BƯỚC 1: CỔNG KIỂM TRA ĐIỀU KIỆN (BÊN HK)**  
+   Vào màn hình **`DS phiếu hậu kiểm`** để kiểm tra xem các siêu thị **đã hoàn thành hậu kiểm hết 100% chưa** (không còn phiếu tồn ở tab *`Cần hậu kiểm`*).
+
+2. 📦 **BƯỚC 2: XUẤT FILE DATA CHÍNH THỨC (BÊN PT)**  
+   Sau khi HK đã hoàn tất ➔ Vào màn hình **`DS phiếu chuyển`**, lọc kho **`FZ02 + CL02`**, chọn ngày cần đối soát và bấm **`[Xuất file]`** để tải file 41 cột về.
+
+3. 🔢 **BƯỚC 3: TRÍCH XUẤT 13 CỘT VÀ TÍNH TOÁN**  
+   Hệ thống tự động lọc 13 cột: **A, C, D, H, I, J, K, L, Q, S, T, AE, AF** và lấy **`Cột K − Cột L`** để sinh ra số liệu chênh lệch chính xác 100%!
+
+---
+
+## 📋 4. DANH SÁCH CHI TIẾT 13 CỘT CỐT LÕI (TRONG TỔNG 41 CỘT):
 
 | Ký Hiệu Cột | Thứ Tự | Tên Cột Trên File Excel | Ý Nghĩa Nghiệp Vụ Cốt Lõi |
 | :---: | :---: | :--- | :--- |
@@ -23,25 +62,3 @@
 | **Cột T** | Cột 20 | **`Trạng thái`** | Trạng thái phiếu (`Đã nhận`, `Đang chuyển`...). |
 | **Cột AE** | Cột 31 | **`Cần hậu kiểm`** | Đánh dấu có cần hậu kiểm không (`Có` / `Không`). |
 | **Cột AF** | Cột 32 | **`Đã hậu kiểm`** | Đánh dấu đã hậu kiểm xong chưa (`Có` / `Không`). |
-
----
-
-## 🔄 QUY TRÌNH PHỐI HỢP VẬN HÀNH GIỮA HK VÀ PT:
-
-1. **Bước 1 (Cổng kiểm tra điều kiện bên HK):**  
-   Vào **`DS phiếu hậu kiểm`** để kiểm tra xem các siêu thị **đã hoàn thành hậu kiểm hết 100% chưa** (không còn phiếu tồn ở tab *`Cần hậu kiểm`*).
-   
-2. **Bước 2 (Xuất dữ liệu chính thức bên PT):**  
-   Sau khi HK đã hoàn tất ➡️ Vào **`DS phiếu chuyển`**, lọc kho `FZ02 + CL02`, chọn ngày cần đối soát và bấm **`[Xuất file]`** để tải file 41 cột về.
-   
-3. **Bước 3 (Tính toán chênh lệch):**  
-   Hệ thống trích xuất 13 cột: **A, C, D, H, I, J, K, L, Q, S, T, AE, AF** và áp dụng công thức:  
-   $$\text{Chênh Lệch} = \text{Cột K} - \text{Cột L}$$
-
----
-
-## 📊 KẾT QUẢ NGÀY 27/08/2026 TỪ FILE `transfer_30082026-020035.xlsx`:
-
-* **Kho Mát (Chill):** Chuyển `107.613,00` | Nhận `106.502,62` | **Lệch: `1.110,38`** *(470 dòng lệch / 223 phiếu PT)*.
-* **Kho Đông (Frozen):** Chuyển `15.936,00` | Nhận `15.008,00` | **Lệch: `928,00`** *(80 dòng lệch / 77 phiếu PT)*.
-* 🌟 **TỔNG CỘNG ĐÔNG + MÁT:** Chuyển **`123.549,00`** | Nhận **`121.510,62`** | **Tổng Lệch (K - L): `2.038,38`** *(550 dòng lệch / 300 phiếu PT)*.
