@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Module tiền xử lý, làm sạch và chuẩn hóa dữ liệu cho Dashboard ĐÔNG MÁT.
 """
@@ -20,9 +21,7 @@ def parse_number(val) -> float:
     if not s or s.lower() in ["nan", "none", "null", "-", ""]:
         return 0.0
     
-    # Xử lý dấu %
     s = s.replace("%", "").strip()
-    
     num_dots = s.count(".")
     num_commas = s.count(",")
     
@@ -43,11 +42,8 @@ def parse_number(val) -> float:
         if num_dots > 1:
             s = s.replace(".", "")
         else:
-            # Nếu phần thập phân có 3 chữ số và phần nguyên khác 0 -> số phân tách hàng nghìn (VD: 16.000 -> 16000)
             if len(parts[1]) == 3 and parts[0] not in ["0", "-0", ""]:
                 s = s.replace(".", "")
-            else:
-                pass
                 
     try:
         return float(s)
@@ -57,7 +53,7 @@ def parse_number(val) -> float:
 
 def process_dong_mat_dataframe(df_raw: pd.DataFrame) -> pd.DataFrame:
     """
-    Pipeline làm sạch dữ liệu toàn diện cho 43 cột trong Sheet Chênh lệch ST.
+    Pipeline làm sạch dữ liệu toàn diện cho tất cả các cột.
     """
     df = df_raw.copy()
     
@@ -74,8 +70,8 @@ def process_dong_mat_dataframe(df_raw: pd.DataFrame) -> pd.DataFrame:
             new_cols.append(c_clean)
     df.columns = new_cols
     
-    # 2. Chuẩn hóa cột ngày tháng linh hoạt (DD/MM/YYYY, MM/DD/YYYY, YYYY-MM-DD)
-    date_col = next((c for c in df.columns if "Ngày" in c or "date" in c.lower()), None)
+    # 2. Chuẩn hóa cột ngày tháng linh hoạt
+    date_col = next((c for c in df.columns if "ngày" in c.lower() or "ngay" in c.lower() or "date" in c.lower()), None)
     if date_col:
         def _parse_dt(v):
             if pd.isna(v) or not str(v).strip() or str(v).lower() in ["nan", "none", "null"]:
@@ -97,13 +93,14 @@ def process_dong_mat_dataframe(df_raw: pd.DataFrame) -> pd.DataFrame:
         df["Date_Parsed"] = pd.NaT
         df["Date_Str"] = "Không rõ"
         
-    # 3. Chuẩn hóa tất cả các cột văn bản (loại bỏ triệt để NaN, None, whitespace)
+    # 3. Chuẩn hóa tất cả các cột văn bản
     for c in df.columns:
         if c != "Date_Parsed":
             df[c] = df[c].fillna("").astype(str).replace(["nan", "None", "NULL", "null", "<NA>"], "").str.strip()
             
     # Chuẩn hóa Nhóm hàng (THỊT CÁ, MÁT, ĐÔNG)
-    if "Nhóm hàng" in df.columns:
+    grp_col = next((c for c in df.columns if "nhóm hàng" in c.lower() or "nhom hang" in c.lower() or "group" in c.lower()), None)
+    if grp_col:
         def _norm_grp(x):
             if not x or pd.isna(x):
                 return "KHÁC"
@@ -116,42 +113,48 @@ def process_dong_mat_dataframe(df_raw: pd.DataFrame) -> pd.DataFrame:
                 return "ĐÔNG"
             return s
             
-        df["Nhóm hàng"] = df["Nhóm hàng"].apply(_norm_grp)
+        df["Nhóm hàng"] = df[grp_col].apply(_norm_grp)
+    else:
+        df["Nhóm hàng"] = "KHÁC"
         
     # Chuẩn hóa Loại Lỗi
-    if "Lỗi" in df.columns:
-        df["Lỗi"] = df["Lỗi"].apply(lambda x: "Chưa phân loại" if not x or x.lower() in ["nan", ""] else x)
+    err_col = next((c for c in df.columns if "lỗi" in c.lower() or c.lower() == "loi" or "error" in c.lower()), None)
+    if err_col:
+        df["Lỗi"] = df[err_col].apply(lambda x: "Chưa phân loại" if not x or x.lower() in ["nan", ""] else x)
+    else:
+        df["Lỗi"] = "Chưa phân loại"
         
     # Chuẩn hóa Tình trạng Claim DC
-    if "DC xác nhận" in df.columns:
-        df["Claim_Status"] = df["DC xác nhận"].apply(
+    dc_conf_col = next((c for c in df.columns if "dc xác nhận" in c.lower() or "dc xac nhan" in c.lower() or "dc_confirm" in c.lower()), None)
+    if dc_conf_col:
+        df["Claim_Status"] = df[dc_conf_col].apply(
             lambda x: "Chưa phản hồi" if not x or x.lower() in ["nan", ""] else x
         )
+        df["DC_Confirm"] = df[dc_conf_col]
     else:
         df["Claim_Status"] = "Chưa phản hồi"
+        df["DC_Confirm"] = ""
         
     # 4. Chuẩn hóa các cột số liệu & tính toán tài chính
     numeric_targets = [
-        "Số lượng chuyển", "Số lượng nhận", "Chênh lệch", "Hạo hụt tự nhiên",
+        "Số lượng chuyển", "Số lượng nhận", "Chênh lệch", "Hao hụt tự nhiên",
         "SL trả tồn về ST", "SL chênh lệch CXD", "% Hao hụt", "Tổng GT",
         "Tổng hao hụt", "Tổng ST", "Tổng kho", "Tổng chưa xác định"
     ]
     
-    # Cột Giá nhập
-    col_gia = next((c for c in df.columns if "Giá nhập" in c), None)
+    col_gia = next((c for c in df.columns if "giá nhập" in c.lower() or "gia nhap" in c.lower() or "price" in c.lower()), None)
     if col_gia:
-        df["Gia_Nhap_Num"] = df[col_gia].apply(parse_number)
+        df["Gia_Nhap_Num"] = [parse_number(v) for v in df[col_gia]]
     else:
         df["Gia_Nhap_Num"] = 0.0
 
     for nc in numeric_targets:
         matched_col = next((c for c in df.columns if nc.lower() in c.lower()), None)
         if matched_col:
-            df[f"{nc}_Num"] = df[matched_col].apply(parse_number)
+            df[f"{nc}_Num"] = [parse_number(v) for v in df[matched_col]]
         else:
             df[f"{nc}_Num"] = 0.0
             
-    # Tên chuẩn hóa rút gọn cho các cột tính toán
     df["Qty_Chuyen"] = df["Số lượng chuyển_Num"]
     df["Qty_Nhan"] = df["Số lượng nhận_Num"]
     df["Qty_Lech"] = df["Chênh lệch_Num"]
@@ -161,44 +164,18 @@ def process_dong_mat_dataframe(df_raw: pd.DataFrame) -> pd.DataFrame:
     df["Val_Tong_HaoHut"] = df["Tổng hao hụt_Num"]
     df["Val_Tong_CXD"] = df["Tổng chưa xác định_Num"]
     
-    # 5. Chuẩn hóa 4 Cột Trọng Tâm AD - AG (DC Xác Nhận & KFM Thông Tin)
-    # Cột AD: DC xác nhận
-    df["DC_Confirm"] = df["DC xác nhận"] if "DC xác nhận" in df.columns else ""
-    
-    # Cột AE: NOTE của DC phản hồi
+    # 5. Cột trọng tâm AD - AG (DC Xác Nhận & KFM Thông Tin)
     dc_note_col = next((c for c in df.columns if c in ["NOTE.1", "NOTE_1"] or (c.startswith("NOTE") and "1" in c)), None)
     if not dc_note_col and len([c for c in df.columns if "NOTE" in c]) >= 2:
         dc_note_col = [c for c in df.columns if "NOTE" in c][1]
     df["DC_Note"] = df[dc_note_col] if dc_note_col and dc_note_col in df.columns else ""
 
-    # Cột AF: KFM phản hồi
-    df["KFM_Reply"] = df["KFM phản hồi"] if "KFM phản hồi" in df.columns else ""
+    kfm_rep_col = next((c for c in df.columns if "kfm phản hồi" in c.lower() or "kfm phan hoi" in c.lower()), None)
+    df["KFM_Reply"] = df[kfm_rep_col] if kfm_rep_col and kfm_rep_col in df.columns else ""
 
-    # Cột AG: NOTE của KFM thông tin
     kfm_note_col = next((c for c in df.columns if c in ["NOTE.2", "NOTE_2"] or (c.startswith("NOTE") and "2" in c)), None)
     if not kfm_note_col and len([c for c in df.columns if "NOTE" in c]) >= 3:
         kfm_note_col = [c for c in df.columns if "NOTE" in c][2]
     df["KFM_Note"] = df[kfm_note_col] if kfm_note_col and kfm_note_col in df.columns else ""
 
-    # 6. Tạo cột tìm kiếm tổng hợp (Search Index)
-    def safe_col(col_name):
-        if col_name in df.columns:
-            return df[col_name].fillna("").astype(str)
-        return ""
-
-    df["Search_Index"] = (
-        safe_col("ID ST") + " " +
-        safe_col("Chi nhánh nhận") + " " +
-        safe_col("Mã hàng") + " " +
-        safe_col("Tên SP") + " " +
-        safe_col("PT chuyển hàng") + " " +
-        safe_col("Mã thùng") + " " +
-        safe_col("TO") + " " +
-        safe_col("Lỗi") + " " +
-        safe_col("DC_Confirm") + " " +
-        safe_col("DC_Note") + " " +
-        safe_col("KFM_Reply") + " " +
-        safe_col("KFM_Note")
-    ).str.lower()
-    
     return df
