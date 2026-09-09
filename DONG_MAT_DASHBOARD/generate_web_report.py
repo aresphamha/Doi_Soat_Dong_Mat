@@ -375,60 +375,60 @@ def build_and_export_web_report():
     unique_days = [d for d in df_enriched["Date_Str"].unique().tolist() if d and str(d).strip()]
     unique_days.sort(key=parse_d, reverse=True)
 
-    for d_str in unique_days:
-        safe_date = d_str.replace('/', '_').replace('-', '_')
-        day_df = df_enriched[df_enriched["Date_Str"] == d_str]
-        
-        records = []
-        for _, r in day_df.iterrows():
-            records.append({
-                "st": str(r.get("ID ST", "")),
-                "store_name": str(r.get("Chi nhánh nhận", "")),
-                "group": str(r.get("Nhóm hàng", "")),
-                "sku": str(r.get("Mã hàng", "")),
-                "sku_name": str(r.get("Tên SP", "")),
-                "qty_transfer": round(float(r.get("Qty_Chuyen", 0.0)), 2),
-                "qty_receive": round(float(r.get("Qty_Nhan", 0.0)), 2),
-                "qty_diff": round(float(r.get("Qty_Lech", 0.0)), 2),
-                "price": float(r.get("Gia_Nhap_Num", 0.0)),
-                "val_total": float(r.get("Val_Tong_GT", 0.0)),
-                "destination": str(r.get("Destination", "")),
-                "error": str(r.get("Lỗi", "")),
-                "is_store_over_100k": bool(r.get("Is_Store_Over_100k", False)),
-                "store_day_total": float(r.get("Store_Day_Val_Total", 0.0)),
-                "status_3level": str(r.get("Status_3Level", "")),
-                "dc_confirm": str(r.get("DC_Confirm", "") or ""),
-                "dc_note": str(r.get("DC_Note", "") or ""),
-                "kfm_reply": str(r.get("KFM_Reply", "") or ""),
-                "kfm_note": str(r.get("KFM_Note", "") or "")
-            })
+    # Map and rename columns cleanly for JSON export
+    export_cols = {
+        "ID ST": "st",
+        "Chi nhánh nhận": "store_name",
+        "Nhóm hàng": "group",
+        "Mã hàng": "sku",
+        "Tên SP": "sku_name",
+        "Qty_Chuyen": "qty_transfer",
+        "Qty_Nhan": "qty_receive",
+        "Qty_Lech": "qty_diff",
+        "Gia_Nhap_Num": "price",
+        "Val_Tong_GT": "val_total",
+        "Destination": "destination",
+        "Lỗi": "error",
+        "Is_Store_Over_100k": "is_store_over_100k",
+        "Store_Day_Val_Total": "store_day_total",
+        "Status_3Level": "status_3level",
+        "DC_Confirm": "dc_confirm",
+        "DC_Note": "dc_note",
+        "KFM_Reply": "kfm_reply",
+        "KFM_Note": "kfm_note"
+    }
+    
+    df_export = df_enriched[[c for c in export_cols.keys() if c in df_enriched.columns]].rename(columns=export_cols).copy()
+    df_export["Date_Str"] = df_enriched["Date_Str"]
 
+    for d_str, day_df in df_export.groupby("Date_Str"):
+        if not d_str or not str(d_str).strip(): continue
+        safe_date = str(d_str).replace('/', '_').replace('-', '_')
+        records = day_df.drop(columns=["Date_Str"]).to_dict(orient="records")
         js_content = f"window.LOADED_DAILY_RECORDS = window.LOADED_DAILY_RECORDS || {{}};\nwindow.LOADED_DAILY_RECORDS['{d_str}'] = {json.dumps(records, ensure_ascii=False)};"
         with open(os.path.join(daily_details_dir, f"d_{safe_date}.js"), "w", encoding="utf-8") as f:
             f.write(js_content)
 
     # 4. Xuất DC Cases riêng
     df_dc_all = df_enriched[df_enriched["Destination"] == "Kho ĐÔNG MÁT"]
-    dc_records = []
-    for _, r in df_dc_all.iterrows():
-        d_parsed = r.get("Date_Parsed")
-        month_str = f"Tháng {d_parsed.month}" if pd.notnull(d_parsed) else "Tháng 8"
-        dc_records.append({
-            "date": str(r.get("Date_Str", "")),
-            "month": month_str,
-            "st": str(r.get("ID ST", "")),
-            "store_name": str(r.get("Chi nhánh nhận", "")),
-            "group": str(r.get("Nhóm hàng", "")),
-            "sku": str(r.get("Mã hàng", "")),
-            "sku_name": str(r.get("Tên SP", "")),
-            "qty_diff": round(float(r.get("Qty_Lech", 0.0)), 2),
-            "val_total": float(r.get("Val_Tong_GT", 0.0)),
-            "dc_confirm": str(r.get("DC_Confirm", "") or ""),
-            "dc_note": str(r.get("DC_Note", "") or ""),
-            "kfm_reply": str(r.get("KFM_Reply", "") or ""),
-            "kfm_note": str(r.get("KFM_Note", "") or ""),
-            "status_3level": str(r.get("Status_3Level", ""))
-        })
+    dc_export_cols = {
+        "Date_Str": "date",
+        "ID ST": "st",
+        "Chi nhánh nhận": "store_name",
+        "Nhóm hàng": "group",
+        "Mã hàng": "sku",
+        "Tên SP": "sku_name",
+        "Qty_Lech": "qty_diff",
+        "Val_Tong_GT": "val_total",
+        "DC_Confirm": "dc_confirm",
+        "DC_Note": "dc_note",
+        "KFM_Reply": "kfm_reply",
+        "KFM_Note": "kfm_note",
+        "Status_3Level": "status_3level"
+    }
+    df_dc_exp = df_dc_all[[c for c in dc_export_cols.keys() if c in df_dc_all.columns]].rename(columns=dc_export_cols).copy()
+    df_dc_exp["month"] = df_dc_all["Date_Parsed"].apply(lambda d: f"Tháng {d.month}" if pd.notnull(d) else "Tháng 8")
+    dc_records = df_dc_exp.to_dict(orient="records")
     with open(os.path.join(daily_details_dir, "dc_cases.js"), "w", encoding="utf-8") as f:
         f.write(f"window.DC_CASES_DATA = {json.dumps(dc_records, ensure_ascii=False)};")
 
@@ -455,7 +455,13 @@ def build_and_export_web_report():
         html_content = f.read()
 
     # Bơm BUNDLES
-    bundles_js = f"window.REPORT_BUNDLES = {json.dumps(bundles, ensure_ascii=False)};"
+    bundles_json_str = json.dumps(bundles, ensure_ascii=False)
+    if "/*__BUNDLES_JSON__*/{}" in html_content:
+        html_content = html_content.replace("/*__BUNDLES_JSON__*/{}", bundles_json_str)
+    elif "/*__BUNDLES_JSON__*/" in html_content:
+        html_content = html_content.replace("/*__BUNDLES_JSON__*/", bundles_json_str)
+    
+    bundles_js = f"window.REPORT_BUNDLES = {bundles_json_str};"
     html_content = html_content.replace("// __BUNDLES_PLACEHOLDER__", bundles_js)
     if "/* __REPORT_BUNDLES_INJECTION__ */" in html_content:
         html_content = html_content.replace("/* __REPORT_BUNDLES_INJECTION__ */", bundles_js)
