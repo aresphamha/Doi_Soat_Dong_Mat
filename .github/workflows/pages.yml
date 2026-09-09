@@ -1,13 +1,22 @@
-name: Deploy Dashboard to GitHub Pages
+name: 🔄 Tự Động Đồng Bộ Google Sheets & Triển Khai Web (24/7 CI/CD)
 
 on:
+  schedule:
+    # Tự động chạy mỗi 30 phút một lần (24/7 liên tục trên Cloud)
+    - cron: '*/30 * * * *'
   push:
     branches:
       - main
+    paths:
+      - 'DONG_MAT_DASHBOARD/**'
+      - '.github/workflows/**'
+      - 'requirements.txt'
+  repository_dispatch:
+    types: [sheet_updated, sync_data]
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -16,23 +25,52 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  build-and-deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: 📥 1. Tải Mã Nguồn từ Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup Pages
+      - name: 🐍 2. Cài đặt Môi trường Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 3. Cài đặt các Thư viện Cần thiết
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 📊 4. Tải Số Liệu 3 Google Sheets & Xuất Bản Báo Cáo
+        run: |
+          python DONG_MAT_DASHBOARD/generate_web_report.py
+
+      - name: 💾 5. Tự Động Lưu File Báo Cáo Mới Vào GitHub
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add index.html Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay.html daily_details/
+          if git diff --staged --quiet; then
+            echo "Không có thay đổi mới từ Google Sheets."
+          else
+            git commit -m "🤖 [Auto-Sync] Tự động cập nhật số liệu mới từ Google Sheets [skip ci]"
+            git push origin main
+          fi
+
+      - name: 🌐 6. Khởi tạo Cấu hình GitHub Pages
         uses: actions/configure-pages@v4
 
-      - name: Upload artifact
+      - name: 📦 7. Đóng gói Artifact Web
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
 
-      - name: Deploy to GitHub Pages
+      - name: 🚀 8. Triển Khai Lên Web Online
         id: deployment
         uses: actions/deploy-pages@v4
