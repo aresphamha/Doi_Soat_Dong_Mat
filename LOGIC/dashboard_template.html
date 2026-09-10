@@ -495,6 +495,12 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
+        .group-btn.active-thit-ca {
+            background: #f43f5e;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+        }
+
         .group-btn.active-mat {
             background: #10b981;
             color: #ffffff;
@@ -584,6 +590,199 @@
         .action-btn:hover {
             background: #059669;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.45);
+        }
+
+        /* ========================================================================= */
+        /* 📂 SUB-TABS SELECTOR CHO STEP 2 (THANH CHỌN 4 BẢNG SỐ LIỆU ĐỐI SOÁT)      */
+        /* ========================================================================= */
+        .sub-tabs-bar {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 41, 59, 0.75) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 14px;
+            padding: 0.85rem 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .sub-tabs-header-label {
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .sub-tabs-list {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+        }
+
+        @media (max-width: 1200px) {
+            .sub-tabs-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .sub-tabs-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sub-tab-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem 0.95rem;
+            color: #94a3b8;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .sub-tab-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.25);
+            color: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+        }
+
+        .sub-tab-btn .tab-badge-num {
+            position: absolute;
+            top: 0.6rem;
+            right: 0.75rem;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+            font-size: 0.72rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.2s ease;
+        }
+
+        .sub-tab-btn .tab-btn-text {
+            font-size: 0.88rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.15rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .sub-tab-btn .tab-btn-text i {
+            font-size: 1rem;
+        }
+
+        .sub-tab-btn .tab-btn-sub {
+            font-size: 0.73rem;
+            font-weight: 500;
+            opacity: 0.75;
+        }
+
+        /* Active State cho từng Tab riêng biệt */
+        .sub-tab-btn.active-sub-1,
+        .sub-tab-btn.active#tab-sub-1 {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.4) 0%, rgba(56, 189, 248, 0.2) 100%) !important;
+            border: 1.5px solid #38bdf8 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.4), inset 0 0 15px rgba(56, 189, 248, 0.15) !important;
+        }
+        .sub-tab-btn.active#tab-sub-1 .tab-badge-num {
+            background: #38bdf8;
+            color: #0f172a;
+            font-weight: 900;
+        }
+        .sub-tab-btn.active#tab-sub-1 .tab-btn-text {
+            color: #38bdf8;
+        }
+
+        .sub-tab-btn.active-sub-2,
+        .sub-tab-btn.active#tab-sub-2 {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.4) 0%, rgba(52, 211, 153, 0.2) 100%) !important;
+            border: 1.5px solid #34d399 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 20px rgba(52, 211, 153, 0.4), inset 0 0 15px rgba(52, 211, 153, 0.15) !important;
+        }
+        .sub-tab-btn.active#tab-sub-2 .tab-badge-num {
+            background: #34d399;
+            color: #064e3b;
+            font-weight: 900;
+        }
+        .sub-tab-btn.active#tab-sub-2 .tab-btn-text {
+            color: #34d399;
+        }
+
+        .sub-tab-btn.active-sub-3,
+        .sub-tab-btn.active#tab-sub-3 {
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.4) 0%, rgba(251, 191, 36, 0.2) 100%) !important;
+            border: 1.5px solid #fbbf24 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.4), inset 0 0 15px rgba(251, 191, 36, 0.15) !important;
+        }
+        .sub-tab-btn.active#tab-sub-3 .tab-badge-num {
+            background: #fbbf24;
+            color: #78350f;
+            font-weight: 900;
+        }
+        .sub-tab-btn.active#tab-sub-3 .tab-btn-text {
+            color: #fbbf24;
+        }
+
+        .sub-tab-btn.active-sub-4,
+        .sub-tab-btn.active#tab-sub-4 {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.4) 0%, rgba(248, 113, 113, 0.2) 100%) !important;
+            border: 1.5px solid #f87171 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 20px rgba(248, 113, 113, 0.4), inset 0 0 15px rgba(248, 113, 113, 0.15) !important;
+        }
+        .sub-tab-btn.active#tab-sub-4 .tab-badge-num {
+            background: #f87171;
+            color: #450a0a;
+            font-weight: 900;
+        }
+        .sub-tab-btn.active#tab-sub-4 .tab-btn-text {
+            color: #f87171;
+        }
+
+        /* Light Mode Theme Adjustments */
+        [data-theme="light"] .sub-tabs-bar {
+            background: #ffffff;
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        }
+        [data-theme="light"] .sub-tab-btn {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            color: #64748b;
+        }
+        [data-theme="light"] .sub-tab-btn:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        [data-theme="light"] .sub-tab-btn .tab-badge-num {
+            background: #e2e8f0;
+            color: #475569;
         }
 
         .main-container {
@@ -1841,7 +2040,7 @@
             <div class="header-title">
                 <i class="fa-solid fa-boxes-stacked header-icon"></i>
                 <div class="header-text">
-                    <h1>BÁO CÁO ĐỐI SOÁT HÀNG ĐÔNG - MÁT</h1>
+                    <h1>BÁO CÁO ĐỐI SOÁT SCM (THỊT CÁ • ĐÔNG • MÁT)</h1>
                     <p>Hệ thống SCM • Phân tích Ngưỡng 100K theo TỔNG SIÊU THỊ / NGÀY</p>
                 </div>
             </div>
@@ -1850,14 +2049,17 @@
             <div style="display:flex; align-items:center; gap:0.65rem; flex-wrap:wrap;">
                 <!-- Group Tabs -->
                 <div class="group-switcher">
-                    <button class="group-btn active-mat" id="tab-mat" onclick="changeGroup('mat')">
-                        <i class="fa-solid fa-drumstick-bite"></i> 🥩 NHÓM HÀNG MÁT
+                    <button class="group-btn active-all" id="tab-all" onclick="changeGroup('all')">
+                        <i class="fa-solid fa-layer-group"></i> 🌟 TẤT CẢ
+                    </button>
+                    <button class="group-btn" id="tab-thit-ca" onclick="changeGroup('thit_ca')">
+                        <i class="fa-solid fa-drumstick-bite"></i> 🥩🐟 THỊT CÁ
+                    </button>
+                    <button class="group-btn" id="tab-mat" onclick="changeGroup('mat')">
+                        <i class="fa-solid fa-leaf"></i> 🥗 NHÓM HÀNG MÁT
                     </button>
                     <button class="group-btn" id="tab-dong" onclick="changeGroup('dong')">
                         <i class="fa-solid fa-snowflake"></i> ❄️ NHÓM HÀNG ĐÔNG
-                    </button>
-                    <button class="group-btn" id="tab-all" onclick="changeGroup('all')">
-                        <i class="fa-solid fa-layer-group"></i> 🌟 ĐÔNG & MÁT
                     </button>
                 </div>
 
@@ -1870,12 +2072,12 @@
                 </div>
             </div>
 
-            <div style="display:flex; align-items:center; gap:0.65rem;">
+            <div style="display:flex; align-items:center; gap:0.65rem; flex-wrap:wrap;">
                 <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Chuyển đổi giao diện Phông Đen / Sáng">
                     <i class="fa-solid fa-moon"></i> <span>Phông Tối</span>
                 </button>
                 <button class="action-btn" onclick="exportExcel()">
-                    <i class="fa-solid fa-file-excel"></i> Xuất Excel
+                    <i class="fa-solid fa-download"></i> Xuất Excel
                 </button>
             </div>
         </div>
@@ -1914,7 +2116,18 @@
 
             <div class="sidebar-footer">
                 <div style="font-weight:700; color:var(--text-primary); margin-bottom:3px;"><i class="fa-solid fa-shield-halved" style="color:var(--primary);"></i> SCM Kingfoodmart</div>
-                <div>Tự động đồng bộ số liệu Google Sheets</div>
+                <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px;">Tự động đồng bộ số liệu Google Sheets</div>
+                <div style="display:flex; flex-direction:column; gap:5px; margin-top:6px; padding-top:6px; border-top:1px dashed var(--border-card);">
+                    <a href="https://docs.google.com/spreadsheets/d/1wac6iEvX8FFrmOse8Hk-6e4e7pOW840lEmjuHb5M2to/edit?gid=1422896115#gid=1422896115" target="_blank" rel="noopener noreferrer" style="color:#f87171; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:5px;" title="Đối soát thịt cá tháng 28.08 - 09.26 (KFM - SCF)">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Sheet Thịt Cá (Mới)
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1LI_cqLh_-k8eJzMVHtQr52X1xwLT9U5NeTYhW6NgQlU/edit?gid=1422896115#gid=1422896115" target="_blank" rel="noopener noreferrer" style="color:#38bdf8; text-decoration:none; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:5px;" title="Đối soát thịt cá tháng 7 + 8 (KFM - SCF)">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Sheet Thịt Cá T7+T8
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/18LwNc2FTqSy9aKMtnqlBFmVQJPPn9E7ALnXajVXHhzI/edit?gid=1422896115#gid=1422896115" target="_blank" rel="noopener noreferrer" style="color:var(--text-secondary); text-decoration:none; font-size:0.75rem; display:inline-flex; align-items:center; gap:5px;" title="Đối soát ĐÔNG MÁT (Gốc)">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Sheet Đông Mát Gốc
+                    </a>
+                </div>
             </div>
         </aside>
 
@@ -2020,16 +2233,16 @@
             <div class="insights-grid">
                 <div class="insight-section">
                     <div class="insight-section-title" style="color:#38bdf8;">
-                        <i class="fa-solid fa-magnifying-glass-chart"></i> 1. Nhận Xét Chuyên Sâu Từng Nhóm Ngưỡng
+                        <i class="fa-solid fa-magnifying-glass-chart"></i> 1. Nhận Xét Chuyên Sâu Từng Nhóm Ngưỡng <span id="insight-period-tag" style="font-size:0.8rem; font-weight:600; color:#38bdf8; background:rgba(56, 189, 248, 0.15); padding:2px 8px; border-radius:12px; margin-left:6px;"></span>
                     </div>
                     <div class="insight-item danger-left" id="insight-item-over">
-                        <strong>🚨 Nhóm Trọng Yếu (ST ≥ 100k/ngày):</strong> Chiếm tới <strong>91.1% số vụ</strong> và <strong>98.2% giá trị (3.12 tỷ VNĐ)</strong>. Tiến độ xử lý đạt <strong>91.9%</strong>; hiện còn tồn <strong>2,069 vụ (~252.3 triệu VNĐ)</strong> tập trung ở các ngày cuối tháng 8 cần ưu tiên xử lý dứt điểm.
+                        <strong>🚨 Nhóm Trọng Yếu (ST ≥ 100k/ngày):</strong> Đang tải nhận xét...
                     </div>
                     <div class="insight-item success-left" id="insight-item-under">
-                        <strong>⚪ Nhóm Miễn Trừ (ST &lt; 100k/ngày):</strong> Chiếm <strong>8.9% số vụ</strong> nhưng chỉ chiếm <strong>1.8% giá trị (57.3 triệu VNĐ)</strong>. Trong đó 65.5% đã tự động quy trách nhiệm, còn lại 34.5% (19.8 triệu VNĐ) thuộc diện miễn trừ không cần tra soát tốn nhân lực.
+                        <strong>⚪ Nhóm Miễn Trừ (ST &lt; 100k/ngày):</strong> Đang tải nhận xét...
                     </div>
                     <div class="insight-item warning-left" id="insight-item-trend">
-                        <strong>📈 Biên Độ Dao Động:</strong> Số lượng vụ việc dao động mạnh từ <strong>300 đến ~2,550 vụ/ngày</strong> (đỉnh điểm vào các ngày 28-30 hàng tháng). Tỷ lệ hoàn tất các ngày tháng 7 đạt &gt;99%, trong khi các ngày gần nhất tháng 8 đang cuốn chiếu đạt từ 50% - 86%.
+                        <strong>📈 Biên Độ Dao Động:</strong> Đang tải nhận xét...
                     </div>
                 </div>
 
@@ -2037,14 +2250,14 @@
                     <div class="insight-section-title" style="color:#34d399;">
                         <i class="fa-solid fa-shield-halved"></i> 2. Đề Xuất Giải Pháp Hành Động (Action Plan)
                     </div>
-                    <div class="insight-item success-left">
-                        <strong>🎯 Giải pháp 1 (Quy tắc 80/20):</strong> Tập trung 100% nhân sự vào <strong>Bảng Danh Sách Siêu Thị Ưu Tiên P1</strong> (nhóm ST ≥ 100k đang treo) để xử lý dứt điểm công nợ còn lại trước kỳ chốt sổ.
+                    <div class="insight-item success-left" id="insight-action-1">
+                        <strong>🎯 Giải pháp 1 (Quy tắc 80/20):</strong> Đang cập nhật giải pháp...
                     </div>
-                    <div class="insight-item" style="border-left-color:#818cf8;">
-                        <strong>⚡ Giải pháp 2 (Tự động hóa Miễn trừ):</strong> Áp dụng cơ chế <em>Auto-Waive</em> (tự động kết chuyển hao hụt định mức) cho nhóm ST &lt; 100k/ngày, giúp giải phóng 80% thời gian rà soát chi tiết từng hóa đơn vụn.
+                    <div class="insight-item" style="border-left-color:#818cf8;" id="insight-action-2">
+                        <strong>⚡ Giải pháp 2 (Tự động hóa Miễn trừ):</strong> Đang cập nhật giải pháp...
                     </div>
-                    <div class="insight-item warning-left">
-                        <strong>🛡️ Giải pháp 3 (Kiểm soát Ngày Cao Điểm):</strong> Vào các ngày cao điểm giao nhận cuối tháng (khi số case vượt 1,000 vụ/ngày), bắt buộc áp dụng <em>Biên bản giao nhận điện tử tức thời</em> tại cửa xe để giảm 60% tỷ lệ sai lệch hàng ĐÔNG - MÁT.
+                    <div class="insight-item warning-left" id="insight-action-3">
+                        <strong>🛡️ Giải pháp 3 (Kiểm soát Ngày Cao Điểm):</strong> Đang cập nhật giải pháp...
                     </div>
                 </div>
             </div>
@@ -2224,19 +2437,32 @@
                 </div>
 
                 <!-- Thanh Chuyển 4 Bảng Số Liệu Riêng Biệt -->
-                <div class="tabs-nav" style="margin-bottom: 1.25rem;">
-                    <button class="sub-tab-btn active" id="tab-sub-1" onclick="switchSubTab(1)">
-                        <i class="fa-solid fa-table-list"></i> BẢNG TỔNG HỢP TIẾN ĐỘ
-                    </button>
-                    <button class="sub-tab-btn" id="tab-sub-2" onclick="switchSubTab(2)">
-                        <i class="fa-solid fa-money-bill-wave"></i> BẢNG GIÁ TRỊ (VNĐ)
-                    </button>
-                    <button class="sub-tab-btn" id="tab-sub-3" onclick="switchSubTab(3)">
-                        <i class="fa-solid fa-boxes-packing"></i> BẢNG SỐ LƯỢNG (PCS / KG)
-                    </button>
-                    <button class="sub-tab-btn" id="tab-sub-4" onclick="switchSubTab(4)">
-                        <i class="fa-solid fa-store"></i> DANH SÁCH SIÊU THỊ ƯU TIÊN (≥ 100K)
-                    </button>
+                <div class="sub-tabs-bar">
+                    <div class="sub-tabs-header-label">
+                        <i class="fa-solid fa-folder-tree"></i> CHỌN BẢNG DỮ LIỆU ĐỐI SOÁT XEM CHI TIẾT:
+                    </div>
+                    <div class="sub-tabs-list">
+                        <button class="sub-tab-btn active active-sub-1" id="tab-sub-1" onclick="switchSubTab(1)">
+                            <span class="tab-badge-num">1</span>
+                            <span class="tab-btn-text"><i class="fa-solid fa-layer-group"></i> BẢNG TỔNG HỢP TIẾN ĐỘ</span>
+                            <span class="tab-btn-sub">Hợp nhất SL & Giá trị theo ngày/tháng</span>
+                        </button>
+                        <button class="sub-tab-btn" id="tab-sub-2" onclick="switchSubTab(2)">
+                            <span class="tab-badge-num">2</span>
+                            <span class="tab-btn-text"><i class="fa-solid fa-money-bill-trend-up"></i> BẢNG GIÁ TRỊ (VNĐ)</span>
+                            <span class="tab-btn-sub">Bóc tách dòng tiền & Ngưỡng 100k</span>
+                        </button>
+                        <button class="sub-tab-btn" id="tab-sub-3" onclick="switchSubTab(3)">
+                            <span class="tab-badge-num">3</span>
+                            <span class="tab-btn-text"><i class="fa-solid fa-boxes-stacked"></i> BẢNG SỐ LƯỢNG (PCS / KG)</span>
+                            <span class="tab-btn-sub">Số lượng giao nhận & Điểm nhận</span>
+                        </button>
+                        <button class="sub-tab-btn" id="tab-sub-4" onclick="switchSubTab(4)">
+                            <span class="tab-badge-num">4</span>
+                            <span class="tab-btn-text"><i class="fa-solid fa-triangle-exclamation"></i> DS SIÊU THỊ ƯU TIÊN (≥ 100K)</span>
+                            <span class="tab-btn-sub">Phân nhóm xử lý P1 / P2 / P3</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Bảng 1: Tổng Hợp -->
@@ -2445,7 +2671,7 @@
                 </div>
 
                 <!-- Bảng Đối Soát DC (4 Cột AD-AG) -->
-                <div class="table-card" id="card-dc-table" style="display:none; border-top: 3px solid #c084fc;">
+                <div class="table-card" id="card-dc-table" style="border-top: 3px solid #c084fc;">
             <!-- Header Row with Controls -->
             <div class="table-header-row" style="flex-wrap:wrap; gap:0.75rem;">
                 <div class="table-title" style="color:#c084fc; font-size:1.15rem;">
@@ -2917,9 +3143,15 @@
                 if (tabNum === 1) {
                     renderCharts(data);
                 } else if (tabNum === 2) {
-                    renderTableData(data);
+                    renderStorePriorityTable();
+                    renderMasterTable();
+                    renderValTable();
+                    renderQtyTable();
                 } else if (tabNum === 3) {
-                    renderDCDashboards(data);
+                    updateDCOverviewStats(data);
+                    renderDCInsights(data);
+                    renderDCCharts(data);
+                    renderDCTable();
                 }
             }
         }
@@ -2935,10 +3167,10 @@
             const p3 = document.getElementById('sub-panel-3');
             const p4 = document.getElementById('sub-panel-4');
 
-            if (btn1) btn1.className = 'sub-tab-btn' + (subNum === 1 ? ' active' : '');
-            if (btn2) btn2.className = 'sub-tab-btn' + (subNum === 2 ? ' active' : '');
-            if (btn3) btn3.className = 'sub-tab-btn' + (subNum === 3 ? ' active' : '');
-            if (btn4) btn4.className = 'sub-tab-btn' + (subNum === 4 ? ' active' : '');
+            if (btn1) btn1.className = 'sub-tab-btn' + (subNum === 1 ? ' active active-sub-1' : '');
+            if (btn2) btn2.className = 'sub-tab-btn' + (subNum === 2 ? ' active active-sub-2' : '');
+            if (btn3) btn3.className = 'sub-tab-btn' + (subNum === 3 ? ' active active-sub-3' : '');
+            if (btn4) btn4.className = 'sub-tab-btn' + (subNum === 4 ? ' active active-sub-4' : '');
 
             if (p1) p1.style.display = subNum === 1 ? 'block' : 'none';
             if (p2) p2.style.display = subNum === 2 ? 'block' : 'none';
@@ -2946,7 +3178,7 @@
             if (p4) p4.style.display = subNum === 4 ? 'block' : 'none';
         }
 
-        let curGroup = 'mat';
+        let curGroup = 'all';
         let curMonth = 'all';
         let valPeriod = 'daily';
         let qtyPeriod = 'daily';
@@ -3069,6 +3301,7 @@
             let stList = (BUNDLES && BUNDLES.store_priority_list) || [];
             if (curGroup === 'mat') stList = stList.filter(r => (r.group || '').includes('MÁT'));
             else if (curGroup === 'dong') stList = stList.filter(r => (r.group || '').includes('ĐÔNG'));
+            else if (curGroup === 'thit_ca') stList = stList.filter(r => (r.group || '').includes('THỊT') || (r.group || '').includes('CÁ') || (r.group || '').includes('MEAT') || (r.group || '').includes('FISH'));
             if (curMonth !== 'all') stList = stList.filter(item => item.month === curMonth);
             const dailyMatrix = (rawBundle.daily_matrix || []).filter(d => curMonth === 'all' || d.month === curMonth);
 
@@ -3102,43 +3335,6 @@
                     stSetDone.add(stItem.st);
                     storeDaysDone++;
                 }
-            });
-
-            return {
-                uniqueStTotal: stSetTotal.size,
-                uniqueStOver: stOverSet.size,
-                uniqueStDone: stSetDone.size,
-                uniqueStPending: stSetPending.size,
-                uniqueStIgnored: stSetIgnored.size,
-                storeDaysDone,
-                storeDaysPending,
-                storeDaysIgnored,
-                casesDone,
-                casesPending,
-                casesIgnored
-            };
-        }
-
-                    if (r.status_3level === 'Đã xử lý') {
-                        casesDone++;
-                        stSetDone.add(r.st);
-                        dayStoreStatusMap[r.st].hasDone = true;
-                    } else if (r.status_3level === 'Đang xử lý') {
-                        casesPending++;
-                        stSetPending.add(r.st);
-                        dayStoreStatusMap[r.st].hasPending = true;
-                    } else if (r.status_3level === 'Không xử lý') {
-                        casesIgnored++;
-                        stSetIgnored.add(r.st);
-                        dayStoreStatusMap[r.st].hasIgnored = true;
-                    }
-                });
-
-                Object.values(dayStoreStatusMap).forEach(statusObj => {
-                    if (statusObj.hasDone) storeDaysDone++;
-                    if (statusObj.hasPending) storeDaysPending++;
-                    if (statusObj.hasIgnored) storeDaysIgnored++;
-                });
             });
 
             return {
@@ -3279,7 +3475,11 @@
                 dc_chua_val: totDcChuaVal,
                 dc_chua_st: totDcChuaSt,
                 dc_pct_phan_hoi: totDcCases > 0 ? (((totDcDongYCases + totDcTuChoiCases + totDcKiemTraCases) / totDcCases * 100).toFixed(1)) : 100.0,
-                dc_pct_dongy: totDcCases > 0 ? ((totDcDongYCases / totDcCases * 100).toFixed(1)) : 0.0
+                dc_pct_dongy: totDcCases > 0 ? ((totDcDongYCases / totDcCases * 100).toFixed(1)) : 0.0,
+                dc_crosstab: raw.grand_total ? raw.grand_total.dc_crosstab : [],
+                top_dc_notes: raw.grand_total ? raw.grand_total.top_dc_notes : [],
+                top_kfm_notes: raw.grand_total ? raw.grand_total.top_kfm_notes : [],
+                non_agree_breakdown: raw.grand_total ? raw.grand_total.non_agree_breakdown : []
             };
 
             const dynOverallMetrics = {
@@ -3306,9 +3506,15 @@
 
         function changeGroup(grp) {
             curGroup = grp;
-            document.getElementById('tab-mat').className = 'group-btn' + (grp === 'mat' ? ' active-mat' : '');
-            document.getElementById('tab-dong').className = 'group-btn' + (grp === 'dong' ? ' active-dong' : '');
-            document.getElementById('tab-all').className = 'group-btn' + (grp === 'all' ? ' active-all' : '');
+            const tabTc = document.getElementById('tab-thit-ca');
+            const tabMat = document.getElementById('tab-mat');
+            const tabDong = document.getElementById('tab-dong');
+            const tabAll = document.getElementById('tab-all');
+            
+            if (tabTc) tabTc.className = 'group-btn' + (grp === 'thit_ca' ? ' active-thit-ca' : '');
+            if (tabMat) tabMat.className = 'group-btn' + (grp === 'mat' ? ' active-mat' : '');
+            if (tabDong) tabDong.className = 'group-btn' + (grp === 'dong' ? ' active-dong' : '');
+            if (tabAll) tabAll.className = 'group-btn' + (grp === 'all' ? ' active-all' : '');
             populateMonthOptions();
             renderAll();
         }
@@ -3640,6 +3846,9 @@
                 }
             }
 
+            // Cập nhật Khối Nhận Xét & Giải Pháp Hành Động Động Theo Kỳ Được Chọn
+            updateExecutiveInsights(data);
+
             // Cập nhật Khối Thống Kê Tổng Quan DC
             updateDCOverviewStats(data);
 
@@ -3656,6 +3865,76 @@
             renderValTable();
             renderQtyTable();
             renderDCTable();
+        }
+
+        function updateExecutiveInsights(data) {
+            if (!data || !data.grand_total) return;
+            const gt = data.grand_total;
+            const detMetrics = getDynamicDetailedMetrics();
+            const list = data.daily_matrix || [];
+            
+            const groupName = curGroup === 'all' ? 'Tất cả các nhóm hàng' : (curGroup === 'thit_ca' ? 'Nhóm Thịt Cá' : (curGroup === 'mat' ? 'Nhóm Hàng Mát' : 'Nhóm Hàng Đông'));
+            const periodName = curMonth === 'all' ? 'Toàn Kỳ' : (curMonth.includes('Tháng') ? curMonth : 'Tháng ' + curMonth);
+
+            const periodTagEl = document.getElementById('insight-period-tag');
+            if (periodTagEl) periodTagEl.innerText = `[${groupName} • ${periodName}]`;
+
+            const totVal = Number(gt.val_total) || 1;
+            const totCases = Number(gt.total_cases) || 1;
+
+            // 1. Nhóm Trọng Yếu (ST >= 100k)
+            const casesOver = Number(gt.cases_over_100k) || (Number(gt.cases_over_da_xl) + Number(gt.cases_over_dang_xl)) || 0;
+            const valOver = Number(gt.val_over_100k) || 0;
+            const pctCasesOver = (casesOver / totCases * 100).toFixed(1);
+            const pctValOver = (valOver / totVal * 100).toFixed(1);
+            const pctOverDone = casesOver > 0 ? (Number(gt.cases_over_da_xl) / casesOver * 100).toFixed(1) : '100.0';
+            const casesOverPending = Number(gt.cases_over_dang_xl) || 0;
+            const valOverPending = Number(gt.val_dang_xl) || 0;
+
+            const elOver = document.getElementById('insight-item-over');
+            if (elOver) {
+                elOver.innerHTML = `<strong>🚨 Nhóm Trọng Yếu (ST ≥ 100k/ngày):</strong> Chiếm tới <strong>${pctCasesOver}% số vụ (${fmtN(casesOver)} dòng)</strong> và <strong>${pctValOver}% giá trị (${fmtVND(valOver)})</strong>. Tiến độ xử lý đạt <strong>${pctOverDone}%</strong>; hiện còn tồn <strong>${fmtN(casesOverPending)} vụ (${fmtVND(valOverPending)})</strong> tại <strong>${fmtN(detMetrics.uniqueStPending)} Siêu Thị</strong> cần ưu tiên thu hồi & xử lý dứt điểm.`;
+            }
+
+            // 2. Nhóm Miễn Trừ (ST < 100k)
+            const casesUnder = Number(gt.cases_under_100k) || (Number(gt.cases_under_da_xl) + Number(gt.cases_under_khong_xl)) || 0;
+            const valUnder = Number(gt.val_under_100k) || 0;
+            const pctCasesUnder = (casesUnder / totCases * 100).toFixed(1);
+            const pctValUnder = (valUnder / totVal * 100).toFixed(1);
+            const pctUnderAuto = casesUnder > 0 ? (Number(gt.cases_under_da_xl) / casesUnder * 100).toFixed(1) : '100.0';
+            const casesUnderIgnore = Number(gt.cases_under_khong_xl) || 0;
+            const valUnderIgnore = Number(gt.val_khong_xl) || 0;
+
+            const elUnder = document.getElementById('insight-item-under');
+            if (elUnder) {
+                elUnder.innerHTML = `<strong>⚪ Nhóm Miễn Trừ (ST &lt; 100k/ngày):</strong> Chiếm <strong>${pctCasesUnder}% số vụ (${fmtN(casesUnder)} dòng)</strong> nhưng chỉ chiếm <strong>${pctValUnder}% giá trị (${fmtVND(valUnder)})</strong>. Trong đó <strong>${pctUnderAuto}%</strong> đã tự động quy trách nhiệm, còn lại <strong>${fmtN(casesUnderIgnore)} vụ (${fmtVND(valUnderIgnore)})</strong> thuộc diện miễn trừ không cần tra soát tốn nhân lực.`;
+            }
+
+            // 3. Biên độ dao động
+            const dailyCases = list.map(d => Number(d.total_cases) || 0).filter(c => c > 0);
+            const minC = dailyCases.length > 0 ? Math.min(...dailyCases) : 0;
+            const maxC = dailyCases.length > 0 ? Math.max(...dailyCases) : 0;
+            const avgC = dailyCases.length > 0 ? Math.round(dailyCases.reduce((a, b) => a + b, 0) / dailyCases.length) : 0;
+            const pctTotalDone = (Number(gt.val_da_xl) / totVal * 100).toFixed(1);
+
+            const elTrend = document.getElementById('insight-item-trend');
+            if (elTrend) {
+                elTrend.innerHTML = `<strong>📈 Biên Độ Dao Động:</strong> Trong ${periodName.toLowerCase()} có <strong>${list.length} ngày giao dịch</strong>, số vụ việc dao động từ <strong>${fmtN(minC)} đến ${fmtN(maxC)} vụ/ngày</strong> (bình quân <strong>${fmtN(avgC)} vụ/ngày</strong>). Tỷ lệ hoàn tất đối soát đạt <strong>${pctTotalDone}%</strong> giá trị chênh lệch toàn kỳ.`;
+            }
+
+            // 4. Action Plans
+            const elAct1 = document.getElementById('insight-action-1');
+            if (elAct1) {
+                elAct1.innerHTML = `<strong>🎯 Giải pháp 1 (Quy tắc 80/20):</strong> Tập trung 100% nhân sự vào <strong>${fmtN(detMetrics.uniqueStPending)} Siêu Thị Ưu Tiên P1</strong> (nhóm ST ≥ 100k đang treo ${fmtVND(valOverPending)}) để xử lý dứt điểm công nợ còn lại trong ${periodName.toLowerCase()}.`;
+            }
+            const elAct2 = document.getElementById('insight-action-2');
+            if (elAct2) {
+                elAct2.innerHTML = `<strong>⚡ Giải pháp 2 (Tự động hóa Miễn trừ):</strong> Áp dụng cơ chế <em>Auto-Waive</em> (tự động kết chuyển hao hụt định mức) cho nhóm ST &lt; 100k/ngày (${fmtN(casesUnder)} dòng • ${fmtVND(valUnder)}), giúp giải phóng 80% thời gian rà soát chi tiết từng hóa đơn vụn.`;
+            }
+            const elAct3 = document.getElementById('insight-action-3');
+            if (elAct3) {
+                elAct3.innerHTML = `<strong>🛡️ Giải pháp 3 (Kiểm soát Ngày Cao Điểm):</strong> Vào các ngày cao điểm giao nhận cuối tháng (đạt đỉnh ${fmtN(maxC)} vụ/ngày), bắt buộc áp dụng <em>Biên bản giao nhận điện tử tức thời</em> tại cửa xe để giảm thiểu tối đa tỷ lệ sai lệch ${groupName.toLowerCase()}.`;
+            }
         }
 
         function renderCharts(data) {
@@ -4399,69 +4678,38 @@
         // ----------------------------------------------------
         function updateDCOverviewStats(data) {
             const list = data.daily_matrix || [];
+            const gt = data.grand_total || {};
             
-            let totDcCases = 0, totDcVal = 0;
-            let totDongYCases = 0, totDongYVal = 0;
-            let totTuChoiCases = 0, totTuChoiVal = 0;
-            let totKiemTraCases = 0, totKiemTraVal = 0;
-            let totChuaCases = 0, totChuaVal = 0;
+            let totDcCases = gt.dc_total_cases || 0;
+            let totDcVal = gt.dc_total_val || 0;
+            let totDongYCases = gt.dc_dongy_cases || 0;
+            let totDongYVal = gt.dc_dongy_val || 0;
+            let totTuChoiCases = gt.dc_tuchoi_cases || 0;
+            let totTuChoiVal = gt.dc_tuchoi_val || 0;
+            let totKiemTraCases = gt.dc_kiemtra_cases || 0;
+            let totKiemTraVal = gt.dc_kiemtra_val || 0;
+            let totChuaCases = gt.dc_chua_cases || 0;
+            let totChuaVal = gt.dc_chua_val || 0;
 
-            const stSetTotal = new Set();
-            const stSetDongY = new Set();
-            const stSetTuChoi = new Set();
-            const stSetKiemTra = new Set();
-            const stSetChua = new Set();
-
-            let storeDaysTotal = 0, storeDaysDongY = 0, storeDaysTuChoi = 0, storeDaysKiemTra = 0, storeDaysChua = 0;
-
-            const dates = list.map(d => d.date);
-            dates.forEach(dStr => {
-                const recs = DAILY_RECORDS[dStr] || [];
-                const filteredRecs = curGroup === 'all' ? recs : recs.filter(r => (curGroup === 'mat' ? r.group.includes('MÁT') : r.group.includes('ĐÔNG')));
-                const dcRecs = filteredRecs.filter(r => r.destination === 'Kho ĐÔNG MÁT');
-
-                const dayStMap = {};
-
-                dcRecs.forEach(r => {
-                    totDcCases++;
-                    totDcVal += r.val_total || 0;
-                    stSetTotal.add(r.st);
-
-                    if (!dayStMap[r.st]) {
-                        dayStMap[r.st] = { hasTotal: true, hasDongY: false, hasTuChoi: false, hasKiemTra: false, hasChua: false };
-                    }
-
-                    if (r.dc_confirm === 'Đồng ý claim') {
-                        totDongYCases++;
-                        totDongYVal += r.val_total || 0;
-                        stSetDongY.add(r.st);
-                        dayStMap[r.st].hasDongY = true;
-                    } else if (r.dc_confirm === 'Từ chối claim') {
-                        totTuChoiCases++;
-                        totTuChoiVal += r.val_total || 0;
-                        stSetTuChoi.add(r.st);
-                        dayStMap[r.st].hasTuChoi = true;
-                    } else if (r.dc_confirm === 'Kiểm tra lại') {
-                        totKiemTraCases++;
-                        totKiemTraVal += r.val_total || 0;
-                        stSetKiemTra.add(r.st);
-                        dayStMap[r.st].hasKiemTra = true;
-                    } else {
-                        totChuaCases++;
-                        totChuaVal += r.val_total || 0;
-                        stSetChua.add(r.st);
-                        dayStMap[r.st].hasChua = true;
-                    }
+            if (curMonth !== 'all') {
+                totDcCases = 0; totDcVal = 0;
+                totDongYCases = 0; totDongYVal = 0;
+                totTuChoiCases = 0; totTuChoiVal = 0;
+                totKiemTraCases = 0; totKiemTraVal = 0;
+                totChuaCases = 0; totChuaVal = 0;
+                list.forEach(d => {
+                    totDcCases += Number(d.dc_total_cases) || 0;
+                    totDcVal += Number(d.dc_total_val) || 0;
+                    totDongYCases += Number(d.dc_dongy_cases) || 0;
+                    totDongYVal += Number(d.dc_dongy_val) || 0;
+                    totTuChoiCases += Number(d.dc_tuchoi_cases) || 0;
+                    totTuChoiVal += Number(d.dc_tuchoi_val) || 0;
+                    totKiemTraCases += Number(d.dc_kiemtra_cases) || 0;
+                    totKiemTraVal += Number(d.dc_kiemtra_val) || 0;
+                    totChuaCases += Number(d.dc_chua_cases) || 0;
+                    totChuaVal += Number(d.dc_chua_val) || 0;
                 });
-
-                Object.values(dayStMap).forEach(obj => {
-                    if (obj.hasTotal) storeDaysTotal++;
-                    if (obj.hasDongY) storeDaysDongY++;
-                    if (obj.hasTuChoi) storeDaysTuChoi++;
-                    if (obj.hasKiemTra) storeDaysKiemTra++;
-                    if (obj.hasChua) storeDaysChua++;
-                });
-            });
+            }
 
             const respCases = totDongYCases + totTuChoiCases + totKiemTraCases;
             const pctResp = totDcCases > 0 ? (respCases / totDcCases * 100) : 100.0;
@@ -4472,22 +4720,22 @@
             const elValTotal = document.getElementById('dc-stat-val-total');
             const elSubTotal = document.getElementById('dc-stat-sub-total');
             if (elValTotal) elValTotal.innerText = fmtVND(totDcVal);
-            if (elSubTotal) elSubTotal.innerText = `${fmtN(totDcCases)} dòng hàng • ${stSetTotal.size} Siêu Thị (${storeDaysTotal} lần giao)`;
+            if (elSubTotal) elSubTotal.innerText = `${fmtN(totDcCases)} dòng hàng • ${fmtN(gt.dc_st_count || 0)} Siêu Thị`;
 
             const elValDongY = document.getElementById('dc-stat-val-dongy');
             const elSubDongY = document.getElementById('dc-stat-sub-dongy');
             if (elValDongY) elValDongY.innerText = fmtVND(totDongYVal);
-            if (elSubDongY) elSubDongY.innerText = `Chiếm ${pctDongY.toFixed(1)}% • ${stSetDongY.size} Siêu Thị (${storeDaysDongY} lần giao) • ${fmtN(totDongYCases)} dòng`;
+            if (elSubDongY) elSubDongY.innerText = `Chiếm ${pctDongY.toFixed(1)}% • ${fmtN(totDongYCases)} dòng`;
 
             const elValTuChoi = document.getElementById('dc-stat-val-tuchoi');
             const elSubTuChoi = document.getElementById('dc-stat-sub-tuchoi');
             if (elValTuChoi) elValTuChoi.innerText = fmtVND(totTuChoiVal);
-            if (elSubTuChoi) elSubTuChoi.innerText = `Chiếm ${pctTuChoi.toFixed(1)}% • ${stSetTuChoi.size} Siêu Thị (${storeDaysTuChoi} lần giao) • ${fmtN(totTuChoiCases)} dòng`;
+            if (elSubTuChoi) elSubTuChoi.innerText = `Chiếm ${pctTuChoi.toFixed(1)}% • ${fmtN(totTuChoiCases)} dòng`;
 
             const elValKiemTra = document.getElementById('dc-stat-val-kiemtra');
             const elSubKiemTra = document.getElementById('dc-stat-sub-kiemtra');
             if (elValKiemTra) elValKiemTra.innerText = fmtVND(totKiemTraVal + totChuaVal);
-            if (elSubKiemTra) elSubKiemTra.innerText = `Chiếm ${pctKiemTra.toFixed(1)}% • ${stSetKiemTra.size + stSetChua.size} Siêu Thị • ${fmtN(totKiemTraCases + totChuaCases)} dòng`;
+            if (elSubKiemTra) elSubKiemTra.innerText = `Chiếm ${pctKiemTra.toFixed(1)}% • ${fmtN(totKiemTraCases + totChuaCases)} dòng`;
 
             const elValPct = document.getElementById('dc-stat-val-pct');
             const elSubPct = document.getElementById('dc-stat-sub-pct');
@@ -4573,74 +4821,65 @@
         }
 
         function getAllDCCases() {
-            const list = [];
-            const dates = Object.keys(DAILY_RECORDS);
-
-            dates.forEach(dStr => {
-                if (curMonth !== 'all') {
-                    const rawBundle = BUNDLES[curGroup];
-                    const matchDay = rawBundle.daily_matrix.find(d => d.date === dStr);
-                    if (!matchDay || matchDay.month !== curMonth) {
-                        return;
-                    }
-                }
-
-                const recs = DAILY_RECORDS[dStr] || [];
-                const filteredRecs = recs.filter(r => {
-                    // Phải là trả DC (Destination Kho ĐÔNG MÁT)
-                    if (r.destination !== 'Kho ĐÔNG MÁT') return false;
-                    // Lọc theo nhóm nếu curGroup != 'all'
+            if (window.DC_CASES_DATA && Array.isArray(window.DC_CASES_DATA)) {
+                return window.DC_CASES_DATA.filter(r => {
                     if (curGroup === 'mat' && !r.group.includes('MÁT')) return false;
                     if (curGroup === 'dong' && !r.group.includes('ĐÔNG')) return false;
+                    if (curGroup === 'thit_ca' && !r.group.includes('THỊT') && !r.group.includes('CÁ') && !r.group.includes('MEAT') && !r.group.includes('FISH')) return false;
+                    if (curMonth !== 'all' && r.month !== curMonth) return false;
                     return true;
                 });
-
-                filteredRecs.forEach(r => {
-                    list.push({ ...r, date: dStr });
-                });
-            });
-
-            return list;
+            }
+            return [];
         }
 
         // Cập nhật 4 Thẻ KPI DC & Bảng Ma Trận Đối Soát Chéo
         function updateDCOverviewStats(data) {
+            if (!data) data = getFilteredBundleData();
+            if (!data) return;
+            const gt = data.grand_total || {};
             const dcCases = getAllDCCases();
-            const totDC = dcCases.length || 1;
-            const totValDC = dcCases.reduce((a, b) => a + (Number(b.val_total) || 0), 0);
 
-            // Phân loại DC xác nhận (Cột AD)
-            const dyCases = dcCases.filter(r => r.dc_confirm === 'Đồng ý claim');
-            const tcCases = dcCases.filter(r => r.dc_confirm === 'Từ chối claim');
-            const ktCases = dcCases.filter(r => r.dc_confirm === 'Kiểm tra lại');
-            const chCases = dcCases.filter(r => !['Đồng ý claim', 'Từ chối claim', 'Kiểm tra lại'].includes(r.dc_confirm));
+            // Nếu dcCases có dữ liệu (khi load dc_cases.js), tính động theo dữ liệu đã nạp
+            // Ngược lại lấy từ số liệu Pandas đã tính sẵn trong grand_total (siêu tốc 0ms)
+            const totDC = dcCases.length > 0 ? dcCases.length : (gt.dc_total_cases || 0);
+            const totValDC = dcCases.length > 0 ? dcCases.reduce((a, b) => a + (Number(b.val_total) || 0), 0) : (gt.dc_total_val || 0);
 
-            const respCases = dyCases.length + tcCases.length + ktCases.length;
-            const pctResp = (respCases / totDC * 100).toFixed(1);
-            const valResp = dyCases.concat(tcCases, ktCases).reduce((a, b) => a + (Number(b.val_total) || 0), 0);
-            const valChua = chCases.reduce((a, b) => a + (Number(b.val_total) || 0), 0);
+            const dyCases = dcCases.length > 0 ? dcCases.filter(r => r.dc_confirm === 'Đồng ý claim').length : (gt.dc_dongy_cases || 0);
+            const dyVal = dcCases.length > 0 ? dcCases.filter(r => r.dc_confirm === 'Đồng ý claim').reduce((a, b) => a + (Number(b.val_total) || 0), 0) : (gt.dc_dongy_val || 0);
+            const dyDone = dcCases.length > 0 ? dcCases.filter(r => r.dc_confirm === 'Đồng ý claim' && r.kfm_reply === 'DONE').length : (gt.dc_dongy_done_cases || 0);
+            const dyNotDone = dcCases.length > 0 ? (dyCases - dyDone) : (gt.dc_dongy_not_done_cases || (dyCases - dyDone));
+            const pctDyDone = dyCases > 0 ? (dyDone / dyCases * 100).toFixed(1) : (gt.dc_dongy_pct_done || 0);
+            const valDyDone = dyCases > 0 ? (dyVal * (dyDone / (dyCases || 1))) : 0;
+            const valDyNotDone = dyVal - valDyDone;
 
-            // Cột AF trên DC Đồng ý claim
-            const dyDone = dyCases.filter(r => r.kfm_reply === 'DONE');
-            const dyNotDone = dyCases.filter(r => r.kfm_reply !== 'DONE');
-            const pctDyDone = dyCases.length > 0 ? (dyDone.length / dyCases.length * 100).toFixed(1) : 0;
-            const valDyDone = dyDone.reduce((a, b) => a + (Number(b.val_total) || 0), 0);
-            const valDyNotDone = dyNotDone.reduce((a, b) => a + (Number(b.val_total) || 0), 0);
+            const tcCases = dcCases.length > 0 ? dcCases.filter(r => r.dc_confirm === 'Từ chối claim').length : (gt.dc_tuchoi_cases || 0);
+            const tcVal = dcCases.length > 0 ? dcCases.filter(r => r.dc_confirm === 'Từ chối claim').reduce((a, b) => a + (Number(b.val_total) || 0), 0) : (gt.dc_tuchoi_val || 0);
+            const tcReplied = dcCases.length > 0 ? dcCases.filter(r => r.dc_confirm === 'Từ chối claim' && (r.kfm_reply || '').trim() !== '').length : (gt.dc_tuchoi_kfm_replied || 0);
+            const tcPending = tcCases - tcReplied;
+            const pctTcReplied = tcCases > 0 ? (tcReplied / tcCases * 100).toFixed(1) : (gt.dc_tuchoi_pct_replied || 0);
 
-            // Nhóm DC khác Đồng ý
-            const nonAgreeCases = tcCases.length + ktCases.length + chCases.length;
-            const pctNonAgree = (nonAgreeCases / totDC * 100).toFixed(1);
-            const tcReplied = tcCases.filter(r => (r.kfm_reply || '').trim() !== '');
-            const pctTcReplied = tcCases.length > 0 ? (tcReplied.length / tcCases.length * 100).toFixed(1) : 0;
-            const ktReplied = ktCases.filter(r => (r.kfm_reply || '').trim() !== '');
-            const pctKtReplied = ktCases.length > 0 ? (ktReplied.length / ktCases.length * 100).toFixed(1) : 0;
+            const ktCases = dcCases.length > 0 ? dcCases.filter(r => r.dc_confirm === 'Kiểm tra lại').length : (gt.dc_kiemtra_cases || 0);
+            const ktVal = dcCases.length > 0 ? dcCases.filter(r => r.dc_confirm === 'Kiểm tra lại').reduce((a, b) => a + (Number(b.val_total) || 0), 0) : (gt.dc_kiemtra_val || 0);
+            const ktReplied = dcCases.length > 0 ? dcCases.filter(r => r.dc_confirm === 'Kiểm tra lại' && (r.kfm_reply || '').trim() !== '').length : (gt.dc_kiemtra_kfm_replied || 0);
+            const pctKtReplied = ktCases > 0 ? (ktReplied / ktCases * 100).toFixed(1) : (gt.dc_kiemtra_pct_replied || 0);
+
+            const chCases = dcCases.length > 0 ? dcCases.filter(r => !['Đồng ý claim', 'Từ chối claim', 'Kiểm tra lại'].includes(r.dc_confirm)).length : (gt.dc_chua_cases || 0);
+            const chVal = dcCases.length > 0 ? dcCases.filter(r => !['Đồng ý claim', 'Từ chối claim', 'Kiểm tra lại'].includes(r.dc_confirm)).reduce((a, b) => a + (Number(b.val_total) || 0), 0) : (gt.dc_chua_val || 0);
+
+            const respCases = dyCases + tcCases + ktCases;
+            const pctResp = totDC > 0 ? (respCases / totDC * 100).toFixed(1) : (gt.dc_pct_phan_hoi || 100);
+            const valResp = dyVal + tcVal + ktVal;
+
+            const nonAgreeCases = tcCases + ktCases + chCases;
+            const pctNonAgree = totDC > 0 ? (nonAgreeCases / totDC * 100).toFixed(1) : 0;
 
             // Update Thẻ 1
             const elPctResp = document.getElementById('dc-kpi-pct-resp');
             const elSubResp = document.getElementById('dc-kpi-sub-resp');
             if (elPctResp) elPctResp.innerText = `${pctResp}%`;
             if (elSubResp) {
-                elSubResp.innerHTML = `Đã phản hồi <strong>${fmtN(respCases)}</strong> / ${fmtN(totDC)} dòng (${fmtVND(valResp)})<br><span style="color:#f87171; font-weight:600;">⚠️ Còn nợ phản hồi: ${fmtN(chCases.length)} dòng (${(chCases.length/totDC*100).toFixed(1)}% • ${fmtVND(valChua)})</span>`;
+                elSubResp.innerHTML = `Đã phản hồi <strong>${fmtN(respCases)}</strong> / ${fmtN(totDC)} dòng (${fmtVND(valResp)})<br><span style="color:#f87171; font-weight:600;">⚠️ Còn nợ phản hồi: ${fmtN(chCases)} dòng (${(chCases/Math.max(totDC,1)*100).toFixed(1)}% • ${fmtVND(chVal)})</span>`;
             }
 
             // Update Thẻ 2 (KFM DONE trên DC Đồng ý)
@@ -4648,7 +4887,7 @@
             const elSubDone = document.getElementById('dc-kpi-sub-done');
             if (elPctDone) elPctDone.innerText = `${pctDyDone}%`;
             if (elSubDone) {
-                elSubDone.innerHTML = `Đã DONE: <strong>${fmtN(dyDone.length)}</strong> / ${fmtN(dyCases.length)} dòng (${fmtVND(valDyDone)})<br><span style="color:#fb923c; font-weight:600;">🚨 Chưa chỉnh DONE: ${fmtN(dyNotDone.length)} dòng (${(100 - pctDyDone).toFixed(1)}% • ${fmtVND(valDyNotDone)})</span>`;
+                elSubDone.innerHTML = `Đã DONE: <strong>${fmtN(dyDone)}</strong> / ${fmtN(dyCases)} dòng<br><span style="color:#fb923c; font-weight:600;">🚨 Chưa chỉnh DONE: ${fmtN(dyNotDone)} dòng (${(100 - pctDyDone).toFixed(1)}%)</span>`;
             }
 
             // Update Thẻ 3 (DC Khác Đồng ý)
@@ -4656,54 +4895,62 @@
             const elSubNon = document.getElementById('dc-kpi-sub-nonagree');
             if (elPctNon) elPctNon.innerText = `${pctNonAgree}%`;
             if (elSubNon) {
-                elSubNon.innerHTML = `Tổng <strong>${fmtN(nonAgreeCases)}</strong> dòng (Từ chối: ${fmtN(tcCases.length)} • KT lại: ${fmtN(ktCases.length)} • Chờ: ${fmtN(chCases.length)})<br><span>KFM phản hồi: <strong>${pctTcReplied}%</strong> Từ chối (${tcReplied.length} case) • <strong>${pctKtReplied}%</strong> KT lại</span>`;
+                elSubNon.innerHTML = `Tổng <strong>${fmtN(nonAgreeCases)}</strong> dòng (Từ chối: ${fmtN(tcCases)} • KT lại: ${fmtN(ktCases)} • Chờ: ${fmtN(chCases)})<br><span>KFM phản hồi: <strong>${pctTcReplied}%</strong> Từ chối (${tcReplied} case) • <strong>${pctKtReplied}%</strong> KT lại</span>`;
             }
 
             // Update Thẻ 4 (Top Note DC & KFM)
-            const dcNotesMap = {};
-            const kfmNotesMap = {};
-            dcCases.forEach(r => {
-                if (r.dc_note) dcNotesMap[r.dc_note] = (dcNotesMap[r.dc_note] || 0) + 1;
-                if (r.kfm_note) kfmNotesMap[r.kfm_note] = (kfmNotesMap[r.kfm_note] || 0) + 1;
-            });
-            const topDCNotes = Object.entries(dcNotesMap).sort((a, b) => b[1] - a[1]);
-            const topKFMNotes = Object.entries(kfmNotesMap).sort((a, b) => b[1] - a[1]);
+            let topDCNotes = gt.top_dc_notes || [];
+            let topKFMNotes = gt.top_kfm_notes || [];
+            if (dcCases.length > 0) {
+                const dcNotesMap = {};
+                const kfmNotesMap = {};
+                dcCases.forEach(r => {
+                    if (r.dc_note) dcNotesMap[r.dc_note] = (dcNotesMap[r.dc_note] || 0) + 1;
+                    if (r.kfm_note) kfmNotesMap[r.kfm_note] = (kfmNotesMap[r.kfm_note] || 0) + 1;
+                });
+                topDCNotes = Object.entries(dcNotesMap).sort((a, b) => b[1] - a[1]).map(x => ({ note: x[0], count: x[1] }));
+                topKFMNotes = Object.entries(kfmNotesMap).sort((a, b) => b[1] - a[1]).map(x => ({ note: x[0], count: x[1] }));
+            }
 
             const elTopNote = document.getElementById('dc-kpi-top-note');
             const elSubNotes = document.getElementById('dc-kpi-sub-notes');
             if (elTopNote) {
-                elTopNote.innerText = topDCNotes.length > 0 ? `${topDCNotes[0][0]} (${topDCNotes[0][1]})` : 'Không có ghi chú';
+                elTopNote.innerText = topDCNotes.length > 0 ? `${topDCNotes[0].note} (${topDCNotes[0].count})` : 'Không có ghi chú';
             }
             if (elSubNotes) {
-                const subDcTxt = topDCNotes.slice(1, 4).map(x => `${x[0]} (${x[1]})`).join(', ') || 'Chưa có ghi chú khác';
-                const subKfmTxt = topKFMNotes.slice(0, 2).map(x => `${x[0]} (${x[1]})`).join(', ') || 'Chưa có';
+                const subDcTxt = topDCNotes.slice(1, 4).map(x => `${x.note} (${x.count})`).join(', ') || 'Chưa có ghi chú khác';
+                const subKfmTxt = topKFMNotes.slice(0, 2).map(x => `${x.note} (${x.count})`).join(', ') || 'Chưa có';
                 elSubNotes.innerHTML = `Lý do DC: <em>${subDcTxt}</em><br>KFM Note: <em>${subKfmTxt}</em>`;
             }
 
             // Update Quick Filter Badges
             const bNotDone = document.getElementById('badge-cnt-not-done');
-            if (bNotDone) bNotDone.innerText = fmtN(dyNotDone.length);
+            if (bNotDone) bNotDone.innerText = fmtN(dyNotDone);
             const bTcPending = document.getElementById('badge-cnt-tc-pending');
-            if (bTcPending) bTcPending.innerText = fmtN(tcCases.length - tcReplied.length);
+            if (bTcPending) bTcPending.innerText = fmtN(tcPending);
             const bTcHlv = document.getElementById('badge-cnt-tc-hlv');
-            if (bTcHlv) bTcHlv.innerText = fmtN(tcCases.filter(r => r.kfm_reply === 'Cấp HLV quyết định').length);
+            if (bTcHlv) bTcHlv.innerText = fmtN(dcCases.length > 0 ? dcCases.filter(r => r.dc_confirm === 'Từ chối claim' && r.kfm_reply === 'Cấp HLV quyết định').length : (gt.non_agree_breakdown ? (gt.non_agree_breakdown.find(x => x.label.includes('HLV'))?.val || 0) : 0));
             const bKt = document.getElementById('badge-cnt-kt');
-            if (bKt) bKt.innerText = fmtN(ktCases.length);
+            if (bKt) bKt.innerText = fmtN(ktCases);
             const bChua = document.getElementById('badge-cnt-chua');
-            if (bChua) bChua.innerText = fmtN(chCases.length);
+            if (bChua) bChua.innerText = fmtN(chCases);
             const bDone = document.getElementById('badge-cnt-done');
-            if (bDone) bDone.innerText = fmtN(dyDone.length);
+            if (bDone) bDone.innerText = fmtN(dyDone);
             const bAll = document.getElementById('badge-cnt-all');
-            if (bAll) bAll.innerText = fmtN(dcCases.length);
+            if (bAll) bAll.innerText = fmtN(totDC);
 
             // Render Cross-Tab Matrix
-            renderDCCrossTabMatrix(dcCases);
+            renderDCCrossTabMatrix(data);
         }
 
-        function renderDCCrossTabMatrix(dcCases) {
+        function renderDCCrossTabMatrix(data) {
             const tbody = document.getElementById('dcCrossTabBody');
             const tfoot = document.getElementById('dcCrossTabFoot');
             if (!tbody || !tfoot) return;
+
+            if (!data) data = getFilteredBundleData();
+            const gt = (data && data.grand_total) || {};
+            const dcCases = getAllDCCases();
 
             const categories = [
                 { key: 'Đồng ý claim', label: '🟢 DC Đồng Ý Claim', color: '#34d399' },
@@ -4715,17 +4962,31 @@
             let sumDone = 0, sumHlv = 0, sumCheck = 0, sumBlank = 0, sumTotal = 0;
             let rowsHtml = '';
 
-            categories.forEach(cat => {
-                const sub = dcCases.filter(r => {
-                    if (cat.key === 'Chưa phản hồi') return !['Đồng ý claim', 'Từ chối claim', 'Kiểm tra lại'].includes(r.dc_confirm);
-                    return r.dc_confirm === cat.key;
-                });
+            const preCrosstab = gt.dc_crosstab || [];
 
-                const cDone = sub.filter(r => r.kfm_reply === 'DONE').length;
-                const cHlv = sub.filter(r => r.kfm_reply === 'Cấp HLV quyết định').length;
-                const cCheck = sub.filter(r => r.kfm_reply === 'DC check lại thông tin').length;
-                const cBlank = sub.filter(r => !['DONE', 'Cấp HLV quyết định', 'DC check lại thông tin'].includes(r.kfm_reply)).length;
-                const cTot = sub.length;
+            categories.forEach(cat => {
+                let cDone = 0, cHlv = 0, cCheck = 0, cBlank = 0, cTot = 0;
+
+                if (dcCases.length > 0) {
+                    const sub = dcCases.filter(r => {
+                        if (cat.key === 'Chưa phản hồi') return !['Đồng ý claim', 'Từ chối claim', 'Kiểm tra lại'].includes(r.dc_confirm);
+                        return r.dc_confirm === cat.key;
+                    });
+                    cDone = sub.filter(r => r.kfm_reply === 'DONE').length;
+                    cHlv = sub.filter(r => r.kfm_reply === 'Cấp HLV quyết định').length;
+                    cCheck = sub.filter(r => r.kfm_reply === 'DC check lại thông tin').length;
+                    cBlank = sub.filter(r => !['DONE', 'Cấp HLV quyết định', 'DC check lại thông tin'].includes(r.kfm_reply)).length;
+                    cTot = sub.length;
+                } else {
+                    const match = preCrosstab.find(x => x.key === cat.key);
+                    if (match) {
+                        cDone = match.done || 0;
+                        cHlv = match.hlv || 0;
+                        cCheck = match.check || 0;
+                        cBlank = match.blank || 0;
+                        cTot = match.total || 0;
+                    }
+                }
 
                 sumDone += cDone;
                 sumHlv += cHlv;
@@ -4753,10 +5014,10 @@
             tfoot.innerHTML = `
             <tr style="font-weight:800; background:rgba(15, 23, 42, 0.95); border-top:2px solid #334155;">
                 <td class="text-left" style="color:#fff;">TỔNG CỘNG HỆ THỐNG</td>
-                <td class="text-center" style="color:#34d399;">${fmtN(sumDone)} (${(sumDone/sumTotal*100).toFixed(1)}%)</td>
-                <td class="text-center" style="color:#f87171;">${fmtN(sumHlv)} (${(sumHlv/sumTotal*100).toFixed(1)}%)</td>
-                <td class="text-center" style="color:#fbbf24;">${fmtN(sumCheck)} (${(sumCheck/sumTotal*100).toFixed(1)}%)</td>
-                <td class="text-center" style="color:#94a3b8;">${fmtN(sumBlank)} (${(sumBlank/sumTotal*100).toFixed(1)}%)</td>
+                <td class="text-center" style="color:#34d399;">${fmtN(sumDone)} (${sumTotal > 0 ? (sumDone/sumTotal*100).toFixed(1) : 0}%)</td>
+                <td class="text-center" style="color:#f87171;">${fmtN(sumHlv)} (${sumTotal > 0 ? (sumHlv/sumTotal*100).toFixed(1) : 0}%)</td>
+                <td class="text-center" style="color:#fbbf24;">${fmtN(sumCheck)} (${sumTotal > 0 ? (sumCheck/sumTotal*100).toFixed(1) : 0}%)</td>
+                <td class="text-center" style="color:#94a3b8;">${fmtN(sumBlank)} (${sumTotal > 0 ? (sumBlank/sumTotal*100).toFixed(1) : 0}%)</td>
                 <td class="text-right" style="color:#38bdf8;">${fmtN(sumTotal)} dòng</td>
             </tr>
             `;
@@ -5412,24 +5673,29 @@
             // 10. Biểu đồ Cơ Cấu DC Khác Đồng Ý & KFM Phản Hồi
             // ----------------------------------------------------
             const dcCases = getAllDCCases();
-            const tcSub = dcCases.filter(r => r.dc_confirm === 'Từ chối claim');
-            const ktSub = dcCases.filter(r => r.dc_confirm === 'Kiểm tra lại');
-            const chSub = dcCases.filter(r => !['Đồng ý claim', 'Từ chối claim', 'Kiểm tra lại'].includes(r.dc_confirm));
+            let nonAgreeItems = [];
+            if (dcCases.length > 0) {
+                const tcSub = dcCases.filter(r => r.dc_confirm === 'Từ chối claim');
+                const ktSub = dcCases.filter(r => r.dc_confirm === 'Kiểm tra lại');
+                const chSub = dcCases.filter(r => !['Đồng ý claim', 'Từ chối claim', 'Kiểm tra lại'].includes(r.dc_confirm));
 
-            const tcHlv = tcSub.filter(r => r.kfm_reply === 'Cấp HLV quyết định').length;
-            const tcPending = tcSub.filter(r => !['DONE', 'Cấp HLV quyết định', 'DC check lại thông tin'].includes(r.kfm_reply)).length;
-            const tcOther = tcSub.length - tcHlv - tcPending;
-            const ktDone = ktSub.filter(r => r.kfm_reply === 'DONE' || r.kfm_reply === 'DC check lại thông tin').length;
-            const ktPending = ktSub.length - ktDone;
-            const chTot = chSub.length;
+                const tcHlv = tcSub.filter(r => r.kfm_reply === 'Cấp HLV quyết định').length;
+                const tcPending = tcSub.filter(r => !['DONE', 'Cấp HLV quyết định', 'DC check lại thông tin'].includes(r.kfm_reply)).length;
+                const tcOther = tcSub.length - tcHlv - tcPending;
+                const ktDone = ktSub.filter(r => r.kfm_reply === 'DONE' || r.kfm_reply === 'DC check lại thông tin').length;
+                const ktPending = ktSub.length - ktDone;
+                const chTot = chSub.length;
 
-            const nonAgreeItems = [
-                { label: '🔴 Từ Chối - Cấp HLV Quyết Định', val: tcHlv, color: '#f87171' },
-                { label: '⚠️ Từ Chối - KFM Chưa Phản Hồi', val: tcPending, color: '#fb923c' },
-                { label: '🟡 Kiểm Tra Lại - Đã Phản Hồi', val: ktDone, color: '#fbbf24' },
-                { label: '⏳ DC Chưa Phản Hồi (Trống)', val: chTot, color: '#94a3b8' },
-                { label: '🟢 Từ Chối - Đã Xử Lý Khác', val: tcOther, color: '#34d399' }
-            ].filter(x => x.val > 0);
+                nonAgreeItems = [
+                    { label: '🔴 Từ Chối - Cấp HLV Quyết Định', val: tcHlv, color: '#f87171' },
+                    { label: '⚠️ Từ Chối - KFM Chưa Phản Hồi', val: tcPending, color: '#fb923c' },
+                    { label: '🟡 Kiểm Tra Lại - Đã Phản Hồi', val: ktDone, color: '#fbbf24' },
+                    { label: '⏳ DC Chưa Phản Hồi (Trống)', val: chTot, color: '#94a3b8' },
+                    { label: '🟢 Từ Chối - Đã Xử Lý Khác', val: tcOther, color: '#34d399' }
+                ].filter(x => x.val > 0);
+            } else {
+                nonAgreeItems = (data.grand_total && data.grand_total.non_agree_breakdown) || [];
+            }
 
             const totNonAgree = nonAgreeItems.reduce((a, b) => a + b.val, 0) || 1;
 
@@ -5512,22 +5778,35 @@
             // ----------------------------------------------------
             // 11. Biểu đồ Top Điểm Nóng Note DC (AE) & Note KFM (AG)
             // ----------------------------------------------------
-            const dcNotesMap = {};
-            const kfmNotesMap = {};
-            dcCases.forEach(r => {
-                if (r.dc_note) dcNotesMap[r.dc_note] = (dcNotesMap[r.dc_note] || 0) + 1;
-                if (r.kfm_note) kfmNotesMap[r.kfm_note] = (kfmNotesMap[r.kfm_note] || 0) + 1;
-            });
+            let allNotesLabels = [];
+            let allNotesValues = [];
+            let allNotesColors = [];
 
-            const topDC = Object.entries(dcNotesMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            const topKFM = Object.entries(kfmNotesMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
-
-            const allNotesLabels = [...topDC.map(x => `🏢 DC: ${x[0]}`), ...topKFM.map(x => `👤 KFM: ${x[0]}`)];
-            const allNotesValues = [...topDC.map(x => x[1]), ...topKFM.map(x => x[1])];
-            const allNotesColors = [
-                ...topDC.map(() => isDark ? 'rgba(192, 132, 252, 0.85)' : 'rgba(147, 51, 234, 0.85)'),
-                ...topKFM.map(() => isDark ? 'rgba(251, 146, 60, 0.85)' : 'rgba(234, 88, 12, 0.85)')
-            ];
+            if (dcCases.length > 0) {
+                const dcNotesMap = {};
+                const kfmNotesMap = {};
+                dcCases.forEach(r => {
+                    if (r.dc_note) dcNotesMap[r.dc_note] = (dcNotesMap[r.dc_note] || 0) + 1;
+                    if (r.kfm_note) kfmNotesMap[r.kfm_note] = (kfmNotesMap[r.kfm_note] || 0) + 1;
+                });
+                const topDC = Object.entries(dcNotesMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+                const topKFM = Object.entries(kfmNotesMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+                allNotesLabels = [...topDC.map(x => `🏢 DC: ${x[0]}`), ...topKFM.map(x => `👤 KFM: ${x[0]}`)];
+                allNotesValues = [...topDC.map(x => x[1]), ...topKFM.map(x => x[1])];
+                allNotesColors = [
+                    ...topDC.map(() => isDark ? 'rgba(192, 132, 252, 0.85)' : 'rgba(147, 51, 234, 0.85)'),
+                    ...topKFM.map(() => isDark ? 'rgba(251, 146, 60, 0.85)' : 'rgba(234, 88, 12, 0.85)')
+                ];
+            } else {
+                const topDC = (data.grand_total && data.grand_total.top_dc_notes) ? data.grand_total.top_dc_notes.slice(0, 5) : [];
+                const topKFM = (data.grand_total && data.grand_total.top_kfm_notes) ? data.grand_total.top_kfm_notes.slice(0, 5) : [];
+                allNotesLabels = [...topDC.map(x => `🏢 DC: ${x.note}`), ...topKFM.map(x => `👤 KFM: ${x.note}`)];
+                allNotesValues = [...topDC.map(x => x.count), ...topKFM.map(x => x.count)];
+                allNotesColors = [
+                    ...topDC.map(() => isDark ? 'rgba(192, 132, 252, 0.85)' : 'rgba(147, 51, 234, 0.85)'),
+                    ...topKFM.map(() => isDark ? 'rgba(251, 146, 60, 0.85)' : 'rgba(234, 88, 12, 0.85)')
+                ];
+            }
 
             const ctxNotes = document.getElementById('chartDCNoteBreakdown');
             if (ctxNotes) {
@@ -6773,35 +7052,40 @@
                 badgeEl.innerText = "🔴 DC Non-Agree Analysis";
 
                 const dcCases = getAllDCCases();
-                const tcSub = dcCases.filter(r => r.dc_confirm === 'Từ chối claim');
-                const ktSub = dcCases.filter(r => r.dc_confirm === 'Kiểm tra lại');
-                const chSub = dcCases.filter(r => !['Đồng ý claim', 'Từ chối claim', 'Kiểm tra lại'].includes(r.dc_confirm));
+                let nonAgreeItems = [];
+                if (dcCases.length > 0) {
+                    const tcSub = dcCases.filter(r => r.dc_confirm === 'Từ chối claim');
+                    const ktSub = dcCases.filter(r => r.dc_confirm === 'Kiểm tra lại');
+                    const chSub = dcCases.filter(r => !['Đồng ý claim', 'Từ chối claim', 'Kiểm tra lại'].includes(r.dc_confirm));
 
-                const tcHlv = tcSub.filter(r => r.kfm_reply === 'Cấp HLV quyết định').length;
-                const tcPending = tcSub.filter(r => !['DONE', 'Cấp HLV quyết định', 'DC check lại thông tin'].includes(r.kfm_reply)).length;
-                const tcOther = tcSub.length - tcHlv - tcPending;
-                const ktDone = ktSub.filter(r => r.kfm_reply === 'DONE' || r.kfm_reply === 'DC check lại thông tin').length;
-                const ktPending = ktSub.length - ktDone;
-                const chTot = chSub.length;
+                    const tcHlv = tcSub.filter(r => r.kfm_reply === 'Cấp HLV quyết định').length;
+                    const tcPending = tcSub.filter(r => !['DONE', 'Cấp HLV quyết định', 'DC check lại thông tin'].includes(r.kfm_reply)).length;
+                    const tcOther = tcSub.length - tcHlv - tcPending;
+                    const ktDone = ktSub.filter(r => r.kfm_reply === 'DONE' || r.kfm_reply === 'DC check lại thông tin').length;
+                    const ktPending = ktSub.length - ktDone;
+                    const chTot = chSub.length;
+
+                    nonAgreeItems = [
+                        { label: '🔴 Từ Chối - Cấp HLV Quyết Định', val: tcHlv, color: '#f87171' },
+                        { label: '⚠️ Từ Chối - KFM Chưa Phản Hồi', val: tcPending, color: '#fb923c' },
+                        { label: '🟡 Kiểm Tra Lại - Đã Phản Hồi', val: ktDone, color: '#fbbf24' },
+                        { label: '⏳ DC Chưa Phản Hồi (Trống)', val: chTot, color: '#94a3b8' },
+                        { label: '🟢 Từ Chối - Đã Xử Lý Khác', val: tcOther, color: '#34d399' }
+                    ].filter(x => x.val > 0);
+                } else {
+                    nonAgreeItems = (data.grand_total && data.grand_total.non_agree_breakdown) || [];
+                }
 
                 insightsHtml = `
                 <div class="zoom-insight-card highlight">
-                    <div class="zoom-insight-title"><i class="fa-solid fa-pie-chart"></i> Bóc Tách Chi Tiết Nhóm DC Khác Đồng Ý (1.608 case)</div>
+                    <div class="zoom-insight-title"><i class="fa-solid fa-pie-chart"></i> Bóc Tách Chi Tiết Nhóm DC Khác Đồng Ý</div>
                     <div class="zoom-insight-text">
-                        • <strong>1. DC Từ Chối Claim (1.094 case • 232 Tr):</strong> KFM đã giải trình <strong>84.4%</strong> (902 case chuyển Cấp HLV quyết định, 8 case DC check lại, 13 case DONE). Còn nợ phản hồi <strong>171 case (15.6%)</strong>.<br>
-                        • <strong>2. DC Kiểm Tra Lại (159 case • 28.1 Tr):</strong> KFM đã phản hồi <strong>98.7%</strong> (151 DONE, 6 Check lại). Còn nợ 2 case.<br>
-                        • <strong>3. DC Chưa Phản Hồi (355 case • 53.6 Tr):</strong> DC cần tăng tốc độ duyệt hồ sơ, tập trung 224 case Hàng Mát.
+                        • <strong>1. DC Từ Chối Claim:</strong> Cần rà soát các case KFM chưa phản hồi hoặc chờ Cấp HLV quyết định.<br>
+                        • <strong>2. DC Kiểm Tra Lại:</strong> KFM theo dõi tiến độ xác minh lại thông tin với kho DC.<br>
+                        • <strong>3. DC Chưa Phản Hồi:</strong> Đôn đốc kho DC hoàn tất xác nhận các phiếu xuất nhập tồn đọng.
                     </div>
                 </div>
                 `;
-
-                const nonAgreeItems = [
-                    { label: '🔴 Từ Chối - Cấp HLV Quyết Định', val: tcHlv, color: '#f87171' },
-                    { label: '⚠️ Từ Chối - KFM Chưa Phản Hồi', val: tcPending, color: '#fb923c' },
-                    { label: '🟡 Kiểm Tra Lại - Đã Phản Hồi', val: ktDone, color: '#fbbf24' },
-                    { label: '⏳ DC Chưa Phản Hồi (Trống)', val: chTot, color: '#94a3b8' },
-                    { label: '🟢 Từ Chối - Đã Xử Lý Khác', val: tcOther, color: '#34d399' }
-                ].filter(x => x.val > 0);
 
                 chartConfig = {
                     type: 'doughnut',
@@ -6819,30 +7103,43 @@
                 badgeEl.innerText = "🏷️ Notes Analytics";
 
                 const dcCases = getAllDCCases();
-                const dcNotesMap = {};
-                const kfmNotesMap = {};
-                dcCases.forEach(r => {
-                    if (r.dc_note) dcNotesMap[r.dc_note] = (dcNotesMap[r.dc_note] || 0) + 1;
-                    if (r.kfm_note) kfmNotesMap[r.kfm_note] = (kfmNotesMap[r.kfm_note] || 0) + 1;
-                });
+                let allNotesLabels = [];
+                let allNotesValues = [];
+                let allNotesColors = [];
 
-                const topDC = Object.entries(dcNotesMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
-                const topKFM = Object.entries(kfmNotesMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
-
-                const allNotesLabels = [...topDC.map(x => `🏢 DC: ${x[0]}`), ...topKFM.map(x => `👤 KFM: ${x[0]}`)];
-                const allNotesValues = [...topDC.map(x => x[1]), ...topKFM.map(x => x[1])];
-                const allNotesColors = [
-                    ...topDC.map(() => '#c084fc'),
-                    ...topKFM.map(() => '#fb923c')
-                ];
+                if (dcCases.length > 0) {
+                    const dcNotesMap = {};
+                    const kfmNotesMap = {};
+                    dcCases.forEach(r => {
+                        if (r.dc_note) dcNotesMap[r.dc_note] = (dcNotesMap[r.dc_note] || 0) + 1;
+                        if (r.kfm_note) kfmNotesMap[r.kfm_note] = (kfmNotesMap[r.kfm_note] || 0) + 1;
+                    });
+                    const topDC = Object.entries(dcNotesMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+                    const topKFM = Object.entries(kfmNotesMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+                    allNotesLabels = [...topDC.map(x => `🏢 DC: ${x[0]}`), ...topKFM.map(x => `👤 KFM: ${x[0]}`)];
+                    allNotesValues = [...topDC.map(x => x[1]), ...topKFM.map(x => x[1])];
+                    allNotesColors = [
+                        ...topDC.map(() => '#c084fc'),
+                        ...topKFM.map(() => '#fb923c')
+                    ];
+                } else {
+                    const topDC = (data.grand_total && data.grand_total.top_dc_notes) ? data.grand_total.top_dc_notes.slice(0, 5) : [];
+                    const topKFM = (data.grand_total && data.grand_total.top_kfm_notes) ? data.grand_total.top_kfm_notes.slice(0, 5) : [];
+                    allNotesLabels = [...topDC.map(x => `🏢 DC: ${x.note}`), ...topKFM.map(x => `👤 KFM: ${x.note}`)];
+                    allNotesValues = [...topDC.map(x => x.count), ...topKFM.map(x => x.count)];
+                    allNotesColors = [
+                        ...topDC.map(() => '#c084fc'),
+                        ...topKFM.map(() => '#fb923c')
+                    ];
+                }
 
                 insightsHtml = `
                 <div class="zoom-insight-card highlight">
                     <div class="zoom-insight-title"><i class="fa-solid fa-list"></i> Phân Tích Nguyên Nhân & Hành Động</div>
                     <div class="zoom-insight-text">
-                        • <strong>Lý do DC từ chối hàng đầu:</strong> <em>Trễ timeline (431 case), Khuất cam (105 case), Không có hình ảnh (52 case), Lỗi cam (30 case)...</em><br>
-                        • <strong>Hành động xử lý của KFM:</strong> <em>Đã trả tồn TO (1.832 case), Trả về kho đông (64 case), Trả tồn ST (33 case)...</em><br>
-                        • <strong>Khuyến nghị:</strong> Siêu thị cần gửi ảnh và biên bản đúng timeline quy định để giảm thiểu 431 case bị DC từ chối vì trễ hạn.
+                        • <strong>Lý do DC từ chối / ghi chú phổ biến:</strong> Các lý do liên quan đến camera, hình ảnh, biên bản giao nhận và thời gian gửi trả.<br>
+                        • <strong>Hành động xử lý của KFM:</strong> Đã chuyển trả tồn TO, thu hồi biên bản hoặc phối hợp kiểm đếm lại.<br>
+                        • <strong>Khuyến nghị:</strong> Siêu thị cần gửi ảnh và biên bản đúng timeline quy định để giảm thiểu các case bị DC từ chối vì trễ hạn.
                     </div>
                 </div>
                 `;

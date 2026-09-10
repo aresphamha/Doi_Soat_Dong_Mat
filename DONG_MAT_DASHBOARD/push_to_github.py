@@ -59,6 +59,8 @@ def sync_and_push(custom_message=None):
         "daily_details",
         "Cap_Nhat_Bao_Cao_Web.bat",
         "Mo_Bao_Cao.bat",
+        "Cap_Nhat_Telegram_Realtime.bat",
+        "Danh_Sach_Group_Telegram_SCM.xlsx",
         "LOGIC_HE_THONG_NOI_BO_THAM_KHAO.html",
         "LOGIC_HE_THONG_NOI_BO_THAM_KHAO.md",
         "DONG_MAT_DASHBOARD",

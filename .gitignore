@@ -28,3 +28,13 @@ $RECYCLE.BIN/
 *.secret
 *token*
 
+
+# Telegram session
+*.session
+*.session-journal
+
+chunk_*.js
+create_workspace_page.js
+transport_page.js
+inspect_*.py
+verify_index_bundles.py
