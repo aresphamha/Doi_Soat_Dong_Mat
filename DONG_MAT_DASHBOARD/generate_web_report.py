@@ -41,53 +41,71 @@ from analytics.threshold_analytics import (
     analyze_threshold_metrics,
     get_daily_threshold_breakdown
 )
-from analytics.kpi_metrics import (
-    get_monthly_summary_matrix,
-    get_error_type_summary,
-    get_top_discrepant_stores,
-    get_top_discrepant_products
-)
 
 
 def compute_store_priority_list(df_in: pd.DataFrame) -> list:
-    """Tính toán danh sách Siêu thị ưu tiên xử lý (Bảng 4) siêu gọn nhẹ."""
-    records = []
+    """Tính toán danh sách Siêu thị ưu tiên xử lý (Bảng 4) siêu nhanh - Vectorized 100%."""
     if len(df_in) == 0:
-        return records
-    grouped = df_in.groupby(['Date_Str', 'ID ST', 'Chi nhánh nhận', 'Nhóm hàng', 'Is_Store_Over_100k'], dropna=False)
-    for (d_str, st_id, st_name, group_name, is_over), g in grouped:
-        val_total = round(float(g['Val_Tong_GT'].sum()), 2)
-        val_da_xl = round(float(g[g['Status_3Level'] == 'Đã xử lý']['Val_Tong_GT'].sum()), 2)
-        val_dang_xl = round(float(g[g['Status_3Level'] == 'Đang xử lý']['Val_Tong_GT'].sum()), 2)
-        val_khong_xl = round(float(g[g['Status_3Level'] == 'Không xử lý']['Val_Tong_GT'].sum()), 2)
-        
-        if val_dang_xl > 0:
-            prio = 'p1'
-        elif val_khong_xl > 0:
-            prio = 'p2'
-        else:
-            prio = 'p3'
+        return []
+    
+    st_col = "ID ST" if "ID ST" in df_in.columns else "Chi nhánh nhận"
+    name_col = "Chi nhánh nhận"
+    grp_cols = ["Date_Str", st_col, name_col, "Nhóm hàng", "Is_Store_Over_100k"]
+    
+    base_agg = df_in.groupby(grp_cols, as_index=False, dropna=False).agg(
+        sku_count=("Val_Tong_GT", "count"),
+        qty_diff_total=("Qty_Lech", "sum"),
+        val_total=("Val_Tong_GT", "sum"),
+        date_parsed=("Date_Parsed", "first")
+    )
+    
+    piv = df_in.pivot_table(
+        index=grp_cols,
+        columns="Status_3Level",
+        values="Val_Tong_GT",
+        aggfunc="sum",
+        fill_value=0.0
+    ).reset_index()
+    
+    for c in ["Đã xử lý", "Đang xử lý", "Không xử lý"]:
+        if c not in piv.columns:
+            piv[c] = 0.0
             
-        pct_done = round((val_da_xl / val_total * 100), 1) if val_total > 0 else 100.0
+    merged = base_agg.merge(piv[grp_cols + ["Đã xử lý", "Đang xử lý", "Không xử lý"]], on=grp_cols, how="left")
+    
+    records = []
+    for _, r in merged.iterrows():
+        val_tot = round(float(r["val_total"]), 2)
+        val_da = round(float(r["Đã xử lý"]), 2)
+        val_dang = round(float(r["Đang xử lý"]), 2)
+        val_khong = round(float(r["Không xử lý"]), 2)
         
-        d_parsed = g['Date_Parsed'].iloc[0] if len(g) > 0 and pd.notnull(g['Date_Parsed'].iloc[0]) else None
-        month_str = f'Tháng {d_parsed.month}' if d_parsed else 'Tháng 8'
+        if val_dang > 0:
+            prio = "p1"
+        elif val_khong > 0:
+            prio = "p2"
+        else:
+            prio = "p3"
+            
+        pct_done = round((val_da / val_tot * 100), 1) if val_tot > 0 else 100.0
+        d_parsed = r["date_parsed"]
+        month_str = f"Tháng {d_parsed.month}" if pd.notnull(d_parsed) else "Tháng 8"
         
         records.append({
-            'date': str(d_str),
-            'month': month_str,
-            'st': str(st_id),
-            'store_name': str(st_name),
-            'group': str(group_name),
-            'is_store_over_100k': bool(is_over),
-            'sku_count': int(len(g)),
-            'qty_diff_total': round(float(g['Qty_Lech'].sum()), 2),
-            'val_total': val_total,
-            'val_da_xl': val_da_xl,
-            'val_dang_xl': val_dang_xl,
-            'val_khong_xl': val_khong_xl,
-            'priority': prio,
-            'pct_done': str(pct_done)
+            "date": str(r["Date_Str"]),
+            "month": month_str,
+            "st": str(r[st_col]),
+            "store_name": str(r[name_col]),
+            "group": str(r["Nhóm hàng"]),
+            "is_store_over_100k": bool(r["Is_Store_Over_100k"]),
+            "sku_count": int(r["sku_count"]),
+            "qty_diff_total": round(float(r["qty_diff_total"]), 2),
+            "val_total": val_tot,
+            "val_da_xl": val_da,
+            "val_dang_xl": val_dang,
+            "val_khong_xl": val_khong,
+            "priority": prio,
+            "pct_done": str(pct_done)
         })
     return records
 
@@ -103,7 +121,27 @@ def compute_group_bundle(df_sub: pd.DataFrame, df_full: pd.DataFrame, threshold:
 
     overall_metrics = analyze_threshold_metrics(df_sub, threshold=threshold, df_full=df_full)
     df_daily_th, _ = get_daily_threshold_breakdown(df_sub, threshold=threshold, df_full=df_full)
-    df_monthly = get_monthly_summary_matrix(df_sub, threshold=threshold, df_full=df_full)
+
+    # Tính monthly matrix trực tiếp từ df_daily_th mà không cần lặp lại
+    agg_dict = {
+        "Tong_So_Vu": "sum", "Tong_SL_Chuyen": "sum", "Tong_SL_Nhan": "sum", "Tong_SL_Lech": "sum",
+        "Tong_Gia_Tri": "sum", "Tong_ST": "sum", "ST_Over_100k": "sum", "ST_Under_100k": "sum",
+        "ST_Da_Xu_Ly": "sum", "ST_Dang_Xu_Ly": "sum", "ST_Khong_Xu_Ly": "sum",
+        "Val_Over_100k": "sum", "Val_Under_100k": "sum", "Val_Kho": "sum", "Val_ST": "sum",
+        "Val_HaoHut": "sum", "Val_Da_Xu_Ly": "sum", "Val_Dang_Xu_Ly": "sum", "Val_Khong_Xu_Ly": "sum",
+        "SL_Kho": "sum", "SL_ST": "sum", "SL_HaoHut": "sum", "SL_Da_Xu_Ly": "sum",
+        "SL_Dang_Xu_Ly": "sum", "SL_Khong_Xu_Ly": "sum",
+        "DC_Total_Cases": "sum", "DC_Total_Qty": "sum", "DC_Total_Val": "sum", "DC_ST_Count": "sum",
+        "DC_DongY_Cases": "sum", "DC_DongY_Val": "sum", "DC_DongY_Qty": "sum", "DC_DongY_ST": "sum",
+        "DC_DongY_Done_Cases": "sum", "DC_DongY_Not_Done_Cases": "sum",
+        "DC_TuChoi_Cases": "sum", "DC_TuChoi_Val": "sum", "DC_TuChoi_Qty": "sum", "DC_TuChoi_ST": "sum",
+        "DC_TuChoi_KFM_Replied": "sum", "DC_TuChoi_KFM_Pending": "sum",
+        "DC_KiemTra_Cases": "sum", "DC_KiemTra_Val": "sum", "DC_KiemTra_Qty": "sum", "DC_KiemTra_ST": "sum",
+        "DC_KiemTra_KFM_Replied": "sum", "DC_KiemTra_KFM_Pending": "sum",
+        "DC_Chua_Cases": "sum", "DC_Chua_Val": "sum", "DC_Chua_Qty": "sum", "DC_Chua_ST": "sum"
+    }
+    agg_clean = {k: v for k, v in agg_dict.items() if k in df_daily_th.columns}
+    df_monthly = df_daily_th.groupby("Tháng").agg(agg_clean).reset_index() if len(df_daily_th) > 0 else pd.DataFrame()
 
     daily_matrix_list = []
     for _, tr in df_daily_th.iterrows():
@@ -195,35 +233,40 @@ def compute_group_bundle(df_sub: pd.DataFrame, df_full: pd.DataFrame, threshold:
 
     monthly_matrix_list = []
     for _, tr in df_monthly.iterrows():
+        val_tot = float(tr.get("Tong_Gia_Tri", 0.0))
+        val_da = float(tr.get("Val_Da_Xu_Ly", 0.0))
+        sl_tot = float(tr.get("Tong_SL_Lech", 0.0))
+        sl_da = float(tr.get("SL_Da_Xu_Ly", 0.0))
+        
         monthly_matrix_list.append({
             "month": str(tr.get("Tháng", "")),
-            "total_cases": int(tr.get("Tổng Số Vụ", 0)),
-            "qty_chuyen": round(float(tr.get("Tổng SL Chuyển", 0.0)), 2),
-            "qty_nhan": round(float(tr.get("Tổng SL Nhận", 0.0)), 2),
-            "qty_lech": round(float(tr.get("Tổng SL Lệch", 0.0)), 2),
-            "stores_count": int(tr.get("Tổng Số ST", 0)),
-            "stores_over_100k": int(tr.get("ST Over 100k", 0)),
-            "stores_under_100k": int(tr.get("ST Under 100k", 0)),
-            "st_da_xl": int(tr.get("ST Đã Xử Lý", 0)),
-            "st_dang_xl": int(tr.get("ST Đang Xử Lý", 0)),
-            "st_khong_xl": int(tr.get("ST Không Xử Lý", 0)),
-            "sl_kho": round(float(tr.get("SL Kho", 0.0)), 2),
-            "sl_st": round(float(tr.get("SL ST", 0.0)), 2),
-            "sl_haohut": round(float(tr.get("SL Hao Hụt", 0.0)), 2),
-            "sl_da_xl": round(float(tr.get("SL Đã Xử Lý", 0.0)), 2),
-            "sl_dang_xl": round(float(tr.get("SL Đang Xử Lý", 0.0)), 2),
-            "sl_khong_xl": round(float(tr.get("SL Không Xử Lý", 0.0)), 2),
-            "pct_sl_da_xl": round(float(tr.get("Tỷ Lệ SL Đã XL (%)", 0.0)), 1),
-            "val_total": float(tr.get("Tổng Tiền", 0.0)),
-            "val_over_100k": float(tr.get("Tiền Over 100k", 0.0)),
-            "val_under_100k": float(tr.get("Tiền Under 100k", 0.0)),
-            "val_kho": float(tr.get("Tiền Kho", 0.0)),
-            "val_st": float(tr.get("Tiền ST", 0.0)),
-            "val_haohut": float(tr.get("Tiền Hao Hụt", 0.0)),
-            "val_da_xl": float(tr.get("Tiền Đã Xử Lý", 0.0)),
-            "val_dang_xl": float(tr.get("Tiền Đang Xử Lý", 0.0)),
-            "val_khong_xl": float(tr.get("Tiền Không Xử Lý", 0.0)),
-            "pct_val_da_xl": round(float(tr.get("Tỷ Lệ Tiền Đã XL (%)", 0.0)), 1),
+            "total_cases": int(tr.get("Tong_So_Vu", 0)),
+            "qty_chuyen": round(float(tr.get("Tong_SL_Chuyen", 0.0)), 2),
+            "qty_nhan": round(float(tr.get("Tong_SL_Nhan", 0.0)), 2),
+            "qty_lech": round(float(tr.get("Tong_SL_Lech", 0.0)), 2),
+            "stores_count": int(tr.get("Tong_ST", 0)),
+            "stores_over_100k": int(tr.get("ST_Over_100k", 0)),
+            "stores_under_100k": int(tr.get("ST_Under_100k", 0)),
+            "st_da_xl": int(tr.get("ST_Da_Xu_Ly", 0)),
+            "st_dang_xl": int(tr.get("ST_Dang_Xu_Ly", 0)),
+            "st_khong_xl": int(tr.get("ST_Khong_Xu_Ly", 0)),
+            "sl_kho": round(float(tr.get("SL_Kho", 0.0)), 2),
+            "sl_st": round(float(tr.get("SL_ST", 0.0)), 2),
+            "sl_haohut": round(float(tr.get("SL_HaoHut", 0.0)), 2),
+            "sl_da_xl": round(sl_da, 2),
+            "sl_dang_xl": round(float(tr.get("SL_Dang_Xu_Ly", 0.0)), 2),
+            "sl_khong_xl": round(float(tr.get("SL_Khong_Xu_Ly", 0.0)), 2),
+            "pct_sl_da_xl": round(sl_da / sl_tot * 100.0, 1) if sl_tot > 0 else 0.0,
+            "val_total": val_tot,
+            "val_over_100k": float(tr.get("Val_Over_100k", 0.0)),
+            "val_under_100k": float(tr.get("Val_Under_100k", 0.0)),
+            "val_kho": float(tr.get("Val_Kho", 0.0)),
+            "val_st": float(tr.get("Val_ST", 0.0)),
+            "val_haohut": float(tr.get("Val_HaoHut", 0.0)),
+            "val_da_xl": val_da,
+            "val_dang_xl": float(tr.get("Val_Dang_Xu_Ly", 0.0)),
+            "val_khong_xl": float(tr.get("Val_Khong_Xu_Ly", 0.0)),
+            "pct_val_da_xl": round(val_da / val_tot * 100.0, 1) if val_tot > 0 else 0.0,
             
             # Thống kê DC Theo Tháng
             "dc_total_cases": int(tr.get("DC_Total_Cases", 0)),
@@ -236,93 +279,107 @@ def compute_group_bundle(df_sub: pd.DataFrame, df_full: pd.DataFrame, threshold:
             "dc_dongy_st": int(tr.get("DC_DongY_ST", 0)),
             "dc_dongy_done_cases": int(tr.get("DC_DongY_Done_Cases", 0)),
             "dc_dongy_not_done_cases": int(tr.get("DC_DongY_Not_Done_Cases", 0)),
-            "dc_dongy_pct_done": round(float(tr.get("DC_DongY_Pct_Done", 0.0)), 1),
+            "dc_dongy_pct_done": round(float(tr.get("DC_DongY_Done_Cases", 0)) / (float(tr.get("DC_DongY_Cases", 0)) or 1.0) * 100.0, 1),
             "dc_tuchoi_cases": int(tr.get("DC_TuChoi_Cases", 0)),
             "dc_tuchoi_val": float(tr.get("DC_TuChoi_Val", 0.0)),
             "dc_tuchoi_st": int(tr.get("DC_TuChoi_ST", 0)),
             "dc_tuchoi_kfm_replied": int(tr.get("DC_TuChoi_KFM_Replied", 0)),
             "dc_tuchoi_kfm_pending": int(tr.get("DC_TuChoi_KFM_Pending", 0)),
-            "dc_tuchoi_pct_replied": round(float(tr.get("DC_TuChoi_Pct_Replied", 0.0)), 1),
+            "dc_tuchoi_pct_replied": round(float(tr.get("DC_TuChoi_KFM_Replied", 0)) / (float(tr.get("DC_TuChoi_Cases", 0)) or 1.0) * 100.0, 1),
             "dc_kiemtra_cases": int(tr.get("DC_KiemTra_Cases", 0)),
             "dc_kiemtra_val": float(tr.get("DC_KiemTra_Val", 0.0)),
             "dc_kiemtra_st": int(tr.get("DC_KiemTra_ST", 0)),
             "dc_kiemtra_kfm_replied": int(tr.get("DC_KiemTra_KFM_Replied", 0)),
             "dc_kiemtra_kfm_pending": int(tr.get("DC_KiemTra_KFM_Pending", 0)),
-            "dc_kiemtra_pct_replied": round(float(tr.get("DC_KiemTra_Pct_Replied", 0.0)), 1),
+            "dc_kiemtra_pct_replied": round(float(tr.get("DC_KiemTra_KFM_Replied", 0)) / (float(tr.get("DC_KiemTra_Cases", 0)) or 1.0) * 100.0, 1),
             "dc_chua_cases": int(tr.get("DC_Chua_Cases", 0)),
             "dc_chua_val": float(tr.get("DC_Chua_Val", 0.0)),
             "dc_chua_st": int(tr.get("DC_Chua_ST", 0)),
-            "dc_pct_phan_hoi": round(float(tr.get("DC_Pct_Phan_Hoi", 0.0)), 1),
-            "dc_pct_dongy": round(float(tr.get("DC_Pct_Dong_Y", 0.0)), 1)
+            "dc_pct_phan_hoi": round((float(tr.get("DC_DongY_Cases", 0)) + float(tr.get("DC_TuChoi_Cases", 0)) + float(tr.get("DC_KiemTra_Cases", 0))) / (float(tr.get("DC_Total_Cases", 0)) or 1.0) * 100.0, 1),
+            "dc_pct_dongy": round(float(tr.get("DC_DongY_Cases", 0)) / (float(tr.get("DC_Total_Cases", 0)) or 1.0) * 100.0, 1)
         })
 
     # Grand Total Metrics
     df_sub_dc = df_sub[df_sub["Destination"] == "Kho ĐÔNG MÁT"]
     gt_dc_total = len(df_sub_dc)
-    gt_dc_dongy = len(df_sub_dc[df_sub_dc["DC xác nhận"] == "Đồng ý claim"])
-    gt_dc_tuchoi = len(df_sub_dc[df_sub_dc["DC xác nhận"] == "Từ chối claim"])
-    gt_dc_kiemtra = len(df_sub_dc[df_sub_dc["DC xác nhận"] == "Kiểm tra lại"])
-    gt_dc_chua = len(df_sub_dc[~df_sub_dc["DC xác nhận"].isin(["Đồng ý claim", "Từ chối claim", "Kiểm tra lại"])])
+    
+    dc_conf_col = "DC_Confirm" if "DC_Confirm" in df_sub_dc.columns else ("DC xác nhận" if "DC xác nhận" in df_sub_dc.columns else None)
+    kfm_reply_col = "KFM_Reply" if "KFM_Reply" in df_sub_dc.columns else ("KFM phản hồi" if "KFM phản hồi" in df_sub_dc.columns else None)
+    st_col = "ID ST" if "ID ST" in df_sub_dc.columns else "Chi nhánh nhận"
+    
+    if dc_conf_col and gt_dc_total > 0:
+        df_dc_dongy = df_sub_dc[df_sub_dc[dc_conf_col].astype(str).str.contains("Đồng ý", case=False, na=False)]
+        df_dc_tuchoi = df_sub_dc[df_sub_dc[dc_conf_col].astype(str).str.contains("Từ chối", case=False, na=False)]
+        df_dc_kiemtra = df_sub_dc[df_sub_dc[dc_conf_col].astype(str).str.contains("Kiểm tra", case=False, na=False)]
+        df_dc_chua = df_sub_dc[~df_sub_dc.index.isin(df_dc_dongy.index.union(df_dc_tuchoi.index).union(df_dc_kiemtra.index))]
+    else:
+        df_dc_dongy = df_sub_dc.iloc[0:0]
+        df_dc_tuchoi = df_sub_dc.iloc[0:0]
+        df_dc_kiemtra = df_sub_dc.iloc[0:0]
+        df_dc_chua = df_sub_dc
+        
+    gt_dc_dongy = len(df_dc_dongy)
+    gt_dc_tuchoi = len(df_dc_tuchoi)
+    gt_dc_kiemtra = len(df_dc_kiemtra)
+    gt_dc_chua = len(df_dc_chua)
     
     gt_dc_resp = gt_dc_dongy + gt_dc_tuchoi + gt_dc_kiemtra
     gt_dc_pct_resp = round((gt_dc_resp / gt_dc_total * 100), 1) if gt_dc_total > 0 else 100.0
     gt_dc_pct_dongy = round((gt_dc_dongy / gt_dc_total * 100), 1) if gt_dc_total > 0 else 0.0
 
-    gt_dc_dongy_done = len(df_sub_dc[(df_sub_dc["DC xác nhận"] == "Đồng ý claim") & (df_sub_dc["KFM phản hồi"] == "DONE")])
+    gt_dc_dongy_done = int(len(df_dc_dongy[df_dc_dongy[kfm_reply_col] == "DONE"])) if kfm_reply_col and gt_dc_dongy > 0 else 0
     gt_dc_dongy_not_done = gt_dc_dongy - gt_dc_dongy_done
     gt_dc_dongy_pct_done = round((gt_dc_dongy_done / gt_dc_dongy * 100), 1) if gt_dc_dongy > 0 else 0.0
 
-    gt_dc_tuchoi_kfm_replied = len(df_sub_dc[(df_sub_dc["DC xác nhận"] == "Từ chối claim") & (df_sub_dc["KFM phản hồi"].fillna("").astype(str).str.strip() != "")])
+    gt_dc_tuchoi_kfm_replied = int(len(df_dc_tuchoi[df_dc_tuchoi[kfm_reply_col].astype(str).str.strip() != ""])) if kfm_reply_col and gt_dc_tuchoi > 0 else 0
     gt_dc_tuchoi_kfm_pending = gt_dc_tuchoi - gt_dc_tuchoi_kfm_replied
     gt_dc_tuchoi_pct_replied = round((gt_dc_tuchoi_kfm_replied / gt_dc_tuchoi * 100), 1) if gt_dc_tuchoi > 0 else 0.0
 
-    gt_dc_kiemtra_kfm_replied = len(df_sub_dc[(df_sub_dc["DC xác nhận"] == "Kiểm tra lại") & (df_sub_dc["KFM phản hồi"].fillna("").astype(str).str.strip() != "")])
+    gt_dc_kiemtra_kfm_replied = int(len(df_dc_kiemtra[df_dc_kiemtra[kfm_reply_col].astype(str).str.strip() != ""])) if kfm_reply_col and gt_dc_kiemtra > 0 else 0
     gt_dc_kiemtra_kfm_pending = gt_dc_kiemtra - gt_dc_kiemtra_kfm_replied
     gt_dc_kiemtra_pct_replied = round((gt_dc_kiemtra_kfm_replied / gt_dc_kiemtra * 100), 1) if gt_dc_kiemtra > 0 else 0.0
 
-    # Cross-tab matrix Cột AD x Cột AF
-    categories = ["Đồng ý claim", "Từ chối claim", "Kiểm tra lại", "Chưa phản hồi"]
+    # Cross-tab matrix
     crosstab_list = []
-    for cat in categories:
-        if cat == "Chưa phản hồi":
-            sub = df_sub_dc[~df_sub_dc["DC xác nhận"].isin(["Đồng ý claim", "Từ chối claim", "Kiểm tra lại"])]
+    for cat_name, sub in [("Đồng ý claim", df_dc_dongy), ("Từ chối claim", df_dc_tuchoi), ("Kiểm tra lại", df_dc_kiemtra), ("Chưa phản hồi", df_dc_chua)]:
+        if kfm_reply_col and len(sub) > 0:
+            c_done = int(len(sub[sub[kfm_reply_col] == "DONE"]))
+            c_hlv = int(len(sub[sub[kfm_reply_col] == "Cấp HLV quyết định"]))
+            c_check = int(len(sub[sub[kfm_reply_col] == "DC check lại thông tin"]))
+            c_blank = int(len(sub[~sub[kfm_reply_col].isin(["DONE", "Cấp HLV quyết định", "DC check lại thông tin"])]))
         else:
-            sub = df_sub_dc[df_sub_dc["DC xác nhận"] == cat]
+            c_done = 0; c_hlv = 0; c_check = 0; c_blank = len(sub)
             
-        c_done = int(len(sub[sub["KFM phản hồi"] == "DONE"]))
-        c_hlv = int(len(sub[sub["KFM phản hồi"] == "Cấp HLV quyết định"]))
-        c_check = int(len(sub[sub["KFM phản hồi"] == "DC check lại thông tin"]))
-        c_blank = int(len(sub[~sub["KFM phản hồi"].isin(["DONE", "Cấp HLV quyết định", "DC check lại thông tin"])]))
-        c_tot = int(len(sub))
-        
         crosstab_list.append({
-            "key": cat,
+            "key": cat_name,
             "done": c_done,
             "hlv": c_hlv,
             "check": c_check,
             "blank": c_blank,
-            "total": c_tot
+            "total": int(len(sub))
         })
 
-    # Top DC Notes (Cột AE)
-    dc_notes_clean = df_sub_dc[df_sub_dc["DC_Note"].fillna("").astype(str).str.strip() != ""]["DC_Note"].str.strip()
-    top_dc_notes = [{"note": str(k), "count": int(v)} for k, v in dc_notes_clean.value_counts().head(7).items()]
+    # Top DC Notes
+    dc_note_col = "DC_Note" if "DC_Note" in df_sub_dc.columns else ("NOTE.1" if "NOTE.1" in df_sub_dc.columns else None)
+    top_dc_notes = []
+    if dc_note_col and len(df_sub_dc) > 0:
+        dc_notes_clean = df_sub_dc[df_sub_dc[dc_note_col].fillna("").astype(str).str.strip() != ""][dc_note_col].str.strip()
+        top_dc_notes = [{"note": str(k), "count": int(v)} for k, v in dc_notes_clean.value_counts().head(7).items()]
 
-    # Top KFM Notes (Cột AG)
-    kfm_notes_clean = df_sub_dc[df_sub_dc["KFM_Note"].fillna("").astype(str).str.strip() != ""]["KFM_Note"].str.strip()
-    top_kfm_notes = [{"note": str(k), "count": int(v)} for k, v in kfm_notes_clean.value_counts().head(7).items()]
+    # Top KFM Notes
+    kfm_note_col = "KFM_Note" if "KFM_Note" in df_sub_dc.columns else ("NOTE.2" if "NOTE.2" in df_sub_dc.columns else None)
+    top_kfm_notes = []
+    if kfm_note_col and len(df_sub_dc) > 0:
+        kfm_notes_clean = df_sub_dc[df_sub_dc[kfm_note_col].fillna("").astype(str).str.strip() != ""][kfm_note_col].str.strip()
+        top_kfm_notes = [{"note": str(k), "count": int(v)} for k, v in kfm_notes_clean.value_counts().head(7).items()]
 
     # Non Agree breakdown
-    df_tc = df_sub_dc[df_sub_dc["DC xác nhận"] == "Từ chối claim"]
-    df_kt = df_sub_dc[df_sub_dc["DC xác nhận"] == "Kiểm tra lại"]
-    df_ch = df_sub_dc[~df_sub_dc["DC xác nhận"].isin(["Đồng ý claim", "Từ chối claim", "Kiểm tra lại"])]
-    
-    tc_hlv = int(len(df_tc[df_tc["KFM phản hồi"] == "Cấp HLV quyết định"]))
-    tc_pending = int(len(df_tc[~df_tc["KFM phản hồi"].isin(["DONE", "Cấp HLV quyết định", "DC check lại thông tin"])]))
-    tc_other = int(len(df_tc)) - tc_hlv - tc_pending
-    kt_done = int(len(df_kt[df_kt["KFM phản hồi"].isin(["DONE", "DC check lại thông tin"])]))
-    kt_pending = int(len(df_kt)) - kt_done
-    ch_tot = int(len(df_ch))
+    tc_hlv = int(len(df_dc_tuchoi[df_dc_tuchoi[kfm_reply_col] == "Cấp HLV quyết định"])) if kfm_reply_col and len(df_dc_tuchoi) > 0 else 0
+    tc_pending = int(len(df_dc_tuchoi[~df_dc_tuchoi[kfm_reply_col].isin(["DONE", "Cấp HLV quyết định", "DC check lại thông tin"])])) if kfm_reply_col and len(df_dc_tuchoi) > 0 else len(df_dc_tuchoi)
+    tc_other = len(df_dc_tuchoi) - tc_hlv - tc_pending
+    kt_done = int(len(df_dc_kiemtra[df_dc_kiemtra[kfm_reply_col].isin(["DONE", "DC check lại thông tin"])])) if kfm_reply_col and len(df_dc_kiemtra) > 0 else 0
+    kt_pending = len(df_dc_kiemtra) - kt_done
+    ch_tot = len(df_dc_chua)
     
     non_agree_items = [
         {"label": "🔴 Từ Chối - Cấp HLV Quyết Định", "val": tc_hlv, "color": "#f87171"},
@@ -338,12 +395,12 @@ def compute_group_bundle(df_sub: pd.DataFrame, df_full: pd.DataFrame, threshold:
         "qty_chuyen": round(float(df_daily_th["Tong_SL_Chuyen"].sum()), 2) if len(df_daily_th) > 0 else 0.0,
         "qty_nhan": round(float(df_daily_th["Tong_SL_Nhan"].sum()), 2) if len(df_daily_th) > 0 else 0.0,
         "qty_lech": round(float(df_daily_th["Tong_SL_Lech"].sum()), 2) if len(df_daily_th) > 0 else 0.0,
-        "stores_count": int(df_sub["ID ST"].nunique()) if len(df_sub) > 0 else 0,
-        "stores_over_100k": int(df_sub[df_sub["Is_Store_Over_100k"]]["ID ST"].nunique()) if len(df_sub) > 0 else 0,
-        "stores_under_100k": int(df_sub[~df_sub["Is_Store_Over_100k"]]["ID ST"].nunique()) if len(df_sub) > 0 else 0,
-        "st_da_xl": int(df_sub[df_sub["Status_3Level"] == "Đã xử lý"]["ID ST"].nunique()) if len(df_sub) > 0 else 0,
-        "st_dang_xl": int(df_sub[df_sub["Status_3Level"] == "Đang xử lý"]["ID ST"].nunique()) if len(df_sub) > 0 else 0,
-        "st_khong_xl": int(df_sub[df_sub["Status_3Level"] == "Không xử lý"]["ID ST"].nunique()) if len(df_sub) > 0 else 0,
+        "stores_count": int(df_sub[st_col].nunique()) if len(df_sub) > 0 else 0,
+        "stores_over_100k": int(df_sub[df_sub["Is_Store_Over_100k"]][st_col].nunique()) if len(df_sub) > 0 else 0,
+        "stores_under_100k": int(df_sub[~df_sub["Is_Store_Over_100k"]][st_col].nunique()) if len(df_sub) > 0 else 0,
+        "st_da_xl": int(df_sub[df_sub["Status_3Level"] == "Đã xử lý"][st_col].nunique()) if len(df_sub) > 0 else 0,
+        "st_dang_xl": int(df_sub[df_sub["Status_3Level"] == "Đang xử lý"][st_col].nunique()) if len(df_sub) > 0 else 0,
+        "st_khong_xl": int(df_sub[df_sub["Status_3Level"] == "Không xử lý"][st_col].nunique()) if len(df_sub) > 0 else 0,
         "sl_kho": round(float(df_daily_th["SL_Kho"].sum()), 2) if len(df_daily_th) > 0 else 0.0,
         "sl_st": round(float(df_daily_th["SL_ST"].sum()), 2) if len(df_daily_th) > 0 else 0.0,
         "sl_haohut": round(float(df_daily_th["SL_HaoHut"].sum()), 2) if len(df_daily_th) > 0 else 0.0,
@@ -364,32 +421,32 @@ def compute_group_bundle(df_sub: pd.DataFrame, df_full: pd.DataFrame, threshold:
         "dc_total_cases": gt_dc_total,
         "dc_total_qty": round(float(df_sub_dc["Qty_Lech"].sum()), 2) if len(df_sub_dc) > 0 else 0.0,
         "dc_total_val": float(df_sub_dc["Val_Tong_GT"].sum()) if len(df_sub_dc) > 0 else 0.0,
-        "dc_st_count": int(df_sub_dc["ID ST"].nunique()) if len(df_sub_dc) > 0 else 0,
+        "dc_st_count": int(df_sub_dc[st_col].nunique()) if len(df_sub_dc) > 0 else 0,
         
         "dc_dongy_cases": gt_dc_dongy,
-        "dc_dongy_val": float(df_sub_dc[df_sub_dc["DC xác nhận"] == "Đồng ý claim"]["Val_Tong_GT"].sum()) if len(df_sub_dc) > 0 else 0.0,
-        "dc_dongy_st": int(df_sub_dc[df_sub_dc["DC xác nhận"] == "Đồng ý claim"]["ID ST"].nunique()) if len(df_sub_dc) > 0 else 0,
+        "dc_dongy_val": float(df_dc_dongy["Val_Tong_GT"].sum()) if len(df_dc_dongy) > 0 else 0.0,
+        "dc_dongy_st": int(df_dc_dongy[st_col].nunique()) if len(df_dc_dongy) > 0 else 0,
         "dc_dongy_done_cases": gt_dc_dongy_done,
         "dc_dongy_not_done_cases": gt_dc_dongy_not_done,
         "dc_dongy_pct_done": gt_dc_dongy_pct_done,
 
         "dc_tuchoi_cases": gt_dc_tuchoi,
-        "dc_tuchoi_val": float(df_sub_dc[df_sub_dc["DC xác nhận"] == "Từ chối claim"]["Val_Tong_GT"].sum()) if len(df_sub_dc) > 0 else 0.0,
-        "dc_tuchoi_st": int(df_sub_dc[df_sub_dc["DC xác nhận"] == "Từ chối claim"]["ID ST"].nunique()) if len(df_sub_dc) > 0 else 0,
+        "dc_tuchoi_val": float(df_dc_tuchoi["Val_Tong_GT"].sum()) if len(df_dc_tuchoi) > 0 else 0.0,
+        "dc_tuchoi_st": int(df_dc_tuchoi[st_col].nunique()) if len(df_dc_tuchoi) > 0 else 0,
         "dc_tuchoi_kfm_replied": gt_dc_tuchoi_kfm_replied,
         "dc_tuchoi_kfm_pending": gt_dc_tuchoi_kfm_pending,
         "dc_tuchoi_pct_replied": gt_dc_tuchoi_pct_replied,
 
         "dc_kiemtra_cases": gt_dc_kiemtra,
-        "dc_kiemtra_val": float(df_sub_dc[df_sub_dc["DC xác nhận"] == "Kiểm tra lại"]["Val_Tong_GT"].sum()) if len(df_sub_dc) > 0 else 0.0,
-        "dc_kiemtra_st": int(df_sub_dc[df_sub_dc["DC xác nhận"] == "Kiểm tra lại"]["ID ST"].nunique()) if len(df_sub_dc) > 0 else 0,
+        "dc_kiemtra_val": float(df_dc_kiemtra["Val_Tong_GT"].sum()) if len(df_dc_kiemtra) > 0 else 0.0,
+        "dc_kiemtra_st": int(df_dc_kiemtra[st_col].nunique()) if len(df_dc_kiemtra) > 0 else 0,
         "dc_kiemtra_kfm_replied": gt_dc_kiemtra_kfm_replied,
         "dc_kiemtra_kfm_pending": gt_dc_kiemtra_kfm_pending,
         "dc_kiemtra_pct_replied": gt_dc_kiemtra_pct_replied,
 
         "dc_chua_cases": gt_dc_chua,
-        "dc_chua_val": float(df_sub_dc[~df_sub_dc["DC xác nhận"].isin(["Đồng ý claim", "Từ chối claim", "Kiểm tra lại"])]["Val_Tong_GT"].sum()) if len(df_sub_dc) > 0 else 0.0,
-        "dc_chua_st": int(df_sub_dc[~df_sub_dc["DC xác nhận"].isin(["Đồng ý claim", "Từ chối claim", "Kiểm tra lại"])]["ID ST"].nunique()) if len(df_sub_dc) > 0 else 0,
+        "dc_chua_val": float(df_dc_chua["Val_Tong_GT"].sum()) if len(df_dc_chua) > 0 else 0.0,
+        "dc_chua_st": int(df_dc_chua[st_col].nunique()) if len(df_dc_chua) > 0 else 0,
         
         "dc_pct_phan_hoi": gt_dc_pct_resp,
         "dc_pct_dongy": gt_dc_pct_dongy,
@@ -440,13 +497,15 @@ def build_and_export_web_report():
     unique_days = [d for d in df_enriched["Date_Str"].unique().tolist() if d and str(d).strip()]
     unique_days.sort(key=parse_d, reverse=True)
 
+    st_col = "ID ST" if "ID ST" in df_enriched.columns else "Chi nhánh nhận"
+    
     for d_str in unique_days:
         safe_date = str(d_str).replace('/', '_').replace('-', '_')
         group = df_enriched[df_enriched["Date_Str"] == d_str]
         records = []
         for _, r in group.iterrows():
             records.append({
-                "st": str(r.get("ID ST", "")),
+                "st": str(r.get(st_col, "")),
                 "store_name": str(r.get("Chi nhánh nhận", "")),
                 "group": str(r.get("Nhóm hàng", "")),
                 "sku": str(r.get("Mã hàng", "")),
@@ -479,7 +538,7 @@ def build_and_export_web_report():
         dc_records.append({
             "date": str(r.get("Date_Str", "")),
             "month": month_str,
-            "st": str(r.get("ID ST", "")),
+            "st": str(r.get(st_col, "")),
             "store_name": str(r.get("Chi nhánh nhận", "")),
             "group": str(r.get("Nhóm hàng", "")),
             "sku": str(r.get("Mã hàng", "")),
@@ -498,7 +557,7 @@ def build_and_export_web_report():
         f.write(f"window.DC_CASES_DATA = {json.dumps(dc_records, ensure_ascii=False)};")
 
     # 5. Đồng bộ thư mục daily_details sang root & LOGIC
-    for target_parent in [os.path.dirname(current_dir), os.path.join(os.path.dirname(current_dir), "LOGIC")]:
+    for target_parent in [os.path.dirname(current_dir), os.path.join(os.path.dirname(current_dir), "LOGIC"), "C:\\Users\\Thu Ha\\Doi_Soat_Dong_Mat"]:
         try:
             target_dt_dir = os.path.join(target_parent, "daily_details")
             os.makedirs(target_dt_dir, exist_ok=True)
@@ -560,6 +619,17 @@ def build_and_export_web_report():
             f.write(html_content)
     except Exception as e:
         print(f"Warning writing root index: {e}")
+
+    # Đồng bộ sang repo trên C: để đảm bảo đồng bộ hoàn hảo
+    c_index = "C:\\Users\\Thu Ha\\Doi_Soat_Dong_Mat\\index.html"
+    c_output = "C:\\Users\\Thu Ha\\Doi_Soat_Dong_Mat\\Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay.html"
+    try:
+        with open(c_index, "w", encoding="utf-8") as f:
+            f.write(html_content)
+        with open(c_output, "w", encoding="utf-8") as f:
+            f.write(html_content)
+    except Exception as e:
+        print(f"Warning writing C: index: {e}")
 
     logic_output = os.path.join(os.path.dirname(current_dir), "LOGIC", "LOGIC_DASHBOARD_DONG_MAT.html")
     try:
