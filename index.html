@@ -3113,8 +3113,6 @@
         <!-- BỘ CHUYỂN ĐỔI 3 BẢNG TIẾN ĐỘ TỔNG HỢP / GIÁ TRỊ / SỐ LƯỢNG -->
         <!-- ========================================================================= -->
         
-            </div>
-        
             <!-- ========================================================================= -->
             <!-- TAB 4: TELEGRAM SCM - QUẢN LÝ 565+ NHÓM SIÊU THỊ & CHAT ID -->
             <!-- ========================================================================= -->
@@ -7806,7 +7804,7 @@
                         <div style="margin-bottom:4px; padding-bottom:4px; border-bottom:1px dashed rgba(255,255,255,0.06);">
                             <div style="font-weight:600; color:var(--text-primary); font-size:0.8rem; display:flex; align-items:center; justify-content:space-between; gap:6px;">
                                 <span><i class="fa-solid fa-snowflake" style="color:#229ED9; font-size:0.75rem; margin-right:4px;"></i>${g.title}</span>
-                                <a href="tg://resolve?domain=${g.username || ''}" style="color:#229ED9; text-decoration:none; font-size:0.72rem; padding:1px 5px; background:rgba(34,158,217,0.1); border-radius:3px;">Mở</a>
+                                <a href="https://web.telegram.org/k/#${g.chat_id_str}" target="_blank" style="color:#229ED9; text-decoration:none; font-size:0.72rem; padding:1px 5px; background:rgba(34,158,217,0.1); border-radius:3px;">Mở</a>
                             </div>
                             <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
                                 <span class="tele-chatid-badge">
@@ -7829,7 +7827,7 @@
                         <div style="margin-bottom:4px; padding-bottom:4px; border-bottom:1px dashed rgba(255,255,255,0.06);">
                             <div style="font-weight:600; color:var(--text-primary); font-size:0.8rem; display:flex; align-items:center; justify-content:space-between; gap:6px;">
                                 <span><i class="fa-solid fa-box-archive" style="color:#e3b341; font-size:0.75rem; margin-right:4px;"></i>${g.title}</span>
-                                <a href="tg://resolve?domain=${g.username || ''}" style="color:#e3b341; text-decoration:none; font-size:0.72rem; padding:1px 5px; background:rgba(210,153,34,0.1); border-radius:3px;">Mở</a>
+                                <a href="https://web.telegram.org/k/#${g.chat_id_str}" target="_blank" style="color:#e3b341; text-decoration:none; font-size:0.72rem; padding:1px 5px; background:rgba(210,153,34,0.1); border-radius:3px;">Mở</a>
                             </div>
                             <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
                                 <span class="tele-chatid-badge">
@@ -7918,7 +7916,7 @@
                     ? `<span style="color:var(--text-primary); font-size:0.75rem;">${g.last_message}</span>`
                     : `<span style="color:var(--text-secondary); opacity:0.4; font-size:0.75rem;">-</span>`;
 
-                const openBtn = `<a href="tg://resolve?domain=${g.username || ''}" style="display:inline-flex; align-items:center; gap:4px; padding:3px 8px; background:rgba(34,158,217,0.15); color:#229ED9; border:1px solid rgba(34,158,217,0.35); border-radius:4px; font-size:0.75rem; text-decoration:none;"><i class="fa-brands fa-telegram"></i> Mở</a>`;
+                const openBtn = `<a href="https://web.telegram.org/k/#${g.chat_id_str}" target="_blank" style="display:inline-flex; align-items:center; gap:4px; padding:3px 8px; background:rgba(34,158,217,0.15); color:#229ED9; border:1px solid rgba(34,158,217,0.35); border-radius:4px; font-size:0.75rem; text-decoration:none;"><i class="fa-brands fa-telegram"></i> Mở</a>`;
 
                 return `<tr>
                     <td style="text-align:center; color:var(--text-secondary); font-size:0.75rem;">${idx + 1}</td>

@@ -248,6 +248,150 @@
             color: #ffffff;
         }
 
+        
+        .sidebar-tab-btn.active-tab4 {
+            background: var(--bg-card-alt) !important;
+            border: 1px solid #229ED9 !important;
+            color: var(--text-primary) !important;
+        }
+        .sidebar-tab-btn.active-tab4 .tab-icon-wrap {
+            background: #229ED9;
+            color: #ffffff;
+        }
+
+        /* Telegram Tab Styling */
+        .tele-hero-card {
+            background: linear-gradient(135deg, rgba(34, 158, 217, 0.12) 0%, rgba(22, 27, 34, 0.95) 100%);
+            border: 1px solid rgba(34, 158, 217, 0.35);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .tele-badge-account {
+            background: rgba(34, 158, 217, 0.15);
+            border: 1px solid rgba(34, 158, 217, 0.4);
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+        .tele-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .tele-stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+        .tele-stat-card:hover {
+            transform: translateY(-2px);
+            border-color: #229ED9;
+        }
+        .tele-stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        .tele-pill-btn {
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .tele-pill-btn:hover {
+            border-color: #229ED9;
+            color: var(--text-primary);
+        }
+        .tele-pill-btn.active {
+            background: #229ED9;
+            color: #fff;
+            border-color: #229ED9;
+            font-weight: 600;
+        }
+        .tele-chatid-badge {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.78rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 2px 7px;
+            border-radius: 5px;
+            color: #a5d6ff;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tele-copy-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: color 0.15s ease, background 0.15s ease;
+        }
+        .tele-copy-btn:hover {
+            color: #58a6ff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .tele-tag-cat {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .tele-cat-sieuthi { background: rgba(35, 134, 54, 0.2); color: #3fb950; border: 1px solid rgba(35, 134, 54, 0.4); }
+        .tele-cat-dc { background: rgba(210, 153, 34, 0.2); color: #e3b341; border: 1px solid rgba(210, 153, 34, 0.4); }
+        .tele-cat-ic { background: rgba(137, 87, 229, 0.2); color: #bc8cff; border: 1px solid rgba(137, 87, 229, 0.4); }
+        .tele-cat-scm { background: rgba(31, 111, 235, 0.2); color: #58a6ff; border: 1px solid rgba(31, 111, 235, 0.4); }
+        .tele-cat-khac { background: rgba(110, 118, 129, 0.2); color: #8b949e; border: 1px solid rgba(110, 118, 129, 0.4); }
+        
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #238636;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            z-index: 99999;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.25s ease;
+            pointer-events: none;
+        }
+        .toast-msg.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         .sidebar-tab-btn.active-tab3 {
             background: var(--bg-card-alt) !important;
             border: 1px solid #8957e5 !important;
@@ -2031,6 +2175,7 @@
         }
 
     </style>
+    <script src="daily_details/telegram_groups.js"></script>
 </head>
 <body>
 
@@ -2111,6 +2256,14 @@
                 <div class="tab-text">
                     <span class="tab-title">TIẾN ĐỘ XỬ LÝ VỚI DC</span>
                     <span class="tab-desc">Phản hồi DC & Tra cứu chi tiết</span>
+                </div>
+            </button>
+
+            <button class="sidebar-tab-btn" id="btn-big-tab-4" onclick="switchBigTab(4)">
+                <div class="tab-icon-wrap" style="color:#229ED9;"><i class="fa-brands fa-telegram" style="font-size:1.15rem;"></i></div>
+                <div class="tab-text">
+                    <span class="tab-title">TELEGRAM SCM</span>
+                    <span class="tab-desc">565+ Nhóm Siêu Thị & Chat ID</span>
                 </div>
             </button>
 
@@ -2960,7 +3113,186 @@
         <!-- BỘ CHUYỂN ĐỔI 3 BẢNG TIẾN ĐỘ TỔNG HỢP / GIÁ TRỊ / SỐ LƯỢNG -->
         <!-- ========================================================================= -->
         
+            <!-- ========================================================================= -->
+            <!-- TAB 4: TELEGRAM SCM - QUẢN LÝ 565+ NHÓM SIÊU THỊ & CHAT ID -->
+            <!-- ========================================================================= -->
+            <div class="big-tab-panel" id="big-panel-4">
+                <!-- HERO HEADER -->
+                <div class="tele-hero-card">
+                    <div style="display:flex; align-items:center; gap:0.9rem;">
+                        <div style="width:48px; height:48px; border-radius:12px; background:#229ED9; color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.6rem; box-shadow:0 4px 12px rgba(34,158,217,0.35);">
+                            <i class="fa-brands fa-telegram"></i>
+                        </div>
+                        <div>
+                            <h2 style="margin:0; font-size:1.35rem; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px;">
+                                QUẢN LÝ NHÓM TELEGRAM SCM - GOM CỤM SIÊU THỊ
+                                <span style="font-size:0.75rem; font-weight:600; background:#238636; color:#fff; padding:2px 8px; border-radius:12px; display:inline-flex; align-items:center; gap:4px;">
+                                    <span style="width:6px; height:6px; border-radius:50%; background:#fff; display:inline-block;"></span> REALTIME
+                                </span>
+                            </h2>
+                            <div style="color:var(--text-secondary); font-size:0.83rem; margin-top:3px;">
+                                Gom nhóm ABA, Đông Mát & KRC thành Cụm Siêu Thị của mình • Theo dõi tin nhắn và chứng từ chênh lệch trực tiếp
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ACCOUNT BADGE & REFRESH -->
+                    <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+                        <button onclick="refreshTelegramRealtime(this)" class="btn-export-excel" style="display:inline-flex; align-items:center; gap:6px; padding:0.5rem 0.95rem; background:#229ED9; color:#fff; border:none; border-radius:8px; font-weight:600; font-size:0.82rem; cursor:pointer; box-shadow:0 2px 8px rgba(34,158,217,0.4);">
+                            <i class="fa-solid fa-rotate"></i> Cập Nhật Realtime
+                        </button>
+                        <div class="tele-badge-account">
+                            <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, #229ED9, #0088cc); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.95rem; font-weight:700; border:2px solid rgba(255,255,255,0.2);">
+                                <i class="fa-solid fa-user-check"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:700; color:#fff; font-size:0.85rem;" id="teleAccountName">KFM - SCM - Hà Phạm</div>
+                                <div style="font-size:0.73rem; color:#8bd5ff; display:flex; align-items:center; gap:6px; margin-top:1px;">
+                                    <span id="teleAccountPhone">0978009295</span>
+                                    <span>•</span>
+                                    <span style="background:#238636; color:#fff; padding:1px 5px; border-radius:4px; font-size:0.65rem; font-weight:600;">● Active</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REALTIME ACTIVITY TICKER -->
+                <div style="background:rgba(34,158,217,0.08); border:1px solid rgba(34,158,217,0.25); border-radius:10px; padding:0.6rem 1rem; margin-bottom:1.25rem; display:flex; align-items:center; gap:0.75rem;">
+                    <div style="display:inline-flex; align-items:center; gap:6px; font-size:0.78rem; font-weight:700; color:#58a6ff; white-space:nowrap;">
+                        <i class="fa-solid fa-bolt" style="color:#e3b341;"></i> TIN MỚI TỪ TELEGRAM:
+                    </div>
+                    <div id="teleRealtimeTicker" style="font-size:0.8rem; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">
+                        Đang nạp dữ liệu trao đổi chênh lệch gần nhất...
+                    </div>
+                    <div id="teleLastSyncTime" style="font-size:0.72rem; color:var(--text-secondary); white-space:nowrap;">
+                        Vừa đồng bộ
+                    </div>
+                </div>
+
+                <!-- KPI METRICS GRID -->
+                <div class="tele-stat-grid">
+                    <div class="tele-stat-card" style="cursor:pointer;" onclick="switchTeleViewMode('clusters')">
+                        <div class="tele-stat-icon" style="background:rgba(35,134,54,0.15); color:#3fb950;">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:0.73rem; color:var(--text-secondary); text-transform:uppercase; font-weight:600;">Cụm Siêu Thị (Gom Nhóm)</div>
+                            <div style="font-size:1.5rem; font-weight:800; color:#3fb950;" id="statTeleClusters">163</div>
+                            <div style="font-size:0.72rem; color:var(--text-secondary);">Gom nhóm ABA & KRC theo ST</div>
+                        </div>
+                    </div>
+
+                    <div class="tele-stat-card" style="cursor:pointer;" onclick="switchTeleViewMode('aba')">
+                        <div class="tele-stat-icon" style="background:rgba(34,158,217,0.15); color:#229ED9;">
+                            <i class="fa-solid fa-snowflake"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:0.73rem; color:var(--text-secondary); text-transform:uppercase; font-weight:600;">Nhóm ABA & Đông Mát</div>
+                            <div style="font-size:1.5rem; font-weight:800; color:#229ED9;" id="statTeleABA">199</div>
+                            <div style="font-size:0.72rem; color:#8bd5ff;">Nhóm nhận hàng mát/đông</div>
+                        </div>
+                    </div>
+
+                    <div class="tele-stat-card" style="cursor:pointer;" onclick="switchTeleViewMode('krc')">
+                        <div class="tele-stat-icon" style="background:rgba(210,153,34,0.15); color:#e3b341;">
+                            <i class="fa-solid fa-box-archive"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:0.73rem; color:var(--text-secondary); text-transform:uppercase; font-weight:600;">Nhóm KRC Siêu Thị</div>
+                            <div style="font-size:1.5rem; font-weight:800; color:#e3b341;" id="statTeleKRC">210</div>
+                            <div style="font-size:0.72rem; color:var(--text-secondary);">Nhóm chênh lệch KRC</div>
+                        </div>
+                    </div>
+
+                    <div class="tele-stat-card" style="cursor:pointer;" onclick="switchTeleViewMode('ic')">
+                        <div class="tele-stat-icon" style="background:rgba(137,87,229,0.15); color:#bc8cff;">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:0.73rem; color:var(--text-secondary); text-transform:uppercase; font-weight:600;">Đối Soát & Kiểm Kê IC</div>
+                            <div style="font-size:1.5rem; font-weight:800; color:#bc8cff;" id="statTeleIC">8</div>
+                            <div style="font-size:0.72rem; color:var(--text-secondary);">IC MeatFish, Chill-Frozen</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FILTER CONTROLS & VIEW SWITCHER -->
+                <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; padding:1rem 1.25rem; margin-bottom:1.25rem;">
+                    <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; justify-content:space-between; margin-bottom:0.85rem;">
+                        <!-- SEARCH INPUT -->
+                        <div style="position:relative; flex:1; min-width:280px;">
+                            <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-secondary);"></i>
+                            <input type="text" id="teleSearchInput" oninput="filterTelegramData()" placeholder="🔍 Tìm kiếm theo Mã ST (A101...), Tên ST, Chat ID, nội dung tin mới..." style="width:100%; padding:0.5rem 0.85rem 0.5rem 2.2rem; background:var(--bg-card-alt); border:1px solid var(--border-color); border-radius:6px; color:var(--text-primary); font-size:0.85rem;">
+                        </div>
+
+                        <!-- ACTION BUTTONS -->
+                        <div style="display:flex; gap:0.5rem; align-items:center;">
+                            <button onclick="exportTelegramToExcel()" class="btn-export-excel" style="display:inline-flex; align-items:center; gap:6px; padding:0.5rem 0.95rem; background:#238636; color:#fff; border:none; border-radius:6px; font-weight:600; font-size:0.82rem; cursor:pointer;">
+                                <i class="fa-solid fa-file-excel"></i> Xuất Excel Nhóm
+                            </button>
+                            <button onclick="copyAllVisibleChatIds()" style="display:inline-flex; align-items:center; gap:6px; padding:0.5rem 0.85rem; background:var(--bg-card-alt); color:var(--text-primary); border:1px solid var(--border-color); border-radius:6px; font-size:0.82rem; cursor:pointer;">
+                                <i class="fa-solid fa-copy"></i> Sao chép Chat ID đang lọc
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- VIEW MODE PILLS -->
+                    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+                        <span style="font-size:0.78rem; color:var(--text-secondary); font-weight:600; margin-right:4px;">Chế độ xem:</span>
+                        <button class="tele-pill-btn active" id="telePill-clusters" onclick="switchTeleViewMode('clusters')">
+                            🏬 Cụm Siêu Thị - Gom Nhóm Mình (<span id="pillCount-clusters">163</span>)
+                        </button>
+                        <button class="tele-pill-btn" id="telePill-aba" onclick="switchTeleViewMode('aba')">
+                            ❄️ Nhóm ABA - Đông Mát (<span id="pillCount-aba">199</span>)
+                        </button>
+                        <button class="tele-pill-btn" id="telePill-krc" onclick="switchTeleViewMode('krc')">
+                            📦 Nhóm KRC (<span id="pillCount-krc">210</span>)
+                        </button>
+                        <button class="tele-pill-btn" id="telePill-ic" onclick="switchTeleViewMode('ic')">
+                            🔍 Đối Soát & IC (<span id="pillCount-ic">8</span>)
+                        </button>
+                        <button class="tele-pill-btn" id="telePill-dc" onclick="switchTeleViewMode('dc')">
+                            🚚 Kho DC & Logistics (<span id="pillCount-dc">97</span>)
+                        </button>
+                        <button class="tele-pill-btn" id="telePill-all" onclick="switchTeleViewMode('all')">
+                            📋 Tất Cả Nhóm (<span id="pillCount-all">565</span>)
+                        </button>
+
+                        <div style="margin-left:auto; font-size:0.78rem; color:var(--text-secondary);">
+                            Đang hiển thị: <strong style="color:#58a6ff;" id="teleVisibleCount">163</strong> bản ghi
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MAIN TABLE CONTAINER -->
+                <div class="data-card" style="padding:0; overflow:hidden;">
+                    <div class="table-responsive" style="max-height:720px; overflow-y:auto;">
+                        <table class="styled-table" id="teleMainTable">
+                            <thead style="position:sticky; top:0; z-index:10; background:var(--bg-card);" id="teleTableHead">
+                                <!-- Rendered dynamically based on view mode -->
+                            </thead>
+                            <tbody id="teleTableBody">
+                                <!-- Dynamic rows rendered via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- GUIDANCE FOOTER CARD -->
+                <div style="margin-top:1.25rem; background:rgba(34,158,217,0.08); border:1px solid rgba(34,158,217,0.25); border-radius:10px; padding:1rem 1.25rem; display:flex; gap:1rem; align-items:flex-start;">
+                    <i class="fa-solid fa-circle-info" style="color:#229ED9; font-size:1.25rem; margin-top:2px;"></i>
+                    <div style="font-size:0.82rem; color:var(--text-secondary); line-height:1.5;">
+                        <strong style="color:#fff;">💡 Hướng dẫn vận hành Cụm Nhóm Siêu Thị SCM:</strong><br>
+                        - **Gom nhóm thông minh**: Mỗi siêu thị gom cả 2 nhóm <strong>ABA/Đông Mát</strong> và <strong>KRC</strong> vào chung 1 hàng, giúp tra cứu và bắn tin đối soát tức thì.<br>
+                        - **Cập nhật Realtime**: Bấm nút <code style="color:#a5d6ff;">Cập Nhật Realtime</code> để làm mới tin nhắn, hình ảnh chênh lệch và số tin chưa đọc từ Telegram.<br>
+                        - Bấm nút <code style="color:#58a6ff;"><i class="fa-solid fa-copy"></i> Copy Cả 2 ID</code> để sao chép cùng lúc cả Chat ID ABA và KRC phục vụ công cụ bắn tin chênh lệch tự động.
+                    </div>
+                </div>
             </div>
+                </div>
+            </div>
+
         </main>
     </div>
 <div class="modal-overlay" id="detailModal">
@@ -3127,32 +3459,38 @@
             const btn1 = document.getElementById('btn-big-tab-1');
             const btn2 = document.getElementById('btn-big-tab-2');
             const btn3 = document.getElementById('btn-big-tab-3');
+            const btn4 = document.getElementById('btn-big-tab-4');
             const p1 = document.getElementById('big-panel-1');
             const p2 = document.getElementById('big-panel-2');
             const p3 = document.getElementById('big-panel-3');
+            const p4 = document.getElementById('big-panel-4');
 
             if (btn1) btn1.className = 'sidebar-tab-btn' + (tabNum === 1 ? ' active-tab1' : '');
             if (btn2) btn2.className = 'sidebar-tab-btn' + (tabNum === 2 ? ' active-tab2' : '');
             if (btn3) btn3.className = 'sidebar-tab-btn' + (tabNum === 3 ? ' active-tab3' : '');
+            if (btn4) btn4.className = 'sidebar-tab-btn' + (tabNum === 4 ? ' active-tab4' : '');
             if (p1) p1.className = 'big-tab-panel' + (tabNum === 1 ? ' active' : '');
             if (p2) p2.className = 'big-tab-panel' + (tabNum === 2 ? ' active' : '');
             if (p3) p3.className = 'big-tab-panel' + (tabNum === 3 ? ' active' : '');
+            if (p4) p4.className = 'big-tab-panel' + (tabNum === 4 ? ' active' : '');
 
             const data = getFilteredBundleData();
-            if (data) {
-                if (tabNum === 1) {
-                    renderCharts(data);
-                } else if (tabNum === 2) {
-                    renderStorePriorityTable();
-                    renderMasterTable();
-                    renderValTable();
-                    renderQtyTable();
-                } else if (tabNum === 3) {
+            if (tabNum === 1) {
+                if (data) renderCharts(data);
+            } else if (tabNum === 2) {
+                renderStorePriorityTable();
+                renderMasterTable();
+                renderValTable();
+                renderQtyTable();
+            } else if (tabNum === 3) {
+                if (data) {
                     updateDCOverviewStats(data);
                     renderDCInsights(data);
                     renderDCCharts(data);
                     renderDCTable();
                 }
+            } else if (tabNum === 4) {
+                renderTelegramTab();
             }
         }
 
@@ -7290,6 +7628,447 @@
             }
             modal.classList.add('active');
         }
+    
+        // =========================================================================
+        // LOGIC & QUẢN LÝ TAB TELEGRAM SCM - GOM CỤM SIÊU THỊ & REALTIME
+        let teleCurrentMode = 'clusters'; // 'clusters', 'aba', 'krc', 'ic', 'dc', 'all'
+
+        function showToast(msg) {
+            let toast = document.getElementById('toastMsg');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toastMsg';
+                toast.className = 'toast-msg';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = msg;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+
+        function copyChatId(chatId, btnEl) {
+            if (!chatId) return;
+            navigator.clipboard.writeText(chatId).then(() => {
+                showToast(`✅ Đã sao chép Chat ID: <strong>${chatId}</strong>`);
+                if (btnEl) {
+                    const original = btnEl.innerHTML;
+                    btnEl.innerHTML = '<i class="fa-solid fa-check" style="color:#3fb950;"></i>';
+                    setTimeout(() => { btnEl.innerHTML = original; }, 1500);
+                }
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = chatId;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast(`✅ Đã sao chép Chat ID: <strong>${chatId}</strong>`);
+            });
+        }
+
+        function copyBothChatIds(abaId, krcId, btnEl) {
+            const ids = [abaId, krcId].filter(Boolean).join('\n');
+            if (!ids) {
+                showToast("⚠️ Siêu thị này chưa có Chat ID!");
+                return;
+            }
+            navigator.clipboard.writeText(ids).then(() => {
+                showToast(`✅ Đã sao chép <strong>cả 2 Chat ID (ABA & KRC)</strong> vào Clipboard!`);
+                if (btnEl) {
+                    const original = btnEl.innerHTML;
+                    btnEl.innerHTML = '<i class="fa-solid fa-check" style="color:#3fb950;"></i> Đã chép!';
+                    setTimeout(() => { btnEl.innerHTML = original; }, 1500);
+                }
+            });
+        }
+
+        function copyAllVisibleChatIds() {
+            const data = window.TELEGRAM_GROUPS_DATA;
+            if (!data) return;
+            let ids = [];
+            if (teleCurrentMode === 'clusters') {
+                const clusters = getFilteredClusters();
+                clusters.forEach(c => {
+                    c.aba_groups.forEach(g => ids.push(g.chat_id_str));
+                    c.krc_groups.forEach(g => ids.push(g.chat_id_str));
+                });
+            } else {
+                const groups = getFilteredDetailedGroups();
+                ids = groups.map(g => g.chat_id_str);
+            }
+            ids = [...new Set(ids.filter(Boolean))];
+            if (!ids.length) {
+                showToast("⚠️ Không có Chat ID nào đang hiển thị!");
+                return;
+            }
+            navigator.clipboard.writeText(ids.join('\n')).then(() => {
+                showToast(`✅ Đã sao chép <strong>${ids.length}</strong> Chat ID vào Clipboard!`);
+            });
+        }
+
+        function switchTeleViewMode(mode) {
+            teleCurrentMode = mode;
+            const pills = ['clusters', 'aba', 'krc', 'ic', 'dc', 'all'];
+            pills.forEach(p => {
+                const el = document.getElementById('telePill-' + p);
+                if (el) el.classList.remove('active');
+            });
+            document.getElementById('telePill-' + mode)?.classList.add('active');
+
+            filterTelegramData();
+        }
+
+        function getFilteredClusters() {
+            const rawClusters = window.TELEGRAM_GROUPS_DATA ? (window.TELEGRAM_GROUPS_DATA.clusters || []) : [];
+            const searchVal = (document.getElementById('teleSearchInput')?.value || '').trim().toLowerCase();
+
+            return rawClusters.filter(c => {
+                if (searchVal) {
+                    const matchCode = (c.store_code || '').toLowerCase().includes(searchVal);
+                    const matchName = (c.store_name || '').toLowerCase().includes(searchVal);
+                    const matchSnippet = (c.latest_message_snippet || '').toLowerCase().includes(searchVal);
+                    const matchAba = c.aba_groups.some(g => (g.title + g.chat_id_str).toLowerCase().includes(searchVal));
+                    const matchKrc = c.krc_groups.some(g => (g.title + g.chat_id_str).toLowerCase().includes(searchVal));
+                    if (!matchCode && !matchName && !matchSnippet && !matchAba && !matchKrc) return false;
+                }
+                return true;
+            });
+        }
+
+        function getFilteredDetailedGroups() {
+            const rawGroups = window.TELEGRAM_GROUPS_DATA ? (window.TELEGRAM_GROUPS_DATA.groups || []) : [];
+            const searchVal = (document.getElementById('teleSearchInput')?.value || '').trim().toLowerCase();
+
+            return rawGroups.filter(g => {
+                if (teleCurrentMode === 'aba' && g.group_type !== 'ABA - Đông Mát') return false;
+                if (teleCurrentMode === 'krc' && g.group_type !== 'KRC') return false;
+                if (teleCurrentMode === 'ic' && g.group_type !== 'Đối soát & IC') return false;
+                if (teleCurrentMode === 'dc' && g.group_type !== 'Kho DC & Logistics') return false;
+
+                if (searchVal) {
+                    const matchTitle = (g.title || '').toLowerCase().includes(searchVal);
+                    const matchStore = (g.store_code || '').toLowerCase().includes(searchVal);
+                    const matchStoreName = (g.store_name || '').toLowerCase().includes(searchVal);
+                    const matchChatId = (g.chat_id_str || '').includes(searchVal);
+                    const matchMsg = (g.last_message || '').toLowerCase().includes(searchVal);
+                    if (!matchTitle && !matchStore && !matchStoreName && !matchChatId && !matchMsg) return false;
+                }
+                return true;
+            });
+        }
+
+        function filterTelegramData() {
+            if (teleCurrentMode === 'clusters') {
+                const visible = getFilteredClusters();
+                document.getElementById('teleVisibleCount').innerText = visible.length;
+                renderClustersTable(visible);
+            } else {
+                const visible = getFilteredDetailedGroups();
+                document.getElementById('teleVisibleCount').innerText = visible.length;
+                renderDetailedGroupsTable(visible);
+            }
+        }
+
+        function renderClustersTable(clusters) {
+            const thead = document.getElementById('teleTableHead');
+            const tbody = document.getElementById('teleTableBody');
+            if (!thead || !tbody) return;
+
+            thead.innerHTML = `<tr>
+                <th style="width:45px; text-align:center;">#</th>
+                <th style="width:85px; text-align:center;">MÃ ST</th>
+                <th style="min-width:180px;">TÊN SIÊU THỊ</th>
+                <th style="min-width:260px;">NHÓM ABA - ĐÔNG MÁT</th>
+                <th style="min-width:260px;">NHÓM KRC</th>
+                <th style="min-width:180px;">HOẠT ĐỘNG REALTIME</th>
+                <th style="width:130px; text-align:center;">THAO TÁC</th>
+            </tr>`;
+
+            if (!clusters.length) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:2.5rem; color:var(--text-secondary);">
+                    <i class="fa-solid fa-inbox" style="font-size:2rem; margin-bottom:8px; opacity:0.5; display:block;"></i>
+                    Không tìm thấy Siêu thị nào phù hợp với bộ lọc tìm kiếm.
+                </td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = clusters.slice(0, 300).map((c, idx) => {
+                const storeBadge = `<span style="background:rgba(31,111,235,0.15); color:#58a6ff; border:1px solid rgba(31,111,235,0.4); padding:3px 8px; border-radius:4px; font-weight:800; font-size:0.78rem; cursor:pointer;" onclick="document.getElementById('teleSearchInput').value='${c.store_code}'; filterTelegramData();">${c.store_code}</span>`;
+
+                // Render ABA Groups Cell
+                let abaHtml = `<span style="color:var(--text-secondary); opacity:0.5; font-size:0.78rem;">(Chưa có nhóm)</span>`;
+                let firstAbaId = '';
+                if (c.aba_groups && c.aba_groups.length) {
+                    firstAbaId = c.aba_groups[0].chat_id_str;
+                    abaHtml = c.aba_groups.map(g => `
+                        <div style="margin-bottom:4px; padding-bottom:4px; border-bottom:1px dashed rgba(255,255,255,0.06);">
+                            <div style="font-weight:600; color:var(--text-primary); font-size:0.8rem; display:flex; align-items:center; justify-content:space-between; gap:6px;">
+                                <span><i class="fa-solid fa-snowflake" style="color:#229ED9; font-size:0.75rem; margin-right:4px;"></i>${g.title}</span>
+                                <a href="https://web.telegram.org/k/#${g.chat_id_str}" target="_blank" style="color:#229ED9; text-decoration:none; font-size:0.72rem; padding:1px 5px; background:rgba(34,158,217,0.1); border-radius:3px;">Mở</a>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
+                                <span class="tele-chatid-badge">
+                                    <span>${g.chat_id_str}</span>
+                                    <button class="tele-copy-btn" title="Copy ID" onclick="copyChatId('${g.chat_id_str}', this)"><i class="fa-regular fa-copy"></i></button>
+                                </span>
+                                ${g.last_date ? `<span style="font-size:0.7rem; color:var(--text-secondary); margin-left:auto;">${g.last_date}</span>` : ''}
+                            </div>
+                            ${g.last_message ? `<div style="font-size:0.72rem; color:var(--text-secondary); font-style:italic; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:240px;">💬 ${g.last_message}</div>` : ''}
+                        </div>
+                    `).join('');
+                }
+
+                // Render KRC Groups Cell
+                let krcHtml = `<span style="color:var(--text-secondary); opacity:0.5; font-size:0.78rem;">(Chưa có nhóm)</span>`;
+                let firstKrcId = '';
+                if (c.krc_groups && c.krc_groups.length) {
+                    firstKrcId = c.krc_groups[0].chat_id_str;
+                    krcHtml = c.krc_groups.map(g => `
+                        <div style="margin-bottom:4px; padding-bottom:4px; border-bottom:1px dashed rgba(255,255,255,0.06);">
+                            <div style="font-weight:600; color:var(--text-primary); font-size:0.8rem; display:flex; align-items:center; justify-content:space-between; gap:6px;">
+                                <span><i class="fa-solid fa-box-archive" style="color:#e3b341; font-size:0.75rem; margin-right:4px;"></i>${g.title}</span>
+                                <a href="https://web.telegram.org/k/#${g.chat_id_str}" target="_blank" style="color:#e3b341; text-decoration:none; font-size:0.72rem; padding:1px 5px; background:rgba(210,153,34,0.1); border-radius:3px;">Mở</a>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
+                                <span class="tele-chatid-badge">
+                                    <span>${g.chat_id_str}</span>
+                                    <button class="tele-copy-btn" title="Copy ID" onclick="copyChatId('${g.chat_id_str}', this)"><i class="fa-regular fa-copy"></i></button>
+                                </span>
+                                ${g.last_date ? `<span style="font-size:0.7rem; color:var(--text-secondary); margin-left:auto;">${g.last_date}</span>` : ''}
+                            </div>
+                            ${g.last_message ? `<div style="font-size:0.72rem; color:var(--text-secondary); font-style:italic; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:240px;">💬 ${g.last_message}</div>` : ''}
+                        </div>
+                    `).join('');
+                }
+
+                // Activity Cell
+                const activityHtml = c.last_activity_date ? `
+                    <div style="display:flex; flex-direction:column; gap:2px;">
+                        <div style="display:flex; align-items:center; gap:5px;">
+                            <span style="width:6px; height:6px; border-radius:50%; background:#238636; display:inline-block;"></span>
+                            <strong style="color:var(--text-primary); font-size:0.78rem;">${c.last_activity_date}</strong>
+                            ${c.unread_total > 0 ? `<span style="background:#f85149; color:#fff; padding:1px 5px; border-radius:8px; font-size:0.65rem; font-weight:700; margin-left:auto;">${c.unread_total} chưa đọc</span>` : ''}
+                        </div>
+                        <div style="font-size:0.72rem; color:var(--text-secondary); line-height:1.3; max-width:200px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+                            ${c.latest_message_snippet || '-'}
+                        </div>
+                    </div>
+                ` : `<span style="color:var(--text-secondary); opacity:0.4; font-size:0.75rem;">Chưa có hoạt động</span>`;
+
+                return `<tr>
+                    <td style="text-align:center; color:var(--text-secondary); font-size:0.75rem;">${idx + 1}</td>
+                    <td style="text-align:center;">${storeBadge}</td>
+                    <td>
+                        <div style="font-weight:700; color:var(--text-primary); font-size:0.83rem;">${c.store_name}</div>
+                        <div style="font-size:0.72rem; color:var(--text-secondary);">Mã: ${c.store_code}</div>
+                    </td>
+                    <td>${abaHtml}</td>
+                    <td>${krcHtml}</td>
+                    <td>${activityHtml}</td>
+                    <td style="text-align:center;">
+                        <button onclick="copyBothChatIds('${firstAbaId}', '${firstKrcId}', this)" style="display:inline-flex; align-items:center; gap:4px; padding:4px 8px; background:rgba(35,134,54,0.15); color:#3fb950; border:1px solid rgba(35,134,54,0.35); border-radius:4px; font-size:0.72rem; font-weight:600; cursor:pointer;" title="Copy cả Chat ID ABA & KRC để bắn tin">
+                            <i class="fa-solid fa-copy"></i> Chép 2 ID
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderDetailedGroupsTable(groups) {
+            const thead = document.getElementById('teleTableHead');
+            const tbody = document.getElementById('teleTableBody');
+            if (!thead || !tbody) return;
+
+            thead.innerHTML = `<tr>
+                <th style="width:45px; text-align:center;">#</th>
+                <th style="width:85px; text-align:center;">MÃ ST</th>
+                <th style="min-width:240px;">TÊN NHÓM TELEGRAM</th>
+                <th style="min-width:180px;">CHAT ID</th>
+                <th style="width:130px; text-align:center;">LOẠI NHÓM</th>
+                <th style="min-width:200px;">TIN MỚI NHẤT (REALTIME)</th>
+                <th style="width:90px; text-align:center;">THỜI GIAN</th>
+                <th style="width:75px; text-align:center;">CHƯA ĐỌC</th>
+                <th style="width:85px; text-align:center;">MỞ NHÓM</th>
+            </tr>`;
+
+            if (!groups.length) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:2.5rem; color:var(--text-secondary);">
+                    <i class="fa-solid fa-inbox" style="font-size:2rem; margin-bottom:8px; opacity:0.5; display:block;"></i>
+                    Không có nhóm nào trong phân loại này.
+                </td></tr>`;
+                return;
+            }
+
+            const getGroupTypeBadge = (t) => {
+                if (t === 'ABA - Đông Mát') return '<span class="tele-tag-cat tele-cat-scm"><i class="fa-solid fa-snowflake"></i> ABA Đông Mát</span>';
+                if (t === 'KRC') return '<span class="tele-tag-cat tele-cat-dc"><i class="fa-solid fa-box-archive"></i> KRC</span>';
+                if (t === 'Đối soát & IC') return '<span class="tele-tag-cat tele-cat-ic"><i class="fa-solid fa-scale-balanced"></i> Đối soát IC</span>';
+                if (t === 'Kho DC & Logistics') return '<span class="tele-tag-cat tele-cat-dc">Kho DC</span>';
+                return '<span class="tele-tag-cat tele-cat-khac">Khác</span>';
+            };
+
+            tbody.innerHTML = groups.slice(0, 300).map((g, idx) => {
+                const storeBadge = g.store_code 
+                    ? `<span style="background:rgba(31,111,235,0.15); color:#58a6ff; border:1px solid rgba(31,111,235,0.4); padding:2px 7px; border-radius:4px; font-weight:700; font-size:0.75rem; cursor:pointer;" onclick="document.getElementById('teleSearchInput').value='${g.store_code}'; filterTelegramData();">${g.store_code}</span>`
+                    : `<span style="color:var(--text-secondary); opacity:0.4;">-</span>`;
+
+                const msgSnippet = g.last_message 
+                    ? `<span style="color:var(--text-primary); font-size:0.75rem;">${g.last_message}</span>`
+                    : `<span style="color:var(--text-secondary); opacity:0.4; font-size:0.75rem;">-</span>`;
+
+                const openBtn = `<a href="https://web.telegram.org/k/#${g.chat_id_str}" target="_blank" style="display:inline-flex; align-items:center; gap:4px; padding:3px 8px; background:rgba(34,158,217,0.15); color:#229ED9; border:1px solid rgba(34,158,217,0.35); border-radius:4px; font-size:0.75rem; text-decoration:none;"><i class="fa-brands fa-telegram"></i> Mở</a>`;
+
+                return `<tr>
+                    <td style="text-align:center; color:var(--text-secondary); font-size:0.75rem;">${idx + 1}</td>
+                    <td style="text-align:center;">${storeBadge}</td>
+                    <td>
+                        <div style="font-weight:600; color:var(--text-primary);">${g.title}</div>
+                        ${g.store_name ? `<div style="font-size:0.72rem; color:var(--text-secondary);">${g.store_name}</div>` : ''}
+                    </td>
+                    <td>
+                        <span class="tele-chatid-badge">
+                            <span>${g.chat_id_str}</span>
+                            <button class="tele-copy-btn" title="Copy Chat ID" onclick="copyChatId('${g.chat_id_str}', this)"><i class="fa-regular fa-copy"></i></button>
+                        </span>
+                    </td>
+                    <td style="text-align:center;">${getGroupTypeBadge(g.group_type)}</td>
+                    <td>${msgSnippet}</td>
+                    <td style="text-align:center; font-size:0.75rem; color:var(--text-secondary);">${g.last_date || '-'}</td>
+                    <td style="text-align:center;">${g.unread > 0 ? `<span style="background:#f85149; color:#fff; padding:1px 6px; border-radius:10px; font-size:0.7rem; font-weight:700;">${g.unread}</span>` : `<span style="color:var(--text-secondary); opacity:0.4;">0</span>`}</td>
+                    <td style="text-align:center;">${openBtn}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function refreshTelegramRealtime(btnEl) {
+            if (btnEl) {
+                btnEl.disabled = true;
+                btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đồng bộ...';
+            }
+            const scriptUrl = 'daily_details/telegram_groups.js?t=' + new Date().getTime();
+            const s = document.createElement('script');
+            s.src = scriptUrl;
+            s.onload = () => {
+                showToast("⚡ Đã cập nhật dữ liệu Realtime mới nhất từ Telegram!");
+                if (btnEl) {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
+                }
+                renderTelegramTab();
+            };
+            s.onerror = () => {
+                showToast("⚠️ Không thể kết nối mạng để làm mới!");
+                if (btnEl) {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
+                }
+            };
+            document.head.appendChild(s);
+        }
+
+        function exportTelegramToExcel() {
+            const data = window.TELEGRAM_GROUPS_DATA;
+            if (!data) return;
+
+            const dateStr = new Date().toISOString().slice(0,10);
+            const wb = XLSX.utils.book_new();
+
+            if (teleCurrentMode === 'clusters') {
+                const clusters = getFilteredClusters();
+                const rows = clusters.map((c, idx) => ({
+                    "STT": idx + 1,
+                    "Mã Siêu Thị": c.store_code,
+                    "Tên Siêu Thị": c.store_name,
+                    "Nhóm ABA - Đông Mát": c.aba_groups.map(g => g.title).join(' | '),
+                    "Chat ID ABA": c.aba_groups.map(g => g.chat_id_str).join(' | '),
+                    "Nhóm KRC": c.krc_groups.map(g => g.title).join(' | '),
+                    "Chat ID KRC": c.krc_groups.map(g => g.chat_id_str).join(' | '),
+                    "Hoạt Động Gần Nhất": c.last_activity_date,
+                    "Tin Nhắn Mới Nhất": c.latest_message_snippet,
+                    "Tin Chưa Đọc": c.unread_total
+                }));
+                const ws = XLSX.utils.json_to_sheet(rows);
+                XLSX.utils.book_append_sheet(wb, ws, "Gom_Cum_Sieu_Thi");
+                XLSX.writeFile(wb, `Gom_Cum_Nhom_Telegram_SCM_${dateStr}.xlsx`);
+            } else {
+                const groups = getFilteredDetailedGroups();
+                const rows = groups.map((g, idx) => ({
+                    "STT": idx + 1,
+                    "Mã Siêu Thị": g.store_code,
+                    "Tên Siêu Thị": g.store_name,
+                    "Tên Group Telegram": g.title,
+                    "Loại Nhóm": g.group_type,
+                    "Chat ID": g.chat_id_str,
+                    "Tin Nhắn Mới": g.last_message,
+                    "Thời Gian": g.last_date,
+                    "Tin Chưa Đọc": g.unread
+                }));
+                const ws = XLSX.utils.json_to_sheet(rows);
+                XLSX.utils.book_append_sheet(wb, ws, "Nhom_Telegram_Chi_Tiet");
+                XLSX.writeFile(wb, `Danh_Sach_Nhom_Telegram_${teleCurrentMode.toUpperCase()}_${dateStr}.xlsx`);
+            }
+            showToast("📥 Đã xuất file Excel thành công!");
+        }
+
+        function renderTelegramTab() {
+            if (!window.TELEGRAM_GROUPS_DATA) {
+                fetch('daily_details/telegram_groups.js')
+                    .then(res => res.text())
+                    .then(code => {
+                        eval(code);
+                        renderTelegramTab();
+                    })
+                    .catch(e => console.error("Lỗi tải telegram_groups.js:", e));
+                return;
+            }
+
+            const data = window.TELEGRAM_GROUPS_DATA;
+            const summary = data.summary || {};
+            const account = summary.account || {};
+
+            if (account.name) document.getElementById('teleAccountName').innerText = account.name;
+            if (account.phone) document.getElementById('teleAccountPhone').innerText = account.phone;
+
+            if (summary.total_clusters) {
+                document.getElementById('statTeleClusters').innerText = summary.total_clusters;
+                document.getElementById('pillCount-clusters').innerText = summary.total_clusters;
+            }
+            if (summary.aba_count) {
+                document.getElementById('statTeleABA').innerText = summary.aba_count;
+                document.getElementById('pillCount-aba').innerText = summary.aba_count;
+            }
+            if (summary.krc_count) {
+                document.getElementById('statTeleKRC').innerText = summary.krc_count;
+                document.getElementById('pillCount-krc').innerText = summary.krc_count;
+            }
+            if (summary.ic_count) {
+                document.getElementById('statTeleIC').innerText = summary.ic_count;
+                document.getElementById('pillCount-ic').innerText = summary.ic_count;
+            }
+            if (summary.dc_count) {
+                document.getElementById('pillCount-dc').innerText = summary.dc_count;
+            }
+            if (summary.total_groups) {
+                document.getElementById('pillCount-all').innerText = summary.total_groups;
+            }
+
+            // Update Realtime Ticker
+            const ticker = data.ticker || [];
+            if (ticker.length) {
+                const tickerHtml = ticker.slice(0, 8).map(t => {
+                    const tag = t.store_code ? `[ST ${t.store_code}]` : `[${t.group_title}]`;
+                    return `<span style="display:inline-block; margin-right:24px;"><strong>${tag}</strong> <span style="color:#a5d6ff;">${t.snippet}</span> <em style="color:var(--text-secondary); font-size:0.72rem;">(${t.time})</em></span>`;
+                }).join(' • ');
+                document.getElementById('teleRealtimeTicker').innerHTML = tickerHtml;
+            }
+
+            if (account.synced_at) {
+                document.getElementById('teleLastSyncTime').innerText = 'Đồng bộ lúc ' + account.synced_at;
+            }
+
+            filterTelegramData();
+        }
+
     </script>
 </body>
 </html>
