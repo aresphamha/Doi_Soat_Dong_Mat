@@ -383,6 +383,7 @@ def export_all(groups_data, account_info, store_clusters):
         "ic_count": sum(1 for g in groups_data if g["group_type"] == "Đối soát & IC"),
         "dc_count": sum(1 for g in groups_data if g["group_type"] == "Kho DC & Logistics"),
         "internal_count": sum(1 for g in groups_data if g["group_type"] == "Nội bộ SCM"),
+        "chat_id_count": sum(1 for g in groups_data if "chat id" in g["group_type"].lower() or "chat id" in g["title"].lower()),
         "other_count": sum(1 for g in groups_data if g["group_type"] not in ["ABA - Đông Mát", "KRC", "Đối soát & IC", "Kho DC & Logistics", "Nội bộ SCM"])
     }
 

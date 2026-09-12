@@ -2472,6 +2472,27 @@
         .tele-row-clickable:hover {
             background: rgba(34, 158, 217, 0.08) !important;
         }
+
+        .tele-excel-chip-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e6edf3;
+            font-size: 0.74rem;
+            font-weight: 600;
+            padding: 4px 11px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+        .tele-excel-chip-btn:hover {
+            background: rgba(35, 134, 54, 0.25);
+            border-color: #3fb950;
+            color: #fff;
+            transform: translateY(-1px);
+        }
 </style>
     <script src="daily_details/telegram_groups.js"></script>
 </head>
@@ -3556,10 +3577,41 @@
                         <button class="tele-pill-btn" id="telePill-internal" onclick="switchTeleViewMode('internal')">
                             💼 Nội Bộ SCM (<span id="pillCount-internal">11</span>)
                         </button>
+                        <button class="tele-pill-btn" id="telePill-chatid" onclick="switchTeleViewMode('chatid')" style="border-color:rgba(235,87,87,0.5); color:#ff7b72;">
+                            🆔 Nhóm Chat ID (<span id="pillCount-chatid">0</span>)
+                        </button>
 
                         <div style="margin-left:auto; font-size:0.78rem; color:var(--text-secondary);">
                             Đang hiển thị: <strong style="color:#58a6ff;" id="teleVisibleCount">573</strong> nhóm
                         </div>
+                    </div>
+
+                    <!-- DÒNG XUẤT FILE EXCEL CHAT ID THEO PHÂN LOẠI (HÌNH 3) -->
+                    <div class="tele-excel-bar" style="display:flex; flex-wrap:wrap; gap:0.45rem; align-items:center; margin-top:0.65rem; padding:0.55rem 0.85rem; background:rgba(35,134,54,0.08); border:1px dashed rgba(35,134,54,0.35); border-radius:8px;">
+                        <span style="font-size:0.75rem; color:#3fb950; font-weight:700; display:inline-flex; align-items:center; gap:5px; margin-right:6px;">
+                            <i class="fa-solid fa-file-excel"></i> Xuất File Chat ID:
+                        </span>
+                        <button class="tele-excel-chip-btn" onclick="exportChatIdExcelByCategory('all')" title="Xuất toàn bộ Chat ID ra Excel">
+                            <i class="fa-solid fa-download"></i> Toàn Bộ Chat ID (573)
+                        </button>
+                        <button class="tele-excel-chip-btn" onclick="exportChatIdExcelByCategory('aba')" title="Xuất Chat ID nhóm ABA ra Excel">
+                            <i class="fa-solid fa-snowflake" style="color:#79c0ff;"></i> Chat ID ABA (200)
+                        </button>
+                        <button class="tele-excel-chip-btn" onclick="exportChatIdExcelByCategory('krc')" title="Xuất Chat ID nhóm KRC ra Excel">
+                            <i class="fa-solid fa-box-open" style="color:#e3b341;"></i> Chat ID KRC (210)
+                        </button>
+                        <button class="tele-excel-chip-btn" onclick="exportChatIdExcelByCategory('ic')" title="Xuất Chat ID nhóm Đối Soát & IC ra Excel">
+                            <i class="fa-solid fa-scale-balanced" style="color:#bc8cff;"></i> Chat ID IC (8)
+                        </button>
+                        <button class="tele-excel-chip-btn" onclick="exportChatIdExcelByCategory('dc')" title="Xuất Chat ID nhóm Kho DC ra Excel">
+                            <i class="fa-solid fa-truck-moving" style="color:#f0883e;"></i> Chat ID Kho DC (105)
+                        </button>
+                        <button class="tele-excel-chip-btn" onclick="exportChatIdExcelByCategory('internal')" title="Xuất Chat ID nhóm Nội Bộ SCM ra Excel">
+                            <i class="fa-solid fa-briefcase" style="color:#a5d6ff;"></i> Chat ID Nội Bộ (11)
+                        </button>
+                        <button class="tele-excel-chip-btn" onclick="exportChatIdExcelByCategory('chatid')" title="Xuất Chat ID nhóm CHAT ID ra Excel" style="border-color:rgba(235,87,87,0.4); color:#ff7b72;">
+                            <i class="fa-solid fa-id-badge"></i> Nhóm Chat ID
+                        </button>
                     </div>
                 </div>
 
@@ -7993,7 +8045,7 @@
 
         function switchTeleViewMode(mode) {
             teleCurrentMode = mode;
-            const pills = ['all', 'aba', 'krc', 'ic', 'dc', 'internal'];
+            const pills = ['all', 'aba', 'krc', 'ic', 'dc', 'internal', 'chatid'];
             pills.forEach(p => {
                 const el = document.getElementById('telePill-' + p);
                 if (el) el.classList.remove('active');
@@ -8019,6 +8071,7 @@
                 if (teleCurrentMode === 'ic' && !t_low.includes('đối soát') && !/\bic\b/i.test(t)) return false;
                 if (teleCurrentMode === 'dc' && !t_low.includes('kho dc') && !t_low.includes('logistics')) return false;
                 if (teleCurrentMode === 'internal' && !t_low.includes('nội bộ')) return false;
+                if (teleCurrentMode === 'chatid' && !(t_low.includes('chat id') || t_low.includes('chat_id') || g.title?.toLowerCase().includes('chat id'))) return false;
 
                 if (!query) return true;
                 const sCode = (g.store_code || '').toLowerCase();
@@ -8143,6 +8196,80 @@
             document.head.appendChild(s);
         }
 
+        
+        function exportChatIdExcelByCategory(cat) {
+            const data = window.TELEGRAM_GROUPS_DATA;
+            if (!data) {
+                showToast("⚠️ Chưa tải xong dữ liệu nhóm Telegram!");
+                return;
+            }
+            const allGroups = data.groups || data.all_groups || [];
+            let filtered = [];
+
+            allGroups.forEach(g => {
+                const t = g.group_type || '';
+                const t_low = t.toLowerCase();
+                if (cat === 'aba' && !(t_low.includes('aba') || t_low.includes('đông mát'))) return;
+                if (cat === 'krc' && !t_low.includes('krc')) return;
+                if (cat === 'ic' && !(t_low.includes('đối soát') || /\bic\b/i.test(t))) return;
+                if (cat === 'dc' && !(t_low.includes('kho dc') || t_low.includes('logistics'))) return;
+                if (cat === 'internal' && !t_low.includes('nội bộ')) return;
+                if (cat === 'chatid' && !(t_low.includes('chat id') || t_low.includes('chat_id') || g.title?.toLowerCase().includes('chat id'))) return;
+                filtered.push(g);
+            });
+
+            if (!filtered.length) {
+                showToast(`⚠️ Chưa có nhóm nào thuộc phân loại [${cat.toUpperCase()}]!`);
+                return;
+            }
+
+            const dateStr = new Date().toISOString().slice(0,10);
+            const wb = XLSX.utils.book_new();
+
+            const rows = filtered.map((g, idx) => ({
+                "STT": idx + 1,
+                "Mã Siêu Thị": g.store_code || "-",
+                "Tên Siêu Thị": g.store_name || "-",
+                "Tên Nhóm Telegram": g.title,
+                "Chat ID Telegram": g.chat_id_str,
+                "Phân Loại Nhóm": g.group_type,
+                "Tin Nhắn Gần Nhất": g.last_message || "-",
+                "Thời Gian Hoạt Động": g.last_date || "-",
+                "Số Tin Chưa Đọc": g.unread || 0,
+                "Link Mở Nhóm Web": g.chat_id_str ? `https://web.telegram.org/k/#${g.chat_id_str}` : ""
+            }));
+
+            const catLabels = {
+                'all': 'Tat_Ca_Nhom',
+                'aba': 'ABA_Dong_Mat',
+                'krc': 'KRC_Sieu_Thi',
+                'ic': 'Doi_Soat_IC',
+                'dc': 'Kho_DC_Logistics',
+                'internal': 'Noi_Bo_SCM',
+                'chatid': 'Nhom_Chat_ID'
+            };
+
+            const sheetName = catLabels[cat] || 'Chat_ID';
+            const ws = XLSX.utils.json_to_sheet(rows);
+
+            ws['!cols'] = [
+                { wch: 6 },
+                { wch: 12 },
+                { wch: 32 },
+                { wch: 42 },
+                { wch: 20 },
+                { wch: 22 },
+                { wch: 45 },
+                { wch: 18 },
+                { wch: 15 },
+                { wch: 45 }
+            ];
+
+            XLSX.utils.book_append_sheet(wb, ws, sheetName);
+            XLSX.writeFile(wb, `Danh_Sach_Chat_ID_${sheetName}_${dateStr}.xlsx`);
+            showToast(`📥 Đã xuất thành công ${filtered.length} Chat ID ra file Excel!`);
+        }
+
         function exportTelegramToExcel() {
             const data = window.TELEGRAM_GROUPS_DATA;
             if (!data) return;
@@ -8256,6 +8383,7 @@
         window.setTeleFilterStore = setTeleFilterStore;
         window.refreshTelegramRealtime = refreshTelegramRealtime;
         window.exportTelegramToExcel = exportTelegramToExcel;
+        window.exportChatIdExcelByCategory = exportChatIdExcelByCategory;
         window.openTelegramChat = openTelegramChat;
         window.closeTelegramChat = closeTelegramChat;
         window.sendTelegramChatReply = sendTelegramChatReply;
