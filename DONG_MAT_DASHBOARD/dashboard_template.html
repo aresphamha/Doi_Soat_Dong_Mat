@@ -3568,7 +3568,17 @@
                     <div class="table-responsive" style="max-height:720px; overflow-y:auto;">
                         <table class="styled-table" id="teleMainTable">
                             <thead style="position:sticky; top:0; z-index:10; background:var(--bg-card);" id="teleTableHead">
-                                <!-- Rendered dynamically based on view mode -->
+                                <tr>
+                                    <th style="width:45px; text-align:center;">#</th>
+                                    <th style="width:75px; text-align:center;">MÃ ST</th>
+                                    <th style="min-width:240px;">TÊN NHÓM TELEGRAM</th>
+                                    <th style="width:165px;">CHAT ID</th>
+                                    <th style="width:130px; text-align:center;">LOẠI NHÓM</th>
+                                    <th style="min-width:280px;">TIN MỚI NHẤT (REALTIME)</th>
+                                    <th style="width:125px; text-align:center;">THỜI GIAN</th>
+                                    <th style="width:80px; text-align:center;">CHƯA ĐỌC</th>
+                                    <th style="width:135px; text-align:center;">THAO TÁC</th>
+                                </tr>
                             </thead>
                             <tbody id="teleTableBody">
                                 <!-- Dynamic rows rendered via JS -->
@@ -7996,15 +8006,19 @@
 
         function getFilteredDetailedGroups() {
             const data = window.TELEGRAM_GROUPS_DATA;
-            if (!data || !data.all_groups) return [];
+            if (!data) return [];
+            const allGroups = data.groups || data.all_groups || [];
             const query = (document.getElementById('teleSearchInput')?.value || '').trim().toLowerCase();
 
-            return data.all_groups.filter(g => {
-                if (teleCurrentMode === 'aba' && g.group_type !== 'ABA - Đông Mát') return false;
-                if (teleCurrentMode === 'krc' && g.group_type !== 'KRC Siêu Thị') return false;
-                if (teleCurrentMode === 'ic' && g.group_type !== 'Đối Soát & IC') return false;
-                if (teleCurrentMode === 'dc' && g.group_type !== 'Kho DC & Logistics') return false;
-                if (teleCurrentMode === 'internal' && g.group_type !== 'Nội bộ SCM') return false;
+            return allGroups.filter(g => {
+                const t = g.group_type || '';
+                const t_low = t.toLowerCase();
+
+                if (teleCurrentMode === 'aba' && !t_low.includes('aba') && !t_low.includes('đông mát')) return false;
+                if (teleCurrentMode === 'krc' && !t_low.includes('krc')) return false;
+                if (teleCurrentMode === 'ic' && !t_low.includes('đối soát') && !/\bic\b/i.test(t)) return false;
+                if (teleCurrentMode === 'dc' && !t_low.includes('kho dc') && !t_low.includes('logistics')) return false;
+                if (teleCurrentMode === 'internal' && !t_low.includes('nội bộ')) return false;
 
                 if (!query) return true;
                 const sCode = (g.store_code || '').toLowerCase();
@@ -8033,8 +8047,28 @@
         }
 
         function renderDetailedGroupsTable(groups) {
-            const tbody = document.getElementById('teleDetailTableBody');
-            if (!tbody) return;
+            const thead = document.getElementById('teleTableHead');
+            if (thead && !thead.innerHTML.trim()) {
+                thead.innerHTML = `
+                    <tr>
+                        <th style="width:45px; text-align:center;">#</th>
+                        <th style="width:75px; text-align:center;">MÃ ST</th>
+                        <th style="min-width:240px;">TÊN NHÓM TELEGRAM</th>
+                        <th style="width:165px;">CHAT ID</th>
+                        <th style="width:130px; text-align:center;">LOẠI NHÓM</th>
+                        <th style="min-width:280px;">TIN MỚI NHẤT (REALTIME)</th>
+                        <th style="width:125px; text-align:center;">THỜI GIAN</th>
+                        <th style="width:80px; text-align:center;">CHƯA ĐỌC</th>
+                        <th style="width:135px; text-align:center;">THAO TÁC</th>
+                    </tr>
+                `;
+            }
+
+            const tbody = document.getElementById('teleTableBody') || document.getElementById('teleDetailTableBody');
+            if (!tbody) {
+                console.error("Không tìm thấy tbody teleTableBody");
+                return;
+            }
 
             if (!groups.length) {
                 tbody.innerHTML = '<tr><td colspan="9" class="text-center" style="padding:2.5rem; color:var(--text-secondary);">🔍 Không tìm thấy nhóm Telegram nào phù hợp</td></tr>';
@@ -8279,7 +8313,8 @@
             if (!chatIdStr) return;
             window.CURRENT_CHAT_ID = chatIdStr;
             const data = window.TELEGRAM_GROUPS_DATA;
-            const group = data?.all_groups?.find(g => g.chat_id_str === chatIdStr) || { title: `Nhóm ${chatIdStr}`, chat_id_str: chatIdStr };
+            const allGroups = data?.groups || data?.all_groups || [];
+            const group = allGroups.find(g => g.chat_id_str === chatIdStr) || { title: `Nhóm ${chatIdStr}`, chat_id_str: chatIdStr };
             window.CURRENT_GROUP_DATA = group;
 
             // Update drawer header
