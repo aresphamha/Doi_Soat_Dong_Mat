@@ -7631,8 +7631,8 @@
         }
     
         // =========================================================================
-        // LOGIC & QUẢN LÝ TAB TELEGRAM SCM - GOM CỤM SIÊU THỊ & REALTIME
-        let teleCurrentMode = 'all'; // 'clusters', 'aba', 'krc', 'ic', 'dc', 'all'
+        // LOGIC & QUẢN LÝ TAB TELEGRAM SCM - DANH SÁCH NHÓM TRỰC TIẾP & REALTIME
+        let teleCurrentMode = 'all'; // 'all', 'aba', 'krc', 'ic', 'dc', 'internal'
 
         function showToast(msg) {
             let toast = document.getElementById('toastMsg');
@@ -7667,22 +7667,6 @@
             });
         }
 
-        function copyBothChatIds(abaId, krcId, btnEl) {
-            const ids = [abaId, krcId].filter(Boolean).join('\n');
-            if (!ids) {
-                showToast("⚠️ Siêu thị này chưa có Chat ID!");
-                return;
-            }
-            navigator.clipboard.writeText(ids).then(() => {
-                showToast(`✅ Đã sao chép <strong>cả 2 Chat ID (ABA & KRC)</strong> vào Clipboard!`);
-                if (btnEl) {
-                    const original = btnEl.innerHTML;
-                    btnEl.innerHTML = '<i class="fa-solid fa-check" style="color:#3fb950;"></i> Đã chép!';
-                    setTimeout(() => { btnEl.innerHTML = original; }, 1500);
-                }
-            });
-        }
-
         function copyAllVisibleChatIds() {
             const data = window.TELEGRAM_GROUPS_DATA;
             if (!data) return;
@@ -7699,4 +7683,241 @@
             });
         }
 
-        >
+        function switchTeleViewMode(mode) {
+            teleCurrentMode = mode;
+            const pills = ['all', 'aba', 'krc', 'ic', 'dc', 'internal'];
+            pills.forEach(p => {
+                const el = document.getElementById('telePill-' + p);
+                if (el) el.classList.remove('active');
+            });
+            const activePill = document.getElementById('telePill-' + mode);
+            if (activePill) activePill.classList.add('active');
+
+            filterTelegramData();
+        }
+
+        function getFilteredDetailedGroups() {
+            const data = window.TELEGRAM_GROUPS_DATA;
+            if (!data || !data.all_groups) return [];
+            const query = (document.getElementById('teleSearchInput')?.value || '').trim().toLowerCase();
+
+            return data.all_groups.filter(g => {
+                if (teleCurrentMode === 'aba' && g.group_type !== 'ABA - Đông Mát') return false;
+                if (teleCurrentMode === 'krc' && g.group_type !== 'KRC Siêu Thị') return false;
+                if (teleCurrentMode === 'ic' && g.group_type !== 'Đối Soát & IC') return false;
+                if (teleCurrentMode === 'dc' && g.group_type !== 'Kho DC & Logistics') return false;
+                if (teleCurrentMode === 'internal' && g.group_type !== 'Nội bộ SCM') return false;
+
+                if (!query) return true;
+                const sCode = (g.store_code || '').toLowerCase();
+                const sName = (g.store_name || '').toLowerCase();
+                const title = (g.title || '').toLowerCase();
+                const chatId = (g.chat_id_str || '').toLowerCase();
+                const lastMsg = (g.last_message || '').toLowerCase();
+                return sCode.includes(query) || sName.includes(query) || title.includes(query) || chatId.includes(query) || lastMsg.includes(query);
+            });
+        }
+
+        function getGroupTypeBadge(type) {
+            if (type === 'ABA - Đông Mát') return '<span class="tele-type-badge tele-type-aba"><i class="fa-regular fa-snowflake"></i> ABA Đông Mát</span>';
+            if (type === 'KRC Siêu Thị') return '<span class="tele-type-badge tele-type-krc"><i class="fa-solid fa-box-open"></i> KRC Siêu Thị</span>';
+            if (type === 'Đối Soát & IC') return '<span class="tele-type-badge tele-type-ic"><i class="fa-solid fa-scale-balanced"></i> Đối Soát & IC</span>';
+            if (type === 'Kho DC & Logistics') return '<span class="tele-type-badge tele-type-dc"><i class="fa-solid fa-truck-moving"></i> Kho DC</span>';
+            return '<span class="tele-type-badge tele-type-internal"><i class="fa-solid fa-briefcase"></i> Nội bộ SCM</span>';
+        }
+
+        function setTeleFilterStore(code) {
+            const input = document.getElementById('teleSearchInput');
+            if (input) {
+                input.value = code;
+                filterTelegramData();
+            }
+        }
+
+        function renderDetailedGroupsTable(groups) {
+            const tbody = document.getElementById('teleDetailTableBody');
+            if (!tbody) return;
+
+            if (!groups.length) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center" style="padding:2.5rem; color:var(--text-secondary);">🔍 Không tìm thấy nhóm Telegram nào phù hợp</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = groups.map((g, idx) => {
+                const storeBadge = g.store_code ? `<span class="tele-store-code" onclick="setTeleFilterStore('${g.store_code}')" title="Lọc theo ${g.store_code}">${g.store_code}</span>` : '<span style="color:var(--text-secondary); font-size:0.75rem;">-</span>';
+                const msgSnippet = g.last_message ? `<div class="tele-msg-snippet" title="${g.last_message.replace(/"/g, '&quot;')}"><i class="fa-solid fa-comment-dots" style="opacity:0.6; margin-right:4px;"></i>${g.last_message}</div>` : '<span style="color:var(--text-secondary); font-size:0.75rem; font-style:italic;">Chưa có tin nhắn</span>';
+                
+                const openBtn = g.chat_id_str ? `<a href="https://web.telegram.org/k/#${g.chat_id_str}" target="_blank" class="tele-action-btn" title="Mở trong Telegram Web"><i class="fa-brands fa-telegram"></i> Mở</a>` : '';
+
+                return `<tr>
+                    <td style="text-align:center; color:var(--text-secondary); font-size:0.75rem;">${idx + 1}</td>
+                    <td style="text-align:center;">${storeBadge}</td>
+                    <td>
+                        <div style="font-weight:600; color:var(--text-primary);">${g.title}</div>
+                        ${g.store_name ? `<div style="font-size:0.72rem; color:var(--text-secondary);">${g.store_name}</div>` : ''}
+                    </td>
+                    <td>
+                        <span class="tele-chatid-badge">
+                            <span>${g.chat_id_str}</span>
+                            <button class="tele-copy-btn" title="Copy Chat ID" onclick="copyChatId('${g.chat_id_str}', this)"><i class="fa-regular fa-copy"></i></button>
+                        </span>
+                    </td>
+                    <td style="text-align:center;">${getGroupTypeBadge(g.group_type)}</td>
+                    <td>${msgSnippet}</td>
+                    <td style="text-align:center; font-size:0.75rem; color:var(--text-secondary);">${g.last_date || '-'}</td>
+                    <td style="text-align:center;">${g.unread > 0 ? `<span style="background:#f85149; color:#fff; padding:1px 6px; border-radius:10px; font-size:0.7rem; font-weight:700;">${g.unread}</span>` : `<span style="color:var(--text-secondary); opacity:0.4;">0</span>`}</td>
+                    <td style="text-align:center;">${openBtn}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function filterTelegramData() {
+            const visible = getFilteredDetailedGroups();
+            const countEl = document.getElementById('teleVisibleCount');
+            if (countEl) countEl.innerText = visible.length;
+            renderDetailedGroupsTable(visible);
+        }
+
+        function refreshTelegramRealtime(btnEl) {
+            if (btnEl) {
+                btnEl.disabled = true;
+                btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đồng bộ...';
+            }
+            const scriptUrl = 'daily_details/telegram_groups.js?t=' + new Date().getTime();
+            const s = document.createElement('script');
+            s.src = scriptUrl;
+            s.onload = () => {
+                showToast("⚡ Đã cập nhật dữ liệu Realtime mới nhất từ Telegram!");
+                if (btnEl) {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
+                }
+                renderTelegramTab();
+            };
+            s.onerror = () => {
+                showToast("⚠️ Không thể kết nối mạng để làm mới!");
+                if (btnEl) {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
+                }
+            };
+            document.head.appendChild(s);
+        }
+
+        function exportTelegramToExcel() {
+            const data = window.TELEGRAM_GROUPS_DATA;
+            if (!data) return;
+
+            const dateStr = new Date().toISOString().slice(0,10);
+            const wb = XLSX.utils.book_new();
+
+            const groups = getFilteredDetailedGroups();
+            const rows = groups.map((g, idx) => ({
+                "STT": idx + 1,
+                "Mã Siêu Thị": g.store_code || "-",
+                "Tên Siêu Thị": g.store_name || "-",
+                "Tên Group Telegram": g.title,
+                "Loại Nhóm": g.group_type,
+                "Chat ID": g.chat_id_str,
+                "Tin Nhắn Mới Nhất": g.last_message || "-",
+                "Thời Gian Hoạt Động": g.last_date || "-",
+                "Tin Chưa Đọc": g.unread || 0
+            }));
+            const ws = XLSX.utils.json_to_sheet(rows);
+            XLSX.utils.book_append_sheet(wb, ws, "Danh_Sach_Nhom_Telegram");
+            XLSX.writeFile(wb, `Danh_Sach_Nhom_Telegram_${teleCurrentMode.toUpperCase()}_${dateStr}.xlsx`);
+            showToast("📥 Đã xuất file Excel thành công!");
+        }
+
+        function renderTelegramTab() {
+            if (!window.TELEGRAM_GROUPS_DATA) {
+                fetch('daily_details/telegram_groups.js')
+                    .then(res => res.text())
+                    .then(code => {
+                        eval(code);
+                        renderTelegramTab();
+                    })
+                    .catch(e => console.error("Lỗi tải telegram_groups.js:", e));
+                return;
+            }
+
+            const data = window.TELEGRAM_GROUPS_DATA;
+            const summary = data.summary || {};
+            const account = summary.account || {};
+
+            if (account.name) {
+                const el = document.getElementById('teleAccountName');
+                if (el) el.innerText = account.name;
+            }
+            if (account.phone) {
+                const el = document.getElementById('teleAccountPhone');
+                if (el) el.innerText = account.phone;
+            }
+
+            if (summary.total_groups) {
+                const statTot = document.getElementById('statTeleTotal');
+                if (statTot) statTot.innerText = summary.total_groups;
+                const pillTot = document.getElementById('pillCount-all');
+                if (pillTot) pillTot.innerText = summary.total_groups;
+            }
+            if (summary.aba_count) {
+                const statABA = document.getElementById('statTeleABA');
+                if (statABA) statABA.innerText = summary.aba_count;
+                const pillABA = document.getElementById('pillCount-aba');
+                if (pillABA) pillABA.innerText = summary.aba_count;
+            }
+            if (summary.krc_count) {
+                const statKRC = document.getElementById('statTeleKRC');
+                if (statKRC) statKRC.innerText = summary.krc_count;
+                const pillKRC = document.getElementById('pillCount-krc');
+                if (pillKRC) pillKRC.innerText = summary.krc_count;
+            }
+            if (summary.ic_count) {
+                const statIC = document.getElementById('statTeleIC');
+                if (statIC) statIC.innerText = summary.ic_count;
+                const pillIC = document.getElementById('pillCount-ic');
+                if (pillIC) pillIC.innerText = summary.ic_count;
+            }
+            if (summary.dc_count) {
+                const pillDC = document.getElementById('pillCount-dc');
+                if (pillDC) pillDC.innerText = summary.dc_count;
+            }
+            if (summary.internal_count) {
+                const pillInt = document.getElementById('pillCount-internal');
+                if (pillInt) pillInt.innerText = summary.internal_count;
+            }
+
+            // Update Realtime Ticker
+            const ticker = data.ticker || [];
+            if (ticker.length) {
+                const tickerHtml = ticker.slice(0, 8).map(t => {
+                    const tag = t.store_code ? `[ST ${t.store_code}]` : `[${t.group_title}]`;
+                    return `<span style="display:inline-block; margin-right:24px;"><strong>${tag}</strong> <span style="color:#a5d6ff;">${t.snippet}</span> <em style="color:var(--text-secondary); font-size:0.72rem;">(${t.time})</em></span>`;
+                }).join(' • ');
+                const tickerEl = document.getElementById('teleRealtimeTicker');
+                if (tickerEl) tickerEl.innerHTML = tickerHtml;
+            }
+
+            if (account.synced_at) {
+                const syncEl = document.getElementById('teleLastSyncTime');
+                if (syncEl) syncEl.innerText = 'Đồng bộ lúc ' + account.synced_at;
+            }
+
+            filterTelegramData();
+        }
+
+        // Expose to window for inline HTML onclick handlers
+        window.switchBigTab = switchBigTab;
+        window.switchSubTab = switchSubTab;
+        window.renderTelegramTab = renderTelegramTab;
+        window.filterTelegramData = filterTelegramData;
+        window.switchTeleViewMode = switchTeleViewMode;
+        window.copyChatId = copyChatId;
+        window.copyAllVisibleChatIds = copyAllVisibleChatIds;
+        window.setTeleFilterStore = setTeleFilterStore;
+        window.refreshTelegramRealtime = refreshTelegramRealtime;
+        window.exportTelegramToExcel = exportTelegramToExcel;
+
+    </script>
+</body>
+</html>
