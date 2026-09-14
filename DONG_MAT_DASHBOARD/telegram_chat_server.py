@@ -1,3 +1,4 @@
+from sync_telegram_groups import is_broadcast_or_spam_message, analyze_message_priority
 # -*- coding: utf-8 -*-
 """
 Telegram SCM Chat Server - Realtime 2-Way Chat Engine
@@ -110,16 +111,23 @@ async def handle_get_messages(request):
 
             time_str = m.date.strftime('%H:%M • %d/%m/%Y') if m.date else ''
             time_short = m.date.strftime('%H:%M') if m.date else ''
+            m_text = m.text or ""
+            is_spam = is_broadcast_or_spam_message(m_text)
+            p_level, p_badge, p_reason = analyze_message_priority(m_text, not is_me, bool(media_info), is_spam)
 
             messages_data.append({
                 "id": m.id,
                 "sender_id": sender_id,
                 "sender_name": sender_name,
                 "is_me": is_me,
-                "text": m.text or "",
+                "text": m_text,
                 "media_info": media_info,
                 "time": time_str,
-                "time_short": time_short
+                "time_short": time_short,
+                "is_spam": is_spam,
+                "priority_level": p_level,
+                "priority_badge": p_badge,
+                "priority_reason": p_reason
             })
 
         group_title = getattr(entity, 'title', str(chat_id))

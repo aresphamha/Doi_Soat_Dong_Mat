@@ -2493,6 +2493,109 @@
             color: #fff;
             transform: translateY(-1px);
         }
+
+        /* TELEGRAM SMART PRIORITY FILTER & BADGES */
+        .tele-prio-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .tele-prio-btn:hover {
+            transform: translateY(-1px);
+            color: var(--text-primary);
+        }
+        .tele-prio-btn.active {
+            background: rgba(34, 158, 217, 0.25);
+            border-color: #229ED9;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(34, 158, 217, 0.25);
+        }
+        .tele-prio-btn.prio-urgent.active {
+            background: rgba(248, 81, 73, 0.25) !important;
+            border-color: #f85149 !important;
+            color: #ff7b72 !important;
+            box-shadow: 0 2px 10px rgba(248, 81, 73, 0.35) !important;
+        }
+        .tele-prio-btn.prio-high.active {
+            background: rgba(210, 153, 34, 0.25) !important;
+            border-color: #d29922 !important;
+            color: #e3b341 !important;
+            box-shadow: 0 2px 10px rgba(210, 153, 34, 0.35) !important;
+        }
+        .tele-prio-btn.prio-medium.active {
+            background: rgba(88, 166, 255, 0.25) !important;
+            border-color: #58a6ff !important;
+            color: #79c0ff !important;
+            box-shadow: 0 2px 10px rgba(88, 166, 255, 0.35) !important;
+        }
+        .tele-prio-btn.prio-normal.active {
+            background: rgba(139, 148, 158, 0.2) !important;
+            border-color: #8b949e !important;
+            color: #c9d1d9 !important;
+        }
+
+        .tele-badge-prio-urgent {
+            background: rgba(248, 81, 73, 0.18);
+            color: #ff7b72;
+            border: 1px solid rgba(248, 81, 73, 0.5);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            animation: pulse-urgent 2s infinite ease-in-out;
+        }
+        @keyframes pulse-urgent {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.4); }
+            50% { box-shadow: 0 0 0 4px rgba(248, 81, 73, 0); }
+        }
+        .tele-badge-prio-high {
+            background: rgba(210, 153, 34, 0.18);
+            color: #e3b341;
+            border: 1px solid rgba(210, 153, 34, 0.5);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .tele-badge-prio-medium {
+            background: rgba(88, 166, 255, 0.15);
+            color: #79c0ff;
+            border: 1px solid rgba(88, 166, 255, 0.4);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .tele-badge-prio-normal {
+            background: rgba(139, 148, 158, 0.1);
+            color: #8b949e;
+            border: 1px solid rgba(139, 148, 158, 0.25);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
 </style>
     <script src="daily_details/telegram_groups.js"></script>
 </head>
@@ -3536,6 +3639,62 @@
                     </div>
                 </div>
 
+                <!-- 4 CẤP ĐỘ CẢNH BÁO THÔNG MINH CARDS -->
+                <div style="margin-bottom:1.25rem;">
+                    <div style="font-size:0.8rem; font-weight:700; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.65rem; display:flex; align-items:center; gap:6px;">
+                        <i class="fa-solid fa-layer-group" style="color:#229ED9;"></i> PHÂN LOẠI 4 CẤP ĐỘ TIN NHẮN THÔNG MINH:
+                    </div>
+                    <div class="tele-stat-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+                        <!-- Card 1: Khẩn Cấp -->
+                        <div class="tele-stat-card" style="cursor:pointer; border-left:4px solid #f85149; background:rgba(248,81,73,0.08); box-shadow:0 0 12px rgba(248,81,73,0.15);" onclick="switchTelePriorityFilter('urgent')">
+                            <div class="tele-stat-icon" style="background:rgba(248,81,73,0.25); color:#ff7b72;">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <div>
+                                <div style="font-size:0.72rem; color:#ff7b72; text-transform:uppercase; font-weight:800; letter-spacing:0.5px;">🚨 1. KHẨN CẤP</div>
+                                <div style="font-size:1.5rem; font-weight:800; color:#ff7b72;" id="statPrioUrgent">0</div>
+                                <div style="font-size:0.7rem; color:var(--text-secondary);">Dư mã hàng, Vượt sức bán, Chuyển gấp</div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Ưu Tiên Cao -->
+                        <div class="tele-stat-card" style="cursor:pointer; border-left:4px solid #d29922; background:rgba(210,153,34,0.08);" onclick="switchTelePriorityFilter('high')">
+                            <div class="tele-stat-icon" style="background:rgba(210,153,34,0.25); color:#e3b341;">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+                            <div>
+                                <div style="font-size:0.72rem; color:#e3b341; text-transform:uppercase; font-weight:800; letter-spacing:0.5px;">⚡ 2. ƯU TIÊN CAO</div>
+                                <div style="font-size:1.5rem; font-weight:800; color:#e3b341;" id="statPrioHigh">0</div>
+                                <div style="font-size:0.7rem; color:var(--text-secondary);">Tạo bổ sung, PO bổ sung, Rút tồn</div>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Trung Bình / ST Phản Hồi -->
+                        <div class="tele-stat-card" style="cursor:pointer; border-left:4px solid #58a6ff; background:rgba(88,166,255,0.08);" onclick="switchTelePriorityFilter('medium')">
+                            <div class="tele-stat-icon" style="background:rgba(88,166,255,0.25); color:#79c0ff;">
+                                <i class="fa-solid fa-reply"></i>
+                            </div>
+                            <div>
+                                <div style="font-size:0.72rem; color:#79c0ff; text-transform:uppercase; font-weight:800; letter-spacing:0.5px;">💬 3. ST PHẢN HỒI</div>
+                                <div style="font-size:1.5rem; font-weight:800; color:#79c0ff;" id="statPrioMedium">0</div>
+                                <div style="font-size:0.7rem; color:var(--text-secondary);">ST trả lời thực nhận, chênh lệch, ảnh</div>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: Thông Thường -->
+                        <div class="tele-stat-card" style="cursor:pointer; border-left:4px solid #8b949e; background:rgba(139,148,158,0.06);" onclick="switchTelePriorityFilter('normal')">
+                            <div class="tele-stat-icon" style="background:rgba(139,148,158,0.2); color:#c9d1d9;">
+                                <i class="fa-regular fa-circle-check"></i>
+                            </div>
+                            <div>
+                                <div style="font-size:0.72rem; color:#c9d1d9; text-transform:uppercase; font-weight:700;">⚪ 4. THÔNG THƯỜNG</div>
+                                <div style="font-size:1.5rem; font-weight:800; color:#c9d1d9;" id="statPrioNormal">0</div>
+                                <div style="font-size:0.7rem; color:var(--text-secondary);">Chờ ST phản hồi / Không cần xử lý gấp</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- FILTER CONTROLS & VIEW SWITCHER -->
                 <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; padding:1rem 1.25rem; margin-bottom:1.25rem;">
                     <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; justify-content:space-between; margin-bottom:0.85rem;">
@@ -3554,6 +3713,28 @@
                                 <i class="fa-solid fa-copy"></i> Sao chép Chat ID đang lọc
                             </button>
                         </div>
+                    </div>
+
+                    <!-- SMART PRIORITY FILTER PILLS -->
+                    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center; margin-bottom:0.75rem; padding-bottom:0.75rem; border-bottom:1px dashed var(--border-card);">
+                        <span style="font-size:0.78rem; color:#ff7b72; font-weight:700; margin-right:4px; display:inline-flex; align-items:center; gap:5px;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Cấp độ cảnh báo:
+                        </span>
+                        <button class="tele-prio-btn active" id="telePrio-all" onclick="switchTelePriorityFilter('all')">
+                            🌟 Tất Cả (<span id="prioCount-all">573</span>)
+                        </button>
+                        <button class="tele-prio-btn prio-urgent" id="telePrio-urgent" onclick="switchTelePriorityFilter('urgent')">
+                            🚨 Khẩn Cấp (<span id="prioCount-urgent">0</span>)
+                        </button>
+                        <button class="tele-prio-btn prio-high" id="telePrio-high" onclick="switchTelePriorityFilter('high')">
+                            ⚡ Ưu Tiên Cao: Tạo BS (<span id="prioCount-high">0</span>)
+                        </button>
+                        <button class="tele-prio-btn prio-medium" id="telePrio-medium" onclick="switchTelePriorityFilter('medium')">
+                            💬 ST Phản Hồi (<span id="prioCount-medium">0</span>)
+                        </button>
+                        <button class="tele-prio-btn prio-normal" id="telePrio-normal" onclick="switchTelePriorityFilter('normal')">
+                            ⚪ Thông Thường (<span id="prioCount-normal">0</span>)
+                        </button>
                     </div>
 
                     <!-- VIEW MODE PILLS -->
@@ -3621,15 +3802,16 @@
                         <table class="styled-table" id="teleMainTable">
                             <thead style="position:sticky; top:0; z-index:10; background:var(--bg-card);" id="teleTableHead">
                                 <tr>
-                                    <th style="width:45px; text-align:center;">#</th>
-                                    <th style="width:75px; text-align:center;">MÃ ST</th>
-                                    <th style="min-width:240px;">TÊN NHÓM TELEGRAM</th>
-                                    <th style="width:165px;">CHAT ID</th>
-                                    <th style="width:130px; text-align:center;">LOẠI NHÓM</th>
-                                    <th style="min-width:280px;">TIN MỚI NHẤT (REALTIME)</th>
-                                    <th style="width:125px; text-align:center;">THỜI GIAN</th>
-                                    <th style="width:80px; text-align:center;">CHƯA ĐỌC</th>
-                                    <th style="width:135px; text-align:center;">THAO TÁC</th>
+                                    <th style="width:40px; text-align:center;">#</th>
+                                    <th style="width:70px; text-align:center;">MÃ ST</th>
+                                    <th style="min-width:220px;">TÊN NHÓM TELEGRAM</th>
+                                    <th style="width:145px;">CHAT ID</th>
+                                    <th style="width:120px; text-align:center;">LOẠI NHÓM</th>
+                                    <th style="width:125px; text-align:center;">CẤP ĐỘ</th>
+                                    <th style="min-width:280px;">TIN MỚI NHẤT (ST PHẢN HỒI)</th>
+                                    <th style="width:115px; text-align:center;">THỜI GIAN</th>
+                                    <th style="width:70px; text-align:center;">CHƯA ĐỌC</th>
+                                    <th style="width:130px; text-align:center;">THAO TÁC</th>
                                 </tr>
                             </thead>
                             <tbody id="teleTableBody">
@@ -7992,7 +8174,8 @@
     
         // =========================================================================
         // LOGIC & QUẢN LÝ TAB TELEGRAM SCM - DANH SÁCH NHÓM TRỰC TIẾP & REALTIME
-        let teleCurrentMode = 'all'; // 'all', 'aba', 'krc', 'ic', 'dc', 'internal'
+        let teleCurrentMode = 'all'; // 'all', 'aba', 'krc', 'ic', 'dc', 'internal', 'chatid'
+        let teleCurrentPrio = 'all'; // 'all', 'urgent', 'high', 'medium', 'normal'
 
         function showToast(msg) {
             let toast = document.getElementById('toastMsg');
@@ -8056,16 +8239,33 @@
             filterTelegramData();
         }
 
+        function switchTelePriorityFilter(prio) {
+            teleCurrentPrio = prio;
+            const prios = ['all', 'urgent', 'high', 'medium', 'normal'];
+            prios.forEach(p => {
+                const el = document.getElementById('telePrio-' + p);
+                if (el) el.classList.remove('active');
+            });
+            const activePrio = document.getElementById('telePrio-' + prio);
+            if (activePrio) activePrio.classList.add('active');
+
+            filterTelegramData();
+        }
+
         function getFilteredDetailedGroups() {
             const data = window.TELEGRAM_GROUPS_DATA;
             if (!data) return [];
             const allGroups = data.groups || data.all_groups || [];
             const query = (document.getElementById('teleSearchInput')?.value || '').trim().toLowerCase();
 
-            return allGroups.filter(g => {
+            const priorityRank = { "urgent": 4, "high": 3, "medium": 2, "normal": 1 };
+
+            let filtered = allGroups.filter(g => {
                 const t = g.group_type || '';
                 const t_low = t.toLowerCase();
+                const p = g.priority_level || 'normal';
 
+                // Lọc theo loại nhóm
                 if (teleCurrentMode === 'aba' && !t_low.includes('aba') && !t_low.includes('đông mát')) return false;
                 if (teleCurrentMode === 'krc' && !t_low.includes('krc')) return false;
                 if (teleCurrentMode === 'ic' && !t_low.includes('đối soát') && !/\bic\b/i.test(t)) return false;
@@ -8073,14 +8273,31 @@
                 if (teleCurrentMode === 'internal' && !t_low.includes('nội bộ')) return false;
                 if (teleCurrentMode === 'chatid' && !(t_low.includes('chat id') || t_low.includes('chat_id') || g.title?.toLowerCase().includes('chat id'))) return false;
 
+                // Lọc theo cấp độ cảnh báo
+                if (teleCurrentPrio !== 'all' && p !== teleCurrentPrio) return false;
+
                 if (!query) return true;
                 const sCode = (g.store_code || '').toLowerCase();
                 const sName = (g.store_name || '').toLowerCase();
                 const title = (g.title || '').toLowerCase();
                 const chatId = (g.chat_id_str || '').toLowerCase();
                 const lastMsg = (g.last_message || '').toLowerCase();
-                return sCode.includes(query) || sName.includes(query) || title.includes(query) || chatId.includes(query) || lastMsg.includes(query);
+                const reason = (g.priority_reason || '').toLowerCase();
+                const badge = (g.priority_badge || '').toLowerCase();
+                return sCode.includes(query) || sName.includes(query) || title.includes(query) || chatId.includes(query) || lastMsg.includes(query) || reason.includes(query) || badge.includes(query);
             });
+
+            // Sắp xếp ưu tiên: Khẩn cấp -> Ưu tiên cao -> ST phản hồi -> Thông thường (và theo ngày mới nhất)
+            filtered.sort((a, b) => {
+                const rankA = priorityRank[a.priority_level || 'normal'] || 1;
+                const rankB = priorityRank[b.priority_level || 'normal'] || 1;
+                if (rankA !== rankB) return rankB - rankA;
+                const timeA = a.last_date_raw || '';
+                const timeB = b.last_date_raw || '';
+                return timeB.localeCompare(timeA);
+            });
+
+            return filtered;
         }
 
         function getGroupTypeBadge(type) {
@@ -8091,6 +8308,20 @@
             return '<span class="tele-type-badge tele-type-internal"><i class="fa-solid fa-briefcase"></i> Nội bộ SCM</span>';
         }
 
+        function getPriorityBadgeHtml(level, reason) {
+            const rTip = reason ? ` title="${reason}"` : '';
+            if (level === 'urgent') {
+                return `<span class="tele-badge-prio-urgent"${rTip}><i class="fa-solid fa-triangle-exclamation"></i> Khẩn Cấp</span>`;
+            }
+            if (level === 'high') {
+                return `<span class="tele-badge-prio-high"${rTip}><i class="fa-solid fa-bolt"></i> Ưu Tiên Cao</span>`;
+            }
+            if (level === 'medium') {
+                return `<span class="tele-badge-prio-medium"${rTip}><i class="fa-solid fa-reply"></i> ST Phản Hồi</span>`;
+            }
+            return `<span class="tele-badge-prio-normal"><i class="fa-regular fa-circle"></i> Thông Thường</span>`;
+        }
+
         function setTeleFilterStore(code) {
             const input = document.getElementById('teleSearchInput');
             if (input) {
@@ -8099,20 +8330,73 @@
             }
         }
 
+        
+        function isAnnouncementOrBroadcast(text) {
+            if (!text) return false;
+            const t = text.trim();
+            const t_low = t.toLowerCase();
+
+            if (/[📅🗓️📢🔔]\s*\d{1,2}[./-]\d{1,2}/.test(t)) return true;
+
+            const prefixes = [
+                'hi team', 'chào team', 'cảm ơn team', 'chào cả nhà', 'chào anh chị',
+                'anh remind lại', 'remind lại', 'remind',
+                'thông báo:', 'thông báo quan trọng', 'lưu ý quan trọng', 'lưu ý:',
+                'st lưu ý', 'siêu thị lưu ý', 'quy chế', 'hướng dẫn kiểm hàng',
+                'cảnh báo kiểm tra date', 'thời điểm cutoff', 'lưu ý nhận hàng'
+            ];
+            for (const p of prefixes) {
+                if (t_low.startsWith(p) || t_low.includes('\n' + p)) return true;
+            }
+
+            const phrases = [
+                'lưu ý quan trọng', 'hậu kiểm hàng thịt cá', 'kiểm hàng đúng vị trí camera',
+                'thao tác kiểm đếm', 'trong vùng camera', 'trả rổ/thùng xanh',
+                'bắt buộc phải có trip', 'không có trip sẽ không thực hiện trả',
+                'st bắt buộc phải scan từng kiện', 'báo cáo phát sinh nhận hàng',
+                'thời điểm cutoff', 'cảnh báo kiểm tra date', 'file import của',
+                'hoàn thành phiếu hậu kiểm', 'nhận dư add vào phiếu hậu kiểm',
+                'nhận dư nhưng không add phiếu hk', 'không thông tin scm tạo bổ sung',
+                'tránh phát sinh ảnh hưởng vận hành', 'phát sinh lần sau',
+                'điều chuyển kịp thời nhé cảm ơn team', 'cảm ơn team', 'nhờ team đối soát',
+                'báo siêu thị rút tồn về kho giúp', 'nhập sót sl các mã hàng trên'
+            ];
+            for (const phrase of phrases) {
+                if (t_low.includes(phrase)) return true;
+            }
+
+            if (/st\s+(bổ\s+sung\s+thêm\s+hình\s+ảnh|báo|kiểm\s+tra|ktra|nhập|hoàn\s+thành)\s+giúp\s+(hà|ny|thấm|thư|quỳnh|nhung|scm)/i.test(t_low)) return true;
+            if (/(thư|thấm|hà|ny|quỳnh|nhung|scm|p|q|t)\s+gửi\s+(phiếu|pt|po)/i.test(t_low)) return true;
+            if (/(nhé|nha|giúp)\s+(st|siêu\s+thị)\b/i.test(t_low) && /(gửi|check|ktra|kiểm\s+tra|hủy|cam|done|lưu\s+ý|báo)/i.test(t_low)) return true;
+            if (t_low.includes('nhé team') || t_low.includes('nha team') || t_low.includes('cảm ơn team')) return true;
+
+            return false;
+        }
+
+        window.CHAT_SHOW_SPAM = false;
+
+        function toggleChatAnnouncements() {
+            window.CHAT_SHOW_SPAM = !window.CHAT_SHOW_SPAM;
+            if (window.CURRENT_CHAT_MESSAGES) {
+                renderChatMessages(window.CURRENT_CHAT_MESSAGES, window.CURRENT_CHAT_PRIO_BANNER);
+            }
+        }
+    
         function renderDetailedGroupsTable(groups) {
             const thead = document.getElementById('teleTableHead');
             if (thead && !thead.innerHTML.trim()) {
                 thead.innerHTML = `
                     <tr>
-                        <th style="width:45px; text-align:center;">#</th>
-                        <th style="width:75px; text-align:center;">MÃ ST</th>
-                        <th style="min-width:240px;">TÊN NHÓM TELEGRAM</th>
-                        <th style="width:165px;">CHAT ID</th>
-                        <th style="width:130px; text-align:center;">LOẠI NHÓM</th>
-                        <th style="min-width:280px;">TIN MỚI NHẤT (REALTIME)</th>
-                        <th style="width:125px; text-align:center;">THỜI GIAN</th>
-                        <th style="width:80px; text-align:center;">CHƯA ĐỌC</th>
-                        <th style="width:135px; text-align:center;">THAO TÁC</th>
+                        <th style="width:40px; text-align:center;">#</th>
+                        <th style="width:70px; text-align:center;">MÃ ST</th>
+                        <th style="min-width:220px;">TÊN NHÓM TELEGRAM</th>
+                        <th style="width:145px;">CHAT ID</th>
+                        <th style="width:120px; text-align:center;">LOẠI NHÓM</th>
+                        <th style="width:125px; text-align:center;">CẤP ĐỘ</th>
+                        <th style="min-width:280px;">TIN MỚI NHẤT (ST PHẢN HỒI)</th>
+                        <th style="width:115px; text-align:center;">THỜI GIAN</th>
+                        <th style="width:70px; text-align:center;">CHƯA ĐỌC</th>
+                        <th style="width:130px; text-align:center;">THAO TÁC</th>
                     </tr>
                 `;
             }
@@ -8124,16 +8408,25 @@
             }
 
             if (!groups.length) {
-                tbody.innerHTML = '<tr><td colspan="9" class="text-center" style="padding:2.5rem; color:var(--text-secondary);">🔍 Không tìm thấy nhóm Telegram nào phù hợp</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding:2.5rem; color:var(--text-secondary);">🔍 Không tìm thấy nhóm Telegram nào phù hợp</td></tr>';
                 return;
             }
 
             tbody.innerHTML = groups.map((g, idx) => {
                 const storeBadge = g.store_code ? `<span class="tele-store-code" onclick="event.stopPropagation(); setTeleFilterStore('${g.store_code}')" title="Lọc theo ${g.store_code}">${g.store_code}</span>` : '<span style="color:var(--text-secondary); font-size:0.75rem;">-</span>';
-                const msgSnippet = g.last_message ? `<div class="tele-msg-snippet" title="${g.last_message.replace(/"/g, '&quot;')}"><i class="fa-solid fa-comment-dots" style="opacity:0.6; margin-right:4px;"></i>${g.last_message}</div>` : '<span style="color:var(--text-secondary); font-size:0.75rem; font-style:italic;">Chưa có tin nhắn</span>';
+                
+                let msgSnippet = '';
+                const isSpamMsg = isAnnouncementOrBroadcast(g.last_message);
+                if (g.last_message && !isSpamMsg) {
+                    const extraBadge = g.priority_reason ? `<span style="font-size:0.7rem; color:#e3b341; margin-right:4px;">[${g.priority_reason}]</span> ` : '';
+                    msgSnippet = `<div class="tele-msg-snippet" title="${g.last_message.replace(/"/g, '&quot;')}"><i class="fa-solid fa-comment-dots" style="color:#58a6ff; margin-right:4px;"></i>${extraBadge}${g.last_message}</div>`;
+                } else {
+                    msgSnippet = '<span style="color:var(--text-secondary); font-size:0.75rem; font-style:italic; opacity:0.6;"><i class="fa-regular fa-clock" style="margin-right:4px;"></i>Chưa có phản hồi từ ST</span>';
+                }
                 
                 const chatBtn = g.chat_id_str ? `<button class="tele-action-btn" style="background:#1f6feb;" onclick="event.stopPropagation(); openTelegramChat('${g.chat_id_str}')" title="Đọc & Phản hồi trực tiếp"><i class="fa-solid fa-comments"></i> Chat</button>` : '';
                 const openBtn = g.chat_id_str ? `<a href="https://web.telegram.org/k/#${g.chat_id_str}" target="_blank" class="tele-action-btn" onclick="event.stopPropagation();" title="Mở trong Telegram Web"><i class="fa-brands fa-telegram"></i> Web</a>` : '';
+                const prioBadge = getPriorityBadgeHtml(g.priority_level || 'normal', g.priority_reason || '');
 
                 return `<tr class="tele-row-clickable" onclick="openTelegramChat('${g.chat_id_str}')" title="Nhấp để đọc tin nhắn và phản hồi nhóm này">
                     <td style="text-align:center; color:var(--text-secondary); font-size:0.75rem;">${idx + 1}</td>
@@ -8152,6 +8445,7 @@
                         </span>
                     </td>
                     <td style="text-align:center;">${getGroupTypeBadge(g.group_type)}</td>
+                    <td style="text-align:center;">${prioBadge}</td>
                     <td>${msgSnippet}</td>
                     <td style="text-align:center; font-size:0.75rem; color:var(--text-secondary);">${g.last_date || '-'}</td>
                     <td style="text-align:center;">${g.unread > 0 ? `<span style="background:#f85149; color:#fff; padding:1px 6px; border-radius:10px; font-size:0.7rem; font-weight:700;">${g.unread}</span>` : `<span style="color:var(--text-secondary); opacity:0.4;">0</span>`}</td>
@@ -8196,7 +8490,6 @@
             document.head.appendChild(s);
         }
 
-        
         function exportChatIdExcelByCategory(cat) {
             const data = window.TELEGRAM_GROUPS_DATA;
             if (!data) {
@@ -8228,6 +8521,8 @@
 
             const rows = filtered.map((g, idx) => ({
                 "STT": idx + 1,
+                "Cấp Độ Cảnh Báo": g.priority_badge || "⚪ Thông Thường",
+                "Lý Do Cảnh Báo": g.priority_reason || "",
                 "Mã Siêu Thị": g.store_code || "-",
                 "Tên Siêu Thị": g.store_name || "-",
                 "Tên Nhóm Telegram": g.title,
@@ -8254,6 +8549,8 @@
 
             ws['!cols'] = [
                 { wch: 6 },
+                { wch: 18 },
+                { wch: 25 },
                 { wch: 12 },
                 { wch: 32 },
                 { wch: 42 },
@@ -8280,6 +8577,8 @@
             const groups = getFilteredDetailedGroups();
             const rows = groups.map((g, idx) => ({
                 "STT": idx + 1,
+                "Cấp Độ Cảnh Báo": g.priority_badge || "⚪ Thông Thường",
+                "Lý Do Cảnh Báo": g.priority_reason || "",
                 "Mã Siêu Thị": g.store_code || "-",
                 "Tên Siêu Thị": g.store_name || "-",
                 "Tên Group Telegram": g.title,
@@ -8291,7 +8590,7 @@
             }));
             const ws = XLSX.utils.json_to_sheet(rows);
             XLSX.utils.book_append_sheet(wb, ws, "Danh_Sach_Nhom_Telegram");
-            XLSX.writeFile(wb, `Danh_Sach_Nhom_Telegram_${teleCurrentMode.toUpperCase()}_${dateStr}.xlsx`);
+            XLSX.writeFile(wb, `Danh_Sach_Nhom_Telegram_${teleCurrentMode.toUpperCase()}_${teleCurrentPrio.toUpperCase()}_${dateStr}.xlsx`);
             showToast("📥 Đã xuất file Excel thành công!");
         }
 
@@ -8325,6 +8624,8 @@
                 if (statTot) statTot.innerText = summary.total_groups;
                 const pillTot = document.getElementById('pillCount-all');
                 if (pillTot) pillTot.innerText = summary.total_groups;
+                const prioTot = document.getElementById('prioCount-all');
+                if (prioTot) prioTot.innerText = summary.total_groups;
             }
             if (summary.aba_count) {
                 const statABA = document.getElementById('statTeleABA');
@@ -8353,12 +8654,33 @@
                 if (pillInt) pillInt.innerText = summary.internal_count;
             }
 
+            // Update priority counts in stat cards
+            const statPUrg = document.getElementById('statPrioUrgent');
+            if (statPUrg) statPUrg.innerText = summary.urgent_count || 0;
+            const statPHigh = document.getElementById('statPrioHigh');
+            if (statPHigh) statPHigh.innerText = summary.high_count || 0;
+            const statPMed = document.getElementById('statPrioMedium');
+            if (statPMed) statPMed.innerText = summary.medium_count || 0;
+            const statPNorm = document.getElementById('statPrioNormal');
+            if (statPNorm) statPNorm.innerText = summary.normal_count || 0;
+
+            // Update priority counts in filter pills
+            const prioUrg = document.getElementById('prioCount-urgent');
+            if (prioUrg) prioUrg.innerText = summary.urgent_count || 0;
+            const prioHigh = document.getElementById('prioCount-high');
+            if (prioHigh) prioHigh.innerText = summary.high_count || 0;
+            const prioMed = document.getElementById('prioCount-medium');
+            if (prioMed) prioMed.innerText = summary.medium_count || 0;
+            const prioNorm = document.getElementById('prioCount-normal');
+            if (prioNorm) prioNorm.innerText = summary.normal_count || 0;
+
             // Update Realtime Ticker
             const ticker = data.ticker || [];
             if (ticker.length) {
-                const tickerHtml = ticker.slice(0, 8).map(t => {
+                const tickerHtml = ticker.slice(0, 10).map(t => {
                     const tag = t.store_code ? `[ST ${t.store_code}]` : `[${t.group_title}]`;
-                    return `<span style="display:inline-block; margin-right:24px;"><strong>${tag}</strong> <span style="color:#a5d6ff;">${t.snippet}</span> <em style="color:var(--text-secondary); font-size:0.72rem;">(${t.time})</em></span>`;
+                    const prioIcon = t.priority_level === 'urgent' ? '🚨 ' : t.priority_level === 'high' ? '⚡ ' : '';
+                    return `<span style="display:inline-block; margin-right:24px;"><strong>${prioIcon}${tag}</strong> <span style="color:#a5d6ff;">${t.snippet}</span> <em style="color:var(--text-secondary); font-size:0.72rem;">(${t.time})</em></span>`;
                 }).join(' • ');
                 const tickerEl = document.getElementById('teleRealtimeTicker');
                 if (tickerEl) tickerEl.innerHTML = tickerHtml;
@@ -8378,6 +8700,7 @@
         window.renderTelegramTab = renderTelegramTab;
         window.filterTelegramData = filterTelegramData;
         window.switchTeleViewMode = switchTeleViewMode;
+        window.switchTelePriorityFilter = switchTelePriorityFilter;
         window.copyChatId = copyChatId;
         window.copyAllVisibleChatIds = copyAllVisibleChatIds;
         window.setTeleFilterStore = setTeleFilterStore;
@@ -8429,7 +8752,7 @@
                     badge.innerHTML = `<i class="fa-solid fa-circle" style="font-size:0.45rem;"></i> Realtime Engine (${userName || '0978009295'})`;
                 } else {
                     badge.className = 'chat-engine-badge chat-engine-offline';
-                    badge.innerHTML = `<i class="fa-solid fa-circle" style="font-size:0.45rem;"></i> Xem & Chuyển Tiếp Web`;
+                    badge.innerHTML = `<i class="fa-solid fa-circle" style="font-size:0.45rem;"></i> Chế độ Xem Tin Nhắn`;
                 }
             }
             if (banner) {
@@ -8493,12 +8816,43 @@
             window.CURRENT_CHAT_ID = null;
         }
 
+        function getPriorityBannerHtml(level, reason) {
+            if (level === 'urgent') {
+                return `
+                    <div style="background:rgba(248,81,73,0.15); border:1.5px solid #f85149; border-radius:8px; padding:10px 14px; margin-bottom:12px; display:flex; align-items:center; gap:10px; box-shadow:0 0 12px rgba(248,81,73,0.2);">
+                        <span class="tele-badge-prio-urgent" style="font-size:0.75rem; padding:3px 8px;"><i class="fa-solid fa-triangle-exclamation"></i> 1. KHẨN CẤP</span>
+                        <span style="font-size:0.78rem; color:#ff7b72; font-weight:700;">Siêu thị phản hồi sự cố: ${reason || 'Khẩn cấp cần xử lý'}</span>
+                    </div>`;
+            }
+            if (level === 'high') {
+                return `
+                    <div style="background:rgba(210,153,34,0.12); border:1px solid rgba(210,153,34,0.5); border-radius:8px; padding:8px 12px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                        <span class="tele-badge-prio-high"><i class="fa-solid fa-bolt"></i> 2. ƯU TIÊN CAO</span>
+                        <span style="font-size:0.75rem; color:#e3b341; font-weight:600;">Cần hỗ trợ: ${reason || 'Tạo bổ sung / Rút tồn kho'}</span>
+                    </div>`;
+            }
+            if (level === 'medium') {
+                return `
+                    <div style="background:rgba(88,166,255,0.1); border:1px solid rgba(88,166,255,0.4); border-radius:8px; padding:8px 12px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                        <span class="tele-badge-prio-medium"><i class="fa-solid fa-reply"></i> 3. ST PHẢN HỒI</span>
+                        <span style="font-size:0.75rem; color:#79c0ff; font-weight:600;">${reason || 'ST có phản hồi thực nhận / chênh lệch'}</span>
+                    </div>`;
+            }
+            return `
+                <div style="background:rgba(139,148,158,0.08); border:1px solid rgba(139,148,158,0.25); border-radius:8px; padding:6px 12px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                    <span class="tele-badge-prio-normal"><i class="fa-regular fa-circle"></i> 4. THÔNG THƯỜNG</span>
+                    <span style="font-size:0.72rem; color:var(--text-secondary);">Chưa có phản hồi từ ST / Không có từ khóa khẩn cấp</span>
+                </div>`;
+        }
+
         async function loadGroupMessages(chatIdStr, group, isOnline) {
             const container = document.getElementById('chatMessagesBody');
             if (!container) return;
 
+            const prioBanner = getPriorityBannerHtml(group.priority_level || 'normal', group.priority_reason || '');
+
             if (isOnline) {
-                container.innerHTML = `<div style="text-align:center; padding:3rem 1rem; color:var(--text-secondary);">
+                container.innerHTML = prioBanner + `<div style="text-align:center; padding:3rem 1rem; color:var(--text-secondary);">
                     <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:#229ED9; margin-bottom:10px;"></i>
                     <div>Đang đọc tin nhắn realtime từ Telegram...</div>
                 </div>`;
@@ -8508,7 +8862,7 @@
                     if (resp.ok) {
                         const res = await resp.json();
                         if (res.success && res.messages && res.messages.length) {
-                            renderChatMessages(res.messages);
+                            renderChatMessages(res.messages, prioBanner);
                             return;
                         }
                     }
@@ -8517,12 +8871,18 @@
                 }
             }
 
-            // Fallback rendering from cached group info
-            let fallbackHtml = `
+            // Render from cached recent_messages if available
+            if (group.recent_messages && group.recent_messages.length > 0) {
+                renderChatMessages(group.recent_messages, prioBanner);
+                return;
+            }
+
+            // Fallback rendering single message
+            let fallbackHtml = prioBanner + `
                 <div class="chat-date-divider">Hoạt động gần nhất</div>
                 <div class="chat-bubble incoming">
                     <div class="chat-sender-name">${group.store_name || group.title}</div>
-                    ${group.last_message ? `<div>${group.last_message}</div>` : '<div style="font-style:italic; opacity:0.7;">Nhóm chưa có lịch sử tin nhắn mới.</div>'}
+                    ${group.last_message ? `<div>${group.last_message}</div>` : '<div style="font-style:italic; opacity:0.7;">Nhóm chưa có lịch sử tin nhắn mới từ Siêu thị.</div>'}
                     <div class="chat-bubble-footer">
                         <span>${group.last_date || 'Gần đây'}</span>
                     </div>
@@ -8531,14 +8891,13 @@
 
             if (!isOnline) {
                 fallbackHtml += `
-                    <div style="margin-top:auto; padding:1.5rem 1rem; text-align:center; background:rgba(255,255,255,0.03); border-radius:12px; border:1px dashed rgba(255,255,255,0.1);">
-                        <div style="font-size:1.5rem; margin-bottom:8px;">💬</div>
-                        <div style="font-weight:700; color:#f0f6fc; margin-bottom:6px;">Chế độ Xem & Chuyển Tiếp Nhanh</div>
-                        <div style="font-size:0.78rem; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">
-                            Bạn có thể gõ nội dung phản hồi bên dưới và bấm <strong>Gửi</strong> (sẽ mở thẳng chat trên Telegram Web với nội dung đã sao chép sẵn).
-                            <br>Hoặc chạy file <strong>Chay_Telegram_Chat_Realtime.bat</strong> để chat 2 chiều tự động 100%.
+                    <div style="margin-top:auto; padding:1.25rem 1rem; text-align:center; background:rgba(255,255,255,0.03); border-radius:12px; border:1px dashed rgba(255,255,255,0.1);">
+                        <div style="font-size:1.4rem; margin-bottom:6px;">💬</div>
+                        <div style="font-weight:700; color:#f0f6fc; margin-bottom:4px; font-size:0.85rem;">Chế độ Xem & Chuyển Tiếp Nhanh</div>
+                        <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.4; margin-bottom:10px;">
+                            Gõ nội dung phản hồi và bấm <strong>Gửi</strong> (sẽ mở thẳng Telegram Web với nội dung đã sao chép).
                         </div>
-                        <a href="https://web.telegram.org/k/#${chatIdStr}" target="_blank" class="tele-action-btn" style="padding:6px 16px; font-size:0.82rem;">
+                        <a href="https://web.telegram.org/k/#${chatIdStr}" target="_blank" class="tele-action-btn" style="padding:6px 14px; font-size:0.78rem;">
                             <i class="fa-brands fa-telegram"></i> Mở cuộc trò chuyện trên Web Telegram
                         </a>
                     </div>
@@ -8549,34 +8908,78 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        function renderChatMessages(messages) {
+        function renderChatMessages(messages, prioBannerHtml = '') {
             const container = document.getElementById('chatMessagesBody');
             if (!container) return;
 
-            if (!messages.length) {
-                container.innerHTML = `<div style="text-align:center; padding:3rem 1rem; color:var(--text-secondary);">Nhóm chưa có tin nhắn nào gần đây.</div>`;
+            window.CURRENT_CHAT_MESSAGES = messages;
+            window.CURRENT_CHAT_PRIO_BANNER = prioBannerHtml;
+
+            if (!messages || !messages.length) {
+                container.innerHTML = (prioBannerHtml || '') + `<div style="text-align:center; padding:3rem 1rem; color:var(--text-secondary);"><i class="fa-regular fa-comments" style="font-size:2rem; opacity:0.3; margin-bottom:8px; display:block;"></i>Nhóm chưa có tin nhắn nào gần đây.</div>`;
                 return;
             }
 
-            let html = '';
-            let lastDate = '';
+            // Phân loại tin nhắn thông báo định kỳ
+            const spamCount = messages.filter(m => m.is_spam || isAnnouncementOrBroadcast(m.text)).length;
+            const displayMessages = window.CHAT_SHOW_SPAM ? messages : messages.filter(m => !(m.is_spam || isAnnouncementOrBroadcast(m.text)));
 
-            messages.forEach(m => {
-                const datePart = m.time ? m.time.split('•')[1]?.trim() : '';
+            let html = prioBannerHtml || '';
+
+            if (spamCount > 0) {
+                html += `
+                    <div style="text-align:center; margin:8px 0 12px 0;">
+                        <span style="font-size:0.74rem; color:var(--text-secondary); background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); padding:4px 12px; border-radius:15px; display:inline-flex; align-items:center; gap:6px;">
+                            <i class="fa-solid fa-filter-circle-xmark" style="color:#58a6ff;"></i>
+                            ${window.CHAT_SHOW_SPAM ? `Đang hiển thị ${spamCount} tin thông báo` : `Đã loại trừ ${spamCount} tin thông báo định kỳ / quy chế`}
+                            <button onclick="toggleChatAnnouncements()" style="background:none; border:none; color:#58a6ff; font-size:0.74rem; cursor:pointer; text-decoration:underline; padding:0; margin-left:4px; font-weight:600;">
+                                ${window.CHAT_SHOW_SPAM ? 'Ẩn thông báo' : 'Xem lại'}
+                            </button>
+                        </span>
+                    </div>
+                `;
+            }
+
+            if (!displayMessages.length) {
+                html += `
+                    <div style="text-align:center; padding:3.5rem 1.5rem; color:var(--text-secondary);">
+                        <i class="fa-regular fa-comments" style="font-size:2.2rem; opacity:0.35; margin-bottom:12px; display:block;"></i>
+                        <div style="font-size:0.95rem; font-weight:600; color:var(--text-primary); margin-bottom:6px;">Chưa có phản hồi từ Siêu Thị</div>
+                        <div style="font-size:0.8rem; opacity:0.75;">Các tin thông báo phát thanh / bot nhắc việc đã được tự động loại trừ.</div>
+                    </div>
+                `;
+                container.innerHTML = html;
+                return;
+            }
+
+            let lastDate = '';
+            displayMessages.forEach(m => {
+                const datePart = m.time ? (m.time.includes('•') ? m.time.split('•')[1]?.trim() : m.time.split(' ')[0]) : '';
                 if (datePart && datePart !== lastDate) {
                     html += `<div class="chat-date-divider">${datePart}</div>`;
                     lastDate = datePart;
                 }
 
-                const bubbleClass = m.is_me ? 'chat-bubble outgoing' : 'chat-bubble incoming';
-                const checkIcon = m.is_me ? '<i class="fa-solid fa-check-double" style="font-size:0.65rem; color:#a5d6ff;"></i>' : '';
+                const isMe = m.is_me || false;
+                let bubbleClass = isMe ? 'chat-bubble outgoing' : 'chat-bubble incoming';
+                let bubbleStyle = '';
+                const checkIcon = isMe ? '<i class="fa-solid fa-check-double" style="font-size:0.65rem; color:#a5d6ff;"></i>' : '';
                 const mediaTag = m.media_info ? `<div class="chat-bubble-media"><i class="fa-solid fa-paperclip"></i> ${m.media_info}</div>` : '';
+                const spamBadge = (m.is_spam || isAnnouncementOrBroadcast(m.text)) ? `<span style="font-size:0.65rem; background:rgba(255,255,255,0.1); padding:1px 5px; border-radius:4px; color:var(--text-secondary); margin-left:6px;">📢 Thông báo phát thanh</span>` : '';
+                
+                let prioTag = '';
+                if (m.priority_level === 'urgent') {
+                    prioTag = `<span class="tele-badge-prio-urgent" style="font-size:0.68rem; padding:2px 7px; margin-left:6px; font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> Khẩn cấp: ${m.priority_reason || 'SỰ CỐ'}</span>`;
+                    bubbleStyle = 'border: 1.5px solid #f85149; background: rgba(248,81,73,0.14); box-shadow: 0 0 10px rgba(248,81,73,0.2);';
+                } else if (m.priority_level === 'high') {
+                    prioTag = `<span class="tele-badge-prio-high" style="font-size:0.65rem; padding:1px 5px; margin-left:6px;"><i class="fa-solid fa-bolt"></i> ${m.priority_reason || 'Tạo BS'}</span>`;
+                }
 
                 html += `
-                    <div class="${bubbleClass}">
-                        ${!m.is_me ? `<div class="chat-sender-name">${m.sender_name}</div>` : ''}
+                    <div class="${bubbleClass}" style="${bubbleStyle}">
+                        ${!isMe ? `<div class="chat-sender-name">${m.sender_name || 'Siêu Thị'}${spamBadge}${prioTag}</div>` : `<div class="chat-sender-name" style="text-align:right; color:#79c0ff;">Bạn (SCM)</div>`}
                         ${mediaTag}
-                        <div style="white-space:pre-wrap;">${m.text ? escapeHtml(m.text) : ''}</div>
+                        <div style="white-space:pre-wrap; word-break:break-word;">${m.text ? escapeHtml(m.text) : ''}</div>
                         <div class="chat-bubble-footer">
                             <span>${m.time_short || m.time || ''}</span>
                             ${checkIcon}
