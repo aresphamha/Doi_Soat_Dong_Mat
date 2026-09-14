@@ -186,6 +186,123 @@ def classify_group(title: str, store_code: str, is_channel: bool):
     return category, group_type, kho_str
 
 
+def is_broadcast_or_spam_message(text: str) -> bool:
+    if not text:
+        return False
+    t = text.strip()
+    
+    # 1. Các mẫu ngày tháng + biểu tượng lịch gửi định kỳ
+    if re.search(r'📅\s*\d{1,2}[./-]\d{1,2}', t):
+        return True
+    
+    # 2. Quy chế hậu kiểm / camera / trả rổ thùng xanh / bot cutoff
+    spam_phrases = [
+        'lưu ý quan trọng',
+        'hậu kiểm hàng thịt cá',
+        'kiểm hàng đúng vị trí camera',
+        'thao tác kiểm đếm và cân hàng phải thực hiện trong vùng camera',
+        'việc trả rổ/thùng xanh bắt buộc phải có trip',
+        'các trường hợp không có trip sẽ không thực hiện trả',
+        'st bắt buộc phải scan từng kiện hàng',
+        'báo cáo phát sinh nhận hàng & thùng rổ',
+        'thời điểm cutoff',
+        'cảnh báo kiểm tra date hàng mát',
+        'kiểm tra gấp xem có hết date',
+        'file import của'
+    ]
+    t_lower = t.lower()
+    for phrase in spam_phrases:
+        if phrase in t_lower:
+            return True
+            
+    # 3. Mẫu bot nhắc việc buổi sáng gửi hàng loạt (VD: "THỊT CÁ 12.09 ST kiểm tra lại giúp Hà...")
+    if re.search(r'(thịt cá|đông mát|rau củ quả)\s+\d{1,2}[./-]\d{1,2}\s+st kiểm tra lại giúp hà', t_lower):
+        return True
+
+    return False
+
+
+def analyze_message_priority(msg_text: str, is_from_store: bool, has_photo: bool, is_broadcast: bool) -> tuple:
+    """
+    Phân loại cấp độ cảnh báo (Level 1-4):
+    - urgent (Khẩn Cấp): Dư mã hàng, Dư số lượng lớn, Vượt sức bán, Cần điều chuyển, Cần chuyển gấp, Lỗi TO...
+    - high (Ưu Tiên Cao): Tạo bổ sung, PO bổ sung, Phiếu BS, PT BS, Nhập bổ sung, Rút tồn...
+    - medium (Trung Bình): ST Phản Hồi thực tế (nhận thiếu, không nhận, thực nhận, phản hồi tin nhắn)...
+    - normal (Thông Thường): Các tin nhắn khác, hình ảnh chứng từ, Done, Ok, hoặc chưa có phản hồi.
+    """
+    if not msg_text or is_broadcast:
+        return "normal", "⚪ Thông Thường", ""
+
+    t_lower = msg_text.lower()
+
+    # 1. KHẨN CẤP
+    urgent_patterns = [
+        r'dư\s+mã\s+hàng',
+        r'dư\s+số\s+lượng\s+lớn',
+        r'dư\s+sl\s+lớn',
+        r'vượt\s+sức\s+bán',
+        r'cần\s+điều\s+chuyển',
+        r'điều\s+chuyển\s+gấp',
+        r'cần\s+chuyển\s+gấp',
+        r'chuyển\s+tồn.*về\s+st',
+        r'dư\s+hàng',
+        r'lệch\s+tồn\s+lớn',
+        r'lỗi\s+to\b',
+        r'lỗi\s+hệ\s+thống',
+        r'khẩn\s+cấp'
+    ]
+    for p in urgent_patterns:
+        m_urg = re.search(p, t_lower)
+        if m_urg:
+            return "urgent", "🚨 Khẩn Cấp", f"Có từ khóa: {m_urg.group(0).upper()}"
+
+    # 2. ƯU TIÊN CAO
+    high_patterns = [
+        r'tạo\s+bổ\s+sung',
+        r'po\s+bổ\s+sung',
+        r'phiếu\s+(?:bổ\s+sung|bs)',
+        r'pt\s*(?:bs|bổ\s+sung)',
+        r'nhập\s+bổ\s+sung',
+        r'phiếu\s+rút\s+tồn',
+        r'rút\s+tồn',
+        r'yêu\s+cầu\s+điều\s+chỉnh',
+        r't\s+gửi\s+phiếu\s+bs'
+    ]
+    for p in high_patterns:
+        m_high = re.search(p, t_lower)
+        if m_high:
+            return "high", "⚡ Ưu Tiên Cao", f"Cần tạo/xử lý: {m_high.group(0).upper()}"
+
+    # 3. TRUNG BÌNH (ST Phản Hồi nghiệp vụ thực tế)
+    medium_patterns = [
+        r'thực\s+nhận',
+        r'không\s+nhận',
+        r'k\s+nhận',
+        r'nhận\s+thiếu',
+        r'nhận\s+\d+',
+        r'nhận\s+đủ',
+        r'nhận\s+0',
+        r'st\s+tn',
+        r'st\s+nhận',
+        r'st\s+k\s+nhận',
+        r'st\s+không',
+        r'phản\s+hồi',
+        r'chưa\s+nhận\s+được',
+        r'sáng\s+st\s+nhận',
+        r'đúng\s+trên\s+phiếu',
+        r'thiếu\s+\d+',
+        r'tn\s*:\s*\d+'
+    ]
+    for p in medium_patterns:
+        if re.search(p, t_lower):
+            return "medium", "💬 ST Phản Hồi", "ST phản hồi thực nhận / chênh lệch"
+
+    if is_from_store and len(t_lower) > 3 and not any(w in t_lower for w in ['done', 'ok', 'dạ']):
+        return "medium", "💬 ST Phản Hồi", "ST có tin phản hồi mới"
+
+    return "normal", "⚪ Thông Thường", ""
+
+
 async def fetch_telegram_groups():
     print("==============================================================================")
     print("🚀 BẮT ĐẦU ĐỒNG BỘ REALTIME & GOM CỤM NHÓM TELEGRAM SCM (0978009295)...")
@@ -223,6 +340,7 @@ async def fetch_telegram_groups():
             return None
 
         me = await client.get_me()
+        my_id = me.id if me else None
         full_name = f"{me.first_name or ''} {me.last_name or ''}".strip()
         account_info["name"] = full_name or account_info["name"]
         account_info["phone"] = f"+{me.phone}" if me.phone else account_info["phone"]
@@ -260,21 +378,93 @@ async def fetch_telegram_groups():
             last_date_str = ""
             last_date_raw = None
             has_photo = False
+            is_from_store = True
+            is_broadcast = False
+            recent_msgs_list = []
 
             if d.message:
-                m = d.message
-                last_date_raw = m.date.isoformat() if m.date else ""
-                last_date_str = m.date.strftime("%d/%m/%Y %H:%M") if m.date else ""
-                if m.message:
-                    last_msg_text = m.message.replace('\n', ' ').strip()
-                    if len(last_msg_text) > 200:
-                        last_msg_text = last_msg_text[:197] + "..."
-                if getattr(m, 'photo', None) or getattr(m, 'document', None):
-                    has_photo = True
-                    if not last_msg_text:
-                        last_msg_text = "[Hình ảnh / Chứng từ]"
+                raw_top_text = d.message.message or ""
+                
+                # Lấy 8 tin nhắn gần nhất để hiển thị đầy đủ lịch sử hội thoại và tìm tin ST phản hồi
+                try:
+                    recent_msgs = await client.get_messages(d.entity, limit=8)
+                except Exception:
+                    recent_msgs = [d.message] if d.message else []
+
+                meaningful_m = None
+                
+                # Duyệt qua các tin nhắn gần nhất (từ mới đến cũ)
+                for rm in recent_msgs:
+                    rm_text = rm.message or ""
+                    rm_sender_id = getattr(rm, 'sender_id', None)
+                    rm_is_out = bool(getattr(rm, 'out', False) or (my_id and rm_sender_id == my_id))
+                    rm_has_photo = bool(getattr(rm, 'photo', None) or getattr(rm, 'document', None))
+                    rm_is_spam = is_broadcast_or_spam_message(rm_text)
+
+                    # Gán tên người gửi hiển thị
+                    if rm_is_out:
+                        s_name = "Bạn (SCM)"
+                    elif store_code:
+                        s_name = f"Siêu thị {store_code}"
+                    else:
+                        s_name = "Siêu thị / Đối tác"
+
+                    # Phân tích cấp độ cho từng tin nhắn
+                    m_level, m_badge, m_reason = analyze_message_priority(rm_text, not rm_is_out, rm_has_photo, rm_is_spam)
+
+                    recent_msgs_list.append({
+                        "id": rm.id,
+                        "text": rm_text.strip(),
+                        "time": rm.date.strftime("%d/%m/%Y %H:%M") if rm.date else "",
+                        "time_short": rm.date.strftime("%H:%M") if rm.date else "",
+                        "date_iso": rm.date.isoformat() if rm.date else "",
+                        "is_me": rm_is_out,
+                        "sender_name": s_name,
+                        "has_photo": rm_has_photo,
+                        "media_info": "Hình ảnh / Chứng từ đính kèm" if rm_has_photo and not rm_text else "",
+                        "is_spam": rm_is_spam,
+                        "priority_level": m_level,
+                        "priority_badge": m_badge,
+                        "priority_reason": m_reason
+                    })
+
+                    # Tìm tin nhắn có ý nghĩa gần nhất (không phải tin broadcast định kỳ)
+                    if not meaningful_m and (rm_text or rm_has_photo) and not rm_is_spam:
+                        meaningful_m = rm
+
+                # Đảo ngược lại theo thứ tự thời gian tăng dần để hiển thị trong khung chat (cũ -> mới)
+                recent_msgs_list.reverse()
+
+                if meaningful_m:
+                    m = meaningful_m
+                    is_broadcast = False
+                else:
+                    m = d.message
+                    is_broadcast = is_broadcast_or_spam_message(raw_top_text)
+
+                if not is_broadcast and m:
+                    last_date_raw = m.date.isoformat() if m.date else ""
+                    last_date_str = m.date.strftime("%d/%m/%Y %H:%M") if m.date else ""
+                    if m.message:
+                        last_msg_text = m.message.replace('\n', ' ').strip()
+                        if len(last_msg_text) > 200:
+                            last_msg_text = last_msg_text[:197] + "..."
+                    if getattr(m, 'photo', None) or getattr(m, 'document', None):
+                        has_photo = True
+                        if not last_msg_text:
+                            last_msg_text = "[Hình ảnh / Chứng từ]"
+                    
+                    sender_id = getattr(m, 'sender_id', None)
+                    is_from_store = (sender_id != my_id and not getattr(m, 'out', False))
+                elif is_broadcast:
+                    last_msg_text = ""
+                    last_date_raw = d.message.date.isoformat() if d.message and d.message.date else ""
+                    last_date_str = d.message.date.strftime("%d/%m/%Y %H:%M") if d.message and d.message.date else ""
 
             unread = d.unread_count or 0
+
+            # Phân loại cấp độ cảnh báo (1: urgent, 2: high, 3: medium, 4: normal)
+            p_level, p_badge, p_reason = analyze_message_priority(last_msg_text, is_from_store, has_photo, is_broadcast)
 
             groups_data.append({
                 "chat_id_str": chat_id_str,
@@ -290,8 +480,13 @@ async def fetch_telegram_groups():
                 "last_date": last_date_str,
                 "last_date_raw": last_date_raw or "",
                 "has_photo": has_photo,
+                "is_from_store": is_from_store,
                 "is_channel": d.is_channel,
-                "is_group": d.is_group
+                "is_group": d.is_group,
+                "priority_level": p_level,
+                "priority_badge": p_badge,
+                "priority_reason": p_reason,
+                "recent_messages": recent_msgs_list
             })
 
     except Exception as e:
@@ -316,8 +511,11 @@ def build_store_clusters(groups_data: list, store_map: dict):
         "latest_message_snippet": "",
         "last_activity_date": "",
         "last_activity_raw": "",
-        "has_recent_activity": False
+        "has_recent_activity": False,
+        "max_priority": "normal"
     })
+
+    priority_rank = {"urgent": 4, "high": 3, "medium": 2, "normal": 1}
 
     # Pre-populate all stores from store_map
     for code, info in store_map.items():
@@ -338,6 +536,10 @@ def build_store_clusters(groups_data: list, store_map: dict):
         c["total_groups"] += 1
         c["unread_total"] += g["unread"]
 
+        g_prio = g.get("priority_level", "normal")
+        if priority_rank.get(g_prio, 1) > priority_rank.get(c["max_priority"], 1):
+            c["max_priority"] = g_prio
+
         g_summary = {
             "title": g["title"],
             "chat_id_str": g["chat_id_str"],
@@ -345,7 +547,10 @@ def build_store_clusters(groups_data: list, store_map: dict):
             "unread": g["unread"],
             "last_message": g["last_message"],
             "last_date": g["last_date"],
-            "last_date_raw": g["last_date_raw"]
+            "last_date_raw": g["last_date_raw"],
+            "priority_level": g.get("priority_level", "normal"),
+            "priority_badge": g.get("priority_badge", "⚪ Thông Thường"),
+            "priority_reason": g.get("priority_reason", "")
         }
 
         if "ABA" in g["group_type"] or "Đông Mát" in g["group_type"]:
@@ -372,6 +577,11 @@ def build_store_clusters(groups_data: list, store_map: dict):
 
 
 def export_all(groups_data, account_info, store_clusters):
+    urgent_cnt = sum(1 for g in groups_data if g.get("priority_level") == "urgent")
+    high_cnt = sum(1 for g in groups_data if g.get("priority_level") == "high")
+    medium_cnt = sum(1 for g in groups_data if g.get("priority_level") == "medium")
+    normal_cnt = sum(1 for g in groups_data if g.get("priority_level") == "normal")
+
     summary = {
         "account": account_info,
         "total_groups": len(groups_data),
@@ -383,21 +593,37 @@ def export_all(groups_data, account_info, store_clusters):
         "ic_count": sum(1 for g in groups_data if g["group_type"] == "Đối soát & IC"),
         "dc_count": sum(1 for g in groups_data if g["group_type"] == "Kho DC & Logistics"),
         "internal_count": sum(1 for g in groups_data if g["group_type"] == "Nội bộ SCM"),
-        "other_count": sum(1 for g in groups_data if g["group_type"] not in ["ABA - Đông Mát", "KRC", "Đối soát & IC", "Kho DC & Logistics", "Nội bộ SCM"])
+        "chat_id_count": sum(1 for g in groups_data if "chat id" in g["group_type"].lower() or "chat id" in g["title"].lower()),
+        "other_count": sum(1 for g in groups_data if g["group_type"] not in ["ABA - Đông Mát", "KRC", "Đối soát & IC", "Kho DC & Logistics", "Nội bộ SCM"]),
+        "urgent_count": urgent_cnt,
+        "high_count": high_cnt,
+        "medium_count": medium_cnt,
+        "normal_count": normal_cnt
     }
 
-    ticker_groups = [g for g in groups_data if g["last_message"] and g["last_date"]]
-    ticker_groups.sort(key=lambda x: x.get("last_date_raw", ""), reverse=True)
+    # Ticker: ưu tiên tin nhắn Khẩn cấp / Ưu tiên cao / ST phản hồi
+    ticker_groups = [g for g in groups_data if g["last_message"] and g.get("priority_level") in ["urgent", "high", "medium"]]
+    if len(ticker_groups) < 10:
+        extra = [g for g in groups_data if g["last_message"] and g not in ticker_groups]
+        ticker_groups.extend(extra)
+
+    ticker_groups.sort(key=lambda x: (
+        0 if x.get("priority_level") == "urgent" else 1 if x.get("priority_level") == "high" else 2 if x.get("priority_level") == "medium" else 3,
+        -(datetime.fromisoformat(x["last_date_raw"]).timestamp() if x.get("last_date_raw") else 0)
+    ))
+
     ticker_items = []
-    for g in ticker_groups[:15]:
+    for g in ticker_groups[:20]:
         snippet = g["last_message"]
-        if len(snippet) > 80:
-            snippet = snippet[:77] + "..."
+        if len(snippet) > 85:
+            snippet = snippet[:82] + "..."
         ticker_items.append({
             "group_title": g["title"],
             "store_code": g["store_code"],
             "snippet": snippet,
-            "time": g["last_date"]
+            "time": g["last_date"],
+            "priority_badge": g.get("priority_badge", ""),
+            "priority_level": g.get("priority_level", "normal")
         })
 
     full_payload = {
@@ -453,6 +679,7 @@ def export_all(groups_data, account_info, store_clusters):
             "STT": idx,
             "Mã Siêu Thị": c["store_code"],
             "Tên Siêu Thị": c["store_name"],
+            "Mức Độ Ưu Tiên Cao Nhất": c.get("max_priority", "normal"),
             "Nhóm ABA - Đông Mát": aba_titles,
             "Chat ID ABA": aba_ids,
             "Nhóm KRC": krc_titles,
@@ -467,14 +694,16 @@ def export_all(groups_data, account_info, store_clusters):
     for idx, g in enumerate(groups_data, 1):
         rows_detail.append({
             "STT": idx,
-            "Chat ID": g["chat_id_str"],
-            "Tên Group Telegram": g["title"],
-            "Phân Loại Nhóm": g["group_type"],
-            "Danh Mục": g["category"],
+            "Cấp Độ Cảnh Báo": g.get("priority_badge", "⚪ Thông Thường"),
+            "Lý Do Cảnh Báo": g.get("priority_reason", ""),
             "Mã Siêu Thị": g["store_code"],
             "Tên Siêu Thị": g["store_name"],
+            "Tên Group Telegram": g["title"],
+            "Chat ID": g["chat_id_str"],
+            "Phân Loại Nhóm": g["group_type"],
+            "Danh Mục": g["category"],
             "Kho Phụ Trách": g["kho_tag"],
-            "Tin Nhắn Gần Nhất": g["last_message"],
+            "Tin Nhắn Thực Tế ST": g["last_message"],
             "Thời Gian": g["last_date"],
             "Tin Chưa Đọc": g["unread"]
         })
@@ -495,8 +724,7 @@ def export_all(groups_data, account_info, store_clusters):
     print(f"📊 Đã xuất file Excel: {OUTPUT_EXCEL_PATH}")
     print("==============================================================================")
     print(f"🎉 HOÀN TẤT ĐỒNG BỘ TELEGRAM SCM: {len(groups_data)} Nhóm | {len(store_clusters)} Cụm Siêu Thị!")
-    print(f"✨ Cụm có nhóm đã gom: {summary['clusters_with_groups']} Siêu thị.")
-    print(f"✨ Cụm có đủ cả ABA & KRC: {summary['clusters_with_both']} Siêu thị.")
+    print(f"🚨 Cảnh báo: {urgent_cnt} Khẩn cấp | ⚡ {high_cnt} Ưu tiên cao | 💬 {medium_cnt} ST Phản hồi | ⚪ {normal_cnt} Thông thường.")
     print("==============================================================================")
 
 
