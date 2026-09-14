@@ -3704,6 +3704,19 @@
                             <input type="text" id="teleSearchInput" oninput="filterTelegramData()" placeholder="🔍 Tìm kiếm theo Mã ST (A101...), Tên ST, Chat ID, nội dung tin mới..." style="width:100%; padding:0.5rem 0.85rem 0.5rem 2.2rem; background:var(--bg-card-alt); border:1px solid var(--border-color); border-radius:6px; color:var(--text-primary); font-size:0.85rem;">
                         </div>
 
+                        <!-- SORT DROPDOWN (REALTIME) -->
+                        <div style="display:flex; align-items:center; gap:6px; background:var(--bg-card-alt); border:1px solid var(--border-color); border-radius:6px; padding:2px 8px;">
+                            <i class="fa-solid fa-arrow-down-short-wide" style="color:#229ED9; font-size:0.85rem;"></i>
+                            <span style="font-size:0.78rem; color:var(--text-secondary); white-space:nowrap; font-weight:600;">Sắp xếp:</span>
+                            <select id="teleSortSelect" onchange="teleCurrentSort = this.value; filterTelegramData();" style="padding:0.4rem 0.6rem; background:transparent; border:none; color:var(--text-primary); font-size:0.82rem; cursor:pointer; outline:none;">
+                                <option value="time_desc" selected>⏰ Mới nhất Realtime (Giảm dần)</option>
+                                <option value="time_asc">⏳ Cũ nhất trước (Tăng dần)</option>
+                                <option value="prio_desc">🚨 Cấp độ Cảnh báo (Khẩn cấp trước)</option>
+                                <option value="unread_desc">💬 Tin chưa đọc nhiều nhất</option>
+                                <option value="store_asc">🏪 Mã Siêu thị (A101 → A999)</option>
+                            </select>
+                        </div>
+
                         <!-- ACTION BUTTONS -->
                         <div style="display:flex; gap:0.5rem; align-items:center;">
                             <button onclick="exportTelegramToExcel()" class="btn-export-excel" style="display:inline-flex; align-items:center; gap:6px; padding:0.5rem 0.95rem; background:#238636; color:#fff; border:none; border-radius:6px; font-weight:600; font-size:0.82rem; cursor:pointer;">
@@ -3809,7 +3822,7 @@
                                     <th style="width:120px; text-align:center;">LOẠI NHÓM</th>
                                     <th style="width:125px; text-align:center;">CẤP ĐỘ</th>
                                     <th style="min-width:280px;">TIN MỚI NHẤT (ST PHẢN HỒI)</th>
-                                    <th style="width:115px; text-align:center;">THỜI GIAN</th>
+                                    <th style="width:125px; text-align:center; cursor:pointer;" onclick="toggleTimeSort()" title="Nhấp để đảo chiều sắp xếp theo thời gian (Mới nhất / Cũ nhất)">THỜI GIAN <i class="fa-solid fa-sort" style="font-size:0.7rem; margin-left:2px; opacity:0.7;"></i></th>
                                     <th style="width:70px; text-align:center;">CHƯA ĐỌC</th>
                                     <th style="width:130px; text-align:center;">THAO TÁC</th>
                                 </tr>
@@ -8176,6 +8189,53 @@
         // LOGIC & QUẢN LÝ TAB TELEGRAM SCM - DANH SÁCH NHÓM TRỰC TIẾP & REALTIME
         let teleCurrentMode = 'all'; // 'all', 'aba', 'krc', 'ic', 'dc', 'internal', 'chatid'
         let teleCurrentPrio = 'all'; // 'all', 'urgent', 'high', 'medium', 'normal'
+        let teleCurrentSort = 'time_desc'; // 'time_desc', 'time_asc', 'prio_desc', 'unread_desc', 'store_asc'
+
+        function getGroupTimeTs(g) {
+            if (g.last_date_raw) {
+                const ts = new Date(g.last_date_raw).getTime();
+                if (!isNaN(ts)) return ts;
+            }
+            if (g.last_date) {
+                const p = g.last_date.match(/(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})\s+(\d{1,2}):(\d{1,2})/);
+                if (p) {
+                    const d = new Date(parseInt(p[3]), parseInt(p[2])-1, parseInt(p[1]), parseInt(p[4]), parseInt(p[5]));
+                    if (!isNaN(d.getTime())) return d.getTime();
+                }
+            }
+            return 0;
+        }
+
+        function formatGroupTime(g) {
+            if (!g.last_date_raw && !g.last_date) return '<span style="color:var(--text-secondary); opacity:0.5;">-</span>';
+            let d = null;
+            if (g.last_date_raw) {
+                d = new Date(g.last_date_raw);
+            } else if (g.last_date) {
+                const p = g.last_date.match(/(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})\s+(\d{1,2}):(\d{1,2})/);
+                if (p) d = new Date(parseInt(p[3]), parseInt(p[2])-1, parseInt(p[1]), parseInt(p[4]), parseInt(p[5]));
+            }
+            if (!d || isNaN(d.getTime())) return `<span style="font-size:0.75rem; color:var(--text-secondary);">${g.last_date || '-'}</span>`;
+
+            const now = new Date();
+            const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            const hh = String(d.getHours()).padStart(2, '0');
+            const mm = String(d.getMinutes()).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            const MM = String(d.getMonth() + 1).padStart(2, '0');
+
+            if (isToday) {
+                return `<span style="color:#58a6ff; font-weight:600; font-size:0.75rem;" title="${dd}/${MM}/${d.getFullYear()} ${hh}:${mm}"><i class="fa-regular fa-clock" style="margin-right:2px;"></i>${hh}:${mm}</span>`;
+            }
+            return `<span style="color:var(--text-secondary); font-size:0.75rem;" title="${dd}/${MM}/${d.getFullYear()} ${hh}:${mm}">${dd}/${MM} ${hh}:${mm}</span>`;
+        }
+
+        function toggleTimeSort() {
+            teleCurrentSort = (teleCurrentSort === 'time_desc') ? 'time_asc' : 'time_desc';
+            const select = document.getElementById('teleSortSelect');
+            if (select) select.value = teleCurrentSort;
+            filterTelegramData();
+        }
 
         function showToast(msg) {
             let toast = document.getElementById('toastMsg');
@@ -8287,14 +8347,36 @@
                 return sCode.includes(query) || sName.includes(query) || title.includes(query) || chatId.includes(query) || lastMsg.includes(query) || reason.includes(query) || badge.includes(query);
             });
 
-            // Sắp xếp ưu tiên: Khẩn cấp -> Ưu tiên cao -> ST phản hồi -> Thông thường (và theo ngày mới nhất)
+            // Sắp xếp các nhóm: Ưu tiên Realtime mới nhất lên đầu
             filtered.sort((a, b) => {
-                const rankA = priorityRank[a.priority_level || 'normal'] || 1;
-                const rankB = priorityRank[b.priority_level || 'normal'] || 1;
-                if (rankA !== rankB) return rankB - rankA;
-                const timeA = a.last_date_raw || '';
-                const timeB = b.last_date_raw || '';
-                return timeB.localeCompare(timeA);
+                if (teleCurrentSort === 'time_desc') {
+                    const tA = getGroupTimeTs(a);
+                    const tB = getGroupTimeTs(b);
+                    if (tB !== tA) return tB - tA;
+                    const rankA = priorityRank[a.priority_level || 'normal'] || 1;
+                    const rankB = priorityRank[b.priority_level || 'normal'] || 1;
+                    return rankB - rankA;
+                } else if (teleCurrentSort === 'time_asc') {
+                    const tA = getGroupTimeTs(a);
+                    const tB = getGroupTimeTs(b);
+                    if (tA !== tB) return tA - tB;
+                    return (a.store_code || '').localeCompare(b.store_code || '');
+                } else if (teleCurrentSort === 'prio_desc') {
+                    const rankA = priorityRank[a.priority_level || 'normal'] || 1;
+                    const rankB = priorityRank[b.priority_level || 'normal'] || 1;
+                    if (rankA !== rankB) return rankB - rankA;
+                    return getGroupTimeTs(b) - getGroupTimeTs(a);
+                } else if (teleCurrentSort === 'unread_desc') {
+                    const uA = a.unread || 0;
+                    const uB = b.unread || 0;
+                    if (uB !== uA) return uB - uA;
+                    return getGroupTimeTs(b) - getGroupTimeTs(a);
+                } else if (teleCurrentSort === 'store_asc') {
+                    const cA = a.store_code || 'ZZZZ';
+                    const cB = b.store_code || 'ZZZZ';
+                    return cA.localeCompare(cB, undefined, { numeric: true });
+                }
+                return getGroupTimeTs(b) - getGroupTimeTs(a);
             });
 
             return filtered;
@@ -8394,7 +8476,7 @@
                         <th style="width:120px; text-align:center;">LOẠI NHÓM</th>
                         <th style="width:125px; text-align:center;">CẤP ĐỘ</th>
                         <th style="min-width:280px;">TIN MỚI NHẤT (ST PHẢN HỒI)</th>
-                        <th style="width:115px; text-align:center;">THỜI GIAN</th>
+                        <th style="width:125px; text-align:center; cursor:pointer;" onclick="toggleTimeSort()" title="Nhấp để đảo chiều sắp xếp theo thời gian (Mới nhất / Cũ nhất)">THỜI GIAN <i class="fa-solid fa-sort" style="font-size:0.7rem; margin-left:2px; opacity:0.7;"></i></th>
                         <th style="width:70px; text-align:center;">CHƯA ĐỌC</th>
                         <th style="width:130px; text-align:center;">THAO TÁC</th>
                     </tr>
@@ -8447,7 +8529,7 @@
                     <td style="text-align:center;">${getGroupTypeBadge(g.group_type)}</td>
                     <td style="text-align:center;">${prioBadge}</td>
                     <td>${msgSnippet}</td>
-                    <td style="text-align:center; font-size:0.75rem; color:var(--text-secondary);">${g.last_date || '-'}</td>
+                    <td style="text-align:center;">${formatGroupTime(g)}</td>
                     <td style="text-align:center;">${g.unread > 0 ? `<span style="background:#f85149; color:#fff; padding:1px 6px; border-radius:10px; font-size:0.7rem; font-weight:700;">${g.unread}</span>` : `<span style="color:var(--text-secondary); opacity:0.4;">0</span>`}</td>
                     <td style="text-align:center; white-space:nowrap;">
                         ${chatBtn}
@@ -8467,13 +8549,13 @@
         function refreshTelegramRealtime(btnEl) {
             if (btnEl) {
                 btnEl.disabled = true;
-                btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đồng bộ...';
+                btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đồng bộ realtime...';
             }
             const scriptUrl = 'daily_details/telegram_groups.js?t=' + new Date().getTime();
             const s = document.createElement('script');
             s.src = scriptUrl;
             s.onload = () => {
-                showToast("⚡ Đã cập nhật dữ liệu Realtime mới nhất từ Telegram!");
+                showToast("⚡ Đã cập nhật và sắp xếp tin theo thời gian Realtime mới nhất!");
                 if (btnEl) {
                     btnEl.disabled = false;
                     btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
