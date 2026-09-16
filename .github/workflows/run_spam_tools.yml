@@ -15,8 +15,17 @@ on:
           - hau_kiem_rau
           - hau_kiem_thit_ca
           - dong_mat_sheet
+          - dong_mat_nhom_dong
           - dong_mat_spam
+          - thit_ca_spam
+          - rau_cu_spam
+          - spam_tu_chon
+          - xoa_tin_nhan
           - lay_chat_id
+          - tra_cuu_id
+          - add_thanh_vien
+          - xuat_doi_soat_chuan
+          - export_thit_ca
           - sync_report
       target_date:
         description: 'Ngày Đối Soát (YYYY-MM-DD) - Để trống để tự động lấy ngày phù hợp'

@@ -570,13 +570,86 @@ async def run_tool_lay_chat_id():
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "1_Lay_Chat_ID.py")
     if os.path.exists(script_path):
         subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+async def run_tool_dong_mat_nhom_dong():
+    print("\n=======================================================")
+    print("🧊 BẮT ĐẦU CHẠY TOOL ĐỐI SOÁT RIÊNG NHÓM ĐÔNG...")
+    print("=======================================================")
+    script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "1_Doi_Soat_Nhom_Dong.py")
+    if os.path.exists(script_path):
+        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+
+async def run_tool_thit_ca_spam():
+    print("\n=======================================================")
+    print("🥩 BẮT ĐẦU CHẠY TOOL SPAM BÁO CÁO THỊT CÁ...")
+    print("=======================================================")
+    script_path = os.path.join(TOOLS_BASE_DIR, "THIT_CA", "Tool_Spam", "2_Spam_Telegram.py")
+    if os.path.exists(script_path):
+        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+
+async def run_tool_rau_cu_spam():
+    print("\n=======================================================")
+    print("🥦 BẮT ĐẦU CHẠY TOOL SPAM BÁO CÁO RAU CỦ...")
+    print("=======================================================")
+    script_path = os.path.join(TOOLS_BASE_DIR, "RAU_CU", "2_Spam_Telegram.py")
+    if os.path.exists(script_path):
+        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+
+async def run_tool_spam_tu_chon():
+    print("\n=======================================================")
+    print("🎯 BẮT ĐẦU CHẠY TOOL SPAM TIN NHẮN TÙY CHỌN (5_Spam_Tu_Chon)...")
+    print("=======================================================")
+    script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "5_Spam_Tu_Chon.py")
+    if os.path.exists(script_path):
+        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+
+async def run_tool_xoa_tin_nhan():
+    print("\n=======================================================")
+    print("🗑️ BẮT ĐẦU CHẠY TOOL THU HỒI / XÓA TIN NHẮN ĐÃ SPAM...")
+    print("=======================================================")
+    script_path = os.path.join(TOOLS_BASE_DIR, "RAU_CU", "Xoa_Tin_Nhan.py")
+    if os.path.exists(script_path):
+        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+
+async def run_tool_tra_cuu_id():
+    print("\n=======================================================")
+    print("🔍 BẮT ĐẦU CHẠY TOOL TRA CỨU NHANH CHAT ID GROUP...")
+    print("=======================================================")
+    script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "3_Tra_Cuu_ID.py")
+    if os.path.exists(script_path):
+        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+
+async def run_tool_add_thanh_vien():
+    print("\n=======================================================")
+    print("👥 BẮT ĐẦU CHẠY TOOL TỰ ĐỘNG THÊM THÀNH VIÊN VÀO GROUP TELEGRAM...")
+    print("=======================================================")
+    script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "4_Add_Thanh_Vien.py")
+    if os.path.exists(script_path):
+        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+
+async def run_tool_xuat_doi_soat_chuan():
+    print("\n=======================================================")
+    print("📑 BẮT ĐẦU XUẤT FILE BÁO CÁO ĐỐI SOÁT CHUẨN EXCEL...")
+    print("=======================================================")
+    script_path = os.path.join(os.path.dirname(ROOT_DIR), "xuat_doi_soat_chuan.py")
+    if os.path.exists(script_path):
+        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+
+async def run_tool_export_thit_ca():
+    print("\n=======================================================")
+    print("📈 BẮT ĐẦU CHẠY TOOL XUẤT ĐỐI SOÁT THỊT CÁ...")
+    print("=======================================================")
+    script_path = os.path.join(TOOLS_BASE_DIR, "THIT_CA", "export_thit_ca.py")
+    if os.path.exists(script_path):
+        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
 
 
 def main():
     parser = argparse.ArgumentParser(description="Chạy Tool Đối Soát & Spam Phiếu Chuyển SCM")
     parser.add_argument("--tool", choices=[
         "all", "thit_ca", "mat", "hau_kiem_rau", "hau_kiem_thit_ca", 
-        "dong_mat_sheet", "dong_mat_spam", "lay_chat_id", "sync_report"
+        "dong_mat_sheet", "dong_mat_nhom_dong", "dong_mat_spam", "thit_ca_spam", "rau_cu_spam",
+        "spam_tu_chon", "xoa_tin_nhan", "lay_chat_id", "tra_cuu_id", "add_thanh_vien",
+        "xuat_doi_soat_chuan", "export_thit_ca", "sync_report"
     ], default="all", help="Chọn tool cần chạy")
     parser.add_argument("--date", default=None, help="Ngày đối soát (YYYY-MM-DD)")
     parser.add_argument("--dry-run", action="store_true", help="Chế độ chạy thử không gửi tin nhắn")
@@ -601,10 +674,28 @@ def main():
         loop.run_until_complete(run_tool_hau_kiem_thit_ca(date_val, args.dry_run))
     elif args.tool == "dong_mat_sheet":
         loop.run_until_complete(run_tool_dong_mat_full(date_val, args.dry_run))
+    elif args.tool == "dong_mat_nhom_dong":
+        loop.run_until_complete(run_tool_dong_mat_nhom_dong())
     elif args.tool == "dong_mat_spam":
         loop.run_until_complete(run_tool_dong_mat_spam(date_val, args.dry_run))
+    elif args.tool == "thit_ca_spam":
+        loop.run_until_complete(run_tool_thit_ca_spam())
+    elif args.tool == "rau_cu_spam":
+        loop.run_until_complete(run_tool_rau_cu_spam())
+    elif args.tool == "spam_tu_chon":
+        loop.run_until_complete(run_tool_spam_tu_chon())
+    elif args.tool == "xoa_tin_nhan":
+        loop.run_until_complete(run_tool_xoa_tin_nhan())
     elif args.tool == "lay_chat_id":
         loop.run_until_complete(run_tool_lay_chat_id())
+    elif args.tool == "tra_cuu_id":
+        loop.run_until_complete(run_tool_tra_cuu_id())
+    elif args.tool == "add_thanh_vien":
+        loop.run_until_complete(run_tool_add_thanh_vien())
+    elif args.tool == "xuat_doi_soat_chuan":
+        loop.run_until_complete(run_tool_xuat_doi_soat_chuan())
+    elif args.tool == "export_thit_ca":
+        loop.run_until_complete(run_tool_export_thit_ca())
     elif args.tool == "all":
         loop.run_until_complete(run_tool_thit_ca(date_val, args.dry_run))
         loop.run_until_complete(run_tool_mat(date_val, args.dry_run))
@@ -623,3 +714,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
