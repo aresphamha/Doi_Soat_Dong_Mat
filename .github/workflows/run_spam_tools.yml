@@ -14,6 +14,9 @@ on:
           - mat
           - hau_kiem_rau
           - hau_kiem_thit_ca
+          - dong_mat_sheet
+          - dong_mat_spam
+          - lay_chat_id
           - sync_report
       target_date:
         description: 'Ngày Đối Soát (YYYY-MM-DD) - Để trống để tự động lấy ngày phù hợp'
@@ -63,14 +66,19 @@ jobs:
           python -c "
           import os, base64
           b64 = os.environ.get('TELEGRAM_SESSION_B64', '').strip()
+          if not b64:
+              b64_file = 'SPAM_PHIEU_CHUYEN/CONFIG_DATA/session_b64.txt'
+              if os.path.exists(b64_file):
+                  with open(b64_file, 'r', encoding='utf-8') as f:
+                      b64 = f.read().strip()
           if b64:
               os.makedirs('SPAM_PHIEU_CHUYEN/CONFIG_DATA', exist_ok=True)
               session_bytes = base64.b64decode(b64)
               with open('SPAM_PHIEU_CHUYEN/CONFIG_DATA/user_session.session', 'wb') as f:
                   f.write(session_bytes)
-              print('✅ Đã giải mã session Telegram từ GitHub Secret!')
+              print('✅ Đã khôi phục session Telegram thành công!')
           else:
-              print('ℹ️ Không tìm thấy TELEGRAM_SESSION_B64 trong GitHub Secrets.')
+              print('ℹ️ Không tìm thấy session b64.')
           "
 
       - name: ⚙️ 5. Thực Thi Công Cụ

@@ -1,3 +1,19 @@
+
+def find_data_file(filename, default_dir=None):
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.join(cur_dir, filename),
+        os.path.join(cur_dir, '..', 'CONFIG_DATA', filename),
+        os.path.join(cur_dir, '..', filename),
+        os.path.join(r'C:\Users\PC\Desktop\AI\Đối soát\ĐÔNG MÁT', filename),
+        os.path.join(r'C:\Users\PC\Desktop\AI\Đối soát\THỊT CÁ', filename),
+        os.path.join(r'C:\Users\PC\Desktop\AI\Đối soát\RAU CỦ', filename)
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return os.path.abspath(c)
+    return os.path.join(cur_dir, filename)
+
 import asyncio
 from telethon import TelegramClient
 
@@ -11,7 +27,7 @@ async def main():
     
     keyword = input("\nNhập tên siêu thị hoặc mã ST cần tìm (Ví dụ: A225): ").strip().lower()
     
-    client = TelegramClient('user_session', api_id, api_hash)
+    client = TelegramClient(find_data_file('user_session').replace('.session', ''), api_id, api_hash)
     await client.start()
     
     print("\nĐang tìm kiếm trong danh bạ Telegram của bạn...\n")

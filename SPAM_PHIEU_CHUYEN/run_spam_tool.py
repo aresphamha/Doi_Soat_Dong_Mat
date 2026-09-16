@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Hệ Thống Điều Khiển & Thực Thi Tự Động 4 Công Cụ SCM (Cloud Runner & Local CLI)
+Hệ Thống Điều Khiển & Thực Thi Tự Động Toàn Bộ Công Cụ SCM (Cloud Runner & Local CLI)
 Hỗ trợ kích hoạt trực tiếp từ Web GitHub Pages qua GitHub Actions Workflow Dispatch.
 """
 
@@ -9,6 +9,7 @@ import sys
 import argparse
 import base64
 import asyncio
+import subprocess
 from datetime import datetime, timedelta
 import pytz
 import pymysql
@@ -23,18 +24,24 @@ if sys.stdout.encoding != 'utf-8':
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_DATA_DIR = os.path.join(ROOT_DIR, "CONFIG_DATA")
+TOOLS_BASE_DIR = os.path.join(os.path.dirname(ROOT_DIR), "TOOLS_DOI_SOAT")
 
 def ensure_telegram_session():
-    """Tự động khôi phục session Telegram từ biến môi trường nếu chạy trên GitHub Actions."""
+    """Tự động khôi phục session Telegram từ biến môi trường hoặc session_b64.txt nếu chạy trên GitHub Actions."""
     session_file = os.path.join(CONFIG_DATA_DIR, "user_session.session")
     if not os.path.exists(session_file):
         b64 = os.environ.get("TELEGRAM_SESSION_B64", "").strip()
+        if not b64:
+            b64_file = os.path.join(CONFIG_DATA_DIR, "session_b64.txt")
+            if os.path.exists(b64_file):
+                with open(b64_file, "r", encoding="utf-8") as f:
+                    b64 = f.read().strip()
         if b64:
             try:
                 os.makedirs(CONFIG_DATA_DIR, exist_ok=True)
                 with open(session_file, "wb") as f:
                     f.write(base64.b64decode(b64))
-                print(f"✅ Đã giải mã session từ TELEGRAM_SESSION_B64 vào {session_file}")
+                print(f"✅ Đã khôi phục session Telegram từ Base64 vào {session_file}")
             except Exception as e:
                 print(f"⚠️ Lỗi giải mã session: {e}")
     return session_file
@@ -42,6 +49,9 @@ def ensure_telegram_session():
 def find_mapping_file(filename):
     candidates = [
         os.path.join(CONFIG_DATA_DIR, filename),
+        os.path.join(TOOLS_BASE_DIR, "DONG_MAT", filename),
+        os.path.join(TOOLS_BASE_DIR, "THIT_CA", filename),
+        os.path.join(TOOLS_BASE_DIR, "RAU_CU", filename),
         os.path.join(ROOT_DIR, "CHI TIẾT MÁT", filename),
         os.path.join(ROOT_DIR, "CHI TIẾT THỊT CÁ", filename),
         os.path.join(ROOT_DIR, "HẬU KIỂM RAU", filename),
@@ -123,7 +133,6 @@ async def run_tool_thit_ca(target_date=None, dry_run=False):
     grouped = df_tickets.groupby('Nơi nhận')
     print(f"🏪 Tổng số Siêu thị có phiếu treo: {len(grouped)}")
 
-    # Gửi tin nhắn
     session_file = ensure_telegram_session()
     session_base = session_file.replace('.session', '')
     
@@ -144,9 +153,7 @@ async def run_tool_thit_ca(target_date=None, dry_run=False):
     for store_name, group in grouped:
         chat_id_raw = chat_map.get(str(store_name).strip())
         if not chat_id_raw:
-            print(f"⏩ [Bỏ qua] Không tìm thấy Chat ID cho: {store_name}")
             continue
-            
         try:
             chat_id = int(chat_id_raw)
         except Exception:
@@ -158,7 +165,6 @@ async def run_tool_thit_ca(target_date=None, dry_run=False):
             print(f"🔍 [DRY-RUN] Sẽ gửi đến {store_name} ({chat_id}): {len(group)} phiếu")
         else:
             try:
-                # Xuất ảnh bảng
                 img_path = f"temp_thit_ca_{int(chat_id)}.png"
                 df_slice = group[['Mã phiếu chuyển', 'SKU', 'Số lượng']]
                 dfi.export(df_slice, img_path, table_conversion="matplotlib", dpi=180)
@@ -344,14 +350,13 @@ async def run_tool_hau_kiem_rau(target_date=None, dry_run=False):
     id_to_name = dict(zip(df_branches['branch_id'], df_branches['branch_name']))
     conn.close()
 
-    print(f"📊 Tìm thấy {len(df_tickets)} phiếu Hậu Kiểm Rau Củ lệch cần đối soát")
+    print(f"📊 Tìm thấy {len(df_tickets)} phiếu Hậu Kiểm Rau Củ lệch")
     if len(df_tickets) == 0:
-        print("✅ Không có phiếu Hậu kiểm Rau Củ lệch trong khoảng thời gian này.")
+        print("✅ Không có phiếu Hậu kiểm Rau Củ lệch.")
         return
 
     df_tickets['Nơi nhận'] = df_tickets['to_branch_id'].map(id_to_name)
     grouped = df_tickets.groupby('Nơi nhận')
-    print(f"🏪 Tổng số Siêu thị cần gửi thông báo: {len(grouped)}")
 
     session_file = ensure_telegram_session()
     session_base = session_file.replace('.session', '')
@@ -460,12 +465,11 @@ async def run_tool_hau_kiem_thit_ca(target_date=None, dry_run=False):
 
     print(f"📊 Tìm thấy {len(df_tickets)} phiếu Hậu Kiểm Thịt Cá lệch")
     if len(df_tickets) == 0:
-        print("✅ Không có phiếu Hậu kiểm Thịt Cá lệch trong khoảng thời gian này.")
+        print("✅ Không có phiếu Hậu kiểm Thịt Cá lệch.")
         return
 
     df_tickets['Nơi nhận'] = df_tickets['to_branch_id'].map(id_to_name)
     grouped = df_tickets.groupby('Nơi nhận')
-    print(f"🏪 Tổng số Siêu thị cần gửi thông báo: {len(grouped)}")
 
     session_file = ensure_telegram_session()
     session_base = session_file.replace('.session', '')
@@ -519,15 +523,44 @@ async def run_tool_hau_kiem_thit_ca(target_date=None, dry_run=False):
     await client.disconnect()
     print("✅ Hoàn thành Tool Hậu Kiểm Thịt Cá!")
 
+# -------------------------------------------------------------
+# MODULE 5: ĐÔNG MÁT SHEET & SPAM TELEGRAM
+# -------------------------------------------------------------
+async def run_tool_dong_mat_full(target_date=None, dry_run=False):
+    print("\n=======================================================")
+    print("❄️ BẮT ĐẦU CHẠY TOOL ĐỐI SOÁT ĐÔNG MÁT GỐC...")
+    print("=======================================================")
+    script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "1_Doi_Soat_Dong_Mat.py")
+    if os.path.exists(script_path):
+        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+
+async def run_tool_dong_mat_spam(target_date=None, dry_run=False):
+    print("\n=======================================================")
+    print("📨 BẮT ĐẦU CHẠY TOOL SPAM BÁO CÁO ĐÔNG MÁT...")
+    print("=======================================================")
+    script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "2_Spam_Telegram.py")
+    if os.path.exists(script_path):
+        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+
+async def run_tool_lay_chat_id():
+    print("\n=======================================================")
+    print("🆔 BẮT ĐẦU CHẠY TOOL QUÉT & CẬP NHẬT CHAT ID TELEGRAM...")
+    print("=======================================================")
+    script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "1_Lay_Chat_ID.py")
+    if os.path.exists(script_path):
+        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+
 
 def main():
-    parser = argparse.ArgumentParser(description="Chạy Tool Spam Phiếu Chuyển SCM")
-    parser.add_argument("--tool", choices=["thit_ca", "mat", "hau_kiem_rau", "hau_kiem_thit_ca", "sync_report", "all"], default="all", help="Chọn tool cần chạy")
+    parser = argparse.ArgumentParser(description="Chạy Tool Đối Soát & Spam Phiếu Chuyển SCM")
+    parser.add_argument("--tool", choices=[
+        "all", "thit_ca", "mat", "hau_kiem_rau", "hau_kiem_thit_ca", 
+        "dong_mat_sheet", "dong_mat_spam", "lay_chat_id", "sync_report"
+    ], default="all", help="Chọn tool cần chạy")
     parser.add_argument("--date", default=None, help="Ngày đối soát (YYYY-MM-DD)")
     parser.add_argument("--dry-run", action="store_true", help="Chế độ chạy thử không gửi tin nhắn")
     
     args = parser.parse_args()
-    
     date_val = args.date.strip() if args.date and args.date.strip() else None
     
     print("==============================================================================")
@@ -545,6 +578,12 @@ def main():
         loop.run_until_complete(run_tool_hau_kiem_rau(date_val, args.dry_run))
     elif args.tool == "hau_kiem_thit_ca":
         loop.run_until_complete(run_tool_hau_kiem_thit_ca(date_val, args.dry_run))
+    elif args.tool == "dong_mat_sheet":
+        loop.run_until_complete(run_tool_dong_mat_full(date_val, args.dry_run))
+    elif args.tool == "dong_mat_spam":
+        loop.run_until_complete(run_tool_dong_mat_spam(date_val, args.dry_run))
+    elif args.tool == "lay_chat_id":
+        loop.run_until_complete(run_tool_lay_chat_id())
     elif args.tool == "all":
         loop.run_until_complete(run_tool_thit_ca(date_val, args.dry_run))
         loop.run_until_complete(run_tool_mat(date_val, args.dry_run))
@@ -552,7 +591,9 @@ def main():
         loop.run_until_complete(run_tool_hau_kiem_thit_ca(date_val, args.dry_run))
     elif args.tool == "sync_report":
         print("📊 Đang khởi tạo tái xuất bản Báo Cáo Web Đối Soát...")
-        from DONG_MAT_DASHBOARD.generate_web_report import generate_web_report
+        dashboard_dir = os.path.join(os.path.dirname(ROOT_DIR), "DONG_MAT_DASHBOARD")
+        sys.path.insert(0, dashboard_dir)
+        from generate_web_report import generate_web_report
         generate_web_report()
 
     print("\n==============================================================================")
