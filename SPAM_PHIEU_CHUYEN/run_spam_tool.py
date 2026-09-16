@@ -69,7 +69,8 @@ def get_db_connection():
         port=9030,
         user='kfm_scm_tho_nguyen',
         password='oh1dtJwR4ihLGrX4E7bs',
-        database='kfm_scm'
+        database='kfm_scm',
+        connect_timeout=7
     )
 
 # -------------------------------------------------------------
@@ -104,25 +105,30 @@ async def run_tool_thit_ca(target_date=None, dry_run=False):
     utc_end = vn_end.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
     print(f"⏰ Khoảng thời gian truy vấn (VN): {vn_start.strftime('%Y-%m-%d %H:%M:%S')} -> {vn_end.strftime('%Y-%m-%d %H:%M:%S')}")
 
-    conn = get_db_connection()
-    query = f"""
-    SELECT 
-        t.code as `Mã phiếu chuyển`,
-        t.from_branch_id,
-        t.to_branch_id,
-        t.total_sku as `SKU`,
-        t.total_transfer_quantity as `Số lượng`,
-        t.status
-    FROM __cdc_kfm_kf_inventories_kf_transfer_items t
-    WHERE t.from_branch_id = '6a34ed56f23028000774139f'
-    AND t.status = 3
-    AND t.created_at >= '{utc_start}' 
-    AND t.created_at <= '{utc_end}'
-    """
-    df_tickets = pd.read_sql(query, conn)
-    df_branches = pd.read_sql("SELECT branch_id, branch_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE branch_name IS NOT NULL AND branch_name != '' GROUP BY branch_id, branch_name", conn)
-    id_to_name = dict(zip(df_branches['branch_id'], df_branches['branch_name']))
-    conn.close()
+    try:
+        conn = get_db_connection()
+        query = f"""
+        SELECT 
+            t.code as `Mã phiếu chuyển`,
+            t.from_branch_id,
+            t.to_branch_id,
+            t.total_sku as `SKU`,
+            t.total_transfer_quantity as `Số lượng`,
+            t.status
+        FROM __cdc_kfm_kf_inventories_kf_transfer_items t
+        WHERE t.from_branch_id = '6a34ed56f23028000774139f'
+        AND t.status = 3
+        AND t.created_at >= '{utc_start}' 
+        AND t.created_at <= '{utc_end}'
+        """
+        df_tickets = pd.read_sql(query, conn)
+        df_branches = pd.read_sql("SELECT branch_id, branch_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE branch_name IS NOT NULL AND branch_name != '' GROUP BY branch_id, branch_name", conn)
+        id_to_name = dict(zip(df_branches['branch_id'], df_branches['branch_name']))
+        conn.close()
+    except Exception as e:
+        print(f"⚠️ [LỖI KẾT NỐI DATABASE 103.147.122.103]: {e}")
+        print("💡 Gợi ý: Database chặn IP Cloud quốc tế. Vui lòng mở Chay_Local_Runner.bat để chạy trên máy tính.")
+        return
 
     print(f"📊 Tìm thấy {len(df_tickets)} phiếu Thịt Cá đang ở trạng thái 'Đang chuyển' (Status=3)")
     if len(df_tickets) == 0:
@@ -217,24 +223,29 @@ async def run_tool_mat(target_date=None, dry_run=False):
     utc_end = vn_end.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
     print(f"⏰ Khoảng thời gian truy vấn (VN): {vn_start.strftime('%Y-%m-%d %H:%M:%S')} -> {vn_end.strftime('%Y-%m-%d %H:%M:%S')}")
 
-    conn = get_db_connection()
-    query = f"""
-    SELECT 
-        t.code as `Mã phiếu chuyển`,
-        t.from_branch_id,
-        t.to_branch_id,
-        t.status,
-        t.ts_do_status
-    FROM __cdc_kfm_kf_inventories_kf_transfer_items t
-    WHERE t.from_branch_id = '6a34ee2aebb48c000760d803'
-    AND t.status = 3
-    AND t.created_at >= '{utc_start}' 
-    AND t.created_at <= '{utc_end}'
-    """
-    df_tickets = pd.read_sql(query, conn)
-    df_branches = pd.read_sql("SELECT branch_id, branch_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE branch_name IS NOT NULL AND branch_name != '' GROUP BY branch_id, branch_name", conn)
-    id_to_name = dict(zip(df_branches['branch_id'], df_branches['branch_name']))
-    conn.close()
+    try:
+        conn = get_db_connection()
+        query = f"""
+        SELECT 
+            t.code as `Mã phiếu chuyển`,
+            t.from_branch_id,
+            t.to_branch_id,
+            t.status,
+            t.ts_do_status
+        FROM __cdc_kfm_kf_inventories_kf_transfer_items t
+        WHERE t.from_branch_id = '6a34ee2aebb48c000760d803'
+        AND t.status = 3
+        AND t.created_at >= '{utc_start}' 
+        AND t.created_at <= '{utc_end}'
+        """
+        df_tickets = pd.read_sql(query, conn)
+        df_branches = pd.read_sql("SELECT branch_id, branch_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE branch_name IS NOT NULL AND branch_name != '' GROUP BY branch_id, branch_name", conn)
+        id_to_name = dict(zip(df_branches['branch_id'], df_branches['branch_name']))
+        conn.close()
+    except Exception as e:
+        print(f"⚠️ [LỖI KẾT NỐI DATABASE 103.147.122.103]: {e}")
+        print("💡 Gợi ý: Database chặn IP Cloud quốc tế. Vui lòng mở Chay_Local_Runner.bat để chạy trên máy tính.")
+        return
 
     print(f"📊 Tìm thấy {len(df_tickets)} phiếu Mát đang ở trạng thái 'Đang chuyển' (Status=3)")
     if len(df_tickets) == 0:
@@ -327,28 +338,33 @@ async def run_tool_hau_kiem_rau(target_date=None, dry_run=False):
     utc_start = vn_start.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
     utc_end = vn_end.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
 
-    conn = get_db_connection()
-    query = f"""
-    SELECT 
-        t.double_check_code as `Mã Hậu Kiểm`,
-        t.code as `Phiếu chuyển`,
-        t.from_branch_id,
-        t.to_branch_id,
-        t.total_sku as `SKU`,
-        t.total_store_quantity as `ST Nhận`,
-        t.total_transfer_quantity as `Xuất đi`
-    FROM __cdc_kfm_kf_inventories_kf_transfer_items t
-    WHERE t.from_branch_id = '5fdc170ebd89c10006f15b7c'
-    AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
-    AND t.double_checked_status = 1
-    AND t.status = 5
-    AND t.created_at >= '{utc_start}' 
-    AND t.created_at <= '{utc_end}'
-    """
-    df_tickets = pd.read_sql(query, conn)
-    df_branches = pd.read_sql("SELECT branch_id, branch_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE branch_name IS NOT NULL AND branch_name != '' GROUP BY branch_id, branch_name", conn)
-    id_to_name = dict(zip(df_branches['branch_id'], df_branches['branch_name']))
-    conn.close()
+    try:
+        conn = get_db_connection()
+        query = f"""
+        SELECT 
+            t.double_check_code as `Mã Hậu Kiểm`,
+            t.code as `Phiếu chuyển`,
+            t.from_branch_id,
+            t.to_branch_id,
+            t.total_sku as `SKU`,
+            t.total_store_quantity as `ST Nhận`,
+            t.total_transfer_quantity as `Xuất đi`
+        FROM __cdc_kfm_kf_inventories_kf_transfer_items t
+        WHERE t.from_branch_id = '5fdc170ebd89c10006f15b7c'
+        AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
+        AND t.double_checked_status = 1
+        AND t.status = 5
+        AND t.created_at >= '{utc_start}' 
+        AND t.created_at <= '{utc_end}'
+        """
+        df_tickets = pd.read_sql(query, conn)
+        df_branches = pd.read_sql("SELECT branch_id, branch_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE branch_name IS NOT NULL AND branch_name != '' GROUP BY branch_id, branch_name", conn)
+        id_to_name = dict(zip(df_branches['branch_id'], df_branches['branch_name']))
+        conn.close()
+    except Exception as e:
+        print(f"⚠️ [LỖI KẾT NỐI DATABASE 103.147.122.103]: {e}")
+        print("💡 Gợi ý: Database chặn IP Cloud quốc tế. Vui lòng mở Chay_Local_Runner.bat để chạy trên máy tính.")
+        return
 
     print(f"📊 Tìm thấy {len(df_tickets)} phiếu Hậu Kiểm Rau Củ lệch")
     if len(df_tickets) == 0:
@@ -440,28 +456,33 @@ async def run_tool_hau_kiem_thit_ca(target_date=None, dry_run=False):
     utc_start = vn_start.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
     utc_end = vn_end.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
 
-    conn = get_db_connection()
-    query = f"""
-    SELECT 
-        t.double_check_code as `Mã Hậu Kiểm`,
-        t.code as `Phiếu chuyển`,
-        t.from_branch_id,
-        t.to_branch_id,
-        t.total_sku as `SKU`,
-        t.total_store_quantity as `ST Nhận`,
-        t.total_transfer_quantity as `Xuất đi`
-    FROM __cdc_kfm_kf_inventories_kf_transfer_items t
-    WHERE t.from_branch_id = '6a34ed56f23028000774139f'
-    AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
-    AND t.double_checked_status = 1
-    AND t.status = 5
-    AND t.created_at >= '{utc_start}' 
-    AND t.created_at <= '{utc_end}'
-    """
-    df_tickets = pd.read_sql(query, conn)
-    df_branches = pd.read_sql("SELECT branch_id, branch_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE branch_name IS NOT NULL AND branch_name != '' GROUP BY branch_id, branch_name", conn)
-    id_to_name = dict(zip(df_branches['branch_id'], df_branches['branch_name']))
-    conn.close()
+    try:
+        conn = get_db_connection()
+        query = f"""
+        SELECT 
+            t.double_check_code as `Mã Hậu Kiểm`,
+            t.code as `Phiếu chuyển`,
+            t.from_branch_id,
+            t.to_branch_id,
+            t.total_sku as `SKU`,
+            t.total_store_quantity as `ST Nhận`,
+            t.total_transfer_quantity as `Xuất đi`
+        FROM __cdc_kfm_kf_inventories_kf_transfer_items t
+        WHERE t.from_branch_id = '6a34ed56f23028000774139f'
+        AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
+        AND t.double_checked_status = 1
+        AND t.status = 5
+        AND t.created_at >= '{utc_start}' 
+        AND t.created_at <= '{utc_end}'
+        """
+        df_tickets = pd.read_sql(query, conn)
+        df_branches = pd.read_sql("SELECT branch_id, branch_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE branch_name IS NOT NULL AND branch_name != '' GROUP BY branch_id, branch_name", conn)
+        id_to_name = dict(zip(df_branches['branch_id'], df_branches['branch_name']))
+        conn.close()
+    except Exception as e:
+        print(f"⚠️ [LỖI KẾT NỐI DATABASE 103.147.122.103]: {e}")
+        print("💡 Gợi ý: Database chặn IP Cloud quốc tế. Vui lòng mở Chay_Local_Runner.bat để chạy trên máy tính.")
+        return
 
     print(f"📊 Tìm thấy {len(df_tickets)} phiếu Hậu Kiểm Thịt Cá lệch")
     if len(df_tickets) == 0:
