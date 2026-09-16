@@ -1,0 +1,5 @@
+  branch_code                      branch_name
+0   HCM007044              KHO RAU CỦ LƯU HÀNG
+1   HCM007009               KHO ĐỔI TRẢ RAU CỦ
+2   HCM010002                       KHO RAU CỦ
+3   HCM007041  KHO RAU CỦ HÀNG GIẢM CHẤT LƯỢNG

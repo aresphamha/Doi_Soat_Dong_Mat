@@ -1,0 +1,4 @@
+                  branch_id branch_code                      branch_name
+0  5fdc170ebd89c10006f15b7c   HCM010002                       KHO RAU CỦ
+1  69532cb676e3cd000760a9e1                                             
+2  69532cb676e3cd000760a9e1   HCM007041  KHO RAU CỦ HÀNG GIẢM CHẤT LƯỢNG

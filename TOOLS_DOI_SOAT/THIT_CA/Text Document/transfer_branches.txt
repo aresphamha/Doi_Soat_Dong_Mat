@@ -1,0 +1,431 @@
+               from_branch_id branch_code                                              branch_name
+0    69e0620df12d750007a8393a        A182                 KFM_HCM_TDU - S08.02 Vinhomes Grand Park
+1    68215fac015d5d0007e322d1                                                                     
+2    61d4ffa72997ae0007f5ad19                                                                     
+3    633110655a03c4000739fa74                                                                     
+4    69afcf208abcc600073373b7        A170                         KFM_HCM_TBI - 91 Nguyễn Phúc Chu
+5    66583b50b902ae00077828c7   HCM0TB008                         KFM_HCM_TBI - 165 Hoàng Hoa Thám
+6    66e8ef13fe604e0007edcc88                                                                     
+7    64e5b7bdc7f253000811c178   HCM006001                          KFM_HCM_Q06 - 229A Tân Hòa Đông
+8    66583b50b902ae00077828c7                                                                     
+9    69d3163a8abcc6000750b5b7                                                                     
+10   690c18cf6c988800070e4ea3        A129       KFM_HCM_Q07 - 17 Đường số 16, Khu Nam Viên Midtown
+11   69aa8f9f1d4e62000739e121        A157                   KFM_HCM_Q06 - B1.00.01 Him Lam Chợ Lớn
+12   69d3163a8abcc6000750b5b7        A188                 KFM_HCM_Q11 - CH0.08 Chung Cư Thuận Việt
+13   65f3c088e4996900075adfb1   HCM0TD013                     KFM_HCM_TDU - Block B Imperia An Phú
+14   69e0620df12d750007a8393a                                                                     
+15   633110655a03c4000739fa74   HCM0BT004                           KFM_HCM_BTA - 46 Nguyễn Thị Tú
+16   65f3c088e4996900075adfb1                                                                     
+17   64a6484bc7f25300080140d6   HCMBTH003                              KFM_HCM_BTH - 107 Bình Quới
+18   690c18cf6c988800070e4ea3                                                                     
+19   64a6484bc7f25300080140d6                                                                     
+20   66e8ef13fe604e0007edcc88   HCM008010                  KFM_HCM_Q08 - Block C Diamond Riverside
+21   66f10a169ee7750007a1af5e   BDU0TA004                  KFM_BDU_TAN - Block A Emerald Golf View
+22   64e5b7bdc7f253000811c178                                                                     
+23   69afcf208abcc600073373b7                                                                     
+24   69b38e588abcc60007367ead                                                                     
+25   68215fac015d5d0007e322d1        A104                        KFM_HCM_NBE - 5/3D Huỳnh Tấn Phát
+26   61d4ffa72997ae0007f5ad19   HCM0BT002                                         KHO ABA QUÁ CẢNH
+27   69aa8f9f1d4e62000739e121                                                                     
+28   69b38e588abcc60007367ead        A166                       KFM_HCM_Q07 - Block K Happy Valley
+29   66f10a169ee7750007a1af5e                                                                     
+30   670cbb64cc68cd000708e8d2                                                                     
+31   692d57d66049bf00077a3574                                                                     
+32   64d738ec07856200070254bc   HCM0TP003                                 KFM_HCM_TPH - 116 Gò Dầu
+33   6952331172d4cd00071f1b8d        A151                       KFM_HCM_GVA - 20 Lê Đức Thọ - MINI
+34   68e312e22d6727000737f099        A118                        KFM_HCM_Q10 - 74 Vĩnh Viễn - MINI
+35   6938e97a3be5090007360eb8                                                                     
+36   6938e97a3be5090007360eb8        A145                              KFM_HCM_TPH - 379 Thạch Lam
+37   6952331172d4cd00071f1b8d        A151                              KFM_HCM_GVA - 20 Lê Đức Thọ
+38   69266fefdd35de0007bab037        A137                          KFM_HCM_TDU - 60 Lương Định Của
+39   68e312e22d6727000737f099                                                                     
+40   68f854438666b80007c3bb98        A124               KFM_HCM_TDU - 74 Đường Số 1 Chung Cư Sky 9
+41   670cbb64cc68cd000708e8d2   BDU0DA004             KFM_BDU_DAN - S01.11 Block A1 Charm Sapphire
+42   68f854438666b80007c3bb98                                                                     
+43   68e312e22d6727000737f099        A118                               KFM_HCM_Q10 - 74 Vĩnh Viễn
+44   6a1e3975960fc20007f9c292                                                                     
+45   69a956ab8abcc600072f04ea        A161              KFM_HCM_NBE - A2.SH28-30 The Park Residence
+46   6669739613b34f00077a0b6c                                                                     
+47   69266fefdd35de0007bab037                                                                     
+48   69a956ab8abcc600072f04ea                                                                     
+49   672ad0bc60a70c00076fe50d                                                                     
+50   69266f8b349a230007e6b999                                                                     
+51   69266f8b349a230007e6b999        A141                  KFM_HCM_Q07 - X1.013 Sunrise City North
+52   6952331172d4cd00071f1b8d                                                                     
+53   66432e4d3b0769000727e02b   HCM006002                                KFM_HCM_Q06 - 126 Chợ Lớn
+54   6669739613b34f00077a0b6c   HCM007030                           KFM_HCM_Q07 - R13 Hưng Vượng 2
+55   64d738ec07856200070254bc                                                                     
+56   66432e4d3b0769000727e02b                                                                     
+57   6a3e383fe20b440007640326                                                                     
+58   672ad0bc60a70c00076fe50d   HCM0TD025                        KFM_HCM_TDU - 02 Nguyễn Thị Nhung
+59   6a3e383fe20b440007640326       KRCBT                                   KHO QUÁ CẢNH BÁNH TƯƠI
+60   692d57d66049bf00077a3574        A144                KFM_HCM_Q07 - A01-06 Hoàng Anh Thanh Bình
+61   67495c4609d65b00079d2e01                                                                     
+62   69e1e057f12d750007a9b949                                                                     
+63   688c2d13c7e1e90007745812        A110                   KFM_HCM_Q10 - Jasmine 1 Hà Đô Centrosa
+64   67495c4609d65b00079d2e01   HCM012004                  KFM_HCM_Q12 - Block B1 Hưng Ngân Garden
+65   68255e26015d5d0007e62859        A105                                  KFM_HCM_TDU - 02 Lê Lợi
+66   65165a066050f60007010b47                                                                     
+67   68255e26015d5d0007e62859                                                                     
+68   6348d6ce5e90020007cb0107                                                                     
+69   640ec016887f3200078fd4f3                                                                     
+70   69e1e057f12d750007a9b949        A196                                KFM_HCM_TBI - 56 Đường A4
+71   692d572b24b14a000708679b                                                                     
+72   688c2d13c7e1e90007745812                                                                     
+73   63ad67fbacd66d0007bb45d9   HCM007015                             KFM_HCM_Q07 - 09 Lâm Văn Bền
+74   6721cd0360a70c00076998be   HCM012003                 KFM_HCM_Q12 - AS19 Block A Prosper Plaza
+75   66bb247e3bfe060007747d23                                                                     
+76   667a9a75e2bdbb0007487c75                                                                     
+77   651a1e7d55312500076e4a13   HCM008007                            KFM_HCM_Q08 - 01.18 Pegasuite
+78   69bcfe271d4e62000748714a                                                                     
+79   687895cf6182270007a56c6b        A109                        KFM_HCM_Q07 - 106 Trần Trọng Cung
+80   67ef7f76fb718a00073d0801                                                                     
+81   651a1e7d55312500076e4a13                                                                     
+82   640ec016887f3200078fd4f3   HCM0TD003                       KFM_HCM_TDU - 160A Nguyễn Thị Định
+83   63c7d3dcdb57770008afad8e                                                                     
+84   66bb247e3bfe060007747d23   HCM0NB004            KFM_HCM_NBE - SH14-15 Saigon South Residences
+85   68a7f09edf88a80007517cc0        A114                               KFM_HCM_Q08 - 320 Hưng Phú
+86   5fdc15c1bd89c10006f15750                                                                     
+87   67346361933ceb0007135094   HCM0BT011                           KFM_HCM_BTA - A10-0.02 Ehome 3
+88   5fdc15c1bd89c10006f15750   HCM007005                               KFM_HCM_BCH - 10 Phạm Hùng
+89   68a7f09edf88a80007517cc0                                                                     
+90   64f834e22d0e52000700ebdf   HCM0TD007                                KFM_HCM_TDU - 46 Trần Não
+91   666114d4479196000731e1ab   HCM0BC005                         KFM_HCM_BCH - A7-8 Valora Mizuki
+92   666114d4479196000731e1ab                                                                     
+93   69b9285b8abcc600073ae0ae                                                                     
+94   63ad67fbacd66d0007bb45d9                                                                     
+95   687895cf6182270007a56c6b                                                                     
+96   667a9a75e2bdbb0007487c75   HCM003003                          KFM_HCM_Q03 - 14 Huỳnh Tịnh Của
+97   65f3c149e4996900075ae6ed                                                                     
+98   69b9285b8abcc600073ae0ae        A183                   KFM_HCM_TDU - 86C Đường 339 Phước Long
+99   692d572b24b14a000708679b        A140       KFM_HCM_BCH - 68 Đường Số 1 Khu dân cư 6B Intresco
+100  67ef7f76fb718a00073d0801   HCM0TD031                                 KFM_HCM_TDU - 02 Tạ Hiện
+101  65f3c149e4996900075ae6ed   HCM0TD014                      KFM_HCM_TDU - TMDV Citihome Cát Lái
+102  65165a066050f60007010b47   BDU0DA002                          KFM_BDU_DAN - SH01 BCons Garden
+103  6721cd0360a70c00076998be                                                                     
+104  69bcfe271d4e62000748714a        A179                       KFM_HCM_TDU - A1.02 Him Lam Phú An
+105  6348d6ce5e90020007cb0107   HCM0TP002                                     KFM_HCM_TPH - 48 CN1
+106  67346361933ceb0007135094                                                                     
+107  64f834e22d0e52000700ebdf                                                                     
+108  63c7d3dcdb57770008afad8e   HCM007016                           KFM_HCM_Q07 - 0105 B4 Era Town
+109  62342407b35d1d0007379692                                                                     
+110  694b4b31c37a7f0007d32e0c        A150             KFM_HCM_Q07 - A14 The Infinity Riviera Point
+111  674992c03a02640007635260   HCM007038                             KFM_HCM_Q07 - 39 Lý Phục Man
+112  6758fd769a7eec00074b4f39   HCM0TD026                            KFM_HCM_TDU - 17 Hồ Thị Nhung
+113  6679414ae2bdbb00071c8045   HCM0BC006                    KFM_HCM_BCH - D-2.01A Westgate An Gia
+114  6758fd769a7eec00074b4f39                                                                     
+115  67e0d4a1585f6f00079ce754                                                                     
+116  694b4b31c37a7f0007d32e0c                                                                     
+117  62b28123bae44600073fbe35                                                                     
+118  674992c03a02640007635260                                                                     
+119  67e0d4a1585f6f00079ce754   HCM0TD029                    KFM_HCM_TDU - GH5 Vinhomes Grand Park
+120  69c7ed90b08bf300079525ff        A178                           KFM_HCM_NBE - G16 Celesta Rise
+121  698068c7c5ba5d0007a19878        A158       KFM_HCM_TDU - 10A Đường Số 20 Chung Cư Opal Garden
+122  6698837b09240a0007fe460b   HCM007031                    KFM_HCM_Q7 - 01 Đường Số 10 Tân Kiểng
+123  68d5d42334a4390007b5e9f4                                                                     
+124  698068c7c5ba5d0007a19878                                                                     
+125  687082c129ef2d0007ce5bf3                                                                     
+126  65e58662ec5a900007da8570   HCM0TD012                            KFM_HCM_TDU - The Art Gia Hòa
+127  66bd7b849f885d0007c32e51   HCM0BT010                           KFM_HCM_BTA - 66/70 Bình Thành
+128  66bd7b849f885d0007c32e51                                                                     
+129  687082c129ef2d0007ce5bf3        A106                   KFM_HCM_PNH - T1-5 TMDV Orchard Garden
+130  67452737b91edc0007d3a5a2                                                                     
+131  6704d90ee592660007bc1a4a   HCM0TP008      KFM_HCM_TPH - S1.0.38 Block A5 Diamond Celadon City
+132  62b28123bae44600073fbe35   HCM004001                               KFM_HCM_Q04 - 98 Khánh Hội
+133  6679414ae2bdbb00071c8045                                                                     
+134  67452737b91edc0007d3a5a2   HCM007037                      KFM_HCM_Q07 - B0.02 Scenic Valley 2
+135  69c7ed90b08bf300079525ff                                                                     
+136  68d5d42334a4390007b5e9f4        A120                            KFM_HCM_Q10 - 7/29 Thành Thái
+137  6698837b09240a0007fe460b                                                                     
+138  6704d90ee592660007bc1a4a                                                                     
+139  65e58662ec5a900007da8570                                                                     
+140  689eecacb3d8810007af25bc                                                                     
+141  6613737652f1980007f2b1f7   HCM0TD015                      KFM_HCM_TDU - 1426 Nguyễn Duy Trinh
+142  69cc94a4b08bf30007990e0b        A189              KFM_BDU_DAN - 9 Đường M, Khu Phố Nhị Đồng 2
+143  68c7aee2399adf00077e4d4b        A117                            KFM_BDU_TAN - SH04 The Rivana
+144  6a153edb8b59ca00077d438e        A212                    KFM_HCM_TDU - 146 Đường D1 Phước Long
+145  6a2b86a628ed4000072de7ec                                                                     
+146  66725abe47919600076456b6   HCMBTH005                          KFM_HCM_BTH - 42 Nguyễn Văn Đậu
+147  69db65a7c3c1e5000793e0c1        A175                     KFM_HCM_PNH - GM-1.06 Golden Mansion
+148  68c7aee2399adf00077e4d4b                                                                     
+149  69c38228b08bf3000791492f                                                                     
+150  6597cbd9bc8fb7000758f6ad                                                                     
+151  6613737652f1980007f2b1f7                                                                     
+152  69cc94a4b08bf30007990e0b                                                                     
+153  69b9139dbc71100007cee4ef        A177         KFM_HCM_Q07 - 1016/21 Chung Cư Sky Garden 2-R1-2
+154  6a2b86a628ed4000072de7ec        A225                   KFM_HCM_TDU - 96K Đường Số 12 Tam Bình
+155  6a153edb8b59ca00077d438e                                                                     
+156  689eecacb3d8810007af25bc        A113                           KFM_HCM_BTH - 216 Phan Văn Hân
+157  69db65a7c3c1e5000793e0c1                                                                     
+158  6597cbd9bc8fb7000758f6ad   HCM0TD011                  KFM_HCM_TDU - D1-1.24 SAFIRA Khang Điền
+159  69b9139dbc71100007cee4ef                                                                     
+160  66725abe47919600076456b6                                                                     
+161  69c38228b08bf3000791492f        A174                                 KFM_HCM_Q03 - 116 Bàn Cờ
+162  67ff087dad448b0007b51ff4                                                                     
+163  691a94414789f00007d8115b                                                                     
+164  6908567d122dbb000646be64                                                                     
+165  657a8471fee44d0007de5d58   HCM0BT008                             KFM_HCM_BTA - AK4 Akari City
+166  67ff087dad448b0007b51ff4        A103                           KFM_HCM_NBE - 222 Lê Văn Lương
+167  69f816628b59ca0007501251                                                                     
+168  69bcfc8e8abcc600073e596d        A164             KFM_BDU_DAN - B2.01.05 Tháp B Opal Boulevard
+169  6764a9ddfac80700076292bf   BDU0TA001                KFM_BDU_TAN - B.01.04 Tháp B Opal Skyline
+170  63c7d46321e0f700084308df   HCM0GV005                        KFM_HCM_GVA - 372 Dương Quảng Hàm
+171  693124d7c6e7f800072f54e8                                                                     
+172  69bcfc8e8abcc600073e596d                                                                     
+173  691a8cfb0be6a500075daae6        A138                          KFM_HCM_TBI - 48 Trần Văn Quang
+174  67e9f7edbe2ea00007a88a83                                                                     
+175  6764a9ddfac80700076292bf                                                                     
+176  69f816628b59ca0007501251        A202                  KFM_HCM_BCH - 32A Đường Số 10 Bình Hưng
+177  687758b86182270007a48966                                                                     
+178  6908567d122dbb000646be64        A125                              KFM_HCM_TDU - 115 Man Thiện
+179  63c7d46321e0f700084308df                                                                     
+180  69b38df3b08bf300078408e3        A172                             KFM_HCM_TDU - 173 Lê Văn Chí
+181  5f33b053800f55000621b617   HCM0TB002                          KFM_HCM_TBI - 22 Hoàng Hoa Thám
+182  669f541d2abb6e0007f7955b                                                                     
+183  6a34ed56f23028000774139f        MF01                    MeatFish - Miền Đông - SCF - Quá Cảnh
+184  657a8471fee44d0007de5d58                                                                     
+185  62d90238058d5b0007050500                                                                     
+186  695f6babc6e4b20006bd2f16                                                                     
+187  5f33b053800f55000621b617                                                                     
+188  693124d7c6e7f800072f54e8        A143                             KFM_HCM_TPH - 83 Khuông Việt
+189  687758b86182270007a48966        A108                                KFM_HCM_TDU - 38E Cây Keo
+190  669f541d2abb6e0007f7955b   BDU0DA003                KFM_BDU_DAN - 01-06 TMDV Him Lam Phú Đông
+191  6a34ed56f23028000774139f                                                                     
+192  691a8cfb0be6a500075daae6                                                                     
+193  65654b82df01db0007400173                                                                     
+194  67e9f7edbe2ea00007a88a83   HCM0PN001                     KFM_HCM_PNH - 154 Nguyễn Trọng Tuyển
+195  69baa5c71d4e620007464330        A181          KFM_HCM_TDU - B6-D.TMDV.02 Masteri Center Point
+196  69b38df3b08bf300078408e3                                                                     
+197  695f6babc6e4b20006bd2f16        A154                            KFM_HCM_TDU - 299 Liên Phường
+198  691a94414789f00007d8115b        A139                      KFM_HCM_BTA - 197 Đường số 1 An Lạc
+199  69baa5c71d4e620007464330                                                                     
+200  6315b8afae739600076b9ee8   HCM0GV004                           KFM_HCM_GVA - 410 Phan Huy Ích
+201  62d90238058d5b0007050500   HCM009001                        KFM_HCM_Q09 - 367 Nguyễn Văn Tăng
+202  6315b8afae739600076b9ee8                                                                     
+203  69ccd40bb08bf30007997f82        A163  KFM_HCM_TPH - S2.0.28 Block A6 Alnata Plus Celadon City
+204  694e56bac37a7f0007d58686                                                                     
+205  69ccd40bb08bf30007997f82                                                                     
+206  69f1cdba7fae33000738347a                                                                     
+207  69eb3ba67fae330007298916                                                                     
+208  6a22a86b93123b0007c20be0                                                                     
+209  69d852f6dd38820007fa7244                                                                     
+210  694e56bac37a7f0007d58686        A149                       KFM_HCM_TPH - 50 Lương Minh Nguyệt
+211  697ac5064dd0950007d45aa6        A156                        KFM_HCM_TDU - 101C Dương Đình Hội
+212  69eb3ba67fae330007298916        A201                 KFM_HCM_GVA - 32B Đường Số 1 An Hội Đông
+213  6a22a86b93123b0007c20be0        A218                        KFM_HCM_Q05 - 87 Nguyễn Duy Dương
+214  62342319b35d1d00073795c6   HCMBTH001                              KFM_HCM_BTH - 54 Vũ Huy Tấn
+215  697ac5064dd0950007d45aa6                                                                     
+216  6943c9d33be50900073d31e2                                                                     
+217  669f870b9fa5190007fa3f8c                                                                     
+218  68e86a9e4eb0df0007cc45b5                                                                     
+219  669f870b9fa5190007fa3f8c   HCM0TD020                 KFM_HCM_TDU - 0.01 Chung cư An Cư An Phú
+220  62342319b35d1d00073795c6                                                                     
+221  68e86a9e4eb0df0007cc45b5        A123               KFM_HCM_TDU - 29B Đường Số 30 4S Linh Đông
+222  69f1cdba7fae33000738347a        A203                       KFM_HCM_Q12 - 135 Tân Thới Nhất 17
+223  6943c9d33be50900073d31e2        A147                         KFM_HCM_Q07 - 956 Huỳnh Tấn Phát
+224  6a0e6f827fae3300076b2c70                                                                     
+225  69d852f6dd38820007fa7244        A190                 KFM_HCM_TBI - BPB-01.08 Botanica Premier
+226  6a0e6f827fae3300076b2c70        A210                               KFM_HCM_TBI - 289 Hồng Lạc
+227  62b27fdcbae44600073fbaf5                                                                     
+228  691aaa19f0ce5e00077df5c6        A136                     KFM_HCM_Q03 - 125 Nguyễn Phúc Nguyên
+229  6593b4a0bc8fb70007565e32   HCM007026                              KFM_HCM_Q07 - 97 Lê Thị Chợ
+230  67b2e6e3689a000007ac54e2   HCM003005                                KFM_HCM_Q03 - 10D Kỳ Đồng
+231  65308c671906f000078ea0b4   HCM0TB006                            KFM_HCM_TBI - Block C Harmona
+232  65308c671906f000078ea0b4                                                                     
+233  5fdc170ebd89c10006f15b7c                                                                     
+234  6593b4a0bc8fb70007565e32                                                                     
+235  691aaa19f0ce5e00077df5c6                                                                     
+236  68df2628a58cc600077b640b                                                                     
+237  68df2628a58cc600077b640b        A121                         KFM_HCM_Q06 - 123 Lý Chiêu Hoàng
+238  66f53871ea31f60007620596   HCM0TP007                          KFM_HCM_TPH - 66 Trương Vĩnh Ký
+239  6a0bd390edaa620007f2560a        A205                   KFM_HCM_GVA - 81/2 Đường 59 An Hội Tây
+240  67b2e6e3689a000007ac54e2                                                                     
+241  69afcd6ab08bf30007810033                                                                     
+242  690960ff32642700071109a8        A128              KFM_HCM_GVA - TM0.03 CH3 Cityland Park Hill
+243  5ff2d5c1c3ee7e0007343d32                                                                     
+244  678daf46689a000007965e7a   HCM0TB010                             KFM_HCM_TBI - 236A Lê Văn Sỹ
+245  64e5b8510785620007062655   HCM007020                             KFM_HCM_Q07 - SH16 Eco Green
+246  6a0bd390edaa620007f2560a                                                                     
+247  64489166e5e99d0007d2bec0                                                                     
+248  5fdc170ebd89c10006f15b7c   HCM010002                                               KHO RAU CỦ
+249  68ae6be13555120007a96798        A116                             KFM_HCM_Q12 - 76 Trần Thị Cờ
+250  5e10d626f84a8c73f79ba001   HCM010001                            KFM_HCM_Q10 - BB17 Trường Sơn
+251  68ae6be13555120007a96798                                                                     
+252  69e8686937bc2f00075ec115        A200   KFM_HCM_Q12 - H36 Khu Nhà Ở Thới An Đường Lê Thị Riêng
+253  69e8686937bc2f00075ec115                                                                     
+254  62b27fdcbae44600073fbaf5   HCM0GV002                             KFM_HCM_GVA - 15 Nguyên Hồng
+255  69afcd6ab08bf30007810033        A171                          KFM_HCM_Q08 - 819 Phạm Thế Hiển
+256  690960ff32642700071109a8                                                                     
+257  651e1c8e55312500076fff4b                                                                     
+258  678daf46689a000007965e7a                                                                     
+259  5e10d626f84a8c73f79ba001                                                                     
+260  64489166e5e99d0007d2bec0   HCM012002                         KFM_HCM_Q12 - 678 Nguyễn Văn Quá
+261  66f53871ea31f60007620596                                                                     
+262  64e5b8510785620007062655                                                                     
+263  5ff2d5c1c3ee7e0007343d32   HCM007006                         KFM_HCM_Q07 - 571 Huỳnh Tấn Phát
+264  651e1c8e55312500076fff4b   HCM0TD009                  KFM_HCM_TDU - S1.05 Vinhomes Grand Park
+265  61c02bfa0d72c5000713fba7   HCM007011                        KFM_HCM_Q07 - 436 Nguyễn Thị Thập
+266  67f7d5cdfb718a00074240a6   BDU0DA013                                 KFM_BDU_DAN - 27 Tân Lập
+267  69b8f561b08bf300078825a8        A176                   KFM_HCM_NBE - A.1.05 Sunrise Riverside
+268  67b2bca289a2a00007385dcd   HCM0TD027                           KFM_HCM_TDU - 222 Lê Văn Thịnh
+269  6234219eb35d1d00073793ab   HCM008001                                              KHO SEEDLOG
+270  626104b7866a62000765c3eb                                                                     
+271  5dbaa042c3d56256ab935975                                                                     
+272  66a062bc2c8383000772ca31                                                                     
+273  66de5d27e6197e0007ce7de7                                                                     
+274  6861f42212aaff0007be31d0        A107                     KFM_HCM_TDU - 05 Đường D3 Phước Long
+275  66f1091cb079a50007d9d03d                                                                     
+276  6357768d758abb0007e6bbe5   HCM0NB001                          KFM_HCM_NBE - 166E Lê Văn Lương
+277  69d6137bdd38820007f866ec                                                                     
+278  64c1ea1cc7f253000808dda5                                                                     
+279  681817188f3b090007d1d409        A102                           KFM_HCM_TDU - 128A Kha Vạn Cân
+280  66825a7ae2bdbb0007dc7bca   HCM0TD019                    KFM_HCM_TDU - A1.04 Jamila Khang Điền
+281  69d85265dd38820007fa7191                                                                     
+282  69d6137bdd38820007f866ec        A192                            KFM_HCM_BTH - 61 Bùi Đình Túy
+283  61c02bfa0d72c5000713fba7                                                                     
+284  6234219eb35d1d00073793ab                                                                     
+285  68c0de9e75529c0007ec700c        A115                         KFM_HCM_BTH - 484B Lê Quang Định
+286  67b2bca289a2a00007385dcd                                                                     
+287  681c25f5c0da0b0007578faa                                                                     
+288  6425088cfb156b0007e2f6ff   HCM0BT005                             KFM_HCM_GVA - 195 Thống Nhất
+289  662f567352944400073e8610   HCMBTH004                             KFM_HCM_BTH - 108 Ngô Tất Tố
+290  681c25f5c0da0b0007578faa   HCM007040                                  KHO IT - KÝ GỬI - TLINK
+291  5dbaa042c3d56256ab935975   HCM007001                                  KFM_HCM_Q07 - 31 Tân Mỹ
+292  6960bad455fb96000792bc1c        A155                         KFM_HCM_Q12 - 170 Nguyễn Thị Búp
+293  68c0de9e75529c0007ec700c                                                                     
+294  69cc5e401d4e62000755128a        A186               KFM_HCM_TPH - H.38 Melody Residences Âu Cơ
+295  626104b7866a62000765c3eb   HCM007012                              KFM_HCM_Q07 - 43 Bùi Văn Ba
+296  69d85265dd38820007fa7191        A194             KFM_HCM_Q04 - TM.B.06 Millennium Bến Vân Đồn
+297  6960bad455fb96000792bc1c                                                                     
+298  681817188f3b090007d1d409                                                                     
+299  69d85356f12d750007a13d9d        A195                              KFM_HCM_TPH - 91 Nguyễn Sơn
+300  690998bf122dbb000648116f                                                                     
+301  67f7d5cdfb718a00074240a6                                                                     
+302  66f1091cb079a50007d9d03d   HCM0TD024                KFM_HCM_TDU - SAV_04-00.03 The Sun Avenue
+303  6425088cfb156b0007e2f6ff                                                                     
+304  66a062bc2c8383000772ca31   HCM0TD021                 KFM_HCM_TDU - S07.02 Vinhomes Grand Park
+305  69b8f561b08bf300078825a8                                                                     
+306  69cc5e401d4e62000755128a                                                                     
+307  64c1ea1cc7f253000808dda5   HCM0TD006                              KFM_HCM_TDU - 63 Đường Số 3
+308  66de5d27e6197e0007ce7de7   HCM007035                KFM_HCM_Q07 - C0.01 Riverside Phú Mỹ Hưng
+309  690998bf122dbb000648116f        A132                              KFM_HCM_TDU - 136 Hiệp Bình
+310  662f567352944400073e8610                                                                     
+311  6861f42212aaff0007be31d0                                                                     
+312  66825a7ae2bdbb0007dc7bca                                                                     
+313  6357768d758abb0007e6bbe5                                                                     
+314  69d85356f12d750007a13d9d                                                                     
+315  67ab15c4137ece00075546a9                                                                     
+316  64b8960e0785620007fa60a4                                                                     
+317  6a28c4cb28ed4000072a9026                                                                     
+318  6985cedbe9c73d000715db39        A159                          KFM_HCM_TPH - 52 Thoại Ngọc Hầu
+319  64b8960e0785620007fa60a4   HCM0TD005                 KFM_HCM_TDU - S06.06 Vinhomes Grand Park
+320  669fb56e2abb6e0007fcc026                                                                     
+321  6899741904ce330007b3e061        A112                                 KFM_HCM_Q1 - 93 Cô Giang
+322  6a268edcf776c400078de6de        A207        KFM_HCM_TDU - SH-1C 2 Đường A5 KDC Palm Residence
+323  69b8d5c2bc71100007ce78b6        A187                       KFM_HCM_TDU - 560 Nguyễn Duy Trinh
+324  69a67b9cbc71100007bfab4e                                                                     
+325  6948914efc7a840007b0a788                                                                     
+326  6348c6095e90020007caf5ab   HCM007014                           KFM_HCM_Q07 - 233 Phạm Hữu Lầu
+327  6a268edcf776c400078de6de                                                                     
+328  650ab6c9553125000768aa66   HCM0TD008                 KFM_HCM_TDU - S10.02 Vinhomes Grand Park
+329  6a22a8f6960fc20007ff5c2d                                                                     
+330  69b8d5c2bc71100007ce78b6                                                                     
+331  673dafb4a6fdf500073bd158                                                                     
+332  68e5c951a58cc6000780aeed        A119                          KFM_HCM_TDU - 09 Đào Trinh Nhất
+333  67c02b974113510007902956                                                                     
+334  69e82a762245e900071d10cf        A199                                 KFM_HCM_TBI - 76 Bàu Cát
+335  6899741904ce330007b3e061                                                                     
+336  69a67b9cbc71100007bfab4e        A165                 KFM_HCM_Q07 - B1.01 Chung cư Golden Star
+337  650ab6c9553125000768aa66                                                                     
+338  68e5c951a58cc6000780aeed                                                                     
+339  68fb3e9dcd25d90007fa22f6        A126                              KFM_HCM_Q03 - 274 Lê Văn Sỹ
+340  67ab15c4137ece00075546a9   HCM008012                             KFM_HCM_Q08 - 296 Hoàng Ngân
+341  68fb3e9dcd25d90007fa22f6                                                                     
+342  6a22a8f6960fc20007ff5c2d        A220                KFM_HCM_Q07 - 116 Đường Số 8 KDC Nam Long
+343  6985cedbe9c73d000715db39                                                                     
+344  673dafb4a6fdf500073bd158   HCM0TB009                               KFM_HCM_TBI - 64A Cửu Long
+345  67c02b974113510007902956   HCM0GV008                          KFM_HCM_GVA - 446 Phạm Văn Bạch
+346  69e82a762245e900071d10cf                                                                     
+347  669fb56e2abb6e0007fcc026   HCM010003                               KFM_HCM_Q10 - 103 Hòa Hưng
+348  6948914efc7a840007b0a788        A134                        KFM_HCM_BTA - 4535 Nguyễn Cửu Phú
+349  6a28c4cb28ed4000072a9026        A221                      KFM_HCM_BTA - 235 Đường Số 6 An Lạc
+350  6982f5f1d360600007807f7b                                                                     
+351  6348c6095e90020007caf5ab                                                                     
+352  6899741904ce330007b3e061        A112                          KFM_HCM_Q1 - 93 Cô Giang - MINI
+353  62610441866a62000765c13b                                                                     
+354  67c91e47fb718a00071df09d                                                                     
+355  6a03e0ce8b59ca00076b64a4        A198                    KFM_HCM_Q07 - A1.03 Sunrise City View
+356  6a34ed8d6607ba000703e235                                                                     
+357  69a7a3b5bc71100007c10a74                                                                     
+358  69c602a88abcc6000745de5a                                                                     
+359  69d754a0f12d750007a07950                                                                     
+360  693a60513be5090007371a06        A146                           KFM_HCM_TBI - 108 Bùi Thị Xuân
+361  66a8df3057c7b800078e6430   HCM0TD022                 KFM_HCM_TDU - S03.05 Vinhomes Grand Park
+362  64f8374b2d0e52000700f556                                                                     
+363  633d3c90d5b45e0007eef4fc                                                                     
+364  69ae861fb08bf300077fe52e        A169                KFM_HCM_TBI - Block A Chung Cư Phúc Yên 2
+365  6614aace52f1980007f3502e                                                                     
+366  69ae861fb08bf300077fe52e                                                                     
+367  691189c10be6a5000755e9bc                                                                     
+368  62faf902296748000777dc31                                                                     
+369  673a99d8933ceb00071709b4                                                                     
+370  698ad48e39ea690007623cbe        A160                   KFM_HCM_Q06 - 145 Đường Số 23 Bình Phú
+371  693a60513be5090007371a06                                                                     
+372  6614aace52f1980007f3502e   HCM0TD016                              KFM_HCM_TDU - 59 Quốc Hương
+373  69082a0632642700070fca61                                                                     
+374  69cc5dd1b08bf3000798c054        A184                           KFM_HCM_BCH - L1.08 Saigon Mia
+375  69d754a0f12d750007a07950        A193                 KFM_HCM_TDU - SH5-SH6 Homyland Riverside
+376  698ad48e39ea690007623cbe                                                                     
+377  62610441866a62000765c13b   HCM0GV001                            KFM_HCM_GVA - 371 Nguyễn Kiệm
+378  673a99d8933ceb00071709b4   HCM007036           KFM_HCM_Q07 - Lô CD L1-12 Q7 Riverside Đào Trí
+379  69c602a88abcc6000745de5a        A185                   KFM_HCM_TDU - BS15 Vinhomes Grand Park
+380  69a7a3b5bc71100007c10a74        A148                               KFM_HCM_BTH - 127 Tân Cảng
+381  69bd0d261d4e620007488eb4                                                                     
+382  65642ed4df01db00073f8603   HCM0TD010                       KFM_HCM_TDU - A0.01 EHomeS Phú Hữu
+383  66a8df3057c7b800078e6430                                                                     
+384  61d4ff152997ae0007f5acb9   HCM0BT001                                         KHO ABA LƯU HÀNG
+385  69cc5dd1b08bf3000798c054                                                                     
+386  6a03e0ce8b59ca00076b64a4                                                                     
+387  65642ed4df01db00073f8603                                                                     
+388  69bd0d261d4e620007488eb4        A167                     KFM_HCM_TDU - TM1.15 Chung Cư 9 View
+389  67c91e47fb718a00071df09d   HCM0BT012                   KFM_HCM_BTA - TMDV19 Privia Khang Điền
+390  61d4ff152997ae0007f5acb9                                                                     
+391  69082a0632642700070fca61        A127                        KFM_HCM_TDU - B-SH.06 Urban Green
+392  64f8374b2d0e52000700f556   HCM0TB005                               KFM_HCM_TPH - RS4 Richstar
+393  62faf902296748000777dc31   HCMBTH002                                KFM_HCM_BTH - 86B Vũ Tùng
+394  63b7a45f4563c90007432210   HCM0TD002                       KFM_HCM_TDU - 305 Nguyễn Duy Trinh
+395  69d080171d4e62000759185b        A191                          KFM_HCM_Q01 - 35 Nguyễn Hữu Cầu
+396  68b7a11875529c0007e5526e        A111                            KFM_HCM_TDU - BA-S03 New City
+397  650b07266050f60007fc77d8                                                                     
+398  69312538c40759000766f47e        A130                            KFM_HCM_TDU - 41 Vũ Tông Phan
+399  66b2f0fd57c7b800076a22a8   HCM007032                KFM_HCM_Q07 - Block A Himlam Riverside Q7
+400  65518ba39e7195000748b680                                                                     
+401  650b07266050f60007fc77d8   HCM0BC002                          KFM_HCM_BCH - TMDV2 Mizuki Park
+402  67ce979e9f66e40007eff3c6                                                                     
+403  69312538c40759000766f47e                                                                     
+404  648806ab6a32d400082a7b0a                                                                     
+405  65e14224e51127000785ada6   HCM007028                              KFM_HCM_Q07 - E72 Phú Thuận
+406  6488167c7a4f870007bba6fe   HCM0TD004                            KFM_HCM_TDU - 539 Đỗ Xuân Hợp
+407  62b2805dbae44600073fbc1b   HCM0GV003                             KFM_HCM_GVA - 308 Lê Văn Thọ
+408  6911522e0be6a500075583a0        A133                       KFM_HCM_BCH - Block G Conic Skyway
+409  6911522e0be6a500075583a0                                                                     
+410  67e4fae39f66e40007035156   HCM0TD030                   KFM_HCM_TDU - BS11 Vinhomes Grand Park
+411  62d9039a058d5b000705074e                                                                     
+412  692d54e424b14a0007086542                                                                     
+413  648806ab6a32d400082a7b0a   HCM0BC001                             KFM_HCM_BCH - 511 Quốc Lộ 50
+414  67e4fae39f66e40007035156                                                                     
+415  69d080171d4e62000759185b                                                                     
+416  63b7a45f4563c90007432210                                                                     
+417  6524bde855312500077202a7   HCM0BT006                              KFM_HCM_BTA - 99 Đường Số 7
+418  62d9039a058d5b000705074e   HCM0TP001                                 KFM_HCM_TPH - 85 Cây Keo
+419  65518ba39e7195000748b680   HCM0TP006                               KFM_HCM_TPH - 128 Vườn Lài
+420  68b7a11875529c0007e5526e                                                                     
+421  66b2f0fd57c7b800076a22a8                                                                     
+422  6524bde855312500077202a7                                                                     
+423  65e14224e51127000785ada6                                                                     
+424  67ce979e9f66e40007eff3c6   HCM0TD028                    KFM_HCM_TDU - D01.14 MT Eastmark City
+425  6488167c7a4f870007bba6fe                                                                     
+426  692d54e424b14a0007086542        A131                   KFM_HCM_Q08 - B01.05 Dream Home Palace
+427  62b2805dbae44600073fbc1b                                                                     
+428  668f8c2809240a00074ece84   HCM0GV006                        KFM_HCM_GVA - 299 Nguyễn Văn Khối
+429  668f8c2809240a00074ece84                                                                     

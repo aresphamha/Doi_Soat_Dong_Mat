@@ -1,0 +1,11 @@
+     Kho thịt cá SL chênh lệch CXD
+0    Kho thịt cá             3,000
+1    Kho thịt cá             1,000
+2  Chưa xác định             1,000
+3            NaN             0,000
+4            NaN             0,000
+5            NaN             0,000
+6            NaN             0,000
+7            NaN             0,000
+8  Chưa xác định             2,000
+9            NaN             0,000

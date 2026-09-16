@@ -1,0 +1,104 @@
+name: ⚡ Chạy Tool Đối Soát & Spam Phiếu Chuyển SCM (Cloud Runner)
+
+on:
+  workflow_dispatch:
+    inputs:
+      tool:
+        description: 'Chọn Công Cụ Cần Chạy'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - thit_ca
+          - mat
+          - hau_kiem_rau
+          - hau_kiem_thit_ca
+          - sync_report
+      target_date:
+        description: 'Ngày Đối Soát (YYYY-MM-DD) - Để trống để tự động lấy ngày phù hợp'
+        required: false
+        default: ''
+        type: string
+      dry_run:
+        description: 'Chế độ Chạy Thử (Dry Run - Chỉ kiểm tra dữ liệu, không gửi tin nhắn thật)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "spam-tools"
+  cancel-in-progress: false
+
+jobs:
+  run-tool:
+    name: 🚀 Thực Thi Tool SCM trên Cloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 1. Tải Mã Nguồn từ Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🐍 2. Cài Đặt Môi Trường Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 3. Cài Đặt Thư Viện Cần Thiết
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🔑 4. Khôi Phục Phiên Đăng Nhập Telegram (Session)
+        env:
+          TELEGRAM_SESSION_B64: ${{ secrets.TELEGRAM_SESSION_B64 }}
+        run: |
+          python -c "
+          import os, base64
+          b64 = os.environ.get('TELEGRAM_SESSION_B64', '').strip()
+          if b64:
+              os.makedirs('SPAM_PHIEU_CHUYEN/CONFIG_DATA', exist_ok=True)
+              session_bytes = base64.b64decode(b64)
+              with open('SPAM_PHIEU_CHUYEN/CONFIG_DATA/user_session.session', 'wb') as f:
+                  f.write(session_bytes)
+              print('✅ Đã giải mã session Telegram từ GitHub Secret!')
+          else:
+              print('ℹ️ Không tìm thấy TELEGRAM_SESSION_B64 trong GitHub Secrets.')
+          "
+
+      - name: ⚙️ 5. Thực Thi Công Cụ
+        run: |
+          TOOL_ARG="${{ github.event.inputs.tool }}"
+          DATE_ARG="${{ github.event.inputs.target_date }}"
+          DRY_ARG="${{ github.event.inputs.dry_run }}"
+
+          CMD="python SPAM_PHIEU_CHUYEN/run_spam_tool.py --tool $TOOL_ARG"
+          if [ -n "$DATE_ARG" ]; then
+            CMD="$CMD --date $DATE_ARG"
+          fi
+          if [ "$DRY_ARG" = "true" ]; then
+            CMD="$CMD --dry-run"
+          fi
+          echo "👉 Chạy lệnh: $CMD"
+          eval $CMD
+
+      - name: 📊 6. Tự Động Cập Nhật Báo Cáo Web & Đồng Bộ (Nếu Chạy Sync Report hoặc All)
+        if: ${{ github.event.inputs.tool == 'sync_report' || github.event.inputs.tool == 'all' }}
+        run: |
+          python DONG_MAT_DASHBOARD/generate_web_report.py
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add index.html Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay.html daily_details/
+          if git diff --staged --quiet; then
+            echo "Báo cáo không thay đổi."
+          else
+            git commit -m "🤖 [Cloud-Runner] Tự động cập nhật Báo cáo Web sau khi chạy Tool [skip ci]"
+            git push origin main
+          fi

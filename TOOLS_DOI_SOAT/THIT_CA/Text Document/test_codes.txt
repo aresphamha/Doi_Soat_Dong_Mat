@@ -1,0 +1,6 @@
+  branch_code                            branch_name
+0   HCM007041        KHO RAU CỦ HÀNG GIẢM CHẤT LƯỢNG
+1        MF01  MeatFish - Miền Đông - SCF - Quá Cảnh
+2   HCM010002                             KHO RAU CỦ
+3   HCM007044                    KHO RAU CỦ LƯU HÀNG
+4   HCM007009                     KHO ĐỔI TRẢ RAU CỦ

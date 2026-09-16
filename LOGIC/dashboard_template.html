@@ -4130,6 +4130,96 @@
                     </div>
                 </div>
 
+                <!-- CLOUD RUNNER INTERACTIVE CONSOLE -->
+                <div class="data-card" style="margin-top:1.25rem; margin-bottom:1.5rem; padding:1.25rem; border:1px solid rgba(249, 115, 22, 0.4); background: linear-gradient(135deg, rgba(249, 115, 22, 0.08) 0%, rgba(22, 27, 34, 0.95) 100%); border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.35);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.85rem; border-bottom:1px dashed var(--border-card);">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg, #f97316, #ea580c); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.15rem;">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+                            <div>
+                                <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px;">
+                                    BẢNG ĐIỀU KHIỂN & CHẠY TOOL TRỰC TUYẾN 100% (SERVERLESS CLOUD)
+                                    <span class="tag-pill" style="background:#238636; color:#fff; font-size:0.68rem; font-weight:700;">24/7 ONLINE</span>
+                                </h3>
+                                <div style="font-size:0.78rem; color:var(--text-secondary); margin-top:2px;">
+                                    Kích hoạt chạy trên máy chủ GitHub Actions từ Web hoặc Điện thoại • Không cần mở máy tính hay chạy file local
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span id="tokenStatusBadge" style="font-size:0.75rem; font-weight:600; color:#94a3b8; display:inline-flex; align-items:center; gap:4px;">
+                                <i class="fa-solid fa-circle-question"></i> Chưa lưu Token
+                            </span>
+                            <a href="https://github.com/aresphamha/Doi_Soat_Dong_Mat/actions/workflows/run_spam_tools.yml" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:5px; padding:0.35rem 0.75rem; background:rgba(255,255,255,0.06); border:1px solid var(--border-card); border-radius:6px; color:var(--text-secondary); font-size:0.75rem; text-decoration:none;" title="Mở trang quản lý GitHub Actions">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Actions Runner
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- FORM CONTROLS -->
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:1rem; margin-bottom:1rem;">
+                        <!-- Col 1: Chọn Tool -->
+                        <div>
+                            <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-primary); margin-bottom:5px;">
+                                <i class="fa-solid fa-cubes" style="color:#f97316;"></i> 1. Chọn Công Cụ Cần Chạy:
+                            </label>
+                            <select id="cloudToolSelect" style="width:100%; padding:0.55rem 0.85rem; background:var(--bg-card-alt); border:1px solid var(--border-card); border-radius:8px; color:var(--text-primary); font-size:0.83rem; font-weight:600; outline:none; cursor:pointer;">
+                                <option value="all" selected>🌟 Chạy Tất Cả 4 Tool (Thịt Cá, Mát, Hậu Kiểm Rau & Thịt Cá)</option>
+                                <option value="thit_ca">🥩 Chi Tiết Phiếu Chuyển Thịt Cá (transfer_items)</option>
+                                <option value="mat">🥬 Chi Tiết Phiếu Chuyển Hàng Mát (transfer_items)</option>
+                                <option value="hau_kiem_rau">🥦 Hậu Kiểm Rau Củ Quả (stockcard)</option>
+                                <option value="hau_kiem_thit_ca">🐟 Hậu Kiểm Thịt Cá (stockcard)</option>
+                                <option value="sync_report">📊 Tải Lại Dữ Liệu 3 Sheet & Xuất Báo Cáo Mới</option>
+                            </select>
+                        </div>
+
+                        <!-- Col 2: Chọn Ngày -->
+                        <div>
+                            <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-primary); margin-bottom:5px;">
+                                <i class="fa-regular fa-calendar-days" style="color:#38bdf8;"></i> 2. Ngày Đối Soát (YYYY-MM-DD):
+                            </label>
+                            <div style="display:flex; gap:6px; align-items:center;">
+                                <input type="date" id="cloudToolDate" style="flex:1; padding:0.5rem 0.75rem; background:var(--bg-card-alt); border:1px solid var(--border-card); border-radius:8px; color:var(--text-primary); font-size:0.83rem; outline:none;">
+                                <button onclick="setCloudDate('today')" type="button" style="padding:0.5rem 0.65rem; background:var(--bg-card-alt); border:1px solid var(--border-card); border-radius:6px; font-size:0.72rem; color:var(--text-primary); cursor:pointer;" title="Chọn ngày hôm nay">Hôm nay</button>
+                                <button onclick="setCloudDate('yesterday')" type="button" style="padding:0.5rem 0.65rem; background:var(--bg-card-alt); border:1px solid var(--border-card); border-radius:6px; font-size:0.72rem; color:var(--text-primary); cursor:pointer;" title="Chọn ngày hôm qua">Hôm qua</button>
+                            </div>
+                        </div>
+
+                        <!-- Col 3: GitHub Token & Tùy Chọn -->
+                        <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                                <label style="font-size:0.78rem; font-weight:700; color:var(--text-primary);">
+                                    <i class="fa-solid fa-key" style="color:#eab308;"></i> 3. GitHub Token (PAT):
+                                </label>
+                                <button onclick="saveCloudToken()" type="button" style="background:none; border:none; color:#38bdf8; font-size:0.72rem; cursor:pointer; text-decoration:underline;">
+                                    Lưu Token
+                                </button>
+                            </div>
+                            <input type="password" id="cloudGhToken" placeholder="Dán ghp_... (Lưu trên máy bạn)" style="width:100%; padding:0.5rem 0.75rem; background:var(--bg-card-alt); border:1px solid var(--border-card); border-radius:8px; color:var(--text-primary); font-size:0.8rem; outline:none;">
+                        </div>
+                    </div>
+
+                    <!-- DRY RUN CHECKBOX & ACTION BUTTONS -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; padding-top:0.5rem;">
+                        <label style="display:inline-flex; align-items:center; gap:8px; font-size:0.8rem; color:var(--text-secondary); cursor:pointer;">
+                            <input type="checkbox" id="cloudToolDryRun" style="width:16px; height:16px; cursor:pointer; accent-color:#f97316;">
+                            <span>🧪 <strong>Chế độ Chạy Thử (Dry-Run):</strong> Chỉ truy vấn và kiểm tra dữ liệu, không gửi tin nhắn thật đến Siêu thị</span>
+                        </label>
+
+                        <div style="display:flex; gap:0.75rem; align-items:center;">
+                            <button id="btnTriggerCloud" onclick="triggerCloudWorkflow()" style="display:inline-flex; align-items:center; gap:8px; padding:0.6rem 1.35rem; background:linear-gradient(135deg, #f97316, #ea580c); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.88rem; cursor:pointer; box-shadow:0 4px 14px rgba(249,115,22,0.4); transition:all 0.2s ease;">
+                                <i class="fa-solid fa-bolt"></i> KÍCH HOẠT CHẠY TOOL TRÊN CLOUD
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- LIVE STATUS & LOGS WIDGET -->
+                    <div id="cloudRunnerStatusBox" style="display:none; margin-top:1rem; padding-top:0.75rem; border-top:1px dashed var(--border-card);">
+                    </div>
+                </div>
+
+
                 <!-- 4 MODULES OVERVIEW CARDS -->
                 <div style="margin-top:1.25rem; margin-bottom:1.5rem;">
                     <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.75rem; display:flex; align-items:center; gap:6px;">
@@ -4343,7 +4433,89 @@
                     </div>
                 </div>
 
-                <!-- HƯỚNG DẪN SỬ DỤNG & VẬN HÀNH NHANH -->
+                
+                <!-- BỘ CÔNG CỤ ĐỐI SOÁT & TIỆN ÍCH MỞ RỘNG (THỊT CÁ • ĐÔNG MÁT • RAU CỦ) -->
+                <div style="margin-top:1.5rem; margin-bottom:1.5rem;">
+                    <div style="font-size:0.85rem; font-weight:700; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.85rem; display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-toolbox" style="color:#38bdf8;"></i> TOÀN BỘ BỘ CÔNG CỤ & TIỆN ÍCH ĐỐI SOÁT SCM TRÊN GITHUB:
+                    </div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1rem;">
+                        
+                        <!-- Suite 1: Thịt Cá -->
+                        <div class="data-card" style="padding:1.15rem; border-left:4px solid #f87171;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.65rem;">
+                                <div style="font-weight:700; font-size:0.95rem; color:#f87171; display:flex; align-items:center; gap:6px;">
+                                    🥩 BỘ TOOL THỊT CÁ
+                                </div>
+                                <a href="https://github.com/aresphamha/Doi_Soat_Dong_Mat/tree/main/TOOLS_DOI_SOAT/THIT_CA" target="_blank" rel="noopener noreferrer" style="color:#f87171; font-size:0.75rem; text-decoration:none; font-weight:600;">
+                                    <i class="fa-brands fa-github"></i> Xem Repo
+                                </a>
+                            </div>
+                            <ul style="padding-left:1.1rem; margin:0; font-size:0.78rem; color:var(--text-secondary); line-height:1.6;">
+                                <li><code>Spam_Phieu_Chuyen_Thit_Ca.py</code>: Đối soát phiếu thịt cá đang chuyển (CDC)</li>
+                                <li><code>Spam_Phieu_Hau_Kiem_Thit_Ca.py</code>: Hậu kiểm thẻ kho Meat & Fish</li>
+                                <li><code>export_thit_ca.py</code>: Xuất báo cáo dữ liệu thịt cá ra Excel</li>
+                                <li><code>Tool_Spam/3_Tra_Cuu_ID.py</code>: Tra cứu nhanh Chat ID Telegram ST</li>
+                            </ul>
+                        </div>
+
+                        <!-- Suite 2: Đông Mát -->
+                        <div class="data-card" style="padding:1.15rem; border-left:4px solid #10b981;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.65rem;">
+                                <div style="font-weight:700; font-size:0.95rem; color:#10b981; display:flex; align-items:center; gap:6px;">
+                                    🥬 BỘ TOOL ĐÔNG MÁT
+                                </div>
+                                <a href="https://github.com/aresphamha/Doi_Soat_Dong_Mat/tree/main/TOOLS_DOI_SOAT/DONG_MAT" target="_blank" rel="noopener noreferrer" style="color:#10b981; font-size:0.75rem; text-decoration:none; font-weight:600;">
+                                    <i class="fa-brands fa-github"></i> Xem Repo
+                                </a>
+                            </div>
+                            <ul style="padding-left:1.1rem; margin:0; font-size:0.78rem; color:var(--text-secondary); line-height:1.6;">
+                                <li><code>1_Doi_Soat_Dong_Mat.py</code>: Đối soát chéo tổng thể kho Đông Mát</li>
+                                <li><code>1_Lay_Chat_ID.py</code>: Quét và cập nhật toàn bộ Chat ID nhóm ABA</li>
+                                <li><code>5_Spam_Tu_Chon.py</code>: Công cụ gửi tin nhắn tùy chọn theo danh sách ST</li>
+                                <li><code>4_Add_Thanh_Vien.py</code>: Tự động mời thành viên SCM vào nhóm ST</li>
+                            </ul>
+                        </div>
+
+                        <!-- Suite 3: Rau Củ -->
+                        <div class="data-card" style="padding:1.15rem; border-left:4px solid #eab308;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.65rem;">
+                                <div style="font-weight:700; font-size:0.95rem; color:#eab308; display:flex; align-items:center; gap:6px;">
+                                    🥦 BỘ TOOL RAU CỦ (KRC)
+                                </div>
+                                <a href="https://github.com/aresphamha/Doi_Soat_Dong_Mat/tree/main/TOOLS_DOI_SOAT/RAU_CU" target="_blank" rel="noopener noreferrer" style="color:#eab308; font-size:0.75rem; text-decoration:none; font-weight:600;">
+                                    <i class="fa-brands fa-github"></i> Xem Repo
+                                </a>
+                            </div>
+                            <ul style="padding-left:1.1rem; margin:0; font-size:0.78rem; color:var(--text-secondary); line-height:1.6;">
+                                <li><code>Spam_Phieu_Hau_Kiem_Rau_Cu.py</code>: Hậu kiểm số lượng xuất/nhận Rau Củ</li>
+                                <li><code>2_Spam_Telegram.py</code>: Gửi thông báo đối soát KRC Rau Củ</li>
+                                <li><code>Xoa_Tin_Nhan.py</code>: Tiện ích dọn dẹp và thu hồi tin nhắn cũ</li>
+                                <li><code>Layout Rau.xlsx</code>: Mẫu cấu trúc import đối soát Rau Củ</li>
+                            </ul>
+                        </div>
+
+                        <!-- Suite 4: Tài Liệu Logic Nghiệp Vụ -->
+                        <div class="data-card" style="padding:1.15rem; border-left:4px solid #a855f7;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.65rem;">
+                                <div style="font-weight:700; font-size:0.95rem; color:#a855f7; display:flex; align-items:center; gap:6px;">
+                                    📚 TÀI LIỆU LOGIC SCM
+                                </div>
+                                <a href="https://github.com/aresphamha/Doi_Soat_Dong_Mat/tree/main/TOOLS_DOI_SOAT/TAI_LIEU_LOGIC" target="_blank" rel="noopener noreferrer" style="color:#a855f7; font-size:0.75rem; text-decoration:none; font-weight:600;">
+                                    <i class="fa-brands fa-github"></i> Xem Docs
+                                </a>
+                            </div>
+                            <ul style="padding-left:1.1rem; margin:0; font-size:0.78rem; color:var(--text-secondary); line-height:1.6;">
+                                <li><code>Logic_Doi_Soat_Thit_Ca.md</code>: Quy chuẩn tính toán & đối chiếu Thịt Cá</li>
+                                <li><code>Logic_Doi_Soat_Dong_Mat.md</code>: Quy tắc bù trừ & ngưỡng 100k Đông Mát</li>
+                                <li><code>Quy_Trinh_Logic_Spam_Telegram.md</code>: Cơ chế phân quyền & gửi tin nhắn</li>
+                                <li><code>Huong_Dan_Cau_Hinh_SCM.md</code>: Hướng dẫn cấu hình API & Database</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+<!-- HƯỚNG DẪN SỬ DỤNG & VẬN HÀNH NHANH -->
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap:1rem;">
                     <!-- Card Hướng dẫn 1: Chạy Menu Batch -->
                     <div class="data-card" style="padding:1.25rem;">
@@ -4948,6 +5120,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            initCloudRunnerUI();
             populateMonthOptions();
             applyTheme(currentTheme);
             renderAll();
@@ -9829,7 +10002,187 @@
         });
 
 
-    </script>
+    
+
+        // =========================================================================
+        // GITHUB ACTIONS CLOUD RUNNER WEB DISPATCHER (100% SERVERLESS)
+        // =========================================================================
+        const GH_USER = "aresphamha";
+        const GH_REPO = "Doi_Soat_Dong_Mat";
+        const GH_WORKFLOW_FILE = "run_spam_tools.yml";
+
+        function initCloudRunnerUI() {
+            const savedToken = localStorage.getItem("gh_pat_token") || "";
+            const tokenInput = document.getElementById("cloudGhToken");
+            if (tokenInput && savedToken) {
+                tokenInput.value = savedToken;
+                updateTokenStatusBadge(true);
+            }
+            
+            const dateInput = document.getElementById("cloudToolDate");
+            if (dateInput && !dateInput.value) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.value = today;
+            }
+        }
+
+        function saveCloudToken() {
+            const tokenInput = document.getElementById("cloudGhToken");
+            if (tokenInput && tokenInput.value.trim()) {
+                localStorage.setItem("gh_pat_token", tokenInput.value.trim());
+                updateTokenStatusBadge(true);
+                alert("✅ Đã lưu GitHub Token an toàn vào trình duyệt của bạn!");
+            } else {
+                localStorage.removeItem("gh_pat_token");
+                updateTokenStatusBadge(false);
+                alert("ℹ️ Đã xóa GitHub Token khỏi trình duyệt.");
+            }
+        }
+
+        function updateTokenStatusBadge(isSaved) {
+            const badge = document.getElementById("tokenStatusBadge");
+            if (badge) {
+                if (isSaved) {
+                    badge.innerHTML = '<i class="fa-solid fa-check-circle" style="color:#34d399;"></i> Đã lưu Token';
+                    badge.style.color = '#34d399';
+                } else {
+                    badge.innerHTML = '<i class="fa-solid fa-circle-question" style="color:#94a3b8;"></i> Chưa lưu Token';
+                    badge.style.color = '#94a3b8';
+                }
+            }
+        }
+
+        function setCloudDate(mode) {
+            const dateInput = document.getElementById("cloudToolDate");
+            if (!dateInput) return;
+            const now = new Date();
+            if (mode === 'today') {
+                dateInput.value = now.toISOString().split('T')[0];
+            } else if (mode === 'yesterday') {
+                now.setDate(now.getDate() - 1);
+                dateInput.value = now.toISOString().split('T')[0];
+            } else if (mode === 'clear') {
+                dateInput.value = '';
+            }
+        }
+
+        async function triggerCloudWorkflow() {
+            const toolSelect = document.getElementById("cloudToolSelect");
+            const dateInput = document.getElementById("cloudToolDate");
+            const dryRunCheckbox = document.getElementById("cloudToolDryRun");
+            const tokenInput = document.getElementById("cloudGhToken");
+            const statusBox = document.getElementById("cloudRunnerStatusBox");
+            const btn = document.getElementById("btnTriggerCloud");
+
+            const tool = toolSelect ? toolSelect.value : "all";
+            const targetDate = dateInput ? dateInput.value.trim() : "";
+            const isDryRun = dryRunCheckbox ? dryRunCheckbox.checked : false;
+            let token = tokenInput ? tokenInput.value.trim() : "";
+            if (!token) {
+                token = localStorage.getItem("gh_pat_token") || "";
+            }
+
+            if (!token) {
+                if (confirm("⚠️ Bạn chưa nhập GitHub Token để kích hoạt trực tiếp từ Web.\n\nBạn có muốn mở trang GitHub Actions để chạy trực tiếp chỉ với 1 cú nhấp chuột không?")) {
+                    window.open(`https://github.com/${GH_USER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW_FILE}`, "_blank");
+                }
+                return;
+            }
+
+            localStorage.setItem("gh_pat_token", token);
+            updateTokenStatusBadge(true);
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi lệnh lên Cloud...';
+            }
+
+            if (statusBox) {
+                statusBox.style.display = 'block';
+                statusBox.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px; color:#38bdf8;">
+                        <i class="fa-solid fa-spinner fa-spin" style="font-size:1.2rem;"></i>
+                        <div>
+                            <strong style="color:#fff;">Đang kích hoạt GitHub Cloud Runner...</strong>
+                            <div style="font-size:0.75rem; color:var(--text-secondary);">Gửi yêu cầu khởi chạy công cụ: <strong>${tool}</strong> (Ngày: ${targetDate || 'Tự động'})</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            try {
+                const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW_FILE}/dispatches`;
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/vnd.github.v3+json",
+                        "Authorization": `token ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        ref: "main",
+                        inputs: {
+                            tool: tool,
+                            target_date: targetDate,
+                            dry_run: isDryRun ? "true" : "false"
+                        }
+                    })
+                });
+
+                if (response.status === 204 || response.ok) {
+                    if (statusBox) {
+                        statusBox.innerHTML = `
+                            <div style="background:rgba(35,134,54,0.15); border:1px solid #238636; border-radius:8px; padding:0.85rem 1rem;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                                    <div style="display:flex; align-items:center; gap:8px; color:#3fb950; font-weight:700; font-size:0.9rem;">
+                                        <i class="fa-solid fa-circle-check" style="font-size:1.1rem;"></i> ĐÃ KÍCH HOẠT THÀNH CÔNG TÁC VỤ TRÊN CLOUD!
+                                    </div>
+                                    <a href="https://github.com/${GH_USER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW_FILE}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; background:#238636; color:#fff; padding:0.35rem 0.75rem; border-radius:6px; font-size:0.78rem; font-weight:600; text-decoration:none;">
+                                        <i class="fa-solid fa-terminal"></i> Xem Nhật Ký Trực Tiếp (Live Logs)
+                                    </a>
+                                </div>
+                                <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:6px; line-height:1.45;">
+                                    Máy chủ GitHub Actions đang chạy công cụ <strong>${tool}</strong> trong nền (Serverless). Tin nhắn Telegram sẽ được gửi tự động đến các nhóm siêu thị mà không phụ thuộc vào máy tính của bạn.
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    const errData = await response.json().catch(() => ({}));
+                    const errMsg = errData.message || response.statusText;
+                    if (statusBox) {
+                        statusBox.innerHTML = `
+                            <div style="background:rgba(248,81,73,0.15); border:1px solid #f85149; border-radius:8px; padding:0.85rem 1rem; color:#ff7b72;">
+                                <div style="font-weight:700; font-size:0.9rem; margin-bottom:4px;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Lỗi khi kích hoạt GitHub Actions: ${response.status}
+                                </div>
+                                <div style="font-size:0.78rem; color:var(--text-secondary);">
+                                    Chi tiết: ${errMsg}<br>
+                                    💡 Gợi ý: Kiểm tra lại GitHub Personal Access Token (cần quyền <code>repo</code> và <code>workflow</code>). Hoặc bấm nút <strong>Mở Actions Runner</strong> ở trên để chạy thủ công 1 click.
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            } catch (err) {
+                if (statusBox) {
+                    statusBox.innerHTML = `
+                        <div style="background:rgba(248,81,73,0.15); border:1px solid #f85149; border-radius:8px; padding:0.85rem 1rem; color:#ff7b72;">
+                            <div style="font-weight:700; font-size:0.9rem;">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Lỗi mạng hoặc kết nối API: ${err.message}
+                            </div>
+                        </div>
+                    `;
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-bolt"></i> KÍCH HOẠT CHẠY TOOL TRÊN CLOUD';
+                }
+            }
+        }
+
+</script>
 
     <!-- ========================================================================= -->
     <!-- TELEGRAM SCM CHAT DRAWER (XEM VÀ PHẢN HỒI TIN NHẮN TRỰC TIẾP) -->
