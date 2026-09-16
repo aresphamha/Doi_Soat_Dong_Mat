@@ -63,6 +63,44 @@ def find_mapping_file(filename):
             return os.path.abspath(c)
     return candidates[0]
 
+import json
+
+def get_sent_history_file():
+    return os.path.join(CONFIG_DATA_DIR, "sent_history.json")
+
+def load_sent_stores(tool_name, date_str):
+    hist_file = get_sent_history_file()
+    if os.path.exists(hist_file):
+        try:
+            with open(hist_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                return set(data.get(date_str, {}).get(tool_name, []))
+        except Exception:
+            return set()
+    return set()
+
+def record_sent_store(tool_name, date_str, store_id):
+    hist_file = get_sent_history_file()
+    data = {}
+    if os.path.exists(hist_file):
+        try:
+            with open(hist_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        except Exception:
+            data = {}
+    if date_str not in data:
+        data[date_str] = {}
+    if tool_name not in data[date_str]:
+        data[date_str][tool_name] = []
+    if store_id not in data[date_str][tool_name]:
+        data[date_str][tool_name].append(store_id)
+    try:
+        os.makedirs(os.path.dirname(os.path.abspath(hist_file)), exist_ok=True)
+        with open(hist_file, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
 def get_db_connection():
     return pymysql.connect(
         host='103.147.122.103',
@@ -544,6 +582,38 @@ async def run_tool_hau_kiem_thit_ca(target_date=None, dry_run=False):
     await client.disconnect()
     print("✅ Hoàn thành Tool Hậu Kiểm Thịt Cá!")
 
+def execute_external_tool(script_path, cwd=None):
+    """Thực thi file script Python cục bộ với môi trường UTF-8 chuẩn xác và in log Real-time từng dòng."""
+    if not os.path.exists(script_path):
+        print(f"❌ [LỖI] Không tìm thấy file script: {script_path}", flush=True)
+        return False
+    work_dir = cwd if cwd else os.path.dirname(script_path)
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUTF8"] = "1"
+    env["PYTHONUNBUFFERED"] = "1"
+    try:
+        proc = subprocess.Popen(
+            [sys.executable, "-u", script_path],
+            cwd=work_dir,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+            bufsize=1
+        )
+        for line in proc.stdout:
+            clean_line = line.rstrip()
+            if clean_line:
+                print(clean_line, flush=True)
+        proc.wait()
+        return proc.returncode == 0
+    except Exception as e:
+        print(f"❌ [LỖI THỰC THI] {os.path.basename(script_path)}: {e}", flush=True)
+        return False
+
 # -------------------------------------------------------------
 # MODULE 5: ĐÔNG MÁT SHEET & SPAM TELEGRAM
 # -------------------------------------------------------------
@@ -552,95 +622,84 @@ async def run_tool_dong_mat_full(target_date=None, dry_run=False):
     print("❄️ BẮT ĐẦU CHẠY TOOL ĐỐI SOÁT ĐÔNG MÁT GỐC...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "1_Doi_Soat_Dong_Mat.py")
-    if os.path.exists(script_path):
-        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+    execute_external_tool(script_path)
 
 async def run_tool_dong_mat_spam(target_date=None, dry_run=False):
     print("\n=======================================================")
     print("📨 BẮT ĐẦU CHẠY TOOL SPAM BÁO CÁO ĐÔNG MÁT...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "2_Spam_Telegram.py")
-    if os.path.exists(script_path):
-        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+    execute_external_tool(script_path)
 
 async def run_tool_lay_chat_id():
     print("\n=======================================================")
     print("🆔 BẮT ĐẦU CHẠY TOOL QUÉT & CẬP NHẬT CHAT ID TELEGRAM...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "1_Lay_Chat_ID.py")
-    if os.path.exists(script_path):
-        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+    execute_external_tool(script_path)
+
 async def run_tool_dong_mat_nhom_dong():
     print("\n=======================================================")
     print("🧊 BẮT ĐẦU CHẠY TOOL ĐỐI SOÁT RIÊNG NHÓM ĐÔNG...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "1_Doi_Soat_Nhom_Dong.py")
-    if os.path.exists(script_path):
-        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+    execute_external_tool(script_path)
 
 async def run_tool_thit_ca_spam():
     print("\n=======================================================")
     print("🥩 BẮT ĐẦU CHẠY TOOL SPAM BÁO CÁO THỊT CÁ...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "THIT_CA", "Tool_Spam", "2_Spam_Telegram.py")
-    if os.path.exists(script_path):
-        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+    execute_external_tool(script_path)
 
 async def run_tool_rau_cu_spam():
     print("\n=======================================================")
     print("🥦 BẮT ĐẦU CHẠY TOOL SPAM BÁO CÁO RAU CỦ...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "RAU_CU", "2_Spam_Telegram.py")
-    if os.path.exists(script_path):
-        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+    execute_external_tool(script_path)
 
 async def run_tool_spam_tu_chon():
     print("\n=======================================================")
     print("🎯 BẮT ĐẦU CHẠY TOOL SPAM TIN NHẮN TÙY CHỌN (5_Spam_Tu_Chon)...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "5_Spam_Tu_Chon.py")
-    if os.path.exists(script_path):
-        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+    execute_external_tool(script_path)
 
 async def run_tool_xoa_tin_nhan():
     print("\n=======================================================")
     print("🗑️ BẮT ĐẦU CHẠY TOOL THU HỒI / XÓA TIN NHẮN ĐÃ SPAM...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "RAU_CU", "Xoa_Tin_Nhan.py")
-    if os.path.exists(script_path):
-        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+    execute_external_tool(script_path)
 
 async def run_tool_tra_cuu_id():
     print("\n=======================================================")
     print("🔍 BẮT ĐẦU CHẠY TOOL TRA CỨU NHANH CHAT ID GROUP...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "3_Tra_Cuu_ID.py")
-    if os.path.exists(script_path):
-        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+    execute_external_tool(script_path)
 
 async def run_tool_add_thanh_vien():
     print("\n=======================================================")
     print("👥 BẮT ĐẦU CHẠY TOOL TỰ ĐỘNG THÊM THÀNH VIÊN VÀO GROUP TELEGRAM...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "4_Add_Thanh_Vien.py")
-    if os.path.exists(script_path):
-        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+    execute_external_tool(script_path)
 
 async def run_tool_xuat_doi_soat_chuan():
     print("\n=======================================================")
     print("📑 BẮT ĐẦU XUẤT FILE BÁO CÁO ĐỐI SOÁT CHUẨN EXCEL...")
     print("=======================================================")
     script_path = os.path.join(os.path.dirname(ROOT_DIR), "xuat_doi_soat_chuan.py")
-    if os.path.exists(script_path):
-        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+    execute_external_tool(script_path)
 
 async def run_tool_export_thit_ca():
     print("\n=======================================================")
     print("📈 BẮT ĐẦU CHẠY TOOL XUẤT ĐỐI SOÁT THỊT CÁ...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "THIT_CA", "export_thit_ca.py")
-    if os.path.exists(script_path):
-        subprocess.run([sys.executable, script_path], cwd=os.path.dirname(script_path))
+    execute_external_tool(script_path)
 
 
 def main():

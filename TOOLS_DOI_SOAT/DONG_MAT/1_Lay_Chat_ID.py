@@ -1,10 +1,35 @@
 
+# -*- coding: utf-8 -*-
+import os
+import sys
+
+# Đảm bảo UTF-8 Output tránh UnicodeEncodeError trên Windows
+if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
+    try:
+        sys.stderr.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
+def safe_prompt(msg="Bấm Enter để tiếp tục..."):
+    """Dừng chờ phím an toàn khi chạy terminal, tự động bỏ qua nếu chạy daemon / non-interactive."""
+    try:
+        if sys.stdin and sys.stdin.isatty():
+            input(msg)
+    except Exception:
+        pass
+
 def find_data_file(filename, default_dir=None):
     cur_dir = os.path.dirname(os.path.abspath(__file__))
     candidates = [
         os.path.join(cur_dir, filename),
         os.path.join(cur_dir, '..', 'CONFIG_DATA', filename),
         os.path.join(cur_dir, '..', filename),
+        os.path.join(cur_dir, '..', '..', 'CONFIG_DATA', filename),
         os.path.join(r'C:\Users\PC\Desktop\AI\Đối soát\ĐÔNG MÁT', filename),
         os.path.join(r'C:\Users\PC\Desktop\AI\Đối soát\THỊT CÁ', filename),
         os.path.join(r'C:\Users\PC\Desktop\AI\Đối soát\RAU CỦ', filename)
@@ -14,7 +39,6 @@ def find_data_file(filename, default_dir=None):
             return os.path.abspath(c)
     return os.path.join(cur_dir, filename)
 
-import os
 import pandas as pd
 from telethon.sync import TelegramClient
 import asyncio
@@ -22,7 +46,7 @@ import re
 
 api_id = 31209455
 api_hash = 'f636ffaebfaf0bfb52d8709a4cdaaa0e'
-session_name = 'user_session'
+session_name = find_data_file('user_session').replace('.session', '')
 
 print("==================================================")
 print("TOOL TỰ ĐỘNG LẤY CHAT ID GROUP SIÊU THỊ TỪ TELEGRAM")
@@ -32,11 +56,14 @@ print("Đang tải file Danh sách Siêu thị để map tự động...")
 # 1. Load Store list
 df_stores = pd.DataFrame(columns=['Tên Siêu thị', 'ID ST'])
 try:
-    df_stores = pd.read_excel(r'C:\Users\PC\Desktop\AI\Đối soát\ĐÔNG MÁT\Danh sách Siêu thị.xlsx', dtype=str)
+    store_file = find_data_file('Danh sách Siêu thị.xlsx')
+    if not os.path.exists(store_file):
+        store_file = find_data_file('Danh_Sach_Sieu_Thi_Dong_Mat.xlsx')
+    df_stores = pd.read_excel(store_file, dtype=str)
     # clean up names
     df_stores['Tên Siêu thị'] = df_stores['Tên Siêu thị'].fillna('').str.strip()
     df_stores['ID ST'] = df_stores['ID ST'].fillna('').str.strip()
-    print(f"Đã tải {len(df_stores)} dòng siêu thị.")
+    print(f"Đã tải {len(df_stores)} dòng siêu thị từ {store_file}.")
 except Exception as e:
     print("Lỗi không đọc được file Danh sách Siêu thị.xlsx:", e)
 

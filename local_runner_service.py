@@ -193,7 +193,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
 
     def _stream_tool_execution(self, tool, target_date, dry_run):
         global ACTIVE_PROCESS, LATEST_EXECUTION
-        cmd = [PYTHON_EXE, SPAM_RUNNER_SCRIPT, "--tool", tool]
+        cmd = [PYTHON_EXE, "-u", SPAM_RUNNER_SCRIPT, "--tool", tool]
         if target_date:
             cmd.extend(["--date", target_date])
         if dry_run:
@@ -205,6 +205,10 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(f"data: {json.dumps(start_payload, ensure_ascii=False)}\n\n".encode('utf-8'))
             self.wfile.flush()
 
+            env = os.environ.copy()
+            env["PYTHONIOENCODING"] = "utf-8"
+            env["PYTHONUTF8"] = "1"
+            env["PYTHONUNBUFFERED"] = "1"
             proc = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
@@ -213,7 +217,8 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
                 encoding='utf-8',
                 errors='replace',
                 cwd=ROOT_DIR,
-                bufsize=1
+                bufsize=1,
+                env=env
             )
             with EXECUTION_LOCK:
                 ACTIVE_PROCESS = proc
@@ -269,7 +274,7 @@ def run_tool_sync(tool, target_date, dry_run):
         LATEST_EXECUTION["logs"] = []
         LATEST_EXECUTION["returncode"] = None
 
-        cmd = [PYTHON_EXE, SPAM_RUNNER_SCRIPT, "--tool", tool]
+        cmd = [PYTHON_EXE, "-u", SPAM_RUNNER_SCRIPT, "--tool", tool]
         if target_date:
             cmd.extend(["--date", target_date])
         if dry_run:
@@ -277,6 +282,10 @@ def run_tool_sync(tool, target_date, dry_run):
 
         try:
             print(f"👉 [LOCAL RUNNER] Chạy lệnh: {' '.join(cmd)}")
+            env = os.environ.copy()
+            env["PYTHONIOENCODING"] = "utf-8"
+            env["PYTHONUTF8"] = "1"
+            env["PYTHONUNBUFFERED"] = "1"
             proc = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
@@ -284,7 +293,9 @@ def run_tool_sync(tool, target_date, dry_run):
                 text=True,
                 encoding='utf-8',
                 errors='replace',
-                cwd=ROOT_DIR
+                cwd=ROOT_DIR,
+                bufsize=1,
+                env=env
             )
             logs = []
             for line in proc.stdout:
