@@ -26,7 +26,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 SPAM_RUNNER_SCRIPT = os.path.join(ROOT_DIR, "SPAM_PHIEU_CHUYEN", "run_spam_tool.py")
 PYTHON_EXE = sys.executable
 
-# Lưu lịch sử log chạy gần nhất
+# Lưu lịch sử log chạy gần nhất và tiến trình đang thực thi
 LATEST_EXECUTION = {
     "tool": None,
     "status": "idle",
@@ -36,6 +36,27 @@ LATEST_EXECUTION = {
     "returncode": 0
 }
 EXECUTION_LOCK = threading.Lock()
+ACTIVE_PROCESS = None
+
+def stop_active_process():
+    global ACTIVE_PROCESS, LATEST_EXECUTION
+    with EXECUTION_LOCK:
+        if ACTIVE_PROCESS is not None:
+            try:
+                print("🛑 [STOP REQUEST] Nhận được yêu cầu dừng tiến trình đang chạy...")
+                ACTIVE_PROCESS.terminate()
+                time.sleep(0.2)
+                if ACTIVE_PROCESS.poll() is None:
+                    ACTIVE_PROCESS.kill()
+                LATEST_EXECUTION["status"] = "stopped"
+                LATEST_EXECUTION["completed_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+                LATEST_EXECUTION["logs"].append("🛑 [ĐÃ DỪNG] Người dùng đã bấm dừng công cụ thành công.")
+                ACTIVE_PROCESS = None
+                return True
+            except Exception as e:
+                print(f"⚠️ Lỗi khi dừng tiến trình: {e}")
+                return False
+        return False
 
 class SCMRequestHandler(BaseHTTPRequestHandler):
     def _send_cors_headers(self):
@@ -61,7 +82,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             resp = {
                 "status": "online",
                 "service": "SCM Local Runner Service",
-                "version": "2.0",
+                "version": "2.1",
                 "port": PORT,
                 "current_status": LATEST_EXECUTION["status"],
                 "last_tool": LATEST_EXECUTION["tool"],
@@ -78,12 +99,25 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(LATEST_EXECUTION, ensure_ascii=False).encode('utf-8'))
             return
 
+        elif path == "/stop" or path == "/cancel":
+            stopped = stop_active_process()
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            resp = {
+                "success": True,
+                "stopped": stopped,
+                "msg": "✅ Đã dừng tiến trình thành công!" if stopped else "ℹ️ Không có tiến trình nào đang chạy để dừng."
+            }
+            self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
+            return
+
         elif path == "/run":
             tool = params.get('tool', ['all'])[0]
             target_date = params.get('date', [''])[0]
             dry_run = params.get('dry_run', ['false'])[0].lower() in ['true', '1', 'yes']
             
-            # Khởi chạy tool đồng bộ hoặc bất đồng bộ
             result = run_tool_sync(tool, target_date, dry_run)
             
             self.send_response(200)
@@ -94,7 +128,6 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/stream":
-            # Server-Sent Events (SSE) để stream logs trực tiếp về Web UI
             tool = params.get('tool', ['all'])[0]
             target_date = params.get('date', [''])[0]
             dry_run = params.get('dry_run', ['false'])[0].lower() in ['true', '1', 'yes']
@@ -126,7 +159,21 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
         except Exception:
             data = {}
 
-        if path == "/run":
+        if path == "/stop" or path == "/cancel":
+            stopped = stop_active_process()
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            resp = {
+                "success": True,
+                "stopped": stopped,
+                "msg": "✅ Đã dừng tiến trình thành công!" if stopped else "ℹ️ Không có tiến trình nào đang chạy để dừng."
+            }
+            self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
+            return
+
+        elif path == "/run":
             tool = data.get('tool', 'all')
             target_date = data.get('date', '')
             dry_run = data.get('dry_run', False)
@@ -145,6 +192,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
     def _stream_tool_execution(self, tool, target_date, dry_run):
+        global ACTIVE_PROCESS, LATEST_EXECUTION
         cmd = [PYTHON_EXE, SPAM_RUNNER_SCRIPT, "--tool", tool]
         if target_date:
             cmd.extend(["--date", target_date])
@@ -167,25 +215,43 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
                 cwd=ROOT_DIR,
                 bufsize=1
             )
+            with EXECUTION_LOCK:
+                ACTIVE_PROCESS = proc
+                LATEST_EXECUTION["tool"] = tool
+                LATEST_EXECUTION["status"] = "running"
+                LATEST_EXECUTION["started_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
 
             for line in proc.stdout:
                 clean_line = line.rstrip()
                 if clean_line:
                     event = {"type": "log", "line": clean_line}
-                    self.wfile.write(f"data: {json.dumps(event, ensure_ascii=False)}\n\n".encode('utf-8'))
-                    self.wfile.flush()
+                    try:
+                        self.wfile.write(f"data: {json.dumps(event, ensure_ascii=False)}\n\n".encode('utf-8'))
+                        self.wfile.flush()
+                    except Exception:
+                        break
 
             proc.wait()
             ret = proc.returncode
+            with EXECUTION_LOCK:
+                ACTIVE_PROCESS = None
+                LATEST_EXECUTION["status"] = "success" if ret == 0 else ("stopped" if ret == 15 or ret == -15 or ret == 1 else "error")
+                LATEST_EXECUTION["completed_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+
             end_event = {
                 "type": "end",
                 "returncode": ret,
-                "msg": "✅ Thực thi hoàn tất thành công!" if ret == 0 else f"⚠️ Thực thi kết thúc với mã lỗi: {ret}"
+                "msg": "✅ Thực thi hoàn tất thành công!" if ret == 0 else f"⚠️ Thực thi đã dừng / kết thúc (Mã: {ret})"
             }
-            self.wfile.write(f"data: {json.dumps(end_event, ensure_ascii=False)}\n\n".encode('utf-8'))
-            self.wfile.flush()
+            try:
+                self.wfile.write(f"data: {json.dumps(end_event, ensure_ascii=False)}\n\n".encode('utf-8'))
+                self.wfile.flush()
+            except Exception:
+                pass
 
         except Exception as e:
+            with EXECUTION_LOCK:
+                ACTIVE_PROCESS = None
             err_event = {"type": "error", "msg": f"❌ Lỗi thực thi: {str(e)}"}
             try:
                 self.wfile.write(f"data: {json.dumps(err_event, ensure_ascii=False)}\n\n".encode('utf-8'))

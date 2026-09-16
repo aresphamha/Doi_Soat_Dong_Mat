@@ -4235,6 +4235,9 @@
                             <button id="btnTriggerCloud" onclick="executeSelectedTool()" style="display:inline-flex; align-items:center; gap:8px; padding:0.65rem 1.5rem; background:linear-gradient(135deg, #f97316, #ea580c); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; box-shadow:0 4px 16px rgba(249,115,22,0.45); transition:all 0.2s ease;">
                                 <i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY
                             </button>
+                            <button id="btnStopTool" onclick="stopCurrentExecution()" type="button" style="display:none; align-items:center; gap:8px; padding:0.65rem 1.25rem; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; box-shadow:0 4px 16px rgba(239,68,68,0.4); transition:all 0.2s ease;" title="Dừng / Hủy bỏ ngay tiến trình đang chạy">
+                                <i class="fa-solid fa-circle-stop"></i> ⏹️ DỪNG / HỦY BỎ
+                            </button>
                         </div>
                     </div>
 
@@ -4253,6 +4256,9 @@
                                 </span>
                             </div>
                             <div style="display:flex; align-items:center; gap:6px;">
+                                <button id="terminalStopBtn" onclick="stopCurrentExecution()" type="button" style="display:none; background:#ef4444; border:none; color:#fff; font-size:0.72rem; padding:0.25rem 0.65rem; border-radius:5px; cursor:pointer; font-weight:700;" title="Dừng tiến trình đang chạy">
+                                    <i class="fa-solid fa-circle-stop"></i> Dừng Chạy
+                                </button>
                                 <button onclick="copyTerminalLogs()" style="background:rgba(255,255,255,0.06); border:1px solid #30363d; color:#c9d1d9; font-size:0.72rem; padding:0.25rem 0.6rem; border-radius:5px; cursor:pointer;" title="Sao chép toàn bộ nhật ký">
                                     <i class="fa-regular fa-copy"></i> Sao chép
                                 </button>
@@ -10356,6 +10362,8 @@
         const LOCAL_RUNNER_API = "http://127.0.0.1:8088";
 
         window.isLocalRunnerOnline = false;
+        window.activeRunnerMode = null; // 'local' or 'cloud'
+        window.activeWorkflowRunId = null;
         let currentEventSource = null;
         let workflowPollInterval = null;
 
@@ -10395,6 +10403,75 @@
             }
         }
 
+        function setRunnerExecutingState(isExecuting) {
+            const btn = document.getElementById("btnTriggerCloud");
+            const btnStop = document.getElementById("btnStopTool");
+            const terminalStopBtn = document.getElementById("terminalStopBtn");
+
+            if (isExecuting) {
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang Thực Thi...';
+                    btn.style.opacity = '0.7';
+                }
+                if (btnStop) btnStop.style.display = 'inline-flex';
+                if (terminalStopBtn) terminalStopBtn.style.display = 'inline-block';
+            } else {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+                    btn.style.opacity = '1';
+                }
+                if (btnStop) btnStop.style.display = 'none';
+                if (terminalStopBtn) terminalStopBtn.style.display = 'none';
+                window.activeRunnerMode = null;
+                window.activeWorkflowRunId = null;
+            }
+        }
+
+        async function stopCurrentExecution() {
+            appendTerminalLog("⏹️ Đang gửi tín hiệu YÊU CẦU DỪNG TIẾN TRÌNH...", "warning");
+
+            if (window.activeRunnerMode === "local") {
+                if (currentEventSource) {
+                    try { currentEventSource.close(); } catch(e) {}
+                }
+                try {
+                    const res = await fetch(`${LOCAL_RUNNER_API}/stop`, { method: "POST" });
+                    const data = await res.json();
+                    appendTerminalLog(`🛑 [LOCAL RUNNER] ${data.msg || "Đã dừng tiến trình!"}`, "error");
+                } catch(e) {
+                    appendTerminalLog(`⚠️ Không thể gửi tín hiệu dừng tới Local Agent: ${e.message}`, "error");
+                }
+            } else if (window.activeRunnerMode === "cloud") {
+                if (workflowPollInterval) clearInterval(workflowPollInterval);
+                if (window.activeWorkflowRunId) {
+                    try {
+                        const token = DEFAULT_GH_PAT;
+                        const cancelUrl = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/actions/runs/${window.activeWorkflowRunId}/cancel`;
+                        await fetch(cancelUrl, {
+                            method: "POST",
+                            headers: { "Authorization": `token ${token}`, "Accept": "application/vnd.github.v3+json" }
+                        });
+                        appendTerminalLog(`🛑 [CLOUD RUNNER] Đã gửi lệnh hủy Workflow #${window.activeWorkflowRunId} trên GitHub Actions!`, "error");
+                    } catch(e) {
+                        appendTerminalLog(`⚠️ Lỗi gửi lệnh hủy GitHub Actions: ${e.message}`, "error");
+                    }
+                } else {
+                    appendTerminalLog("🛑 Đã hủy theo dõi tác vụ Cloud.", "warning");
+                }
+            } else {
+                try { fetch(`${LOCAL_RUNNER_API}/stop`); } catch(e) {}
+                if (currentEventSource) {
+                    try { currentEventSource.close(); } catch(e) {}
+                }
+                if (workflowPollInterval) clearInterval(workflowPollInterval);
+                appendTerminalLog("🛑 Đã dừng tiến trình.", "warning");
+            }
+
+            setRunnerExecutingState(false);
+        }
+
         function setCloudDate(mode) {
             const dateInput = document.getElementById("cloudToolDate");
             if (!dateInput) return;
@@ -10425,9 +10502,9 @@
             let colorStyle = "#c9d1d9";
             if (type === "success" || line.includes("✅") || line.includes("[ĐÃ GỬI]") || line.includes("thành công") || line.includes("SUCCESS")) {
                 colorStyle = "#34d399";
-            } else if (type === "warning" || line.includes("⚠️") || line.includes("[DRY-RUN]")) {
+            } else if (type === "warning" || line.includes("⚠️") || line.includes("[DRY-RUN]") || line.includes("⏹️")) {
                 colorStyle = "#fbbf24";
-            } else if (type === "error" || line.includes("❌") || line.includes("[LỖI]") || line.includes("FAILED")) {
+            } else if (type === "error" || line.includes("❌") || line.includes("🛑") || line.includes("[LỖI]") || line.includes("FAILED")) {
                 colorStyle = "#f87171";
             } else if (type === "header" || line.startsWith("===") || line.startsWith("🚀")) {
                 colorStyle = "#38bdf8";
@@ -10460,7 +10537,6 @@
             const dateInput = document.getElementById("cloudToolDate");
             const dryRunCheckbox = document.getElementById("cloudToolDryRun");
             const engineSelect = document.getElementById("runnerEngineSelect");
-            const btn = document.getElementById("btnTriggerCloud");
             const terminalCard = document.getElementById("liveTerminalCard");
             const engineTag = document.getElementById("terminalEngineTag");
             const ghLink = document.getElementById("terminalGhLogsLink");
@@ -10486,23 +10562,22 @@
                 useLocal = window.isLocalRunnerOnline;
             }
 
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang Thực Thi...';
-            }
+            setRunnerExecutingState(true);
 
             if (useLocal) {
+                window.activeRunnerMode = "local";
                 if (engineTag) engineTag.innerHTML = '💻 Máy Tính Cục Bộ (Local Agent 0ms)';
                 if (ghLink) ghLink.style.display = 'none';
-                runViaLocalAgent(tool, targetDate, isDryRun, btn);
+                runViaLocalAgent(tool, targetDate, isDryRun);
             } else {
+                window.activeRunnerMode = "cloud";
                 if (engineTag) engineTag.innerHTML = '☁️ GitHub Actions Cloud Runner';
                 if (ghLink) ghLink.style.display = 'inline-flex';
-                runViaGitHubActions(tool, targetDate, isDryRun, btn);
+                runViaGitHubActions(tool, targetDate, isDryRun);
             }
         }
 
-        function runViaLocalAgent(tool, targetDate, isDryRun, btn) {
+        function runViaLocalAgent(tool, targetDate, isDryRun) {
             appendTerminalLog("🔌 Đang kết nối tới SCM Local Runner Service (http://127.0.0.1:8088)...", "info");
             
             if (currentEventSource) {
@@ -10529,17 +10604,11 @@
                         } else if (data.type === "end") {
                             appendTerminalLog(data.msg, data.returncode === 0 ? "success" : "warning");
                             currentEventSource.close();
-                            if (btn) {
-                                btn.disabled = false;
-                                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
-                            }
+                            setRunnerExecutingState(false);
                         } else if (data.type === "error") {
                             appendTerminalLog(data.msg, "error");
                             currentEventSource.close();
-                            if (btn) {
-                                btn.disabled = false;
-                                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
-                            }
+                            setRunnerExecutingState(false);
                         }
                     } catch (err) {
                         appendTerminalLog(e.data);
@@ -10567,22 +10636,16 @@
                         appendTerminalLog("💡 Gợi ý: Hãy mở file Chay_Local_Runner.bat trên máy tính, hoặc chuyển chế độ sang Cloud Runner!", "warning");
                     })
                     .finally(() => {
-                        if (btn) {
-                            btn.disabled = false;
-                            btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
-                        }
+                        setRunnerExecutingState(false);
                     });
                 };
             } catch (err) {
                 appendTerminalLog(`❌ Lỗi khởi tạo EventSource: ${err.message}`, "error");
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
-                }
+                setRunnerExecutingState(false);
             }
         }
 
-        async function runViaGitHubActions(tool, targetDate, isDryRun, btn) {
+        async function runViaGitHubActions(tool, targetDate, isDryRun) {
             appendTerminalLog("☁️ Gửi yêu cầu Dispatch tới máy chủ GitHub Actions Cloud Runner...", "info");
             const token = DEFAULT_GH_PAT;
 
@@ -10623,6 +10686,7 @@
                                 const runsData = await runsRes.json();
                                 const latestRun = runsData.workflow_runs && runsData.workflow_runs[0];
                                 if (latestRun) {
+                                    window.activeWorkflowRunId = latestRun.id;
                                     const status = latestRun.status;
                                     const conclusion = latestRun.conclusion;
                                     
@@ -10635,10 +10699,7 @@
                                             appendTerminalLog(`⚠️ [CLOUD KẾT THÚC] Tác vụ kết thúc với trạng thái: ${conclusion} (${elapsedSeconds}s)`, "warning");
                                             appendTerminalLog(`🔗 Kiểm tra nhật ký chi tiết tại: ${latestRun.html_url}`, "warning");
                                         }
-                                        if (btn) {
-                                            btn.disabled = false;
-                                            btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
-                                        }
+                                        setRunnerExecutingState(false);
                                     } else {
                                         appendTerminalLog(`⏳ [${elapsedSeconds}s] Trạng thái Cloud: ${status.toUpperCase()} (Run #${latestRun.run_number})...`);
                                     }
@@ -10649,27 +10710,18 @@
                         if (elapsedSeconds >= 180) {
                             clearInterval(workflowPollInterval);
                             appendTerminalLog("ℹ️ Đã dừng theo dõi tự động sau 3 phút. Công cụ vẫn tiếp tục chạy độc lập trên Cloud.", "info");
-                            if (btn) {
-                                btn.disabled = false;
-                                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
-                            }
+                            setRunnerExecutingState(false);
                         }
                     }, 3000);
 
                 } else {
                     const errData = await response.json().catch(() => ({}));
                     appendTerminalLog(`❌ Lỗi API GitHub (${response.status}): ${errData.message || response.statusText}`, "error");
-                    if (btn) {
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
-                    }
+                    setRunnerExecutingState(false);
                 }
             } catch (err) {
                 appendTerminalLog(`❌ Lỗi mạng khi kết nối GitHub Actions: ${err.message}`, "error");
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
-                }
+                setRunnerExecutingState(false);
             }
         }
 
