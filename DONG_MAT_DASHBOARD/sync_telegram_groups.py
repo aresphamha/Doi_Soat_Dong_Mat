@@ -187,36 +187,103 @@ def classify_group(title: str, store_code: str, is_channel: bool):
 
 
 def is_broadcast_or_spam_message(text: str) -> bool:
+    """
+    Loại trừ 100% các tin nhắn thông báo, nhắc việc, quy chế, bot gửi tự động:
+    - Lịch định kỳ: 📅, 🗓️, 📢, 🔔
+    - Các mẫu mở đầu: 'Hi team', 'Chào team', 'Cảm ơn team', 'Lưu ý quan trọng', 'Remind'...
+    - Tin SCM/Coordinator nhắc việc gửi hàng loạt cho Siêu thị (như: ST bổ sung thêm hình ảnh, ST kiểm tra lại giúp,
+      ghi nhận ST nhận dư nhưng không add phiếu HK, tránh phát sinh ảnh hưởng vận hành, phát sinh lần sau...)
+    - Chỉ đạo / quy chế camera, thùng rổ, cutoff...
+    """
     if not text:
         return False
     t = text.strip()
-    
-    # 1. Các mẫu ngày tháng + biểu tượng lịch gửi định kỳ
-    if re.search(r'📅\s*\d{1,2}[./-]\d{1,2}', t):
+    t_lower = t.lower()
+
+    # 1. Các biểu tượng lịch, loa phát thanh gửi định kỳ
+    if re.search(r'[📅🗓️📢🔔]\s*\d{1,2}[./-]\d{1,2}', t):
         return True
-    
-    # 2. Quy chế hậu kiểm / camera / trả rổ thùng xanh / bot cutoff
-    spam_phrases = [
+
+    # 2. Tiền tố chào hỏi / nhắc nhở / thông báo gửi hàng loạt
+    announcement_prefixes = [
+        'hi team', 'chào team', 'cảm ơn team', 'chào cả nhà', 'chào anh chị',
+        'anh remind lại', 'remind lại', 'remind',
+        'thông báo:', 'thông báo quan trọng', 'lưu ý quan trọng', 'lưu ý:',
+        'st lưu ý', 'siêu thị lưu ý', 'quy chế', 'hướng dẫn kiểm hàng',
+        'cảnh báo kiểm tra date', 'thời điểm cutoff', 'lưu ý nhận hàng'
+    ]
+    for p in announcement_prefixes:
+        if t_lower.startswith(p) or f'\n{p}' in t_lower:
+            return True
+
+    # 3. Mẫu Coordinator SCM nhắc nhở / thông báo / cảnh báo gửi siêu thị:
+    scm_request_patterns = [
+        r'st\s+(bổ\s+sung\s+thêm\s+hình\s+ảnh|bổ\s+sung\s+hình\s+ảnh|gửi\s+hình\s+ảnh|chụp\s+lại\s+hình\s+ảnh)',
+        r'hình\s+ảnh\s+phải\s+thấy\s+rõ\s+số\s+kg',
+        r'sau\s+thời\s+gian\s+trên|sau\s+\d+h\s+ngày',
+        r'không\s+nhận\s+được\s+phản\s+hồi.*hệ\s+thống\s+trả\s+tồn',
+        r'ghi\s+nhận\s+st\s+nhận\s+dư\s+nhưng\s+không\s+add',
+        r'ghi\s+nhận\s+st\s+vừa\s+trừ\s+tn\s+vừa\s+add',
+        r'ghi\s+nhận\s+st\s+nhập\s+thiếu',
+        r'không\s+thông\s+tin\s+scm\s+tạo\s+bổ\s+sung',
+        r'tránh\s+phát\s+sinh\s+ảnh\s+hưởng\s+vận\s+hành',
+        r'phát\s+sinh\s+lần\s+sau.*tiếp\s+theo|phát\s+sinh\s+lần\s+sau.*liên\s+quan',
+        r'st\s+lưu\s+ý\s+(ktra|kiểm\s+tra|nhập\s+đúng)',
+        r'st\s+(kiểm\s+tra|ktra|báo|hoàn\s+thành|xác\s+nhận)\s+lại?\s+giúp\s+(hà|ny|thấm|thư|quỳnh|nhung|scm)',
+        r'(báo|kiểm\s+tra|ktra|gửi)\s+giúp\s+(hà|ny|thấm|thư|quỳnh|nhung|scm)',
+        r'điều\s+chuyển\s+kịp\s+thời\s+nhé\s+cảm\s+ơn\s+team',
+        r'cảm\s+ơn\s+team',
+        r'nhờ\s+team\s+đối\s+soát',
+        r'báo\s+siêu\s+thị\s+rút\s+tồn\s+về\s+kho\s+giúp',
+        r'nhập\s+sót\s+sl\s+các\s+mã\s+hàng\s+trên',
+        r'case\s+này.*bổ\s+sung\s+cam|case\s+này.*gửi\s+lại\s+danh\s+sách',
+        r'(thư|thấm|hà|ny|quỳnh|nhung|scm|p|q|t)\s+gửi\s+(phiếu|pt|po)\s*(bs|bổ\s+sung|rút\s+tồn)?',
+        r'phiếu\s+auto\s+nhập\s+tồn\s+st|hệ\s+thống\s+tự\s+nhập\s+tồn',
+        r'(nhé|nha|giúp)\s+(st|siêu\s+thị)\b.*(gửi|check|ktra|kiểm\s+tra|hủy|cam|done|lưu\s+ý|báo|nhập|rút\s+tồn)',
+        r'cho\s+e\s+xin\s+đoạn\s+cam|gửi\s+về\s+dc\s+claim|claim\s+nhé\s+st'
+    ]
+    for pat in scm_request_patterns:
+        if re.search(pat, t_lower):
+            return True
+
+    # 4. Các quy chế vận hành, camera, thùng rổ, cutoff
+    broadcast_phrases = [
         'lưu ý quan trọng',
         'hậu kiểm hàng thịt cá',
         'kiểm hàng đúng vị trí camera',
-        'thao tác kiểm đếm và cân hàng phải thực hiện trong vùng camera',
-        'việc trả rổ/thùng xanh bắt buộc phải có trip',
-        'các trường hợp không có trip sẽ không thực hiện trả',
-        'st bắt buộc phải scan từng kiện hàng',
-        'báo cáo phát sinh nhận hàng & thùng rổ',
+        'thao tác kiểm đếm',
+        'thao tác kiểm đếm và cân hàng',
+        'trong vùng camera',
+        'trả rổ/thùng xanh',
+        'bắt buộc phải có trip',
+        'không có trip sẽ không thực hiện trả',
+        'st bắt buộc phải scan từng kiện',
+        'bắt buộc phải scan',
+        'báo cáo phát sinh nhận hàng',
         'thời điểm cutoff',
-        'cảnh báo kiểm tra date hàng mát',
+        'cảnh báo kiểm tra date',
         'kiểm tra gấp xem có hết date',
-        'file import của'
+        'file import của',
+        'hoàn thành phiếu hậu kiểm',
+        'nhận dư add vào phiếu hậu kiểm',
+        'nhận dư nhưng không add phiếu hk',
+        'không thông tin scm tạo bổ sung',
+        'tránh phát sinh ảnh hưởng vận hành',
+        'phát sinh lần sau',
+        'st quay lại giúp anh đoạn video',
+        'st quay lại giúp anh đoạn clip',
+        'st chụp lại giúp anh',
+        'hàng không đạt chất lượng'
     ]
-    t_lower = t.lower()
-    for phrase in spam_phrases:
+    for phrase in broadcast_phrases:
         if phrase in t_lower:
             return True
-            
-    # 3. Mẫu bot nhắc việc buổi sáng gửi hàng loạt (VD: "THỊT CÁ 12.09 ST kiểm tra lại giúp Hà...")
-    if re.search(r'(thịt cá|đông mát|rau củ quả)\s+\d{1,2}[./-]\d{1,2}\s+st kiểm tra lại giúp hà', t_lower):
+
+    # 5. Regex bot ngày tháng định kỳ
+    if re.search(r'(thịt cá|đông mát|rau củ quả|krc|aba)\s*\d{1,2}[./-]\d{1,2}', t_lower) and ('kiểm tra lại giúp' in t_lower or 'nhập sót' in t_lower or 'đếm sót' in t_lower):
+        return True
+
+    if 'remind' in t_lower:
         return True
 
     return False
@@ -224,81 +291,54 @@ def is_broadcast_or_spam_message(text: str) -> bool:
 
 def analyze_message_priority(msg_text: str, is_from_store: bool, has_photo: bool, is_broadcast: bool) -> tuple:
     """
-    Phân loại cấp độ cảnh báo (Level 1-4):
-    - urgent (Khẩn Cấp): Dư mã hàng, Dư số lượng lớn, Vượt sức bán, Cần điều chuyển, Cần chuyển gấp, Lỗi TO...
-    - high (Ưu Tiên Cao): Tạo bổ sung, PO bổ sung, Phiếu BS, PT BS, Nhập bổ sung, Rút tồn...
-    - medium (Trung Bình): ST Phản Hồi thực tế (nhận thiếu, không nhận, thực nhận, phản hồi tin nhắn)...
-    - normal (Thông Thường): Các tin nhắn khác, hình ảnh chứng từ, Done, Ok, hoặc chưa có phản hồi.
+    Phân loại cấp độ cảnh báo nghiệp vụ (CHỈ áp dụng cho phản hồi thực tế từ Siêu Thị/Đối Tác):
+    - urgent (1. Khẩn Cấp): Dư mã hàng, Dư SL lớn, Vượt sức bán, Cần điều chuyển gấp, Giao sai/lộn mã, Hư hỏng nặng/bể vỡ, Lỗi TO...
+    - high (2. Ưu Tiên Cao): Cần tạo bổ sung (PO/PT BS), Yêu cầu rút tồn kho, Cần tạo PO/TO...
+    - medium (3. ST Phản Hồi): ST báo thực nhận, nhận thiếu, hàng hủy, date, đối soát...
+    - normal (4. Thông Thường): Tin nhắn khác, done/ok, hoặc chưa có phản hồi.
     """
-    if not msg_text or is_broadcast:
+    if not msg_text or is_broadcast or not is_from_store:
         return "normal", "⚪ Thông Thường", ""
 
     t_lower = msg_text.lower()
 
-    # 1. KHẨN CẤP
+    # 1. KHẨN CẤP (Store báo khẩn)
     urgent_patterns = [
-        r'dư\s+mã\s+hàng',
-        r'dư\s+số\s+lượng\s+lớn',
-        r'dư\s+sl\s+lớn',
-        r'vượt\s+sức\s+bán',
-        r'cần\s+điều\s+chuyển',
-        r'điều\s+chuyển\s+gấp',
-        r'cần\s+chuyển\s+gấp',
-        r'chuyển\s+tồn.*về\s+st',
-        r'dư\s+hàng',
-        r'lệch\s+tồn\s+lớn',
-        r'lỗi\s+to\b',
-        r'lỗi\s+hệ\s+thống',
-        r'khẩn\s+cấp'
+        (r'dư\s+mã\s+hàng', 'DƯ MÃ HÀNG'),
+        (r'dư\s+số\s+lượng\s+lớn|dư\s+sl\s+lớn|dư\s+nhiều', 'DƯ SL LỚN'),
+        (r'vượt\s+sức\s+bán', 'VƯỢT SỨC BÁN'),
+        (r'cần\s+điều\s+chuyển|điều\s+chuyển\s+gấp|chuyển\s+gấp', 'ĐIỀU CHUYỂN GẤP'),
+        (r'giao\s+sai\s+kiện|giao\s+sai\s+mã|giao\s+lộn\s+hàng|giao\s+nhầm', 'GIAO SAI HÀNG'),
+        (r'hư\s+hỏng\s+nặng|chảy\s+nước|hư\s+hỏng\s+hàng\s+loạt|bể\s+vỡ|bị\s+bể|bể\s+\d+', 'HÀNG HƯ HỎNG/BỂ VỠ'),
+        (r'lỗi\s+to|to\s+lỗi|không\s+quét\s+được\s+to|to\s+không\s+vào', 'LỖI TO'),
+        (r'gấp\s+lắm|xử\s+lý\s+gấp|khẩn\s+cấp|hỗ\s+trợ\s+gấp|cứu\s+gấp', 'CẦN XỬ LÝ GẤP')
     ]
-    for p in urgent_patterns:
-        m_urg = re.search(p, t_lower)
-        if m_urg:
-            return "urgent", "🚨 Khẩn Cấp", f"Có từ khóa: {m_urg.group(0).upper()}"
+    for pat, label in urgent_patterns:
+        if re.search(pat, t_lower):
+            return "urgent", "🚨 Khẩn Cấp", label
 
-    # 2. ƯU TIÊN CAO
+    # 2. ƯU TIÊN CAO: Yêu cầu Tạo BS / Rút tồn từ ST
     high_patterns = [
-        r'tạo\s+bổ\s+sung',
-        r'po\s+bổ\s+sung',
-        r'phiếu\s+(?:bổ\s+sung|bs)',
-        r'pt\s*(?:bs|bổ\s+sung)',
-        r'nhập\s+bổ\s+sung',
-        r'phiếu\s+rút\s+tồn',
-        r'rút\s+tồn',
-        r'yêu\s+cầu\s+điều\s+chỉnh',
-        r't\s+gửi\s+phiếu\s+bs'
+        (r'tạo\s+bổ\s+sung|tạo\s+bs|po\s+bổ\s+sung|po\s+bs|phiếu\s+bổ\s+sung|phiếu\s+bs|pt\s+bổ\s+sung|pt\s+bs|nhập\s+bổ\s+sung|nhập\s+bs', 'CẦN TẠO BS'),
+        (r'rút\s+tồn|xin\s+mã\s+pt|mã\s+pt', 'CẦN RÚT TỒN'),
+        (r'cần\s+tạo\s+po|thiếu\s+to|chưa\s+có\s+to', 'CẦN TẠO PO/TO')
     ]
-    for p in high_patterns:
-        m_high = re.search(p, t_lower)
-        if m_high:
-            return "high", "⚡ Ưu Tiên Cao", f"Cần tạo/xử lý: {m_high.group(0).upper()}"
+    for pat, label in high_patterns:
+        if re.search(pat, t_lower):
+            return "high", "⚡ Ưu Tiên Cao", label
 
-    # 3. TRUNG BÌNH (ST Phản Hồi nghiệp vụ thực tế)
+    # 3. TRUNG BÌNH: ST Phản Hồi thực tế
     medium_patterns = [
-        r'thực\s+nhận',
-        r'không\s+nhận',
-        r'k\s+nhận',
-        r'nhận\s+thiếu',
-        r'nhận\s+\d+',
-        r'nhận\s+đủ',
-        r'nhận\s+0',
-        r'st\s+tn',
-        r'st\s+nhận',
-        r'st\s+k\s+nhận',
-        r'st\s+không',
-        r'phản\s+hồi',
-        r'chưa\s+nhận\s+được',
-        r'sáng\s+st\s+nhận',
-        r'đúng\s+trên\s+phiếu',
-        r'thiếu\s+\d+',
-        r'tn\s*:\s*\d+'
+        (r'thực\s+nhận|nhận\s+thiếu|giao\s+thiếu|thiếu\s+\d+|dư\s+\d+|không\s+nhận', 'ST BÁO NHẬN/THIẾU/DƯ'),
+        (r'hàng\s+hủy|hàng\s+trả|trả\s+về|hàng\s+hư|hàng\s+dập|hết\s+date|cận\s+date|sai\s+date', 'ST BÁO HÀNG TRẢ/HỦY/DATE'),
+        (r'lệch\s+tồn|chênh\s+lệch|đã\s+nhập|chưa\s+nhập|phiếu\s+hậu\s+kiểm|phiếu\s+hk|đã\s+add|đã\s+báo|xác\s+nhận', 'ST PHẢN HỒI ĐỐI SOÁT')
     ]
-    for p in medium_patterns:
-        if re.search(p, t_lower):
-            return "medium", "💬 ST Phản Hồi", "ST phản hồi thực nhận / chênh lệch"
+    for pat, label in medium_patterns:
+        if re.search(pat, t_lower):
+            return "medium", "💬 ST Phản Hồi", label
 
-    if is_from_store and len(t_lower) > 3 and not any(w in t_lower for w in ['done', 'ok', 'dạ']):
-        return "medium", "💬 ST Phản Hồi", "ST có tin phản hồi mới"
+    if is_from_store and (len(t_lower) >= 3 or has_photo):
+        return "medium", "💬 ST Phản Hồi", "Ý kiến ST"
 
     return "normal", "⚪ Thông Thường", ""
 
@@ -379,20 +419,19 @@ async def fetch_telegram_groups():
             last_date_raw = None
             has_photo = False
             is_from_store = True
-            is_broadcast = False
             recent_msgs_list = []
+            store_msgs = []
+            prio_rank = {"urgent": 4, "high": 3, "medium": 2, "normal": 1}
 
             if d.message:
                 raw_top_text = d.message.message or ""
-                
-                # Lấy 8 tin nhắn gần nhất để hiển thị đầy đủ lịch sử hội thoại và tìm tin ST phản hồi
+
+                # Lấy 8 tin nhắn gần nhất để hiển thị lịch sử hội thoại và tìm tin ST phản hồi
                 try:
                     recent_msgs = await client.get_messages(d.entity, limit=8)
                 except Exception:
                     recent_msgs = [d.message] if d.message else []
 
-                meaningful_m = None
-                
                 # Duyệt qua các tin nhắn gần nhất (từ mới đến cũ)
                 for rm in recent_msgs:
                     rm_text = rm.message or ""
@@ -412,7 +451,7 @@ async def fetch_telegram_groups():
                     # Phân tích cấp độ cho từng tin nhắn
                     m_level, m_badge, m_reason = analyze_message_priority(rm_text, not rm_is_out, rm_has_photo, rm_is_spam)
 
-                    recent_msgs_list.append({
+                    msg_item = {
                         "id": rm.id,
                         "text": rm_text.strip(),
                         "time": rm.date.strftime("%d/%m/%Y %H:%M") if rm.date else "",
@@ -426,45 +465,49 @@ async def fetch_telegram_groups():
                         "priority_level": m_level,
                         "priority_badge": m_badge,
                         "priority_reason": m_reason
-                    })
+                    }
+                    recent_msgs_list.append(msg_item)
 
-                    # Tìm tin nhắn có ý nghĩa gần nhất (không phải tin broadcast định kỳ)
-                    if not meaningful_m and (rm_text or rm_has_photo) and not rm_is_spam:
-                        meaningful_m = rm
+                    # Nếu là tin nhắn phản hồi thực tế từ Siêu Thị (không phải SCM và không phải thông báo phát thanh)
+                    if not rm_is_out and not rm_is_spam and (rm_text or rm_has_photo):
+                        store_msgs.append((msg_item, m_level, m_badge, m_reason))
 
                 # Đảo ngược lại theo thứ tự thời gian tăng dần để hiển thị trong khung chat (cũ -> mới)
                 recent_msgs_list.reverse()
 
-                if meaningful_m:
-                    m = meaningful_m
-                    is_broadcast = False
-                else:
-                    m = d.message
-                    is_broadcast = is_broadcast_or_spam_message(raw_top_text)
+            # Xác định TIN MỚI NHẤT (ST PHẢN HỒI) và CẤP ĐỘ CẢNH BÁO
+            # TUYỆT ĐỐI KHÔNG HIỂN THỊ TIN THÔNG BÁO Ở ĐÂY
+            if store_msgs:
+                # Tin ST phản hồi gần nhất (phần tử đầu tiên trong store_msgs vì duyệt từ mới đến cũ)
+                latest_store_item, _, _, _ = store_msgs[0]
+                last_msg_text = latest_store_item.get("text", "").replace('\n', ' ').strip()
+                if not last_msg_text and latest_store_item.get("has_photo"):
+                    last_msg_text = "[Hình ảnh / Chứng từ]"
+                if len(last_msg_text) > 200:
+                    last_msg_text = last_msg_text[:197] + "..."
 
-                if not is_broadcast and m:
-                    last_date_raw = m.date.isoformat() if m.date else ""
-                    last_date_str = m.date.strftime("%d/%m/%Y %H:%M") if m.date else ""
-                    if m.message:
-                        last_msg_text = m.message.replace('\n', ' ').strip()
-                        if len(last_msg_text) > 200:
-                            last_msg_text = last_msg_text[:197] + "..."
-                    if getattr(m, 'photo', None) or getattr(m, 'document', None):
-                        has_photo = True
-                        if not last_msg_text:
-                            last_msg_text = "[Hình ảnh / Chứng từ]"
-                    
-                    sender_id = getattr(m, 'sender_id', None)
-                    is_from_store = (sender_id != my_id and not getattr(m, 'out', False))
-                elif is_broadcast:
-                    last_msg_text = ""
-                    last_date_raw = d.message.date.isoformat() if d.message and d.message.date else ""
-                    last_date_str = d.message.date.strftime("%d/%m/%Y %H:%M") if d.message and d.message.date else ""
+                last_date_str = latest_store_item.get("time", "")
+                last_date_raw = latest_store_item.get("date_iso", "")
+                is_from_store = True
+                has_photo = bool(latest_store_item.get("has_photo"))
+
+                # Cấp độ cảnh báo của nhóm = MỨC CAO NHẤT trong các tin ST phản hồi gần nhất
+                best_prio = max(store_msgs, key=lambda x: prio_rank.get(x[1], 1))
+                p_level = best_prio[1]
+                p_badge = best_prio[2]
+                p_reason = best_prio[3]
+            else:
+                # Không có tin phản hồi từ Siêu thị (chỉ có tin thông báo định kỳ hoặc chưa có tin)
+                last_msg_text = ""
+                last_date_raw = d.message.date.isoformat() if d.message and d.message.date else ""
+                last_date_str = d.message.date.strftime("%d/%m/%Y %H:%M") if d.message and d.message.date else ""
+                is_from_store = False
+                has_photo = False
+                p_level = "normal"
+                p_badge = "⚪ Thông Thường"
+                p_reason = ""
 
             unread = d.unread_count or 0
-
-            # Phân loại cấp độ cảnh báo (1: urgent, 2: high, 3: medium, 4: normal)
-            p_level, p_badge, p_reason = analyze_message_priority(last_msg_text, is_from_store, has_photo, is_broadcast)
 
             groups_data.append({
                 "chat_id_str": chat_id_str,

@@ -249,7 +249,17 @@
         }
 
         
-        .sidebar-tab-btn.active-tab4 {
+                .sidebar-tab-btn.active-tab5 {
+            background: var(--bg-card-alt) !important;
+            border: 1px solid #f97316 !important;
+            color: var(--text-primary) !important;
+        }
+        .sidebar-tab-btn.active-tab5 .tab-icon-wrap {
+            background: #f97316;
+            color: #ffffff;
+        }
+
+.sidebar-tab-btn.active-tab4 {
             background: var(--bg-card-alt) !important;
             border: 1px solid #229ED9 !important;
             color: var(--text-primary) !important;
@@ -2596,6 +2606,237 @@
             align-items: center;
             gap: 4px;
         }
+
+        /* ENHANCED URGENT MESSAGE DISPLAY IN TABLE */
+        .tele-msg-urgent-container {
+            background: rgba(248, 81, 73, 0.08);
+            border: 1px solid rgba(248, 81, 73, 0.35);
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            text-align: left;
+        }
+        .tele-msg-urgent-container:hover {
+            background: rgba(248, 81, 73, 0.16);
+            border-color: #f85149;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(248, 81, 73, 0.2);
+        }
+        .tele-msg-urgent-line {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .tele-badge-urgent-tag {
+            background: #f85149;
+            color: #ffffff;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        .tele-msg-urgent-text {
+            color: #ff7b72;
+            font-size: 0.82rem;
+            font-weight: 600;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+        .tele-msg-latest-sub {
+            margin-top: 5px;
+            padding-top: 4px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+            font-size: 0.74rem;
+            color: #8b949e;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .tele-msg-snippet {
+            font-size: 0.82rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 420px;
+        }
+
+        /* STICKY URGENT TOP BAR IN CHAT DRAWER */
+        .chat-urgent-sticky-bar {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: linear-gradient(135deg, rgba(248, 81, 73, 0.25) 0%, rgba(218, 54, 51, 0.38) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(248, 81, 73, 0.6);
+            border-radius: 10px;
+            padding: 9px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+        .chat-urgent-sticky-bar:hover {
+            background: linear-gradient(135deg, rgba(248, 81, 73, 0.35) 0%, rgba(218, 54, 51, 0.5) 100%);
+            border-color: #f85149;
+            box-shadow: 0 6px 18px rgba(248, 81, 73, 0.35);
+        }
+        .chat-urgent-sticky-icon {
+            font-size: 1.25rem;
+            color: #ff7b72;
+            animation: pulse-urgent 1.5s infinite;
+            flex-shrink: 0;
+        }
+        .chat-urgent-sticky-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .chat-urgent-sticky-title {
+            font-size: 0.74rem;
+            font-weight: 800;
+            color: #ff7b72;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+        .chat-urgent-sticky-desc {
+            font-size: 0.8rem;
+            color: #f0f6fc;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-urgent-sticky-btn {
+            background: #f85149;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 11px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .chat-urgent-sticky-btn:hover {
+            background: #da3633;
+            transform: scale(1.03);
+        }
+
+        /* TARGET URGENT MESSAGE BUBBLE IN CHAT */
+        .chat-bubble-urgent-target {
+            border: 2px solid #f85149 !important;
+            background: rgba(248, 81, 73, 0.16) !important;
+            box-shadow: 0 0 20px rgba(248, 81, 73, 0.45) !important;
+            position: relative;
+        }
+        .chat-bubble-urgent-highlight {
+            animation: target-flash 2.5s ease-out 2;
+        }
+        @keyframes target-flash {
+            0% { box-shadow: 0 0 30px rgba(248, 81, 73, 0.9); transform: scale(1.02); }
+            50% { box-shadow: 0 0 15px rgba(248, 81, 73, 0.4); transform: scale(1); }
+            100% { box-shadow: 0 0 20px rgba(248, 81, 73, 0.45); transform: scale(1); }
+        }
+        .chat-bubble-urgent-banner {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f85149;
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            box-shadow: 0 2px 6px rgba(248, 81, 73, 0.4);
+            letter-spacing: 0.3px;
+        }
+
+        /* SYSTEM / BROADCAST BUBBLE (STAYS VISIBLE, DOES NOT POLLUTE CONVERSATION) */
+        .chat-bubble.system-broadcast {
+            align-self: center !important;
+            max-width: 90% !important;
+            background: rgba(255, 255, 255, 0.04) !important;
+            border: 1px dashed rgba(255, 255, 255, 0.12) !important;
+            color: #8b949e !important;
+            font-size: 0.78rem !important;
+            padding: 0.55rem 0.85rem !important;
+            border-radius: 10px !important;
+            margin: 4px 0 !important;
+            box-shadow: none !important;
+        }
+        .system-broadcast-header {
+            font-weight: 700;
+            color: #58a6ff;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+        }
+
+        /* FLOATING NAVIGATION BUTTONS */
+        .chat-floating-actions {
+            position: absolute;
+            bottom: 125px;
+            right: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 25;
+            pointer-events: auto;
+        }
+        .chat-float-btn {
+            background: #21262d;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #c9d1d9;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .chat-float-btn:hover {
+            background: #30363d;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .chat-float-btn.urgent {
+            background: rgba(248, 81, 73, 0.25);
+            border-color: #f85149;
+            color: #ff7b72;
+        }
+        .chat-float-btn.urgent:hover {
+            background: #f85149;
+            color: #fff;
+        }
 </style>
     <script src="daily_details/telegram_groups.js"></script>
 </head>
@@ -2686,6 +2927,14 @@
                 <div class="tab-text">
                     <span class="tab-title">TELEGRAM SCM</span>
                     <span class="tab-desc">565+ Nhóm Siêu Thị & Chat ID</span>
+                </div>
+            </button>
+
+            <button class="sidebar-tab-btn" id="btn-big-tab-5" onclick="switchBigTab(5)">
+                <div class="tab-icon-wrap" style="color:#f97316;"><i class="fa-solid fa-robot" style="font-size:1.15rem;"></i></div>
+                <div class="tab-text">
+                    <span class="tab-title">TOOL SPAM PHIẾU CHUYỂN</span>
+                    <span class="tab-desc">Chi tiết & Hậu kiểm Thịt Cá, Rau, Mát</span>
                 </div>
             </button>
 
@@ -3704,6 +3953,19 @@
                             <input type="text" id="teleSearchInput" oninput="filterTelegramData()" placeholder="🔍 Tìm kiếm theo Mã ST (A101...), Tên ST, Chat ID, nội dung tin mới..." style="width:100%; padding:0.5rem 0.85rem 0.5rem 2.2rem; background:var(--bg-card-alt); border:1px solid var(--border-color); border-radius:6px; color:var(--text-primary); font-size:0.85rem;">
                         </div>
 
+                        <!-- SORT DROPDOWN (REALTIME) -->
+                        <div style="display:flex; align-items:center; gap:6px; background:var(--bg-card-alt); border:1px solid var(--border-color); border-radius:6px; padding:2px 8px;">
+                            <i class="fa-solid fa-arrow-down-short-wide" style="color:#229ED9; font-size:0.85rem;"></i>
+                            <span style="font-size:0.78rem; color:var(--text-secondary); white-space:nowrap; font-weight:600;">Sắp xếp:</span>
+                            <select id="teleSortSelect" onchange="teleCurrentSort = this.value; filterTelegramData();" style="padding:0.4rem 0.6rem; background:transparent; border:none; color:var(--text-primary); font-size:0.82rem; cursor:pointer; outline:none;">
+                                <option value="time_desc" selected>⏰ Mới nhất Realtime (Giảm dần)</option>
+                                <option value="time_asc">⏳ Cũ nhất trước (Tăng dần)</option>
+                                <option value="prio_desc">🚨 Cấp độ Cảnh báo (Khẩn cấp trước)</option>
+                                <option value="unread_desc">💬 Tin chưa đọc nhiều nhất</option>
+                                <option value="store_asc">🏪 Mã Siêu thị (A101 → A999)</option>
+                            </select>
+                        </div>
+
                         <!-- ACTION BUTTONS -->
                         <div style="display:flex; gap:0.5rem; align-items:center;">
                             <button onclick="exportTelegramToExcel()" class="btn-export-excel" style="display:inline-flex; align-items:center; gap:6px; padding:0.5rem 0.95rem; background:#238636; color:#fff; border:none; border-radius:6px; font-weight:600; font-size:0.82rem; cursor:pointer;">
@@ -3809,7 +4071,7 @@
                                     <th style="width:120px; text-align:center;">LOẠI NHÓM</th>
                                     <th style="width:125px; text-align:center;">CẤP ĐỘ</th>
                                     <th style="min-width:280px;">TIN MỚI NHẤT (ST PHẢN HỒI)</th>
-                                    <th style="width:115px; text-align:center;">THỜI GIAN</th>
+                                    <th style="width:125px; text-align:center; cursor:pointer;" onclick="toggleTimeSort()" title="Nhấp để đảo chiều sắp xếp theo thời gian (Mới nhất / Cũ nhất)">THỜI GIAN <i class="fa-solid fa-sort" style="font-size:0.7rem; margin-left:2px; opacity:0.7;"></i></th>
                                     <th style="width:70px; text-align:center;">CHƯA ĐỌC</th>
                                     <th style="width:130px; text-align:center;">THAO TÁC</th>
                                 </tr>
@@ -3833,6 +4095,311 @@
                 </div>
             </div>
             </div>
+                </div>
+            </div>
+
+        
+            <!-- ========================================================================= -->
+            <!-- TAB 5: TRUNG TÂM CÔNG CỤ TỰ ĐỘNG SPAM PHIẾU CHUYỂN & HẬU KIỂM SCM        -->
+            <!-- ========================================================================= -->
+            <div class="big-tab-panel" id="big-panel-5">
+                <!-- HERO HEADER -->
+                <div class="tele-hero-card" style="background: linear-gradient(135deg, rgba(249, 115, 22, 0.14) 0%, rgba(22, 27, 34, 0.95) 100%); border-color: rgba(249, 115, 22, 0.35);">
+                    <div style="display:flex; align-items:center; gap:0.9rem;">
+                        <div style="width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg, #f97316, #ea580c); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.6rem; box-shadow:0 4px 12px rgba(249,115,22,0.35);">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div>
+                            <h2 style="margin:0; font-size:1.35rem; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px;">
+                                TRUNG TÂM TOOL TỰ ĐỘNG SPAM PHIẾU CHUYỂN & HẬU KIỂM
+                                <span style="font-size:0.75rem; font-weight:600; background:#f97316; color:#fff; padding:2px 8px; border-radius:12px; display:inline-flex; align-items:center; gap:4px;">
+                                    <span style="width:6px; height:6px; border-radius:50%; background:#fff; display:inline-block;"></span> GITHUB SYNCED
+                                </span>
+                            </h2>
+                            <div style="color:var(--text-secondary); font-size:0.83rem; margin-top:3px;">
+                                Tự động truy vấn Cloud StarRocks / MySQL kfm_scm, đối chiếu chênh lệch phiếu xuất/nhận và spam thông báo đến từng Group Telegram Siêu thị
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+                        <a href="https://github.com/aresphamha/Doi_Soat_Dong_Mat/tree/main/SPAM_PHIEU_CHUYEN" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; padding:0.5rem 0.95rem; background:#24292f; color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:8px; font-weight:600; font-size:0.82rem; text-decoration:none; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                            <i class="fa-brands fa-github" style="font-size:1rem;"></i> Xem Repo GitHub
+                        </a>
+                        <a href="https://aresphamha.github.io/Doi_Soat_Dong_Mat/" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; padding:0.5rem 0.95rem; background:#f97316; color:#fff; border:none; border-radius:8px; font-weight:600; font-size:0.82rem; text-decoration:none; box-shadow:0 2px 8px rgba(249,115,22,0.4);">
+                            <i class="fa-solid fa-globe"></i> Web Báo Cáo Trực Tuyến
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 4 MODULES OVERVIEW CARDS -->
+                <div style="margin-top:1.25rem; margin-bottom:1.5rem;">
+                    <div style="font-size:0.82rem; font-weight:700; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.75rem; display:flex; align-items:center; gap:6px;">
+                        <i class="fa-solid fa-cubes" style="color:#f97316;"></i> 4 MODULE CÔNG CỤ CHÍNH TRONG HỆ THỐNG:
+                    </div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem;">
+                        
+                        <!-- Card 1: Chi Tiết Thịt Cá -->
+                        <div class="data-card" style="padding:1.1rem; border-top:3px solid #f87171; display:flex; flex-direction:column; justify-content:space-between;">
+                            <div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                                    <span class="tag-pill" style="background:rgba(248,113,113,0.15); color:#f87171; font-weight:700;">🥩 CHI TIẾT THỊT CÁ</span>
+                                    <span style="font-size:0.72rem; color:var(--text-muted);"><i class="fa-solid fa-table"></i> transfer_items</span>
+                                </div>
+                                <div style="font-weight:700; font-size:0.95rem; color:var(--text-primary); margin-bottom:0.35rem;">
+                                    SPAM_CHI_TIET_THIT_CA.py
+                                </div>
+                                <div style="font-size:0.78rem; color:var(--text-secondary); line-height:1.45; margin-bottom:0.75rem;">
+                                    Truy vấn chi tiết phiếu chuyển thịt cá theo ngày, gom mã hàng theo từng siêu thị, đối chiếu chênh lệch và gửi tin nhắn cảnh báo trực tiếp đến nhóm Telegram ST.
+                                </div>
+                            </div>
+                            <div style="background:var(--bg-card-alt); border-radius:6px; padding:0.45rem 0.65rem; font-family:Consolas, monospace; font-size:0.72rem; color:#f87171; display:flex; justify-content:space-between; align-items:center;">
+                                <span>python SPAM_CHI_TIET_THIT_CA.py</span>
+                                <i class="fa-regular fa-copy" style="cursor:pointer;" onclick="navigator.clipboard.writeText('python "SPAM_PHIEU_CHUYEN/CHI TIẾT THỊT CÁ/SPAM_CHI_TIET_THIT_CA.py"'); alert('Đã sao chép lệnh chạy Chi Tiết Thịt Cá!');" title="Sao chép lệnh"></i>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Chi Tiết Mát -->
+                        <div class="data-card" style="padding:1.1rem; border-top:3px solid #10b981; display:flex; flex-direction:column; justify-content:space-between;">
+                            <div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                                    <span class="tag-pill" style="background:rgba(16,185,129,0.15); color:#10b981; font-weight:700;">🥬 CHI TIẾT MÁT</span>
+                                    <span style="font-size:0.72rem; color:var(--text-muted);"><i class="fa-solid fa-table"></i> transfer_items</span>
+                                </div>
+                                <div style="font-weight:700; font-size:0.95rem; color:var(--text-primary); margin-bottom:0.35rem;">
+                                    SPAM_CHI_TIET_MAT.py
+                                </div>
+                                <div style="font-size:0.78rem; color:var(--text-secondary); line-height:1.45; margin-bottom:0.75rem;">
+                                    Đối soát chi tiết toàn bộ mã hàng Mát theo phiếu chuyển, tính tổng số lượng chênh lệch, nhóm theo từng cửa hàng và thông báo real-time qua Telegram Client.
+                                </div>
+                            </div>
+                            <div style="background:var(--bg-card-alt); border-radius:6px; padding:0.45rem 0.65rem; font-family:Consolas, monospace; font-size:0.72rem; color:#10b981; display:flex; justify-content:space-between; align-items:center;">
+                                <span>python SPAM_CHI_TIET_MAT.py</span>
+                                <i class="fa-regular fa-copy" style="cursor:pointer;" onclick="navigator.clipboard.writeText('python "SPAM_PHIEU_CHUYEN/CHI TIẾT MÁT/SPAM_CHI_TIET_MAT.py"'); alert('Đã sao chép lệnh chạy Chi Tiết Mát!');" title="Sao chép lệnh"></i>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Hậu Kiểm Rau Củ -->
+                        <div class="data-card" style="padding:1.1rem; border-top:3px solid #38bdf8; display:flex; flex-direction:column; justify-content:space-between;">
+                            <div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                                    <span class="tag-pill" style="background:rgba(56,189,248,0.15); color:#38bdf8; font-weight:700;">🥦 HẬU KIỂM RAU</span>
+                                    <span style="font-size:0.72rem; color:var(--text-muted);"><i class="fa-solid fa-database"></i> stockcard</span>
+                                </div>
+                                <div style="font-weight:700; font-size:0.95rem; color:var(--text-primary); margin-bottom:0.35rem;">
+                                    SPAM_HAU_KIEM_RAU.py
+                                </div>
+                                <div style="font-size:0.78rem; color:var(--text-secondary); line-height:1.45; margin-bottom:0.75rem;">
+                                    Quét bảng thẻ kho stockcard cho nhóm hàng Rau Củ, đối chiếu phiếu chuyển với biến động kho thực tế, lập danh sách ST lệch và gửi yêu cầu giải trình.
+                                </div>
+                            </div>
+                            <div style="background:var(--bg-card-alt); border-radius:6px; padding:0.45rem 0.65rem; font-family:Consolas, monospace; font-size:0.72rem; color:#38bdf8; display:flex; justify-content:space-between; align-items:center;">
+                                <span>python SPAM_HAU_KIEM_RAU.py</span>
+                                <i class="fa-regular fa-copy" style="cursor:pointer;" onclick="navigator.clipboard.writeText('python "SPAM_PHIEU_CHUYEN/HẬU KIỂM RAU/SPAM_HAU_KIEM_RAU.py"'); alert('Đã sao chép lệnh chạy Hậu Kiểm Rau!');" title="Sao chép lệnh"></i>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: Hậu Kiểm Thịt Cá -->
+                        <div class="data-card" style="padding:1.1rem; border-top:3px solid #eab308; display:flex; flex-direction:column; justify-content:space-between;">
+                            <div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                                    <span class="tag-pill" style="background:rgba(234,179,8,0.15); color:#eab308; font-weight:700;">🐟 HẬU KIỂM THỊT CÁ</span>
+                                    <span style="font-size:0.72rem; color:var(--text-muted);"><i class="fa-solid fa-database"></i> stockcard</span>
+                                </div>
+                                <div style="font-weight:700; font-size:0.95rem; color:var(--text-primary); margin-bottom:0.35rem;">
+                                    SPAM_HAU_KIEM_THIT_CA.py
+                                </div>
+                                <div style="font-size:0.78rem; color:var(--text-secondary); line-height:1.45; margin-bottom:0.75rem;">
+                                    Quét biến động thẻ kho Meat & Fish, xác định các mã hàng có biến động bất thường so với phiếu chuyển để bộ phận SCM kịp thời điều chuyển / bù trừ.
+                                </div>
+                            </div>
+                            <div style="background:var(--bg-card-alt); border-radius:6px; padding:0.45rem 0.65rem; font-family:Consolas, monospace; font-size:0.72rem; color:#eab308; display:flex; justify-content:space-between; align-items:center;">
+                                <span>python SPAM_HAU_KIEM_THIT_CA.py</span>
+                                <i class="fa-regular fa-copy" style="cursor:pointer;" onclick="navigator.clipboard.writeText('python "SPAM_PHIEU_CHUYEN/HẬU KIỂM THỊ CÁ/SPAM_HAU_KIEM_THIT_CA.py"'); alert('Đã sao chép lệnh chạy Hậu Kiểm Thịt Cá!');" title="Sao chép lệnh"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BẢNG TỔNG HỢP CÁC FILE & TÀI NGUYÊN PHỤ THUỘC ĐỂ CHẠY TOOL -->
+                <div class="data-card" style="padding:0; overflow:hidden; margin-bottom:1.5rem;">
+                    <div style="padding:0.85rem 1.25rem; background:var(--bg-card-alt); border-bottom:1px solid var(--border-card); display:flex; justify-content:space-between; align-items:center;">
+                        <div style="font-weight:700; font-size:0.88rem; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+                            <i class="fa-solid fa-list-check" style="color:#f97316;"></i> BẢNG DANH SÁCH FILE & TÀI NGUYÊN PHỤ THUỘC ĐỂ CHẠY CÁC TOOL
+                        </div>
+                        <span class="tag-pill" style="background:rgba(35,134,54,0.2); color:#3fb950; font-weight:700;">
+                            <i class="fa-solid fa-circle-check"></i> Đã cấu hình nạp thông minh (Smart Path Fallback)
+                        </span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="styled-table" style="margin:0;">
+                            <thead>
+                                <tr>
+                                    <th style="width:40px; text-align:center;">#</th>
+                                    <th style="min-width:200px;">TÊN FILE / TÀI NGUYÊN</th>
+                                    <th style="width:130px; text-align:center;">LOẠI TÀI NGUYÊN</th>
+                                    <th style="min-width:260px;">MỤC ĐÍCH & VAI TRÒ</th>
+                                    <th style="min-width:220px;">VỊ TRÍ LƯU TRỮ DỰ ÁN</th>
+                                    <th style="width:150px; text-align:center;">TRẠNG THÁI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center; font-weight:700; color:var(--text-muted);">1</td>
+                                    <td>
+                                        <div style="font-weight:700; color:#38bdf8; display:flex; align-items:center; gap:6px;">
+                                            <i class="fa-solid fa-file-excel" style="color:#10b981;"></i> Danh sách Siêu thị.xlsx
+                                        </div>
+                                        <div style="font-size:0.72rem; color:var(--text-muted);">File mapping Đông Mát / Thịt Cá</div>
+                                    </td>
+                                    <td style="text-align:center;"><span class="tag-pill" style="background:rgba(16,185,129,0.15); color:#10b981;">Excel Config</span></td>
+                                    <td style="font-size:0.8rem; color:var(--text-secondary);">
+                                        Ánh xạ <strong>Mã ST</strong> (A101...) sang <strong>ID Nhóm Telegram ABA/Đông Mát</strong> để công cụ biết gửi tin nhắn vào nhóm nào.
+                                    </td>
+                                    <td style="font-size:0.75rem; font-family:Consolas, monospace; color:var(--text-muted);">
+                                        <code>SPAM_PHIEU_CHUYEN/CONFIG_DATA/</code><br>và trực tiếp trong từng folder Tool
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span class="tag-pill" style="background:rgba(35,134,54,0.2); color:#3fb950; font-weight:600;"><i class="fa-solid fa-check"></i> Sẵn sàng</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center; font-weight:700; color:var(--text-muted);">2</td>
+                                    <td>
+                                        <div style="font-weight:700; color:#38bdf8; display:flex; align-items:center; gap:6px;">
+                                            <i class="fa-solid fa-file-excel" style="color:#10b981;"></i> Danh sách Siêu thị.xlsx (Rau Củ)
+                                        </div>
+                                        <div style="font-size:0.72rem; color:var(--text-muted);">File mapping Rau Củ quả KRC</div>
+                                    </td>
+                                    <td style="text-align:center;"><span class="tag-pill" style="background:rgba(16,185,129,0.15); color:#10b981;">Excel Config</span></td>
+                                    <td style="font-size:0.8rem; color:var(--text-secondary);">
+                                        Ánh xạ <strong>Mã ST</strong> sang <strong>ID Nhóm Telegram KRC Rau Củ</strong> cho công cụ Hậu Kiểm Rau Củ.
+                                    </td>
+                                    <td style="font-size:0.75rem; font-family:Consolas, monospace; color:var(--text-muted);">
+                                        <code>SPAM_PHIEU_CHUYEN/HẬU KIỂM RAU/</code><br>và <code>CONFIG_DATA/</code>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span class="tag-pill" style="background:rgba(35,134,54,0.2); color:#3fb950; font-weight:600;"><i class="fa-solid fa-check"></i> Sẵn sàng</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center; font-weight:700; color:var(--text-muted);">3</td>
+                                    <td>
+                                        <div style="font-weight:700; color:#38bdf8; display:flex; align-items:center; gap:6px;">
+                                            <i class="fa-solid fa-key" style="color:#eab308;"></i> user_session.session
+                                        </div>
+                                        <div style="font-size:0.72rem; color:var(--text-muted);">Telethon Client Auth Session</div>
+                                    </td>
+                                    <td style="text-align:center;"><span class="tag-pill" style="background:rgba(234,179,8,0.15); color:#eab308;">Telegram Auth</span></td>
+                                    <td style="font-size:0.8rem; color:var(--text-secondary);">
+                                        Lưu phiên xác thực tài khoản Telegram cá nhân (Hà Phạm - <code>0978009295</code>) để gửi tin nhắn trực tiếp không bị hỏi mã OTP lại.
+                                    </td>
+                                    <td style="font-size:0.75rem; font-family:Consolas, monospace; color:var(--text-muted);">
+                                        <code>SPAM_PHIEU_CHUYEN/CONFIG_DATA/</code><br>(Được bảo mật qua .gitignore)
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span class="tag-pill" style="background:rgba(35,134,54,0.2); color:#3fb950; font-weight:600;"><i class="fa-solid fa-lock"></i> Đã kích hoạt</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center; font-weight:700; color:var(--text-muted);">4</td>
+                                    <td>
+                                        <div style="font-weight:700; color:#38bdf8; display:flex; align-items:center; gap:6px;">
+                                            <i class="fa-solid fa-database" style="color:#f97316;"></i> MySQL Cloud StarRocks (kfm_scm)
+                                        </div>
+                                        <div style="font-size:0.72rem; color:var(--text-muted);">103.147.122.103:9030</div>
+                                    </td>
+                                    <td style="text-align:center;"><span class="tag-pill" style="background:rgba(249,115,22,0.15); color:#f97316;">Cloud Database</span></td>
+                                    <td style="font-size:0.8rem; color:var(--text-secondary);">
+                                        Nguồn dữ liệu gốc chứa các bảng <code>transfer_items</code> và thẻ kho <code>stockcard</code> phục vụ truy vấn số lượng thực tế.
+                                    </td>
+                                    <td style="font-size:0.75rem; font-family:Consolas, monospace; color:var(--text-muted);">
+                                        Cấu hình trực tiếp trong script Python
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span class="tag-pill" style="background:rgba(35,134,54,0.2); color:#3fb950; font-weight:600;"><i class="fa-solid fa-signal"></i> Kết nối OK</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center; font-weight:700; color:var(--text-muted);">5</td>
+                                    <td>
+                                        <div style="font-weight:700; color:#38bdf8; display:flex; align-items:center; gap:6px;">
+                                            <i class="fa-solid fa-terminal" style="color:#38bdf8;"></i> Chay_Tat_Ca_Tool_Spam.bat
+                                        </div>
+                                        <div style="font-size:0.72rem; color:var(--text-muted);">File Batch Menu 1 Chạm</div>
+                                    </td>
+                                    <td style="text-align:center;"><span class="tag-pill" style="background:rgba(56,189,248,0.15); color:#38bdf8;">Batch Launcher</span></td>
+                                    <td style="font-size:0.8rem; color:var(--text-secondary);">
+                                        Giao diện Menu trực quan trên Windows giúp người dùng chỉ cần nhấp đúp là chạy được từng Tool mà không cần nhớ câu lệnh.
+                                    </td>
+                                    <td style="font-size:0.75rem; font-family:Consolas, monospace; color:var(--text-muted);">
+                                        <code>SPAM_PHIEU_CHUYEN/Chay_Tat_Ca_Tool_Spam.bat</code>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span class="tag-pill" style="background:rgba(35,134,54,0.2); color:#3fb950; font-weight:600;"><i class="fa-solid fa-play"></i> 1 Click Ready</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- HƯỚNG DẪN SỬ DỤNG & VẬN HÀNH NHANH -->
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap:1rem;">
+                    <!-- Card Hướng dẫn 1: Chạy Menu Batch -->
+                    <div class="data-card" style="padding:1.25rem;">
+                        <div style="font-weight:700; font-size:0.92rem; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:0.75rem;">
+                            <i class="fa-solid fa-wand-magic-sparkles" style="color:#f97316;"></i> CÁCH 1: CHẠY BẰNG MENU 1 CHẠM (KHUYẾN KHÍCH)
+                        </div>
+                        <div style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">
+                            <ol style="padding-left:1.2rem; margin:0;">
+                                <li style="margin-bottom:6px;">Mở thư mục <code>SPAM_PHIEU_CHUYEN/</code> trong máy tính hoặc trong thư mục dự án.</li>
+                                <li style="margin-bottom:6px;">Nhấp đúp vào file <strong><code>Chay_Tat_Ca_Tool_Spam.bat</code></strong>.</li>
+                                <li style="margin-bottom:6px;">Chọn phím số tương ứng:
+                                    <ul style="padding-left:1rem; margin-top:3px; color:#58a6ff;">
+                                        <li><code>[1]</code> Chạy Chi Tiết Thịt Cá</li>
+                                        <li><code>[2]</code> Chạy Chi Tiết Mát</li>
+                                        <li><code>[3]</code> Chạy Hậu Kiểm Rau Củ</li>
+                                        <li><code>[4]</code> Chạy Hậu Kiểm Thịt Cá</li>
+                                        <li><code>[5]</code> Kiểm tra kết nối Cloud Database</li>
+                                    </ul>
+                                </li>
+                                <li>Nhập ngày cần đối soát theo định dạng <code>YYYY-MM-DD</code> khi màn hình yêu cầu.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Card Hướng dẫn 2: Lệnh CLI & Cài đặt Môi trường -->
+                    <div class="data-card" style="padding:1.25rem;">
+                        <div style="font-weight:700; font-size:0.92rem; color:#fff; display:flex; align-items:center; gap:8px; margin-bottom:0.75rem;">
+                            <i class="fa-solid fa-code" style="color:#38bdf8;"></i> CÁCH 2: CHẠY QUA DÒNG LỆNH PYTHON (CLI)
+                        </div>
+                        <div style="font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">
+                            <div style="margin-bottom:6px;">1. Cài đặt các thư viện cần thiết (nếu máy mới chưa có):</div>
+                            <div style="background:var(--bg-card-alt); border-radius:6px; padding:0.45rem 0.65rem; font-family:Consolas, monospace; font-size:0.75rem; color:#34d399; margin-bottom:8px;">
+                                pip install telethon pymysql openpyxl pandas
+                            </div>
+                            <div style="margin-bottom:6px;">2. Chạy trực tiếp từng tool qua Terminal / Command Prompt:</div>
+                            <div style="background:var(--bg-card-alt); border-radius:6px; padding:0.45rem 0.65rem; font-family:Consolas, monospace; font-size:0.75rem; color:#38bdf8; display:flex; flex-direction:column; gap:4px;">
+                                <div>python "SPAM_PHIEU_CHUYEN/CHI TIẾT THỊT CÁ/SPAM_CHI_TIET_THIT_CA.py"</div>
+                                <div>python "SPAM_PHIEU_CHUYEN/CHI TIẾT MÁT/SPAM_CHI_TIET_MAT.py"</div>
+                                <div>python "SPAM_PHIEU_CHUYEN/HẬU KIỂM RAU/SPAM_HAU_KIEM_RAU.py"</div>
+                                <div>python "SPAM_PHIEU_CHUYEN/HẬU KIỂM THỊ CÁ/SPAM_HAU_KIEM_THIT_CA.py"</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FOOTER INFO BOX -->
+                <div style="margin-top:1.25rem; background:rgba(249,115,22,0.08); border:1px solid rgba(249,115,22,0.25); border-radius:10px; padding:1rem 1.25rem; display:flex; gap:1rem; align-items:flex-start;">
+                    <i class="fa-solid fa-shield-halved" style="color:#f97316; font-size:1.25rem; margin-top:2px;"></i>
+                    <div style="font-size:0.82rem; color:var(--text-secondary); line-height:1.5;">
+                        <strong style="color:#fff;">🔒 Bảo mật & An toàn dữ liệu:</strong><br>
+                        - Tất cả file phiên đăng nhập Telegram (<code>*.session</code>) và tệp cấu hình chứa mã khóa đều được đưa vào <code>.gitignore</code> để đảm bảo an toàn 100% khi đẩy mã nguồn lên GitHub công khai.<br>
+                        - Các script Python đã được nâng cấp hàm tìm file thông minh <code>find_data_file()</code>, cho phép người dùng chạy file từ bất kỳ thư mục nào mà không bị lỗi đường dẫn (Path Error).
+                    </div>
                 </div>
             </div>
 
@@ -4003,19 +4570,23 @@
             const btn2 = document.getElementById('btn-big-tab-2');
             const btn3 = document.getElementById('btn-big-tab-3');
             const btn4 = document.getElementById('btn-big-tab-4');
+            const btn5 = document.getElementById('btn-big-tab-5');
             const p1 = document.getElementById('big-panel-1');
             const p2 = document.getElementById('big-panel-2');
             const p3 = document.getElementById('big-panel-3');
             const p4 = document.getElementById('big-panel-4');
+            const p5 = document.getElementById('big-panel-5');
 
             if (btn1) btn1.className = 'sidebar-tab-btn' + (tabNum === 1 ? ' active-tab1' : '');
             if (btn2) btn2.className = 'sidebar-tab-btn' + (tabNum === 2 ? ' active-tab2' : '');
             if (btn3) btn3.className = 'sidebar-tab-btn' + (tabNum === 3 ? ' active-tab3' : '');
             if (btn4) btn4.className = 'sidebar-tab-btn' + (tabNum === 4 ? ' active-tab4' : '');
+            if (btn5) btn5.className = 'sidebar-tab-btn' + (tabNum === 5 ? ' active-tab5' : '');
             if (p1) p1.className = 'big-tab-panel' + (tabNum === 1 ? ' active' : '');
             if (p2) p2.className = 'big-tab-panel' + (tabNum === 2 ? ' active' : '');
             if (p3) p3.className = 'big-tab-panel' + (tabNum === 3 ? ' active' : '');
             if (p4) p4.className = 'big-tab-panel' + (tabNum === 4 ? ' active' : '');
+            if (p5) p5.className = 'big-tab-panel' + (tabNum === 5 ? ' active' : '');
 
             const data = getFilteredBundleData();
             if (tabNum === 1) {
@@ -8176,6 +8747,53 @@
         // LOGIC & QUẢN LÝ TAB TELEGRAM SCM - DANH SÁCH NHÓM TRỰC TIẾP & REALTIME
         let teleCurrentMode = 'all'; // 'all', 'aba', 'krc', 'ic', 'dc', 'internal', 'chatid'
         let teleCurrentPrio = 'all'; // 'all', 'urgent', 'high', 'medium', 'normal'
+        let teleCurrentSort = 'time_desc'; // 'time_desc', 'time_asc', 'prio_desc', 'unread_desc', 'store_asc'
+
+        function getGroupTimeTs(g) {
+            if (g.last_date_raw) {
+                const ts = new Date(g.last_date_raw).getTime();
+                if (!isNaN(ts)) return ts;
+            }
+            if (g.last_date) {
+                const p = g.last_date.match(/(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})\s+(\d{1,2}):(\d{1,2})/);
+                if (p) {
+                    const d = new Date(parseInt(p[3]), parseInt(p[2])-1, parseInt(p[1]), parseInt(p[4]), parseInt(p[5]));
+                    if (!isNaN(d.getTime())) return d.getTime();
+                }
+            }
+            return 0;
+        }
+
+        function formatGroupTime(g) {
+            if (!g.last_date_raw && !g.last_date) return '<span style="color:var(--text-secondary); opacity:0.5;">-</span>';
+            let d = null;
+            if (g.last_date_raw) {
+                d = new Date(g.last_date_raw);
+            } else if (g.last_date) {
+                const p = g.last_date.match(/(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})\s+(\d{1,2}):(\d{1,2})/);
+                if (p) d = new Date(parseInt(p[3]), parseInt(p[2])-1, parseInt(p[1]), parseInt(p[4]), parseInt(p[5]));
+            }
+            if (!d || isNaN(d.getTime())) return `<span style="font-size:0.75rem; color:var(--text-secondary);">${g.last_date || '-'}</span>`;
+
+            const now = new Date();
+            const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            const hh = String(d.getHours()).padStart(2, '0');
+            const mm = String(d.getMinutes()).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            const MM = String(d.getMonth() + 1).padStart(2, '0');
+
+            if (isToday) {
+                return `<span style="color:#58a6ff; font-weight:600; font-size:0.75rem;" title="${dd}/${MM}/${d.getFullYear()} ${hh}:${mm}"><i class="fa-regular fa-clock" style="margin-right:2px;"></i>${hh}:${mm}</span>`;
+            }
+            return `<span style="color:var(--text-secondary); font-size:0.75rem;" title="${dd}/${MM}/${d.getFullYear()} ${hh}:${mm}">${dd}/${MM} ${hh}:${mm}</span>`;
+        }
+
+        function toggleTimeSort() {
+            teleCurrentSort = (teleCurrentSort === 'time_desc') ? 'time_asc' : 'time_desc';
+            const select = document.getElementById('teleSortSelect');
+            if (select) select.value = teleCurrentSort;
+            filterTelegramData();
+        }
 
         function showToast(msg) {
             let toast = document.getElementById('toastMsg');
@@ -8287,14 +8905,36 @@
                 return sCode.includes(query) || sName.includes(query) || title.includes(query) || chatId.includes(query) || lastMsg.includes(query) || reason.includes(query) || badge.includes(query);
             });
 
-            // Sắp xếp ưu tiên: Khẩn cấp -> Ưu tiên cao -> ST phản hồi -> Thông thường (và theo ngày mới nhất)
+            // Sắp xếp các nhóm: Ưu tiên Realtime mới nhất lên đầu
             filtered.sort((a, b) => {
-                const rankA = priorityRank[a.priority_level || 'normal'] || 1;
-                const rankB = priorityRank[b.priority_level || 'normal'] || 1;
-                if (rankA !== rankB) return rankB - rankA;
-                const timeA = a.last_date_raw || '';
-                const timeB = b.last_date_raw || '';
-                return timeB.localeCompare(timeA);
+                if (teleCurrentSort === 'time_desc') {
+                    const tA = getGroupTimeTs(a);
+                    const tB = getGroupTimeTs(b);
+                    if (tB !== tA) return tB - tA;
+                    const rankA = priorityRank[a.priority_level || 'normal'] || 1;
+                    const rankB = priorityRank[b.priority_level || 'normal'] || 1;
+                    return rankB - rankA;
+                } else if (teleCurrentSort === 'time_asc') {
+                    const tA = getGroupTimeTs(a);
+                    const tB = getGroupTimeTs(b);
+                    if (tA !== tB) return tA - tB;
+                    return (a.store_code || '').localeCompare(b.store_code || '');
+                } else if (teleCurrentSort === 'prio_desc') {
+                    const rankA = priorityRank[a.priority_level || 'normal'] || 1;
+                    const rankB = priorityRank[b.priority_level || 'normal'] || 1;
+                    if (rankA !== rankB) return rankB - rankA;
+                    return getGroupTimeTs(b) - getGroupTimeTs(a);
+                } else if (teleCurrentSort === 'unread_desc') {
+                    const uA = a.unread || 0;
+                    const uB = b.unread || 0;
+                    if (uB !== uA) return uB - uA;
+                    return getGroupTimeTs(b) - getGroupTimeTs(a);
+                } else if (teleCurrentSort === 'store_asc') {
+                    const cA = a.store_code || 'ZZZZ';
+                    const cB = b.store_code || 'ZZZZ';
+                    return cA.localeCompare(cB, undefined, { numeric: true });
+                }
+                return getGroupTimeTs(b) - getGroupTimeTs(a);
             });
 
             return filtered;
@@ -8330,6 +8970,58 @@
             }
         }
 
+        
+        function isAnnouncementOrBroadcast(text) {
+            if (!text) return false;
+            const t = text.trim();
+            const t_low = t.toLowerCase();
+
+            if (/[📅🗓️📢🔔]\s*\d{1,2}[./-]\d{1,2}/.test(t)) return true;
+
+            const prefixes = [
+                'hi team', 'chào team', 'cảm ơn team', 'chào cả nhà', 'chào anh chị',
+                'anh remind lại', 'remind lại', 'remind',
+                'thông báo:', 'thông báo quan trọng', 'lưu ý quan trọng', 'lưu ý:',
+                'st lưu ý', 'siêu thị lưu ý', 'quy chế', 'hướng dẫn kiểm hàng',
+                'cảnh báo kiểm tra date', 'thời điểm cutoff', 'lưu ý nhận hàng'
+            ];
+            for (const p of prefixes) {
+                if (t_low.startsWith(p) || t_low.includes('\n' + p)) return true;
+            }
+
+            const phrases = [
+                'lưu ý quan trọng', 'hậu kiểm hàng thịt cá', 'kiểm hàng đúng vị trí camera',
+                'thao tác kiểm đếm', 'trong vùng camera', 'trả rổ/thùng xanh',
+                'bắt buộc phải có trip', 'không có trip sẽ không thực hiện trả',
+                'st bắt buộc phải scan từng kiện', 'báo cáo phát sinh nhận hàng',
+                'thời điểm cutoff', 'cảnh báo kiểm tra date', 'file import của',
+                'hoàn thành phiếu hậu kiểm', 'nhận dư add vào phiếu hậu kiểm',
+                'nhận dư nhưng không add phiếu hk', 'không thông tin scm tạo bổ sung',
+                'tránh phát sinh ảnh hưởng vận hành', 'phát sinh lần sau',
+                'điều chuyển kịp thời nhé cảm ơn team', 'cảm ơn team', 'nhờ team đối soát',
+                'báo siêu thị rút tồn về kho giúp', 'nhập sót sl các mã hàng trên'
+            ];
+            for (const phrase of phrases) {
+                if (t_low.includes(phrase)) return true;
+            }
+
+            if (/st\s+(bổ\s+sung\s+thêm\s+hình\s+ảnh|báo|kiểm\s+tra|ktra|nhập|hoàn\s+thành)\s+giúp\s+(hà|ny|thấm|thư|quỳnh|nhung|scm)/i.test(t_low)) return true;
+            if (/(thư|thấm|hà|ny|quỳnh|nhung|scm|p|q|t)\s+gửi\s+(phiếu|pt|po)/i.test(t_low)) return true;
+            if (/(nhé|nha|giúp)\s+(st|siêu\s+thị)\b/i.test(t_low) && /(gửi|check|ktra|kiểm\s+tra|hủy|cam|done|lưu\s+ý|báo)/i.test(t_low)) return true;
+            if (t_low.includes('nhé team') || t_low.includes('nha team') || t_low.includes('cảm ơn team')) return true;
+
+            return false;
+        }
+
+        window.CHAT_SHOW_SPAM = false;
+
+        function toggleChatAnnouncements() {
+            window.CHAT_SHOW_SPAM = !window.CHAT_SHOW_SPAM;
+            if (window.CURRENT_CHAT_MESSAGES) {
+                renderChatMessages(window.CURRENT_CHAT_MESSAGES, window.CURRENT_CHAT_PRIO_BANNER);
+            }
+        }
+    
         function renderDetailedGroupsTable(groups) {
             const thead = document.getElementById('teleTableHead');
             if (thead && !thead.innerHTML.trim()) {
@@ -8341,8 +9033,8 @@
                         <th style="width:145px;">CHAT ID</th>
                         <th style="width:120px; text-align:center;">LOẠI NHÓM</th>
                         <th style="width:125px; text-align:center;">CẤP ĐỘ</th>
-                        <th style="min-width:280px;">TIN MỚI NHẤT (ST PHẢN HỒI)</th>
-                        <th style="width:115px; text-align:center;">THỜI GIAN</th>
+                        <th style="min-width:300px;">TIN MỚI NHẤT (ST PHẢN HỒI)</th>
+                        <th style="width:130px; text-align:center; cursor:pointer;" onclick="toggleTimeSort()" title="Nhấp để đảo chiều sắp xếp theo thời gian">THỜI GIAN <i class="fa-solid fa-sort" style="font-size:0.7rem; margin-left:2px; opacity:0.7;"></i></th>
                         <th style="width:70px; text-align:center;">CHƯA ĐỌC</th>
                         <th style="width:130px; text-align:center;">THAO TÁC</th>
                     </tr>
@@ -8364,18 +9056,44 @@
                 const storeBadge = g.store_code ? `<span class="tele-store-code" onclick="event.stopPropagation(); setTeleFilterStore('${g.store_code}')" title="Lọc theo ${g.store_code}">${g.store_code}</span>` : '<span style="color:var(--text-secondary); font-size:0.75rem;">-</span>';
                 
                 let msgSnippet = '';
-                if (g.last_message) {
+                const isUrgent = (g.priority_level === 'urgent');
+                const uMsg = g.urgent_message || g.urgent_msg?.text || '';
+                const uTime = g.urgent_time || g.urgent_msg?.time || '';
+                const uReason = g.priority_reason || g.urgent_msg?.priority_reason || 'HÀNG HƯ HỎNG/BỂ VỠ';
+                const uMsgId = g.urgent_msg_id || g.urgent_msg?.id || '';
+
+                if (isUrgent && uMsg) {
+                    const uClean = escapeHtml(uMsg.replace(/\n/g, ' '));
+                    const hasNewer = g.last_message && g.last_message.trim() !== uMsg.trim();
+                    const newerSnippet = hasNewer ? escapeHtml(g.last_message.replace(/\n/g, ' ')) : '';
+                    const newerTime = g.last_date ? (g.last_date.includes(' ') ? g.last_date.split(' ')[1] : g.last_date) : '';
+
+                    msgSnippet = `
+                        <div class="tele-msg-urgent-container" onclick="event.stopPropagation(); openTelegramChat('${g.chat_id_str}', '${uMsgId}')" title="Nhấp để xem chi tiết tin khẩn cấp và toàn bộ lịch sử">
+                            <div class="tele-msg-urgent-line">
+                                <span class="tele-badge-urgent-tag"><i class="fa-solid fa-triangle-exclamation"></i> [${uReason}]</span>
+                                <span class="tele-msg-urgent-text">${uClean}</span>
+                            </div>
+                            ${hasNewer ? `
+                            <div class="tele-msg-latest-sub">
+                                <i class="fa-solid fa-reply fa-flip-horizontal" style="color:var(--text-secondary);"></i>
+                                <span style="color:var(--text-secondary);">Mới nhất (${newerTime}):</span>
+                                <span style="color:var(--text-primary); opacity:0.85;">${newerSnippet}</span>
+                            </div>` : ''}
+                        </div>
+                    `;
+                } else if (g.last_message && !isAnnouncementOrBroadcast(g.last_message)) {
                     const extraBadge = g.priority_reason ? `<span style="font-size:0.7rem; color:#e3b341; margin-right:4px;">[${g.priority_reason}]</span> ` : '';
-                    msgSnippet = `<div class="tele-msg-snippet" title="${g.last_message.replace(/"/g, '&quot;')}"><i class="fa-solid fa-comment-dots" style="opacity:0.6; margin-right:4px;"></i>${extraBadge}${g.last_message}</div>`;
+                    msgSnippet = `<div class="tele-msg-snippet" title="${escapeHtml(g.last_message)}"><i class="fa-solid fa-comment-dots" style="color:#58a6ff; margin-right:4px;"></i>${extraBadge}${escapeHtml(g.last_message)}</div>`;
                 } else {
-                    msgSnippet = '<span style="color:var(--text-secondary); font-size:0.75rem; font-style:italic; opacity:0.7;">Chờ ST phản hồi</span>';
+                    msgSnippet = '<span style="color:var(--text-secondary); font-size:0.75rem; font-style:italic; opacity:0.6;"><i class="fa-regular fa-clock" style="margin-right:4px;"></i>Chưa có phản hồi từ ST</span>';
                 }
                 
-                const chatBtn = g.chat_id_str ? `<button class="tele-action-btn" style="background:#1f6feb;" onclick="event.stopPropagation(); openTelegramChat('${g.chat_id_str}')" title="Đọc & Phản hồi trực tiếp"><i class="fa-solid fa-comments"></i> Chat</button>` : '';
+                const chatBtn = g.chat_id_str ? `<button class="tele-action-btn" style="background:#1f6feb;" onclick="event.stopPropagation(); openTelegramChat('${g.chat_id_str}', '${uMsgId}')" title="Đọc & Phản hồi trực tiếp"><i class="fa-solid fa-comments"></i> Chat</button>` : '';
                 const openBtn = g.chat_id_str ? `<a href="https://web.telegram.org/k/#${g.chat_id_str}" target="_blank" class="tele-action-btn" onclick="event.stopPropagation();" title="Mở trong Telegram Web"><i class="fa-brands fa-telegram"></i> Web</a>` : '';
                 const prioBadge = getPriorityBadgeHtml(g.priority_level || 'normal', g.priority_reason || '');
 
-                return `<tr class="tele-row-clickable" onclick="openTelegramChat('${g.chat_id_str}')" title="Nhấp để đọc tin nhắn và phản hồi nhóm này">
+                return `<tr class="tele-row-clickable" onclick="openTelegramChat('${g.chat_id_str}', '${uMsgId}')" title="Nhấp để đọc chi tiết tin nhắn nhóm này">
                     <td style="text-align:center; color:var(--text-secondary); font-size:0.75rem;">${idx + 1}</td>
                     <td style="text-align:center;">${storeBadge}</td>
                     <td>
@@ -8394,7 +9112,7 @@
                     <td style="text-align:center;">${getGroupTypeBadge(g.group_type)}</td>
                     <td style="text-align:center;">${prioBadge}</td>
                     <td>${msgSnippet}</td>
-                    <td style="text-align:center; font-size:0.75rem; color:var(--text-secondary);">${g.last_date || '-'}</td>
+                    <td style="text-align:center;">${formatGroupTime(g)}</td>
                     <td style="text-align:center;">${g.unread > 0 ? `<span style="background:#f85149; color:#fff; padding:1px 6px; border-radius:10px; font-size:0.7rem; font-weight:700;">${g.unread}</span>` : `<span style="color:var(--text-secondary); opacity:0.4;">0</span>`}</td>
                     <td style="text-align:center; white-space:nowrap;">
                         ${chatBtn}
@@ -8414,13 +9132,13 @@
         function refreshTelegramRealtime(btnEl) {
             if (btnEl) {
                 btnEl.disabled = true;
-                btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đồng bộ...';
+                btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đồng bộ realtime...';
             }
             const scriptUrl = 'daily_details/telegram_groups.js?t=' + new Date().getTime();
             const s = document.createElement('script');
             s.src = scriptUrl;
             s.onload = () => {
-                showToast("⚡ Đã cập nhật dữ liệu Realtime mới nhất từ Telegram!");
+                showToast("⚡ Đã cập nhật và sắp xếp tin theo thời gian Realtime mới nhất!");
                 if (btnEl) {
                     btnEl.disabled = false;
                     btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
@@ -8707,13 +9425,16 @@
             }
         }
 
-        async function openTelegramChat(chatIdStr) {
+        async function openTelegramChat(chatIdStr, targetMsgId = null) {
             if (!chatIdStr) return;
             window.CURRENT_CHAT_ID = chatIdStr;
             const data = window.TELEGRAM_GROUPS_DATA;
             const allGroups = data?.groups || data?.all_groups || [];
             const group = allGroups.find(g => g.chat_id_str === chatIdStr) || { title: `Nhóm ${chatIdStr}`, chat_id_str: chatIdStr };
             window.CURRENT_GROUP_DATA = group;
+
+            // Xác định tin nhắn khẩn cấp mục tiêu nếu có
+            window.CURRENT_TARGET_MSG_ID = targetMsgId || group.urgent_msg_id || group.urgent_msg?.id || null;
 
             // Update drawer header
             const titleEl = document.getElementById('chatTitle');
@@ -8746,7 +9467,7 @@
 
             // Check connection and load messages
             const isOnline = await checkTelegramEngineConnection();
-            loadGroupMessages(chatIdStr, group, isOnline);
+            loadGroupMessages(chatIdStr, group, isOnline, window.CURRENT_TARGET_MSG_ID);
 
             // Focus textarea
             setTimeout(() => {
@@ -8760,39 +9481,10 @@
             const overlay = document.getElementById('chatDrawerOverlay');
             if (drawer) drawer.classList.remove('open');
             if (overlay) overlay.classList.remove('open');
-            window.CURRENT_CHAT_ID = null;
+            window.CURRENT_TARGET_MSG_ID = null;
         }
 
-        function getPriorityBannerHtml(level, reason) {
-            if (level === 'urgent') {
-                return `
-                    <div style="background:rgba(248,81,73,0.12); border:1px solid rgba(248,81,73,0.5); border-radius:8px; padding:8px 12px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                        <span class="tele-badge-prio-urgent"><i class="fa-solid fa-triangle-exclamation"></i> 1. KHẨN CẤP</span>
-                        <span style="font-size:0.75rem; color:#ff7b72; font-weight:600;">${reason || 'Chứa từ khóa: Dư mã hàng, Vượt sức bán, Cần điều chuyển'}</span>
-                    </div>`;
-            }
-            if (level === 'high') {
-                return `
-                    <div style="background:rgba(210,153,34,0.12); border:1px solid rgba(210,153,34,0.5); border-radius:8px; padding:8px 12px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                        <span class="tele-badge-prio-high"><i class="fa-solid fa-bolt"></i> 2. ƯU TIÊN CAO</span>
-                        <span style="font-size:0.75rem; color:#e3b341; font-weight:600;">${reason || 'Chứa từ khóa: Tạo bổ sung, PO bổ sung, Rút tồn'}</span>
-                    </div>`;
-            }
-            if (level === 'medium') {
-                return `
-                    <div style="background:rgba(88,166,255,0.1); border:1px solid rgba(88,166,255,0.4); border-radius:8px; padding:8px 12px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                        <span class="tele-badge-prio-medium"><i class="fa-solid fa-reply"></i> 3. ST PHẢN HỒI</span>
-                        <span style="font-size:0.75rem; color:#79c0ff; font-weight:600;">${reason || 'ST có phản hồi thực nhận / chênh lệch'}</span>
-                    </div>`;
-            }
-            return `
-                <div style="background:rgba(139,148,158,0.08); border:1px solid rgba(139,148,158,0.25); border-radius:8px; padding:6px 12px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                    <span class="tele-badge-prio-normal"><i class="fa-regular fa-circle"></i> 4. THÔNG THƯỜNG</span>
-                    <span style="font-size:0.72rem; color:var(--text-secondary);">Đang chờ ST phản hồi / Không có từ khóa khẩn cấp</span>
-                </div>`;
-        }
-
-        async function loadGroupMessages(chatIdStr, group, isOnline) {
+        async function loadGroupMessages(chatIdStr, group, isOnline, targetMsgId = null) {
             const container = document.getElementById('chatMessagesBody');
             if (!container) return;
 
@@ -8801,15 +9493,15 @@
             if (isOnline) {
                 container.innerHTML = prioBanner + `<div style="text-align:center; padding:3rem 1rem; color:var(--text-secondary);">
                     <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:#229ED9; margin-bottom:10px;"></i>
-                    <div>Đang đọc tin nhắn realtime từ Telegram...</div>
+                    <div>Đang đọc toàn bộ tin nhắn realtime từ Telegram...</div>
                 </div>`;
 
                 try {
-                    const resp = await fetch(`${TELE_API_BASE}/api/messages?chat_id=${chatIdStr}&limit=35`);
+                    const resp = await fetch(`${TELE_API_BASE}/api/messages?chat_id=${chatIdStr}&limit=60`);
                     if (resp.ok) {
                         const res = await resp.json();
                         if (res.success && res.messages && res.messages.length) {
-                            renderChatMessages(res.messages, prioBanner);
+                            renderChatMessages(res.messages, prioBanner, targetMsgId, group);
                             return;
                         }
                     }
@@ -8818,9 +9510,9 @@
                 }
             }
 
-            // Render from cached recent_messages if available
+            // Render from cached recent_messages (toàn bộ lịch sử tin nhắn đang có trên group)
             if (group.recent_messages && group.recent_messages.length > 0) {
-                renderChatMessages(group.recent_messages, prioBanner);
+                renderChatMessages(group.recent_messages, prioBanner, targetMsgId, group);
                 return;
             }
 
@@ -8829,7 +9521,7 @@
                 <div class="chat-date-divider">Hoạt động gần nhất</div>
                 <div class="chat-bubble incoming">
                     <div class="chat-sender-name">${group.store_name || group.title}</div>
-                    ${group.last_message ? `<div>${group.last_message}</div>` : '<div style="font-style:italic; opacity:0.7;">Nhóm chưa có lịch sử tin nhắn mới từ Siêu thị.</div>'}
+                    ${group.last_message ? `<div>${escapeHtml(group.last_message)}</div>` : '<div style="font-style:italic; opacity:0.7;">Nhóm chưa có lịch sử tin nhắn mới từ Siêu thị.</div>'}
                     <div class="chat-bubble-footer">
                         <span>${group.last_date || 'Gần đây'}</span>
                     </div>
@@ -8855,43 +9547,104 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        function renderChatMessages(messages, prioBannerHtml = '') {
+        function renderChatMessages(messages, prioBannerHtml = '', targetMsgId = null, group = null) {
             const container = document.getElementById('chatMessagesBody');
             if (!container) return;
 
+            group = group || window.CURRENT_GROUP_DATA || {};
+            targetMsgId = targetMsgId || window.CURRENT_TARGET_MSG_ID;
+
+            window.CURRENT_CHAT_MESSAGES = messages;
+            window.CURRENT_CHAT_PRIO_BANNER = prioBannerHtml;
+
             if (!messages || !messages.length) {
-                container.innerHTML = (prioBannerHtml || '') + `<div style="text-align:center; padding:3rem 1rem; color:var(--text-secondary);">Nhóm chưa có tin nhắn nào gần đây.</div>`;
+                container.innerHTML = (prioBannerHtml || '') + `<div style="text-align:center; padding:3rem 1rem; color:var(--text-secondary);"><i class="fa-regular fa-comments" style="font-size:2rem; opacity:0.3; margin-bottom:8px; display:block;"></i>Nhóm chưa có tin nhắn nào gần đây.</div>`;
                 return;
             }
 
-            let html = prioBannerHtml || '';
-            let lastDate = '';
+            let html = '';
 
+            // 1. Kiểm tra sự cố khẩn cấp của nhóm để tạo Sticky Navigation Bar ở đầu khung chat
+            const urgentMsgInList = messages.find(m => m.id == targetMsgId || m.priority_level === 'urgent' || (group.urgent_message && m.text && m.text.trim() === group.urgent_message.trim()));
+            const urgentId = targetMsgId || urgentMsgInList?.id || group.urgent_msg_id || 'urgent-target';
+            const urgentReason = urgentMsgInList?.priority_reason || group.priority_reason || 'HÀNG HƯ HỎNG/BỂ VỠ';
+            const urgentTime = urgentMsgInList?.time || group.urgent_time || '';
+            const urgentText = urgentMsgInList?.text || group.urgent_message || '';
+
+            if (urgentText) {
+                const urgentSnippet = escapeHtml(urgentText.replace(/\n/g, ' '));
+                html += `
+                    <div class="chat-urgent-sticky-bar" onclick="scrollChatToUrgent('${urgentId}')" title="Bấm để cuộn ngay đến tin khẩn cấp">
+                        <div class="chat-urgent-sticky-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="chat-urgent-sticky-content">
+                            <div class="chat-urgent-sticky-title">🚨 TIN KHẨN CẤP [${urgentTime}]: ${escapeHtml(urgentReason)}</div>
+                            <div class="chat-urgent-sticky-desc">${urgentSnippet}</div>
+                        </div>
+                        <button class="chat-urgent-sticky-btn"><i class="fa-solid fa-crosshairs"></i> Nhảy tới tin</button>
+                    </div>
+                `;
+            }
+
+            // Banner ưu tiên chung nếu có
+            if (prioBannerHtml) {
+                html += prioBannerHtml;
+            }
+
+            // 2. Hiển thị TOÀN BỘ TIN NHẮN ĐANG CÓ TRÊN GROUP (phân tách theo ngày rõ ràng)
+            let lastDate = '';
             messages.forEach(m => {
-                const datePart = m.time ? (m.time.includes('•') ? m.time.split('•')[1]?.trim() : m.time.split(' ')[0]) : '';
+                // Trích xuất ngày
+                let datePart = '';
+                if (m.time) {
+                    if (m.time.includes('•')) {
+                        datePart = m.time.split('•')[1]?.trim();
+                    } else if (m.time.includes(' ')) {
+                        datePart = m.time.split(' ')[0];
+                    }
+                }
                 if (datePart && datePart !== lastDate) {
-                    html += `<div class="chat-date-divider">${datePart}</div>`;
+                    html += `<div class="chat-date-divider"><i class="fa-regular fa-calendar-days" style="margin-right:4px;"></i> Hoạt động ngày ${datePart}</div>`;
                     lastDate = datePart;
                 }
 
                 const isMe = m.is_me || false;
-                const bubbleClass = isMe ? 'chat-bubble outgoing' : 'chat-bubble incoming';
+                const isSpam = m.is_spam || isAnnouncementOrBroadcast(m.text);
+                const isThisUrgent = (m.id && m.id == urgentId) || (urgentText && m.text && m.text.trim() === urgentText.trim()) || (m.priority_level === 'urgent');
+
+                // Nếu là tin thông báo định kỳ / nhắc việc / bot: Render dạng system card nhẹ nhàng, không bị mất tin
+                if (isSpam && !isThisUrgent) {
+                    html += `
+                        <div class="chat-bubble system-broadcast" id="chat-msg-${m.id || ''}">
+                            <div class="system-broadcast-header">
+                                <i class="fa-solid fa-bullhorn"></i> Nhắc việc / Thông báo hệ thống &bull; ${m.time_short || m.time || ''}
+                            </div>
+                            <div style="white-space:pre-wrap; word-break:break-word;">${escapeHtml(m.text || '')}</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let bubbleClass = isMe ? 'chat-bubble outgoing' : 'chat-bubble incoming';
+                let extraClass = isThisUrgent ? ' chat-bubble-urgent-target' : '';
                 const checkIcon = isMe ? '<i class="fa-solid fa-check-double" style="font-size:0.65rem; color:#a5d6ff;"></i>' : '';
-                const mediaTag = m.media_info ? `<div class="chat-bubble-media"><i class="fa-solid fa-paperclip"></i> ${m.media_info}</div>` : '';
-                const spamBadge = m.is_spam ? `<span style="font-size:0.65rem; background:rgba(255,255,255,0.1); padding:1px 5px; border-radius:4px; color:var(--text-secondary); margin-left:6px;">📢 Thông báo phát thanh</span>` : '';
-                
+                const mediaTag = m.media_info ? `<div class="chat-bubble-media"><i class="fa-solid fa-paperclip"></i> ${escapeHtml(m.media_info)}</div>` : '';
+
+                let urgentTopBanner = '';
+                if (isThisUrgent) {
+                    urgentTopBanner = `<div class="chat-bubble-urgent-banner"><i class="fa-solid fa-triangle-exclamation"></i> 🚨 TIN KHẨN CẤP ĐANG XEM: [${m.priority_reason || urgentReason}]</div>`;
+                }
+
                 let prioTag = '';
-                if (m.priority_level === 'urgent') {
-                    prioTag = `<span class="tele-badge-prio-urgent" style="font-size:0.65rem; padding:1px 5px; margin-left:6px;"><i class="fa-solid fa-triangle-exclamation"></i> Khẩn cấp</span>`;
-                } else if (m.priority_level === 'high') {
-                    prioTag = `<span class="tele-badge-prio-high" style="font-size:0.65rem; padding:1px 5px; margin-left:6px;"><i class="fa-solid fa-bolt"></i> Tạo BS</span>`;
+                if (m.priority_level === 'high') {
+                    prioTag = `<span class="tele-badge-prio-high" style="font-size:0.65rem; padding:1px 5px; margin-left:6px;"><i class="fa-solid fa-bolt"></i> ${m.priority_reason || 'Tạo BS'}</span>`;
                 }
 
                 html += `
-                    <div class="${bubbleClass}">
-                        ${!isMe ? `<div class="chat-sender-name">${m.sender_name || 'Siêu Thị'}${spamBadge}${prioTag}</div>` : `<div class="chat-sender-name" style="text-align:right; color:#79c0ff;">Bạn (SCM)</div>`}
+                    <div class="${bubbleClass}${extraClass}" id="chat-msg-${m.id || (isThisUrgent ? 'urgent-target' : '')}">
+                        ${urgentTopBanner}
+                        ${!isMe ? `<div class="chat-sender-name">${escapeHtml(m.sender_name || 'Siêu Thị')}${prioTag}</div>` : `<div class="chat-sender-name" style="text-align:right; color:#79c0ff;">Bạn (SCM)</div>`}
                         ${mediaTag}
-                        <div style="white-space:pre-wrap; word-break:break-word;">${m.text ? escapeHtml(m.text) : ''}</div>
+                        <div style="white-space:pre-wrap; word-break:break-word; font-size:0.88rem;">${m.text ? escapeHtml(m.text) : ''}</div>
                         <div class="chat-bubble-footer">
                             <span>${m.time_short || m.time || ''}</span>
                             ${checkIcon}
@@ -8900,8 +9653,56 @@
                 `;
             });
 
+            // 3. Floating Quick Action Buttons
+            html += `
+                <div class="chat-floating-actions" id="chatFloatingNav">
+                    ${urgentText ? `<button class="chat-float-btn urgent" onclick="scrollChatToUrgent('${urgentId}')" title="Cuộn lên xem tin khẩn cấp"><i class="fa-solid fa-triangle-exclamation"></i> Tin khẩn cấp</button>` : ''}
+                    <button class="chat-float-btn latest" onclick="scrollChatToBottom()" title="Cuộn xuống xem tin mới nhất"><i class="fa-solid fa-arrow-down"></i> Mới nhất</button>
+                </div>
+            `;
+
             container.innerHTML = html;
-            container.scrollTop = container.scrollHeight;
+
+            // 4. TỰ ĐỘNG CUỘN ĐẾN ĐÚNG TIN NHẮN KHẨN CẤP (hoặc cuộn xuống đáy nếu không có tin khẩn cấp)
+            setTimeout(() => {
+                let targetEl = null;
+                if (urgentId) {
+                    targetEl = document.getElementById('chat-msg-' + urgentId);
+                }
+                if (!targetEl) {
+                    targetEl = container.querySelector('.chat-bubble-urgent-target');
+                }
+
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    targetEl.classList.remove('chat-bubble-urgent-highlight');
+                    void targetEl.offsetWidth; // trigger reflow
+                    targetEl.classList.add('chat-bubble-urgent-highlight');
+                } else {
+                    container.scrollTop = container.scrollHeight;
+                }
+            }, 220);
+        }
+
+        function scrollChatToUrgent(msgId) {
+            const container = document.getElementById('chatMessagesBody');
+            if (!container) return;
+            let targetEl = null;
+            if (msgId) targetEl = document.getElementById('chat-msg-' + msgId);
+            if (!targetEl) targetEl = container.querySelector('.chat-bubble-urgent-target');
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetEl.classList.remove('chat-bubble-urgent-highlight');
+                void targetEl.offsetWidth;
+                targetEl.classList.add('chat-bubble-urgent-highlight');
+            }
+        }
+
+        function scrollChatToBottom() {
+            const container = document.getElementById('chatMessagesBody');
+            if (container) {
+                container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+            }
         }
 
         function escapeHtml(text) {

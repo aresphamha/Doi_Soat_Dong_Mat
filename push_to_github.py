@@ -62,7 +62,8 @@ def sync_and_push(custom_message=None):
         "LOGIC_HE_THONG_NOI_BO_THAM_KHAO.html",
         "LOGIC_HE_THONG_NOI_BO_THAM_KHAO.md",
         "DONG_MAT_DASHBOARD",
-        "LOGIC"
+        "LOGIC",
+        "SPAM_PHIEU_CHUYEN"
     ]
     
     valid_paths = [p for p in tracked_items if os.path.exists(os.path.join(ROOT_DIR, p))]
