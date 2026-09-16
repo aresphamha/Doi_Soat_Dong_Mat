@@ -152,7 +152,9 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             cmd.append("--dry-run")
 
         try:
-            self.wfile.write(f"data: {json.dumps({'type': 'start', 'msg': f'🚀 Bắt đầu thực thi: {tool} (Date: {target_date or \"Mặc định\"})'}, ensure_ascii=False)}\n\n".encode('utf-8'))
+            date_label = target_date if target_date else "Mặc định"
+            start_payload = {'type': 'start', 'msg': f"🚀 Bắt đầu thực thi: {tool} (Date: {date_label})"}
+            self.wfile.write(f"data: {json.dumps(start_payload, ensure_ascii=False)}\n\n".encode('utf-8'))
             self.wfile.flush()
 
             proc = subprocess.Popen(
