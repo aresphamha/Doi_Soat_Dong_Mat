@@ -13,7 +13,7 @@ echo   [1] 🥩 Spam Phiếu Chuyển THỊT CÁ (Chụp bảng chênh lệch & 
 echo   [2] 🥗 Spam Phiếu Chuyển HÀNG MÁT (Gửi phiếu đang chuyển hàng mát cho ST)
 echo   [3] 🥬 Spam Phiếu HẬU KIỂM RAU CỦ (Nhắc nhở kiểm tra camera & vị trí nhận)
 echo   [4] 🐟 Spam Phiếu HẬU KIỂM THỊT CÁ (Nhắc nhở hoàn thành phiếu hậu kiểm)
-echo   [5] 📦 Chạy kiểm tra kết nối Database Cloud (103.147.122.103:9030)
+echo   [5] 📦 Chạy kiểm tra kết nối Database Cloud (103.140.248.250:9030)
 echo   [0] ❌ Thoát
 echo.
 echo ==============================================================================
@@ -62,6 +62,6 @@ goto MENU
 :TEST_DB
 cls
 echo [ĐANG KIỂM TRA] Kết nối MySQL Database Cloud...
-python -c "import pymysql; conn = pymysql.connect(host='103.147.122.103', port=9030, user='kfm_scm_tho_nguyen', password='oh1dtJwR4ihLGrX4E7bs', database='kfm_scm', connect_timeout=5); print('✅ KẾT NỐI DATABASE THÀNH CÔNG!'); conn.close()"
+python -c "import pymysql; conn = pymysql.connect(host='103.140.248.250', port=9030, user='kfm_scm_tho_nguyen', password='oh1dtJwR4ihLGrX4E7bs', database='kfm_scm', connect_timeout=5); print('✅ KẾT NỐI DATABASE THÀNH CÔNG!'); conn.close()"
 pause
 goto MENU

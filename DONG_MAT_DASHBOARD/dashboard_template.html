@@ -18,15 +18,16 @@
         /* BẢNG MÀU TIẾT CHẾ & SIDEBAR NAVIGATION CHUYÊN NGHIỆP    */
         /* ======================================================== */
         :root {
-            --bg-body: #0b0f19;
+            /* MODERN PROFESSIONAL DARK SLATE THEME (DỊU MẮT, KHÔNG TỐI ĐEN) */
+            --bg-body: #161f2e;
             --bg-body-gradient: none;
-            --bg-card: #111827;
-            --bg-card-alt: #162032;
-            --bg-hover: rgba(255, 255, 255, 0.04);
+            --bg-card: #202b3d;
+            --bg-card-alt: #29364c;
+            --bg-hover: rgba(255, 255, 255, 0.05);
             --border-card: rgba(255, 255, 255, 0.08);
-            --border-subtle: rgba(255, 255, 255, 0.04);
+            --border-subtle: rgba(255, 255, 255, 0.05);
             
-            --text-primary: #f8fafc;
+            --text-primary: #f1f5f9;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
             
@@ -38,14 +39,14 @@
             --success: #34d399;
             --warning: #fbbf24;
             
-            --input-bg: #1e293b;
-            --input-border: #334155;
-            --table-head-bg: #0f172a;
-            --table-tfoot-bg: #090d16;
-            --modal-bg: #0f172a;
-            --modal-head-bg: #090d16;
-            --modal-toolbar-bg: #131d31;
-            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --input-bg: #1c2536;
+            --input-border: #33435c;
+            --table-head-bg: #1a2436;
+            --table-tfoot-bg: #172030;
+            --modal-bg: #202b3d;
+            --modal-head-bg: #172030;
+            --modal-toolbar-bg: #1c2638;
+            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
         }
 
         [data-theme="light"] {
@@ -107,6 +108,43 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+        }
+
+        .app-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2.5px;
+            background: linear-gradient(90deg, #38bdf8 0%, #818cf8 35%, #ec4899 70%, #f59e0b 100%);
+        }
+
+        .header-title h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 45%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        }
+
+        .section-panel-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+        .section-panel-title i {
+            -webkit-text-fill-color: initial;
+            color: #38bdf8;
         }
 
         .header-container {
@@ -249,7 +287,17 @@
         }
 
         
-                .sidebar-tab-btn.active-tab5 {
+        .sidebar-tab-btn.active-tab4 {
+            background: var(--bg-card-alt) !important;
+            border: 1px solid #229ED9 !important;
+            color: var(--text-primary) !important;
+        }
+        .sidebar-tab-btn.active-tab4 .tab-icon-wrap {
+            background: #229ED9;
+            color: #ffffff;
+        }
+
+        .sidebar-tab-btn.active-tab5 {
             background: var(--bg-card-alt) !important;
             border: 1px solid #f97316 !important;
             color: var(--text-primary) !important;
@@ -259,15 +307,6 @@
             color: #ffffff;
         }
 
-.sidebar-tab-btn.active-tab4 {
-            background: var(--bg-card-alt) !important;
-            border: 1px solid #229ED9 !important;
-            color: var(--text-primary) !important;
-        }
-        .sidebar-tab-btn.active-tab4 .tab-icon-wrap {
-            background: #229ED9;
-            color: #ffffff;
-        }
 
         /* Telegram Tab Styling */
         .tele-hero-card {
@@ -979,10 +1018,15 @@
             height: 4px;
         }
 
-        .kpi-card.c-blue::before { background: linear-gradient(90deg, #0284c7, #38bdf8); }
-        .kpi-card.c-red::before { background: linear-gradient(90deg, #b91c1c, #f87171); }
-        .kpi-card.c-green::before { background: linear-gradient(90deg, #059669, #34d399); }
-        .kpi-card.c-orange::before { background: linear-gradient(90deg, #d97706, #fbbf24); }
+        .kpi-card.c-blue::before { background: #38bdf8; height: 2.5px; }
+        .kpi-card.c-red::before { background: #f87171; height: 2.5px; }
+        .kpi-card.c-green::before { background: #34d399; height: 2.5px; }
+        .kpi-card.c-orange::before { background: #fbbf24; height: 2.5px; }
+        .kpi-card { background: var(--bg-card); border: 1px solid var(--border-card); }
+        .kpi-card .kpi-value.c-blue { color: #f8fafc; }
+        .kpi-card .kpi-value.c-red { color: #fca5a5; }
+        .kpi-card .kpi-value.c-green { color: #86efac; }
+        .kpi-card .kpi-value.c-orange { color: #fde047; }
 
         .kpi-label {
             font-size: 0.78rem;
@@ -2837,6 +2881,73 @@
             background: #f85149;
             color: #fff;
         }
+
+        /* TELEGRAM SCM CARDS & PILLS - REFINED CORPORATE LOOK */
+        .tele-stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 10px;
+            padding: 1rem 1.15rem;
+            transition: all 0.2s ease;
+        }
+        .tele-stat-card:hover {
+            background: var(--bg-card-alt);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        .tele-prio-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .tele-prio-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .tele-prio-btn.active {
+            background: #1f6feb !important;
+            border-color: #388bfd !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(31, 111, 235, 0.3) !important;
+        }
+        .tele-prio-btn.prio-urgent.active {
+            background: #dc2626 !important;
+            border-color: #ef4444 !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3) !important;
+        }
+        .tele-pill-btn {
+            padding: 0.35rem 0.85rem;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .tele-pill-btn:hover {
+            border-color: #388bfd;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .tele-pill-btn.active {
+            background: #1f6feb !important;
+            color: #ffffff !important;
+            border-color: #388bfd !important;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(31, 111, 235, 0.3) !important;
+        }
 </style>
     <script src="daily_details/telegram_groups.js"></script>
 </head>
@@ -2937,6 +3048,7 @@
                     <span class="tab-desc">Chi tiết & Hậu kiểm Thịt Cá, Rau, Mát</span>
                 </div>
             </button>
+
 
             <div class="sidebar-footer">
                 <div style="font-weight:700; color:var(--text-primary); margin-bottom:3px;"><i class="fa-solid fa-shield-halved" style="color:var(--primary);"></i> SCM Kingfoodmart</div>
@@ -3951,6 +4063,7 @@
                         <div style="position:relative; flex:1; min-width:280px;">
                             <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-secondary);"></i>
                             <input type="text" id="teleSearchInput" oninput="filterTelegramData()" placeholder="🔍 Tìm kiếm theo Mã ST (A101...), Tên ST, Chat ID, nội dung tin mới..." style="width:100%; padding:0.5rem 0.85rem 0.5rem 2.2rem; background:var(--bg-card-alt); border:1px solid var(--border-color); border-radius:6px; color:var(--text-primary); font-size:0.85rem;">
+                            <button type="button" id="teleSearchClearBtn" onclick="clearTeleSearchOnly()" title="Xóa tìm kiếm" style="display:none; position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:0.9rem; padding:2px 6px;">✕</button>
                         </div>
 
                         <!-- SORT DROPDOWN (REALTIME) -->
@@ -4096,7 +4209,7 @@
             </div>
 
         
-            <!-- ========================================================================= -->
+<!-- ========================================================================= -->
             <!-- TAB 5: TRUNG TÂM CÔNG CỤ TỰ ĐỘNG SPAM PHIẾU CHUYỂN & HẬU KIỂM SCM        -->
             <!-- ========================================================================= -->
             <div class="big-tab-panel" id="big-panel-5">
@@ -4235,9 +4348,6 @@
                             <button id="btnTriggerCloud" onclick="executeSelectedTool()" style="display:inline-flex; align-items:center; gap:8px; padding:0.65rem 1.5rem; background:linear-gradient(135deg, #f97316, #ea580c); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; box-shadow:0 4px 16px rgba(249,115,22,0.45); transition:all 0.2s ease;">
                                 <i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY
                             </button>
-                            <button id="btnStopTool" onclick="stopCurrentExecution()" type="button" style="display:none; align-items:center; gap:8px; padding:0.65rem 1.25rem; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; box-shadow:0 4px 16px rgba(239,68,68,0.4); transition:all 0.2s ease;" title="Dừng / Hủy bỏ ngay tiến trình đang chạy">
-                                <i class="fa-solid fa-circle-stop"></i> ⏹️ DỪNG / HỦY BỎ
-                            </button>
                         </div>
                     </div>
 
@@ -4256,9 +4366,6 @@
                                 </span>
                             </div>
                             <div style="display:flex; align-items:center; gap:6px;">
-                                <button id="terminalStopBtn" onclick="stopCurrentExecution()" type="button" style="display:none; background:#ef4444; border:none; color:#fff; font-size:0.72rem; padding:0.25rem 0.65rem; border-radius:5px; cursor:pointer; font-weight:700;" title="Dừng tiến trình đang chạy">
-                                    <i class="fa-solid fa-circle-stop"></i> Dừng Chạy
-                                </button>
                                 <button onclick="copyTerminalLogs()" style="background:rgba(255,255,255,0.06); border:1px solid #30363d; color:#c9d1d9; font-size:0.72rem; padding:0.25rem 0.6rem; border-radius:5px; cursor:pointer;" title="Sao chép toàn bộ nhật ký">
                                     <i class="fa-regular fa-copy"></i> Sao chép
                                 </button>
@@ -4744,7 +4851,7 @@
                                         <div style="font-weight:700; color:#38bdf8; display:flex; align-items:center; gap:6px;">
                                             <i class="fa-solid fa-database" style="color:#f97316;"></i> MySQL Cloud StarRocks (kfm_scm)
                                         </div>
-                                        <div style="font-size:0.72rem; color:var(--text-muted);">103.147.122.103:9030</div>
+                                        <div style="font-size:0.72rem; color:var(--text-muted);">103.140.248.250:9030</div>
                                     </td>
                                     <td style="text-align:center;"><span class="tag-pill" style="background:rgba(249,115,22,0.15); color:#f97316;">Cloud Database</span></td>
                                     <td style="font-size:0.8rem; color:var(--text-secondary);">
@@ -9481,11 +9588,69 @@
         }
 
         function setTeleFilterStore(code) {
+            teleCurrentPrio = 'all';
+            teleCurrentMode = 'all';
+            updateTelePrioButtons();
+            updateTeleModeButtons();
             const input = document.getElementById('teleSearchInput');
             if (input) {
                 input.value = code;
-                filterTelegramData();
+                const clearBtn = document.getElementById('teleSearchClearBtn');
+                if (clearBtn) clearBtn.style.display = 'block';
             }
+            filterTelegramData();
+        }
+
+        function clearTeleSearchOnly() {
+            const input = document.getElementById('teleSearchInput');
+            if (input) input.value = '';
+            const clearBtn = document.getElementById('teleSearchClearBtn');
+            if (clearBtn) clearBtn.style.display = 'none';
+            filterTelegramData();
+        }
+
+        function showAllGroupsOfStore(storeCode) {
+            teleCurrentPrio = 'all';
+            teleCurrentMode = 'all';
+            updateTelePrioButtons();
+            updateTeleModeButtons();
+            const input = document.getElementById('teleSearchInput');
+            if (input) input.value = storeCode;
+            filterTelegramData();
+        }
+
+        function resetTeleAllFilters() {
+            teleCurrentPrio = 'all';
+            teleCurrentMode = 'all';
+            updateTelePrioButtons();
+            updateTeleModeButtons();
+            const input = document.getElementById('teleSearchInput');
+            if (input) input.value = '';
+            const clearBtn = document.getElementById('teleSearchClearBtn');
+            if (clearBtn) clearBtn.style.display = 'none';
+            filterTelegramData();
+        }
+
+        function updateTelePrioButtons() {
+            const prios = ['all', 'urgent', 'high', 'medium', 'normal'];
+            prios.forEach(p => {
+                const el = document.getElementById('telePrio-' + p);
+                if (el) {
+                    if (p === teleCurrentPrio) el.classList.add('active');
+                    else el.classList.remove('active');
+                }
+            });
+        }
+
+        function updateTeleModeButtons() {
+            const modes = ['all', 'aba', 'krc', 'ic', 'dc', 'internal', 'chatid'];
+            modes.forEach(m => {
+                const el = document.getElementById('teleMode-' + m);
+                if (el) {
+                    if (m === teleCurrentMode) el.classList.add('active');
+                    else el.classList.remove('active');
+                }
+            });
         }
 
         
@@ -9566,7 +9731,42 @@
             }
 
             if (!groups.length) {
-                tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding:2.5rem; color:var(--text-secondary);">🔍 Không tìm thấy nhóm Telegram nào phù hợp</td></tr>';
+                const q = (document.getElementById('teleSearchInput')?.value || '').trim();
+                const prioLabelMap = {
+                    'all': 'Tất Cả',
+                    'urgent': '🚨 Khẩn Cấp',
+                    'high': '⚡ Ưu Tiên Cao',
+                    'medium': '💬 ST Phản Hồi',
+                    'normal': '⚪ Thông Thường'
+                };
+                const prioText = prioLabelMap[teleCurrentPrio] || teleCurrentPrio;
+
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="text-center" style="padding:3.5rem 1.5rem;">
+                            <div style="font-size:2.4rem; margin-bottom:12px; opacity:0.4;">🔍</div>
+                            <div style="font-size:1.05rem; font-weight:700; color:var(--text-primary); margin-bottom:8px;">
+                                Không tìm thấy nhóm Telegram nào phù hợp
+                            </div>
+                            <div style="font-size:0.84rem; color:var(--text-secondary); max-width:560px; margin:0 auto 18px auto; line-height:1.5;">
+                                ${q ? `Từ khóa tìm kiếm <strong>"${escapeHtml(q)}"</strong> không có nhóm nào thuộc cấp độ <strong>${prioText}</strong>.` : `Không có nhóm nào phù hợp với bộ lọc hiện tại (${prioText}).`}
+                            </div>
+                            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                                ${q ? `
+                                <button class="tele-action-btn" style="background:#1f6feb; padding:8px 16px; font-size:0.82rem;" onclick="clearTeleSearchOnly()">
+                                    <i class="fa-solid fa-filter-circle-xmark"></i> Xóa tìm kiếm (Xem tất cả ${prioText})
+                                </button>
+                                <button class="tele-action-btn" style="background:#238636; padding:8px 16px; font-size:0.82rem;" onclick="showAllGroupsOfStore('${escapeHtml(q)}')">
+                                    <i class="fa-solid fa-store"></i> Xem tất cả nhóm của "${escapeHtml(q)}"
+                                </button>
+                                ` : ''}
+                                <button class="tele-action-btn" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); padding:8px 16px; font-size:0.82rem;" onclick="resetTeleAllFilters()">
+                                    <i class="fa-solid fa-rotate-left"></i> Đặt lại bộ lọc (Hiện toàn bộ 574 nhóm)
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
                 return;
             }
 
@@ -9641,6 +9841,9 @@
         }
 
         function filterTelegramData() {
+            const searchVal = document.getElementById('teleSearchInput')?.value || '';
+            const clearBtn = document.getElementById('teleSearchClearBtn');
+            if (clearBtn) clearBtn.style.display = searchVal.trim() ? 'block' : 'none';
             const visible = getFilteredDetailedGroups();
             const countEl = document.getElementById('teleVisibleCount');
             if (countEl) countEl.innerText = visible.length;
@@ -10362,8 +10565,6 @@
         const LOCAL_RUNNER_API = "http://127.0.0.1:8088";
 
         window.isLocalRunnerOnline = false;
-        window.activeRunnerMode = null; // 'local' or 'cloud'
-        window.activeWorkflowRunId = null;
         let currentEventSource = null;
         let workflowPollInterval = null;
 
@@ -10403,75 +10604,6 @@
             }
         }
 
-        function setRunnerExecutingState(isExecuting) {
-            const btn = document.getElementById("btnTriggerCloud");
-            const btnStop = document.getElementById("btnStopTool");
-            const terminalStopBtn = document.getElementById("terminalStopBtn");
-
-            if (isExecuting) {
-                if (btn) {
-                    btn.disabled = true;
-                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang Thực Thi...';
-                    btn.style.opacity = '0.7';
-                }
-                if (btnStop) btnStop.style.display = 'inline-flex';
-                if (terminalStopBtn) terminalStopBtn.style.display = 'inline-block';
-            } else {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
-                    btn.style.opacity = '1';
-                }
-                if (btnStop) btnStop.style.display = 'none';
-                if (terminalStopBtn) terminalStopBtn.style.display = 'none';
-                window.activeRunnerMode = null;
-                window.activeWorkflowRunId = null;
-            }
-        }
-
-        async function stopCurrentExecution() {
-            appendTerminalLog("⏹️ Đang gửi tín hiệu YÊU CẦU DỪNG TIẾN TRÌNH...", "warning");
-
-            if (window.activeRunnerMode === "local") {
-                if (currentEventSource) {
-                    try { currentEventSource.close(); } catch(e) {}
-                }
-                try {
-                    const res = await fetch(`${LOCAL_RUNNER_API}/stop`, { method: "POST" });
-                    const data = await res.json();
-                    appendTerminalLog(`🛑 [LOCAL RUNNER] ${data.msg || "Đã dừng tiến trình!"}`, "error");
-                } catch(e) {
-                    appendTerminalLog(`⚠️ Không thể gửi tín hiệu dừng tới Local Agent: ${e.message}`, "error");
-                }
-            } else if (window.activeRunnerMode === "cloud") {
-                if (workflowPollInterval) clearInterval(workflowPollInterval);
-                if (window.activeWorkflowRunId) {
-                    try {
-                        const token = DEFAULT_GH_PAT;
-                        const cancelUrl = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/actions/runs/${window.activeWorkflowRunId}/cancel`;
-                        await fetch(cancelUrl, {
-                            method: "POST",
-                            headers: { "Authorization": `token ${token}`, "Accept": "application/vnd.github.v3+json" }
-                        });
-                        appendTerminalLog(`🛑 [CLOUD RUNNER] Đã gửi lệnh hủy Workflow #${window.activeWorkflowRunId} trên GitHub Actions!`, "error");
-                    } catch(e) {
-                        appendTerminalLog(`⚠️ Lỗi gửi lệnh hủy GitHub Actions: ${e.message}`, "error");
-                    }
-                } else {
-                    appendTerminalLog("🛑 Đã hủy theo dõi tác vụ Cloud.", "warning");
-                }
-            } else {
-                try { fetch(`${LOCAL_RUNNER_API}/stop`); } catch(e) {}
-                if (currentEventSource) {
-                    try { currentEventSource.close(); } catch(e) {}
-                }
-                if (workflowPollInterval) clearInterval(workflowPollInterval);
-                appendTerminalLog("🛑 Đã dừng tiến trình.", "warning");
-            }
-
-            setRunnerExecutingState(false);
-        }
-
         function setCloudDate(mode) {
             const dateInput = document.getElementById("cloudToolDate");
             if (!dateInput) return;
@@ -10502,9 +10634,9 @@
             let colorStyle = "#c9d1d9";
             if (type === "success" || line.includes("✅") || line.includes("[ĐÃ GỬI]") || line.includes("thành công") || line.includes("SUCCESS")) {
                 colorStyle = "#34d399";
-            } else if (type === "warning" || line.includes("⚠️") || line.includes("[DRY-RUN]") || line.includes("⏹️")) {
+            } else if (type === "warning" || line.includes("⚠️") || line.includes("[DRY-RUN]")) {
                 colorStyle = "#fbbf24";
-            } else if (type === "error" || line.includes("❌") || line.includes("🛑") || line.includes("[LỖI]") || line.includes("FAILED")) {
+            } else if (type === "error" || line.includes("❌") || line.includes("[LỖI]") || line.includes("FAILED")) {
                 colorStyle = "#f87171";
             } else if (type === "header" || line.startsWith("===") || line.startsWith("🚀")) {
                 colorStyle = "#38bdf8";
@@ -10537,6 +10669,7 @@
             const dateInput = document.getElementById("cloudToolDate");
             const dryRunCheckbox = document.getElementById("cloudToolDryRun");
             const engineSelect = document.getElementById("runnerEngineSelect");
+            const btn = document.getElementById("btnTriggerCloud");
             const terminalCard = document.getElementById("liveTerminalCard");
             const engineTag = document.getElementById("terminalEngineTag");
             const ghLink = document.getElementById("terminalGhLogsLink");
@@ -10562,22 +10695,23 @@
                 useLocal = window.isLocalRunnerOnline;
             }
 
-            setRunnerExecutingState(true);
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang Thực Thi...';
+            }
 
             if (useLocal) {
-                window.activeRunnerMode = "local";
                 if (engineTag) engineTag.innerHTML = '💻 Máy Tính Cục Bộ (Local Agent 0ms)';
                 if (ghLink) ghLink.style.display = 'none';
-                runViaLocalAgent(tool, targetDate, isDryRun);
+                runViaLocalAgent(tool, targetDate, isDryRun, btn);
             } else {
-                window.activeRunnerMode = "cloud";
                 if (engineTag) engineTag.innerHTML = '☁️ GitHub Actions Cloud Runner';
                 if (ghLink) ghLink.style.display = 'inline-flex';
-                runViaGitHubActions(tool, targetDate, isDryRun);
+                runViaGitHubActions(tool, targetDate, isDryRun, btn);
             }
         }
 
-        function runViaLocalAgent(tool, targetDate, isDryRun) {
+        function runViaLocalAgent(tool, targetDate, isDryRun, btn) {
             appendTerminalLog("🔌 Đang kết nối tới SCM Local Runner Service (http://127.0.0.1:8088)...", "info");
             
             if (currentEventSource) {
@@ -10604,11 +10738,17 @@
                         } else if (data.type === "end") {
                             appendTerminalLog(data.msg, data.returncode === 0 ? "success" : "warning");
                             currentEventSource.close();
-                            setRunnerExecutingState(false);
+                            if (btn) {
+                                btn.disabled = false;
+                                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+                            }
                         } else if (data.type === "error") {
                             appendTerminalLog(data.msg, "error");
                             currentEventSource.close();
-                            setRunnerExecutingState(false);
+                            if (btn) {
+                                btn.disabled = false;
+                                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+                            }
                         }
                     } catch (err) {
                         appendTerminalLog(e.data);
@@ -10636,16 +10776,22 @@
                         appendTerminalLog("💡 Gợi ý: Hãy mở file Chay_Local_Runner.bat trên máy tính, hoặc chuyển chế độ sang Cloud Runner!", "warning");
                     })
                     .finally(() => {
-                        setRunnerExecutingState(false);
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+                        }
                     });
                 };
             } catch (err) {
                 appendTerminalLog(`❌ Lỗi khởi tạo EventSource: ${err.message}`, "error");
-                setRunnerExecutingState(false);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+                }
             }
         }
 
-        async function runViaGitHubActions(tool, targetDate, isDryRun) {
+        async function runViaGitHubActions(tool, targetDate, isDryRun, btn) {
             appendTerminalLog("☁️ Gửi yêu cầu Dispatch tới máy chủ GitHub Actions Cloud Runner...", "info");
             const token = DEFAULT_GH_PAT;
 
@@ -10686,7 +10832,6 @@
                                 const runsData = await runsRes.json();
                                 const latestRun = runsData.workflow_runs && runsData.workflow_runs[0];
                                 if (latestRun) {
-                                    window.activeWorkflowRunId = latestRun.id;
                                     const status = latestRun.status;
                                     const conclusion = latestRun.conclusion;
                                     
@@ -10699,7 +10844,10 @@
                                             appendTerminalLog(`⚠️ [CLOUD KẾT THÚC] Tác vụ kết thúc với trạng thái: ${conclusion} (${elapsedSeconds}s)`, "warning");
                                             appendTerminalLog(`🔗 Kiểm tra nhật ký chi tiết tại: ${latestRun.html_url}`, "warning");
                                         }
-                                        setRunnerExecutingState(false);
+                                        if (btn) {
+                                            btn.disabled = false;
+                                            btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+                                        }
                                     } else {
                                         appendTerminalLog(`⏳ [${elapsedSeconds}s] Trạng thái Cloud: ${status.toUpperCase()} (Run #${latestRun.run_number})...`);
                                     }
@@ -10710,22 +10858,31 @@
                         if (elapsedSeconds >= 180) {
                             clearInterval(workflowPollInterval);
                             appendTerminalLog("ℹ️ Đã dừng theo dõi tự động sau 3 phút. Công cụ vẫn tiếp tục chạy độc lập trên Cloud.", "info");
-                            setRunnerExecutingState(false);
+                            if (btn) {
+                                btn.disabled = false;
+                                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+                            }
                         }
                     }, 3000);
 
                 } else {
                     const errData = await response.json().catch(() => ({}));
                     appendTerminalLog(`❌ Lỗi API GitHub (${response.status}): ${errData.message || response.statusText}`, "error");
-                    setRunnerExecutingState(false);
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+                    }
                 }
             } catch (err) {
                 appendTerminalLog(`❌ Lỗi mạng khi kết nối GitHub Actions: ${err.message}`, "error");
-                setRunnerExecutingState(false);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+                }
             }
         }
 
-</script>
+    </script>
 
     <!-- ========================================================================= -->
     <!-- TELEGRAM SCM CHAT DRAWER (XEM VÀ PHẢN HỒI TIN NHẮN TRỰC TIẾP) -->

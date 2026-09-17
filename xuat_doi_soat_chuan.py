@@ -112,7 +112,7 @@ pt_fz_day1_sheet = set(df_sheet[(df_sheet["Date_Str"] == "01/08/2026") & (df_she
 
 print("🚀 2. Tải và xử lý Database từ StarRocks...")
 conn = pymysql.connect(
-    host='103.147.122.103',
+    host='103.140.248.250',
     port=9030,
     user='kfm_scm_tho_nguyen',
     password='oh1dtJwR4ihLGrX4E7bs',

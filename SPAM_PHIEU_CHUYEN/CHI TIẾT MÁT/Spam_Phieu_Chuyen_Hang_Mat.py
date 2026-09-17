@@ -30,7 +30,7 @@ url_send_photo = f'https://api.telegram.org/bot{bot_token}/sendPhoto'
 
 def get_connection():
     return pymysql.connect(
-        host='103.147.122.103',
+        host='103.140.248.250',
         port=9030,
         user='kfm_scm_tho_nguyen',
         password='oh1dtJwR4ihLGrX4E7bs',

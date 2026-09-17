@@ -30,7 +30,7 @@ url_send_photo = f'https://api.telegram.org/bot{bot_token}/sendPhoto'
 
 def get_connection():
     return pymysql.connect(
-        host='103.147.122.103',
+        host='103.140.248.250',
         port=9030,
         user='kfm_scm_tho_nguyen',
         password='oh1dtJwR4ihLGrX4E7bs',
@@ -82,11 +82,11 @@ async def main():
 
         query = f"""
         SELECT 
-            t.double_check_code as `Mã Hậu Kiểm`,
-            t.code as `Phiếu chuyển`,
+            t.double_check_code,
+            t.code,
             t.from_branch_id,
             t.to_branch_id,
-            t.total_sku as `SKU`,
+            t.total_sku,
             t.total_store_quantity,
             t.total_transfer_quantity
         FROM __cdc_kfm_kf_inventories_kf_transfer_items t
@@ -98,6 +98,9 @@ async def main():
         AND t.created_at <= '{utc_end}'
         """
         df_tickets = pd.read_sql(query, conn)
+        df_tickets['Mã Hậu Kiểm'] = df_tickets['double_check_code']
+        df_tickets['Phiếu chuyển'] = df_tickets['code']
+        df_tickets['SKU'] = df_tickets['total_sku']
         
         df_branches = pd.read_sql("SELECT branch_id, branch_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE branch_name IS NOT NULL AND branch_name != '' GROUP BY branch_id, branch_name", conn)
         id_to_name = dict(zip(df_branches['branch_id'], df_branches['branch_name']))

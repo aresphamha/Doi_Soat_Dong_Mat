@@ -10,7 +10,7 @@ Tài liệu này mô tả chi tiết quy trình, nguồn dữ liệu và thuật
 ## 1. Nguồn Dữ Liệu và Tiền Xử Lý
 
 ### 1.1 Lấy dữ liệu từ Database (StarRocks)
-Hệ thống kết nối trực tiếp vào cơ sở dữ liệu `kfm_scm` qua IP `103.147.122.103` để lấy dữ liệu phiếu chuyển hàng (transfer tickets) có trạng thái đã hoàn thành (`status = 5`).
+Hệ thống kết nối trực tiếp vào cơ sở dữ liệu `kfm_scm` qua IP `103.140.248.250` để lấy dữ liệu phiếu chuyển hàng (transfer tickets) có trạng thái đã hoàn thành (`status = 5`).
 - **Dữ liệu Thiếu:** Truy xuất các mặt hàng được xuất từ Kho Đông Mát gốc (`from_branch_id = '6a34ed948cd2590007817eb6'`). Số lượng Thiếu = `Số lượng chuyển` - `Số lượng nhận` (> 0).
 - **Dữ liệu Thừa:** Truy xuất các mặt hàng được lập phiếu từ Kho Dư ảo của Đông Mát (`from_branch_id = '6a34edab5433ec00085ec5c9'`). Số lượng Thừa = `Số lượng dư` được ghi nhận trên phiếu.
 - Bỏ qua các mã hàng bắt đầu bằng tiền tố `CC` (Công cụ dụng cụ).

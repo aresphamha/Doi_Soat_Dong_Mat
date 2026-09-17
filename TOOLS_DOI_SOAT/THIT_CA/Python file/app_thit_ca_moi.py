@@ -55,7 +55,7 @@ st.markdown("Hệ thống tự động kết nối StarRocks qua VPN để đố
 # DB connection helper
 def get_connection():
     return pymysql.connect(
-        host='103.147.122.103',
+        host='103.140.248.250',
         port=9030,
         user='kfm_scm_tho_nguyen',
         password='oh1dtJwR4ihLGrX4E7bs',
