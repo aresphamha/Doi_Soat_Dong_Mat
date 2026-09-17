@@ -780,12 +780,135 @@ async def run_tool_rau_cu_spam():
     script_path = os.path.join(TOOLS_BASE_DIR, "RAU_CU", "2_Spam_Telegram.py")
     execute_external_tool(script_path)
 
-async def run_tool_spam_tu_chon():
+async def run_tool_spam_tu_chon(stores="ALL", message=None, tag_roles=True, dry_run=False, photo_path=None):
     print("\n=======================================================")
-    print("🎯 BẮT ĐẦU CHẠY TOOL SPAM TIN NHẮN TÙY CHỌN (5_Spam_Tu_Chon)...")
+    print("🎯 BẮT ĐẦU CHẠY TOOL: SPAM TIN NHẮN TÙY CHỌN...")
     print("=======================================================")
-    script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "5_Spam_Tu_Chon.py")
-    execute_external_tool(script_path)
+    
+    excel_path = find_mapping_file("Danh sách Siêu thị.xlsx")
+    if not os.path.exists(excel_path):
+        excel_path = find_mapping_file("Danh_Sach_Sieu_Thi_Dong_Mat.xlsx")
+        
+    df = pd.read_excel(excel_path, dtype=str)
+    df = df[df['CHAT ID'].notna() & (df['CHAT ID'].str.strip() != '') & (df['CHAT ID'] != 'nan')]
+    df['CHAT ID'] = df['CHAT ID'].str.replace('.0', '', regex=False).str.strip()
+    if 'Tên viết tắt' not in df.columns:
+        df['Tên viết tắt'] = df['ID ST']
+    df['Tên viết tắt'] = df['Tên viết tắt'].fillna('').str.strip()
+
+    # Xử lý danh sách cửa hàng
+    selected_indices = []
+    if not stores or str(stores).strip().upper() == "ALL":
+        selected_indices = list(range(len(df)))
+        print(f"📋 Đã chọn: TẤT CẢ {len(selected_indices)} Siêu thị")
+    else:
+        id_map = {}
+        for idx, row in df.iterrows():
+            id_val = str(row['ID ST']).strip().upper()
+            vt_val = str(row['Tên viết tắt']).strip().upper()
+            ten_val = str(row['Tên Siêu thị']).strip().upper()
+            id_map.setdefault(id_val, []).append(idx)
+            if vt_val: id_map.setdefault(vt_val, []).append(idx)
+            if ten_val: id_map.setdefault(ten_val, []).append(idx)
+        
+        parts = [p.strip().upper() for p in str(stores).split(',') if p.strip()]
+        for p in parts:
+            if p in id_map:
+                selected_indices.extend(id_map[p])
+            else:
+                matched = False
+                for k, v in id_map.items():
+                    if p in k:
+                        selected_indices.extend(v)
+                        matched = True
+                        break
+                if not matched:
+                    print(f"⚠️ Không tìm thấy Siêu thị có mã/tên: '{p}'")
+        selected_indices = sorted(set(selected_indices))
+        print(f"📋 Đã nhận diện {len(selected_indices)} Siêu thị được chọn.")
+
+    if not selected_indices:
+        print("❌ Không có Siêu thị nào hợp lệ để gửi tin nhắn.")
+        return
+
+    default_msg = "📢 **THÔNG BÁO TỪ PHÒNG SCM**\nNgày: {NGAY}\nKính gửi Cửa hàng: **{TEN_ST}**\nNhờ Siêu thị phối hợp kiểm tra và hoàn tất chứng từ tồn đọng giúp team nhé!\n{TAGS}"
+    raw_message = message if message and str(message).strip() else default_msg
+
+    session_file = ensure_telegram_session()
+    session_base = session_file.replace('.session', '')
+    
+    from telethon import TelegramClient
+    api_id = '28938971'
+    api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
+    bot_token = '8810108114:AAHFyBEL_JoNFdn2r3V21zEDtElUBU_nV-E'
+
+    client = TelegramClient(session_base, api_id, api_hash)
+    await client.connect()
+    
+    is_auth = await client.is_user_authorized()
+    if not is_auth:
+        print("ℹ️ Chế độ gửi: Bot Token Telegram API")
+
+    vn_tz = pytz.timezone('Asia/Ho_Chi_Minh')
+    vn_now = datetime.now(vn_tz)
+    ngay_str = vn_now.strftime('%d/%m/%Y')
+
+    total_count = len(selected_indices)
+    success_count = 0
+
+    for i, idx in enumerate(selected_indices, 1):
+        row = df.iloc[idx]
+        ten_st = str(row['Tên Siêu thị']).strip()
+        id_st = str(row['ID ST']).strip()
+        chat_id_str = str(row['CHAT ID']).strip()
+        
+        try:
+            chat_id = int(chat_id_str)
+        except Exception:
+            print(f"⚠️ [{i}/{total_count}] Bỏ qua {ten_st}: Chat ID không hợp lệ ({chat_id_str})")
+            continue
+
+        tag_text = ""
+        if tag_roles:
+            if is_auth:
+                tag_text = await get_tags_for_group(client, chat_id)
+            else:
+                tag_text = "@SM @TC @GSM"
+
+        # Thay thế biến động
+        msg = raw_message.replace('{TEN_ST}', ten_st).replace('{ID_ST}', id_st).replace('{NGAY}', ngay_str)
+        if '{TAGS}' in msg:
+            msg = msg.replace('{TAGS}', tag_text)
+        elif tag_roles and tag_text:
+            msg = f"{msg}\n{tag_text}"
+
+        if dry_run:
+            print(f"🔍 [DRY-RUN] [{i}/{total_count}] Sẽ gửi đến {ten_st} ({chat_id}):\n{msg}\n---")
+            success_count += 1
+        else:
+            try:
+                if photo_path and os.path.exists(photo_path):
+                    with open(photo_path, 'rb') as f:
+                        requests.post(
+                            f"https://api.telegram.org/bot{bot_token}/sendPhoto",
+                            data={'chat_id': chat_id, 'caption': msg, 'parse_mode': 'Markdown'},
+                            files={'photo': f},
+                            timeout=15
+                        )
+                else:
+                    requests.post(
+                        f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                        data={'chat_id': chat_id, 'text': msg, 'parse_mode': 'Markdown'},
+                        timeout=15
+                    )
+                print(f"🚀 [{i}/{total_count}] [ĐÃ GỬI] Thành công tới: {ten_st} ({chat_id})")
+                success_count += 1
+                await asyncio.sleep(1.2)
+            except Exception as e:
+                print(f"❌ [{i}/{total_count}] [LỖI GỬI] {ten_st}: {e}")
+
+    await client.disconnect()
+    print(f"\n🎉 HOÀN TẤT SPAM TÙY CHỌN! Đã gửi thành công {success_count}/{total_count} Siêu thị.")
 
 async def run_tool_xoa_tin_nhan():
     print("\n=======================================================")
@@ -833,9 +956,14 @@ def main():
     ], default="all", help="Chọn tool cần chạy")
     parser.add_argument("--date", default=None, help="Ngày đối soát (YYYY-MM-DD)")
     parser.add_argument("--dry-run", action="store_true", help="Chế độ chạy thử không gửi tin nhắn")
+    parser.add_argument("--stores", default="ALL", help="Danh sách mã ST cần gửi (ngăn cách bởi dấu phẩy hoặc ALL)")
+    parser.add_argument("--message", default=None, help="Nội dung tin nhắn tùy chọn cần spam")
+    parser.add_argument("--no-tags", action="store_true", help="Không tự động tag Quản lý/Trưởng ca")
+    parser.add_argument("--photo", default=None, help="Đường dẫn file ảnh đính kèm (nếu có)")
     
     args = parser.parse_args()
     date_val = args.date.strip() if args.date and args.date.strip() else None
+    tag_roles = not args.no_tags
     
     print("==============================================================================")
     print(f"🚀 KHỞI ĐỘNG HỆ THỐNG RUNNER TOOL SCM CLOUD (Tool: {args.tool}, Date: {date_val or 'Mặc định'}, Dry-run: {args.dry_run})")
@@ -863,7 +991,7 @@ def main():
     elif args.tool == "rau_cu_spam":
         loop.run_until_complete(run_tool_rau_cu_spam())
     elif args.tool == "spam_tu_chon":
-        loop.run_until_complete(run_tool_spam_tu_chon())
+        loop.run_until_complete(run_tool_spam_tu_chon(args.stores, args.message, tag_roles, args.dry_run, args.photo))
     elif args.tool == "xoa_tin_nhan":
         loop.run_until_complete(run_tool_xoa_tin_nhan())
     elif args.tool == "lay_chat_id":

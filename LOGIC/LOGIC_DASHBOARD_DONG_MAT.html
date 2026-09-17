@@ -10,7 +10,469 @@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js, ChartDataLabels & SheetJS -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+        // =========================================================================
+        // SCM CUSTOM SPAM WEB STUDIO ENGINE (DYNAMIC STORES, TEMPLATES, PREVIEW)
+        // =========================================================================
+        const CUSTOM_SPAM_PRESETS = {
+            thong_bao: "📢 **THÔNG BÁO TỪ PHÒNG SCM**\nNgày: {NGAY}\nKính gửi Cửa hàng: **{TEN_ST}** ({ID_ST})\nNhờ Siêu thị phối hợp kiểm tra và hoàn tất chứng từ tồn đọng giúp team nhé!\n{TAGS}",
+            nhac_phieu: "📦 **NHẮC NHỞ PHIẾU CHUYỂN TREO**\nNgày: {NGAY}\nSiêu thị **{TEN_ST}** vui lòng kiểm tra và bấm HOÀN THÀNH các phiếu chuyển đang treo gấp trong ca!\n{TAGS}",
+            doi_soat: "🔍 **ĐỐI SOÁT CHỨNG TỪ TỒN KHO**\nNgày: {NGAY}\nKính gửi Quản lý Siêu thị **{TEN_ST}**,\nSCM ghi nhận còn phiếu lệch chưa giải trình. Vui lòng phản hồi sớm.\n{TAGS}",
+            hau_kiem: "⚠️ **CẢNH BÁO HẬU KIỂM KHO**\nNgày: {NGAY}\nCửa hàng **{TEN_ST}** kiểm tra lại số liệu thực xuất / thực nhập theo biên bản.\n{TAGS}"
+        };
+
+        let customSpamStores = [{"id": "A101", "name": "KFM_BDU_DAN - 27 Tân Lập", "short": "A101", "chat_id": "-4970846623"}, {"id": "A102", "name": "KFM_HCM_TDU - 128A Kha Vạn Cân", "short": "A102", "chat_id": "-4957522643"}, {"id": "A103", "name": "KFM_HCM_NBE - 222 Lê Văn Lương", "short": "A103", "chat_id": "-4886971123"}, {"id": "A104", "name": "KFM_HCM_NBE - 5/3D Huỳnh Tấn Phát", "short": "A104", "chat_id": "-1002558007963"}, {"id": "A105", "name": "KFM_HCM_TDU - 02 Lê Lợi", "short": "A105", "chat_id": "-4947055311"}, {"id": "A106", "name": "KFM_HCM_PNH - T1-5 TMDV Orchard Garden", "short": "A106", "chat_id": "-4746420333"}, {"id": "A107", "name": "KFM_HCM_TDU - 05 Đường D3 Phước Long", "short": "A107", "chat_id": "-1003525071105"}, {"id": "A108", "name": "KFM_HCM_TDU - 38E Cây Keo", "short": "A108", "chat_id": "-4978161635"}, {"id": "A108", "name": "KFM_HCM_TDU - 38E Cây Keo", "short": "A108", "chat_id": "-4813095752"}, {"id": "A109", "name": "KFM_HCM_Q07 - 106 Trần Trọng Cung", "short": "A109", "chat_id": "-1002882274038"}, {"id": "A110", "name": "KFM_HCM_Q10 - Jasmine 1 Hà Đô Centrosa", "short": "A110", "chat_id": "-1002900710978"}, {"id": "A111", "name": "KFM_HCM_TDU - BA-S03 New City", "short": "A111", "chat_id": "-4854147505"}, {"id": "A112", "name": "KFM_HCM_Q1 - 93 Cô Giang", "short": "A112", "chat_id": "-4659539358"}, {"id": "A113", "name": "KFM_HCM_BTH - 216 Phan Văn Hân", "short": "A113", "chat_id": "-4810768163"}, {"id": "A114", "name": "KFM_HCM_Q08 - 320 Hưng Phú", "short": "A114", "chat_id": "-4850342862"}, {"id": "A115", "name": "KFM_HCM_BTH - 484B Lê Quang Định", "short": "A115", "chat_id": "-4870087396"}, {"id": "A116", "name": "KFM_HCM_Q12 - 76 Trần Thị Cờ", "short": "A116", "chat_id": "-5065492668"}, {"id": "A117", "name": "KFM_BDU_TAN - SH04 The Rivana", "short": "A117", "chat_id": "-4938449227"}, {"id": "A117", "name": "KFM_BDU_TAN - SH04 The Rivana", "short": "A117", "chat_id": "-1003595238765"}, {"id": "A118", "name": "KFM_HCM_Q10 - 74 Vĩnh Viễn", "short": "A118", "chat_id": "-5094638485"}, {"id": "A119", "name": "KFM_HCM_TDU - 09 Đào Trinh Nhất", "short": "A119", "chat_id": "-5009402250"}, {"id": "A120", "name": "KFM_HCM_Q10 - 7/29 Thành Thái", "short": "A120", "chat_id": "-5297647450"}, {"id": "A121", "name": "KFM_HCM_Q06 - 123 Lý Chiêu Hoàng", "short": "A121", "chat_id": "-5022284943"}, {"id": "A123", "name": "KFM_HCM_TDU - 29B Đường Số 30 4S Linh Đông", "short": "A123", "chat_id": "-5037293861"}, {"id": "A124", "name": "KFM_HCM_TDU - 74 Đường Số 1 Chung Cư Sky 9", "short": "A124", "chat_id": "-4825566527"}, {"id": "A125", "name": "KFM_HCM_TDU - 115 Man Thiện", "short": "A125", "chat_id": "-5039669634"}, {"id": "A126", "name": "KFM_HCM_Q03 - 274 Lê Văn Sỹ", "short": "A126", "chat_id": "-5005449812"}, {"id": "A127", "name": "KFM_HCM_TDU - B-SH.06 Urban Green", "short": "A127", "chat_id": "-5131825480"}, {"id": "A128", "name": "KFM_HCM_GVA - TM0.03 CH3 Cityland Park Hill", "short": "A128", "chat_id": "-5004400246"}, {"id": "A129", "name": "KFM_HCM_Q07 - 17 Đường số 16, Khu Nam Viên Midtown", "short": "A129", "chat_id": "-4995752727"}, {"id": "A130", "name": "KFM_HCM_TDU - 41 Vũ Tông Phan", "short": "A130", "chat_id": "-5056493930"}, {"id": "A131", "name": "KFM_HCM_Q08 - B01.05 Dream Home Palace", "short": "A131", "chat_id": "-5152526449"}, {"id": "A132", "name": "KFM_HCM_TDU - 136 Hiệp Bình", "short": "A132", "chat_id": "-5060013044"}, {"id": "A133", "name": "KFM_HCM_BCH - Block G Conic Skyway", "short": "A133", "chat_id": "-5212554383"}, {"id": "A134", "name": "KFM_HCM_BTA - 4535 Nguyễn Cửu Phú", "short": "A134", "chat_id": "-5057155708"}, {"id": "A135", "name": "KFM_HCM_NBE - 1652 Huỳnh Tấn Phát", "short": "A135", "chat_id": "-1004437324085"}, {"id": "A136", "name": "KFM_HCM_Q03 - 125 Nguyễn Phúc Nguyên", "short": "A136", "chat_id": "-5158389296"}, {"id": "A137", "name": "KFM_HCM_TDU - 60 Lương Định Của", "short": "A137", "chat_id": "-5000807561"}, {"id": "A138", "name": "KFM_HCM_TBI - 48 Trần Văn Quang", "short": "A138", "chat_id": "-5090615271"}, {"id": "A139", "name": "KFM_HCM_BTA - 197 Đường số 1 An Lạc", "short": "A139", "chat_id": "-5094000749"}, {"id": "A140", "name": "KFM_HCM_BCH - 68 Đường Số 1 Khu dân cư 6B Intresco", "short": "A140", "chat_id": "-5263695143"}, {"id": "A141", "name": "KFM_HCM_Q07 - X1.013 Sunrise City North", "short": "A141", "chat_id": "-5102570262"}, {"id": "A143", "name": "KFM_HCM_TPH - 83 Khuông Việt", "short": "A143", "chat_id": "-5159131607"}, {"id": "A144", "name": "KFM_HCM_Q07 - A01-06 Hoàng Anh Thanh Bình", "short": "A144", "chat_id": "-5158078354"}, {"id": "A145", "name": "KFM_HCM_TPH - 379 Thạch Lam", "short": "A145", "chat_id": "-5233572071"}, {"id": "A146", "name": "KFM_HCM_TBI - 108 Bùi Thị Xuân", "short": "A146", "chat_id": "-5269362420"}, {"id": "A147", "name": "KFM_HCM_Q07 - 956 Huỳnh Tấn Phát", "short": "A147", "chat_id": "-5110539026"}, {"id": "A148", "name": "KFM_HCM_BTH - 127 Tân Cảng", "short": "A148", "chat_id": "-5030560383"}, {"id": "A149", "name": "KFM_HCM_TPH - 50 Lương Minh Nguyệt", "short": "A149", "chat_id": "-5052944571"}, {"id": "A150", "name": "KFM_HCM_Q07 - A14 The Infinity Riviera Point", "short": "A150", "chat_id": "-5206503915"}, {"id": "A151", "name": "KFM_HCM_GVA - 20 Lê Đức Thọ", "short": "A151", "chat_id": "-5226952638"}, {"id": "A154", "name": "KFM_HCM_TDU - 299 Liên Phường", "short": "A154", "chat_id": "-4907799710"}, {"id": "A155", "name": "KFM_HCM_Q12 - 170 Nguyễn Thị Búp", "short": "A155", "chat_id": "-5143331178"}, {"id": "A156", "name": "KFM_HCM_TDU - 101C Dương Đình Hội", "short": "A156", "chat_id": "-5099008566"}, {"id": "A157", "name": "KFM_HCM_Q06 - B1.00.01 Him Lam Chợ Lớn", "short": "A157", "chat_id": "-5263861524"}, {"id": "A158", "name": "KFM_HCM_TDU - 10A Đường Số 20 Chung Cư Opal Garden", "short": "A158", "chat_id": "-5536761493"}, {"id": "A159", "name": "KFM_HCM_TPH - 52 Thoại Ngọc Hầu", "short": "A159", "chat_id": "-5018175502"}, {"id": "A160", "name": "KFM_HCM_Q06 - 145 Đường Số 23 Bình Phú", "short": "A160", "chat_id": "-5187544138"}, {"id": "A161", "name": "KFM_HCM_NBE - A2.SH28-30 The Park Residence", "short": "A161", "chat_id": "-5188493690"}, {"id": "A163", "name": "KFM_HCM_TPH - S2.0.28 Block A6 Alnata Plus Celadon City", "short": "A163", "chat_id": "-5210410858"}, {"id": "A164", "name": "KFM_BDU_DAN - B2.01.05 Tháp B Opal Boulevard", "short": "A164", "chat_id": "-5223853892"}, {"id": "A165", "name": "KFM_HCM_Q07 - B1.01 Chung cư Golden Star", "short": "A165", "chat_id": "-4906644767"}, {"id": "A166", "name": "KFM_HCM_Q07 - Block K Happy Valley", "short": "A166", "chat_id": "-5135406910"}, {"id": "A167", "name": "KFM_HCM_TDU - TM1.15 Chung Cư 9 View", "short": "A167", "chat_id": "-5202511646"}, {"id": "A169", "name": "KFM_HCM_TBI - Block A Chung Cư Phúc Yên 2", "short": "A169", "chat_id": "-5208260532"}, {"id": "A170", "name": "KFM_HCM_TBI - 91 Nguyễn Phúc Chu", "short": "A170", "chat_id": "-5031310721"}, {"id": "A171", "name": "KFM_HCM_Q08 - 819 Phạm Thế Hiển", "short": "A171", "chat_id": "-5100060992"}, {"id": "A172", "name": "KFM_HCM_TDU - 173 Lê Văn Chí", "short": "A172", "chat_id": "-5224476913"}, {"id": "A174", "name": "KFM_HCM_Q03 - 116 Bàn Cờ", "short": "A174", "chat_id": "-5156303742"}, {"id": "A175", "name": "KFM_HCM_PNH - GM-1.06 Golden Mansion", "short": "A175", "chat_id": "-5169150901"}, {"id": "A176", "name": "KFM_HCM_NBE - A.1.05 Sunrise Riverside", "short": "A176", "chat_id": "-5088265050"}, {"id": "A177", "name": "KFM_HCM_Q07 - 1016/21 Chung Cư Sky Garden 2-R1-2", "short": "A177", "chat_id": "-5279185281"}, {"id": "A178", "name": "KFM_HCM_NBE - G16 Celesta Rise", "short": "A178", "chat_id": "-5288962344"}, {"id": "A179", "name": "KFM_HCM_TDU - A1.02 Him Lam Phú An", "short": "A179", "chat_id": "-5228058674"}, {"id": "A181", "name": "KFM_HCM_TDU - B6-D.TMDV.02 Masteri Center Point", "short": "A181", "chat_id": "-5293338882"}, {"id": "A182", "name": "KFM_HCM_TDU - S08.02 Vinhomes Grand Park", "short": "A182", "chat_id": "-5268822151"}, {"id": "A183", "name": "KFM_HCM_TDU - 86C Đường 339 Phước Long", "short": "A183", "chat_id": "-5150306625"}, {"id": "A184", "name": "KFM_HCM_BCH - L1.08 Saigon Mia", "short": "A184", "chat_id": "-5203833846"}, {"id": "A185", "name": "KFM_HCM_TDU - BS15 Vinhomes Grand Park", "short": "A185", "chat_id": "-5163672851"}, {"id": "A186", "name": "KFM_HCM_TPH - H.38 Melody Residences Âu Cơ", "short": "A186", "chat_id": "-5291554022"}, {"id": "A187", "name": "KFM_HCM_TDU - 560 Nguyễn Duy Trinh", "short": "A187", "chat_id": "-1003856051511"}, {"id": "A188", "name": "KFM_HCM_Q11 - CH0.08 Chung Cư Thuận Việt", "short": "A188", "chat_id": "-5205248121"}, {"id": "A189", "name": "KFM_BDU_DAN - 9 Đường M, Khu Phố Nhị Đồng 2", "short": "A189", "chat_id": "-5263939973"}, {"id": "A190", "name": "KFM_HCM_TBI - BPB-01.08 Botanica Premier", "short": "A190", "chat_id": "-5162953573"}, {"id": "A191", "name": "KFM_HCM_Q01 - 35 Nguyễn Hữu Cầu", "short": "A191", "chat_id": "-5157171466"}, {"id": "A192", "name": "KFM_HCM_BTH - 61 Bùi Đình Túy", "short": "A192", "chat_id": "-5254381964"}, {"id": "A193", "name": "KFM_HCM_TDU - SH5-SH6 Homyland Riverside", "short": "A193", "chat_id": "-1003958760392"}, {"id": "A194", "name": "KFM_HCM_Q04 - TM.B.06 Millennium Bến Vân Đồn", "short": "A194", "chat_id": "-5290327565"}, {"id": "A195", "name": "KFM_HCM_TPH - 91 Nguyễn Sơn", "short": "A195", "chat_id": "-5138011234"}, {"id": "A196", "name": "KFM_HCM_TBI - 56 Đường A4", "short": "A196", "chat_id": "-5034156634"}, {"id": "A197", "name": "KFM_HCM_TDU - T05 Tháp Tilia Empire City", "short": "A197", "chat_id": "-1004396051291"}, {"id": "A198", "name": "KFM_HCM_Q07 - A1.03 Sunrise City View", "short": "A198", "chat_id": "-5132757986"}, {"id": "A199", "name": "KFM_HCM_TBI - 76 Bàu Cát", "short": "A199", "chat_id": "-5181060615"}, {"id": "A200", "name": "KFM_HCM_Q12 - H36 Khu Nhà Ở Thới An Đường Lê Thị Riêng", "short": "A200", "chat_id": "-5125738337"}, {"id": "A201", "name": "KFM_HCM_GVA - 32B Đường Số 1 An Hội Đông", "short": "A201", "chat_id": "-1004405937281"}, {"id": "A202", "name": "KFM_HCM_BCH - 32A Đường Số 10 Bình Hưng", "short": "A202", "chat_id": "-5233500171"}, {"id": "A203", "name": "KFM_HCM_Q12 - 135 Tân Thới Nhất 17", "short": "A203", "chat_id": "-5242263578"}, {"id": "A204", "name": "KFM_HCM_TDU - 67A Nguyễn Duy Trinh Long Trường", "short": "A204", "chat_id": "-1004332992942"}, {"id": "A205", "name": "KFM_HCM_GVA - 81/2 Đường 59 An Hội Tây", "short": "A205", "chat_id": "-5204014049"}, {"id": "A207", "name": "KFM_HCM_TDU - SH-1C 2 Đường A5 KDC Palm Residence", "short": "A207", "chat_id": "-5425409318"}, {"id": "A208", "name": "KFM_HCM_TDU - BS08 Vinhomes Grand Park", "short": "A208", "chat_id": "-1004369961071"}, {"id": "A209", "name": "KFM_BDU_DAN - 145B Lê Trọng Tấn", "short": "A209", "chat_id": "-1004469963017"}, {"id": "A210", "name": "KFM_HCM_TBI - 289 Hồng Lạc", "short": "A210", "chat_id": "-1004413869891"}, {"id": "A212", "name": "KFM_HCM_TDU - 146 Đường D1 Phước Long", "short": "A212", "chat_id": "-5585568162"}, {"id": "A214", "name": "KFM_BDU_TAN - 13 Vĩnh Phú 41", "short": "A214", "chat_id": "-1003707250405"}, {"id": "A217", "name": "KFM_HCM_TDU - 129 Hoàng Diệu 2", "short": "A217", "chat_id": "-1004334608188"}, {"id": "A218", "name": "KFM_HCM_Q05 - 87 Nguyễn Duy Dương", "short": "A218", "chat_id": "-1004322601078"}, {"id": "A219", "name": "KFM_HCM_Q06 - TMDV 1-08 Chung Cư D-Homme", "short": "A219", "chat_id": "-1004410100037"}, {"id": "A220", "name": "KFM_HCM_Q07 - 116 Đường Số 8 KDC Nam Long", "short": "A220", "chat_id": "-5171632693"}, {"id": "A221", "name": "KFM_HCM_BTA - 235 Đường Số 6 An Lạc", "short": "A221", "chat_id": "-5373475260"}, {"id": "A223", "name": "KFM_HCM_PNH - 29 Đặng Văn Ngữ", "short": "A223", "chat_id": "-1004424998343"}, {"id": "A224", "name": "KFM_HCM_GVA - 8 Nguyễn Văn Dung", "short": "A224", "chat_id": "-1003888540638"}, {"id": "A225", "name": "KFM_HCM_TDU - 96K Đường Số 12 Tam Bình", "short": "A225", "chat_id": "-1004375842803"}, {"id": "A229", "name": "KFM_HCM_TPH - 58 Nguyễn Hữu Tiến", "short": "A229", "chat_id": "-1004312253338"}, {"id": "A231", "name": "KFM_HCM_BTA - 1M Đường A8 Bình Hưng Hòa B", "short": "A231", "chat_id": "-1004339440131"}, {"id": "A232", "name": "KFM_HCM_TDU - 376 Nguyễn Thị Định", "short": "A232", "chat_id": "-1004392333450"}, {"id": "A233", "name": "KFM_BDU_TAN - TDH03 New Lavida Tân Đông Hiệp", "short": "A233", "chat_id": "-1003904512457"}, {"id": "A234", "name": "KFM_HCM_Q08 - A0.03 Conic Riverside", "short": "A234", "chat_id": "-1003716491337"}, {"id": "A235", "name": "KFM_HCM_TBI - 44 Thăng Long", "short": "A235", "chat_id": "-1004327581275"}, {"id": "A236", "name": "KFM_HCM_Q12 - 45F1 Đường DN5 KDC An Sương", "short": "A236", "chat_id": "-1004475154133"}, {"id": "A237", "name": "KFM_BDU_TAN - TMDV 1 Chung Cư A&T Sky Garden", "short": "A237", "chat_id": "-1004341740983"}, {"id": "A240", "name": "KFM_HCM_TDU - S02.03 Vinhomes Grand Park", "short": "A240", "chat_id": "-1004473589568"}, {"id": "A241", "name": "KFM_HCM_TDU - S05.02 Vinhomes Grand Park", "short": "A241", "chat_id": "-1004495534449"}, {"id": "A250", "name": "KFM_HCM_Q07 - 25 Đường Số 3 Khu Dân Cư Phú Mỹ", "short": "A250", "chat_id": "-1004424055410"}, {"id": "A242", "name": "KFM_HCM_Q07 - B1 Q7 Boulevard", "short": "A242", "chat_id": "-1004268595947"}, {"id": "ACU", "name": "KFM_HCM_TDU - 0.01 Chung cư An Cư An Phú", "short": "ACU", "chat_id": "-4513412580"}, {"id": "AKR", "name": "KFM_HCM_BTA - AK4 Akari City", "short": "AKR", "chat_id": "-4189502700"}, {"id": "AV4", "name": "KFM_HCM_TDU - SAV_04-00.03 The Sun Avenue", "short": "AV4", "chat_id": "-4503460791"}, {"id": "BCG", "name": "KFM_BDU_DAN - SH01 BCons Garden", "short": "BCG", "chat_id": "-4063163569"}, {"id": "BQI", "name": "KFM_HCM_BTH - 107 Bình Quới", "short": "BQI", "chat_id": "-967297157"}, {"id": "BTH", "name": "KFM_HCM_BTA - 66/70 Bình Thành", "short": "BTH", "chat_id": "-4840150141"}, {"id": "BVB", "name": "KFM_HCM_Q07 - 43 Bùi Văn Ba", "short": "BVB", "chat_id": "-1002439645926"}, {"id": "CHR", "name": "KFM_BDU_DAN - S01.11 Block A1 Charm Sapphire", "short": "CHR", "chat_id": "-4843220137"}, {"id": "CKO", "name": "KFM_HCM_TPH - 85 Cây Keo", "short": "CKO", "chat_id": "-791356749"}, {"id": "CLD", "name": "KFM_HCM_TPH - S1.0.38 Block A5 Diamond Celadon City", "short": "CLD", "chat_id": "-4579770752"}, {"id": "CLG", "name": "KFM_HCM_TBI - 64A Cửu Long", "short": "CLG", "chat_id": "-4842272947"}, {"id": "CLN", "name": "KFM_HCM_Q06 - 126 Chợ Lớn", "short": "CLN", "chat_id": "-4202085650"}, {"id": "CN1", "name": "KFM_HCM_TPH - 48 CN1", "short": "CN1", "chat_id": "-822801997"}, {"id": "CTH", "name": "KFM_HCM_TDU - TMDV Citihome Cát Lái", "short": "CTH", "chat_id": "-4133099957"}, {"id": "D10", "name": "KFM_HCM_Q7 - 01 Đường Số 10 Tân Kiểng", "short": "D10", "chat_id": "-4207720204"}, {"id": "DMR", "name": "KFM_HCM_Q08 - Block C Diamond Riverside", "short": "DMR", "chat_id": "-4987817070"}, {"id": "DQH", "name": "KFM_HCM_GVA - 372 Dương Quảng Hàm", "short": "DQH", "chat_id": "-852406010"}, {"id": "DS3", "name": "KFM_HCM_TDU - 63 Đường Số 3", "short": "DS3", "chat_id": "-955688061"}, {"id": "DS7", "name": "KFM_HCM_BTA - 99 Đường Số 7", "short": "DS7", "chat_id": "-4041044290"}, {"id": "DXH", "name": "KFM_HCM_TDU - 539 Đỗ Xuân Hợp", "short": "DXH", "chat_id": "-954752748"}, {"id": "ECG", "name": "KFM_HCM_Q07 - SH16 Eco Green", "short": "ECG", "chat_id": "-1002479606021"}, {"id": "EH3", "name": "KFM_HCM_BTA - A10-0.02 Ehome 3", "short": "EH3", "chat_id": "-4844074755"}, {"id": "EHS", "name": "KFM_HCM_TDU - A0.01 EHomeS Phú Hữu", "short": "EHS", "chat_id": "-4071286738"}, {"id": "EMR", "name": "KFM_BDU_TAN - Block A Emerald Golf View", "short": "EMR", "chat_id": "-1002574399398"}, {"id": "ERT", "name": "KFM_HCM_Q07 - 0105 B4 Era Town", "short": "ERT", "chat_id": "-807927844"}, {"id": "GDU", "name": "KFM_HCM_TPH - 116 Gò Dầu", "short": "GDU", "chat_id": "-915258555"}, {"id": "GHA", "name": "KFM_HCM_TDU - The Art Gia Hòa", "short": "GHA", "chat_id": "-4823902549"}, {"id": "HHG", "name": "KFM_HCM_Q10 - 103 Hòa Hưng", "short": "HHG", "chat_id": "-4623899543"}, {"id": "HHM", "name": "KFM_HCM_TBI - 165 Hoàng Hoa Thám", "short": "HHM", "chat_id": "-4913037367"}, {"id": "HHT", "name": "KFM_HCM_TBI - 22 Hoàng Hoa Thám", "short": "HHT", "chat_id": "-705684646"}, {"id": "HLR", "name": "KFM_HCM_Q07 - Block A Himlam Riverside Q7", "short": "HLR", "chat_id": "-4892625820"}, {"id": "HMN", "name": "KFM_HCM_TBI - Block C Harmona", "short": "HMN", "chat_id": "-4066759092"}, {"id": "HNG", "name": "KFM_HCM_Q12 - Block B1 Hưng Ngân Garden", "short": "HNG", "chat_id": "-4843390858"}, {"id": "HNN", "name": "KFM_HCM_Q08 - 296 Hoàng Ngân", "short": "HNN", "chat_id": "-4854268300"}, {"id": "HPD", "name": "KFM_BDU_DAN - 01-06 TMDV Him Lam Phú Đông", "short": "HPD", "chat_id": "-4533722045"}, {"id": "HTC", "name": "KFM_HCM_Q03 - 14 Huỳnh Tịnh Của", "short": "HTC", "chat_id": "-4548375618"}, {"id": "HTN", "name": "KFM_HCM_TDU - 17 Hồ Thị Nhung", "short": "HTN", "chat_id": "-4617834058"}, {"id": "HTP", "name": "KFM_HCM_Q07 - 571 Huỳnh Tấn Phát", "short": "HTP", "chat_id": "-883536739"}, {"id": "HV2", "name": "KFM_HCM_Q07 - R13 Hưng Vượng 2", "short": "HV2", "chat_id": "-4124726502"}, {"id": "IAP", "name": "KFM_HCM_TDU - Block B Imperia An Phú", "short": "IAP", "chat_id": "-4129048161"}, {"id": "JKD", "name": "KFM_HCM_TDU - A1.04 Jamila Khang Điền", "short": "JKD", "chat_id": "-4218466578"}, {"id": "KDG", "name": "KFM_HCM_Q03 - 10D Kỳ Đồng", "short": "KDG", "chat_id": "-4685936814"}, {"id": "KHI", "name": "KFM_HCM_Q04 - 98 Khánh Hội", "short": "KHI", "chat_id": "-880112715"}, {"id": "LPM", "name": "KFM_HCM_Q07 - 39 Lý Phục Man", "short": "LPM", "chat_id": "-4642722927"}, {"id": "LTC", "name": "KFM_HCM_Q07 - 97 Lê Thị Chợ", "short": "LTC", "chat_id": "-4174079222"}, {"id": "LVH", "name": "KFM_HCM_TDU - 222 Lê Văn Thịnh", "short": "LVH", "chat_id": "-4832327413"}, {"id": "LVL", "name": "KFM_HCM_NBE - 166E Lê Văn Lương", "short": "LVL", "chat_id": "-783204272"}, {"id": "LVN", "name": "KFM_HCM_Q07 - 09 Lâm Văn Bền", "short": "LVN", "chat_id": "-4551905438"}, {"id": "LVT", "name": "KFM_HCM_GVA - 308 Lê Văn Thọ", "short": "LVT", "chat_id": "-875321112"}, {"id": "LVY", "name": "KFM_HCM_TBI - 236A Lê Văn Sỹ", "short": "LVY", "chat_id": "-1003958612570"}, {"id": "MTE", "name": "KFM_HCM_TDU - D01.14 MT Eastmark City", "short": "MTE", "chat_id": "-4733319672"}, {"id": "MZ2", "name": "KFM_HCM_BCH - A7-8 Valora Mizuki", "short": "MZ2", "chat_id": "-4273732297"}, {"id": "MZK", "name": "KFM_HCM_BCH - TMDV2 Mizuki Park", "short": "MZK", "chat_id": "-4044742673"}, {"id": "NDH", "name": "KFM_HCM_TDU - 1426 Nguyễn Duy Trinh", "short": "NDH", "chat_id": "-4624997784"}, {"id": "NDT", "name": "KFM_HCM_TDU - 305 Nguyễn Duy Trinh", "short": "NDT", "chat_id": "-965979457"}, {"id": "NHG", "name": "KFM_HCM_GVA - 15 Nguyên Hồng", "short": "NHG", "chat_id": "-719226115"}, {"id": "NKM", "name": "KFM_HCM_GVA - 371 Nguyễn Kiệm", "short": "NKM", "chat_id": "-887431835"}, {"id": "NTD", "name": "KFM_HCM_TDU - 160A Nguyễn Thị Định", "short": "NTD", "chat_id": "-820823560"}, {"id": "NTN", "name": "KFM_HCM_PNH - 154 Nguyễn Trọng Tuyển", "short": "NTN", "chat_id": "-1004389700726"}, {"id": "NTO", "name": "KFM_HCM_BTH - 108 Ngô Tất Tố", "short": "NTO", "chat_id": "-4254286776"}, {"id": "NTT", "name": "KFM_HCM_Q07 - 436 Nguyễn Thị Thập", "short": "NTT", "chat_id": "-640887076"}, {"id": "NTU", "name": "KFM_HCM_BTA - 46 Nguyễn Thị Tú", "short": "NTU", "chat_id": "-619954677"}, {"id": "NVD", "name": "KFM_HCM_BTH - 42 Nguyễn Văn Đậu", "short": "NVD", "chat_id": "-4136471345"}, {"id": "NVK", "name": "KFM_HCM_GVA - 299 Nguyễn Văn Khối", "short": "NVK", "chat_id": "-4922765575"}, {"id": "NVQ", "name": "KFM_HCM_Q12 - 678 Nguyễn Văn Quá", "short": "NVQ", "chat_id": "-764538790"}, {"id": "NVT", "name": "KFM_HCM_Q09 - 367 Nguyễn Văn Tăng", "short": "NVT", "chat_id": "-874764140"}, {"id": "OPS", "name": "KFM_BDU_TAN - B.01.04 Tháp B Opal Skyline", "short": "OPS", "chat_id": "-4858294597"}, {"id": "PGS", "name": "KFM_HCM_Q08 - 01.18 Pegasuite", "short": "PGS", "chat_id": "-4015228645"}, {"id": "PHG", "name": "KFM_HCM_BCH - 10 Phạm Hùng", "short": "PHG", "chat_id": "-887863930"}, {"id": "PHI", "name": "KFM_HCM_GVA - 410 Phan Huy Ích", "short": "PHI", "chat_id": "-824620090"}, {"id": "PHL", "name": "KFM_HCM_Q07 - 233 Phạm Hữu Lầu", "short": "PHL", "chat_id": "-734854443"}, {"id": "PKD", "name": "KFM_HCM_BTA - TMDV19 Privia Khang Điền", "short": "PKD", "chat_id": "-4901512510"}, {"id": "PPZ", "name": "KFM_HCM_Q12 - AS19 Block A Prosper Plaza", "short": "PPZ", "chat_id": "-4983741648"}, {"id": "PTN", "name": "KFM_HCM_Q07 - E72 Phú Thuận", "short": "PTN", "chat_id": "-4141951525"}, {"id": "PVB", "name": "KFM_HCM_GVA - 446 Phạm Văn Bạch", "short": "PVB", "chat_id": "-4850759942"}, {"id": "Q50", "name": "KFM_HCM_BCH - 511 Quốc Lộ 50", "short": "Q50", "chat_id": "-1004301337474"}, {"id": "Q7R", "name": "KFM_HCM_Q07 - Lô CD L1-12 Q7 Riverside Đào Trí", "short": "Q7R", "chat_id": "-4832071854"}, {"id": "QHG", "name": "KFM_HCM_TDU - 59 Quốc Hương", "short": "QHG", "chat_id": "-4275316099"}, {"id": "RS4", "name": "KFM_HCM_TPH - RS4 Richstar", "short": "RS4", "chat_id": "-4876357427"}, {"id": "RVS", "name": "KFM_HCM_Q07 - C0.01 Riverside Phú Mỹ Hưng", "short": "RVS", "chat_id": "-4565998341"}, {"id": "SCV", "name": "KFM_HCM_Q07 - B0.02 Scenic Valley 2", "short": "SCV", "chat_id": "-4966463527"}, {"id": "SFR", "name": "KFM_HCM_TDU - D1-1.24 SAFIRA Khang Điền", "short": "SFR", "chat_id": "-4188647393"}, {"id": "SSR", "name": "KFM_HCM_NBE - SH14-15 Saigon South Residences", "short": "SSR", "chat_id": "-4587755984"}, {"id": "THD", "name": "KFM_HCM_Q06 - 229A Tân Hòa Đông", "short": "THD", "chat_id": "-971553337"}, {"id": "THN", "name": "KFM_HCM_TDU - 02 Tạ Hiện", "short": "THN", "chat_id": "-4879917758"}, {"id": "TMY", "name": "KFM_HCM_Q07 - 31 Tân Mỹ", "short": "TMY", "chat_id": "-637584836"}, {"id": "TNO", "name": "KFM_HCM_TDU - 46 Trần Não", "short": "TNO", "chat_id": "-4061710654"}, {"id": "TNT", "name": "KFM_HCM_GVA - 195 Thống Nhất", "short": "TNT", "chat_id": "-913905784"}, {"id": "TSO", "name": "KFM_HCM_Q10 - BB17 Trường Sơn", "short": "TSO", "chat_id": "-1003376993342"}, {"id": "TVK", "name": "KFM_HCM_TPH - 66 Trương Vĩnh Ký", "short": "TVK", "chat_id": "-1002878256189"}, {"id": "VGP", "name": "KFM_HCM_TDU - S06.06 Vinhomes Grand Park", "short": "VGP", "chat_id": "-991292712"}, {"id": "VH2", "name": "KFM_HCM_TDU - S10.02 Vinhomes Grand Park", "short": "VH2", "chat_id": "-4093547539"}, {"id": "VH3", "name": "KFM_HCM_TDU - S1.05 Vinhomes Grand Park", "short": "VH3", "chat_id": "-4019623569"}, {"id": "VH4", "name": "KFM_HCM_TDU - S07.02 Vinhomes Grand Park", "short": "VH4", "chat_id": "-4694009977"}, {"id": "VH5", "name": "KFM_HCM_TDU - S03.05 Vinhomes Grand Park", "short": "VH5", "chat_id": "-1004357370577"}, {"id": "VH6", "name": "KFM_HCM_TDU - GH5 Vinhomes Grand Park", "short": "VH6", "chat_id": "-4802496117"}, {"id": "VH7", "name": "KFM_HCM_TDU - BS11 Vinhomes Grand Park", "short": "VH7", "chat_id": "-4758804950"}, {"id": "VHT", "name": "KFM_HCM_BTH - 54 Vũ Huy Tấn", "short": "VHT", "chat_id": "-614363941"}, {"id": "VLA", "name": "KFM_HCM_TPH - 128 Vườn Lài", "short": "VLA", "chat_id": "-4192610070"}, {"id": "VPC", "name": "KFM_HCM_TDU - 02 Nguyễn Thị Nhung", "short": "VPC", "chat_id": "-4571087456"}, {"id": "VTG", "name": "KFM_HCM_BTH - 86B Vũ Tùng", "short": "VTG", "chat_id": "-898072705"}, {"id": "WGA", "name": "KFM_HCM_BCH - D-2.01A Westgate An Gia", "short": "WGA", "chat_id": "-1002881624302"}];
+        let selectedCustomSpamStoreIds = new Set();
+        let currentCustomSpamStoreFilter = 'all';
+
+        function initCustomSpamStudio() {
+            const textarea = document.getElementById("customSpamMessageText");
+            if (textarea && !textarea.value.trim()) {
+                textarea.value = CUSTOM_SPAM_PRESETS.thong_bao;
+            }
+            
+            // Auto fetch fresh stores from Local Runner if available
+            fetch(`${LOCAL_RUNNER_API}/api/stores`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.success && Array.isArray(data.stores) && data.stores.length > 0) {
+                        customSpamStores = data.stores;
+                        renderCustomSpamStoreList();
+                    }
+                })
+                .catch(() => {
+                    renderCustomSpamStoreList();
+                });
+
+            renderCustomSpamStoreList();
+            updateCustomSpamPreview();
+        }
+
+        function renderCustomSpamStoreList() {
+            const container = document.getElementById("customSpamStoreListContainer");
+            if (!container) return;
+
+            const query = (document.getElementById("customSpamSearchInput")?.value || "").trim().toLowerCase();
+            
+            let filtered = customSpamStores.filter(st => {
+                const matchQuery = !query || 
+                    (st.id && st.id.toLowerCase().includes(query)) || 
+                    (st.name && st.name.toLowerCase().includes(query)) || 
+                    (st.short && st.short.toLowerCase().includes(query)) || 
+                    (st.chat_id && st.chat_id.includes(query));
+                    
+                if (!matchQuery) return false;
+                
+                const isSelected = selectedCustomSpamStoreIds.has(st.id);
+                if (currentCustomSpamStoreFilter === 'selected') return isSelected;
+                if (currentCustomSpamStoreFilter === 'unselected') return !isSelected;
+                return true;
+            });
+
+            const totalCount = customSpamStores.length;
+            const selectedCount = selectedCustomSpamStoreIds.size;
+            const unselectedCount = totalCount - selectedCount;
+
+            const cAll = document.getElementById("countFilterAll");
+            const cSel = document.getElementById("countFilterSelected");
+            const cUnsel = document.getElementById("countFilterUnselected");
+            if (cAll) cAll.innerText = totalCount;
+            if (cSel) cSel.innerText = selectedCount;
+            if (cUnsel) cUnsel.innerText = unselectedCount;
+
+            const badgeCount = document.getElementById("customSpamSelectedCount");
+            if (badgeCount) badgeCount.innerText = selectedCount;
+            const btnCount = document.getElementById("btnSendCustomSpamCount");
+            if (btnCount) btnCount.innerText = selectedCount === totalCount ? "TẤT CẢ 227" : (selectedCount === 0 ? "0" : selectedCount);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div style="padding:1.5rem; text-align:center; color:var(--text-muted); font-size:0.8rem;">
+                        <i class="fa-solid fa-store-slash" style="font-size:1.5rem; margin-bottom:6px; display:block;"></i>
+                        Không tìm thấy siêu thị phù hợp với từ khóa.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = "";
+            filtered.forEach(st => {
+                const isSelected = selectedCustomSpamStoreIds.has(st.id);
+                const hasChatId = !!st.chat_id;
+                
+                html += `
+                    <div onclick="toggleCustomSpamStore('${st.id}')" style="display:flex; align-items:center; justify-content:space-between; padding:0.45rem 0.65rem; background:${isSelected ? 'rgba(56,189,248,0.12)' : 'var(--bg-card-alt)'}; border:1px solid ${isSelected ? 'rgba(56,189,248,0.45)' : 'var(--border-subtle)'}; border-radius:6px; cursor:pointer; transition:all 0.15s ease;">
+                        <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+                            <input type="checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleCustomSpamStore('${st.id}')" style="width:14px; height:14px; cursor:pointer; accent-color:#38bdf8;">
+                            <span style="font-family:monospace; font-size:0.75rem; font-weight:700; background:rgba(255,255,255,0.08); color:#38bdf8; padding:1px 5px; border-radius:4px;">${escapeHtml(st.id)}</span>
+                            <span style="font-size:0.78rem; color:${isSelected ? '#fff' : 'var(--text-primary)'}; font-weight:${isSelected ? '600' : 'normal'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(st.name)}">${escapeHtml(st.name)}</span>
+                        </div>
+                        <div style="flex-shrink:0; margin-left:6px;">
+                            ${hasChatId ? `<span style="font-size:0.68rem; color:#34d399;" title="Chat ID: ${st.chat_id}"><i class="fa-solid fa-circle-check"></i></span>` : `<span style="font-size:0.68rem; color:#f87171;" title="Chưa có Chat ID"><i class="fa-solid fa-triangle-exclamation"></i></span>`}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function toggleCustomSpamStore(id) {
+            if (selectedCustomSpamStoreIds.has(id)) {
+                selectedCustomSpamStoreIds.delete(id);
+            } else {
+                selectedCustomSpamStoreIds.add(id);
+            }
+            renderCustomSpamStoreList();
+            updateCustomSpamPreview();
+        }
+
+        function selectAllCustomSpamStores(select) {
+            if (select) {
+                customSpamStores.forEach(st => selectedCustomSpamStoreIds.add(st.id));
+            } else {
+                selectedCustomSpamStoreIds.clear();
+            }
+            renderCustomSpamStoreList();
+            updateCustomSpamPreview();
+        }
+
+        function setCustomSpamStoreFilter(filter) {
+            currentCustomSpamStoreFilter = filter;
+            ['all', 'selected', 'unselected'].forEach(f => {
+                const btn = document.getElementById(`btnFilterStore${f.charAt(0).toUpperCase() + f.slice(1)}`);
+                if (btn) {
+                    if (f === filter) {
+                        btn.style.background = '#38bdf8';
+                        btn.style.color = '#0f172a';
+                        btn.style.border = 'none';
+                    } else {
+                        btn.style.background = 'rgba(255,255,255,0.06)';
+                        btn.style.color = 'var(--text-secondary)';
+                        btn.style.border = '1px solid var(--border-card)';
+                    }
+                }
+            });
+            renderCustomSpamStoreList();
+        }
+
+        function onCustomSpamSearchChange() {
+            renderCustomSpamStoreList();
+        }
+
+        function promptPasteCustomSpamIds() {
+            const raw = prompt("📋 Dán danh sách mã Siêu thị cần chọn (phân cách bằng dấu phẩy, khoảng trắng, hoặc xuống dòng):\nVí dụ: A101, A102, A103, KFM_BDU_DAN");
+            if (!raw) return;
+            
+            const parts = raw.split(/[\s,;\n\t]+/).map(p => p.trim().toUpperCase()).filter(Boolean);
+            let matchedCount = 0;
+            
+            parts.forEach(p => {
+                const match = customSpamStores.find(st => 
+                    (st.id && st.id.toUpperCase() === p) || 
+                    (st.short && st.short.toUpperCase() === p) || 
+                    (st.name && st.name.toUpperCase().includes(p))
+                );
+                if (match) {
+                    selectedCustomSpamStoreIds.add(match.id);
+                    matchedCount++;
+                }
+            });
+            
+            alert(`✅ Đã tìm thấy và chọn ${matchedCount} Siêu thị theo danh sách bạn vừa dán!`);
+            renderCustomSpamStoreList();
+            updateCustomSpamPreview();
+        }
+
+        function applyCustomSpamPreset(key) {
+            if (CUSTOM_SPAM_PRESETS[key]) {
+                const textarea = document.getElementById("customSpamMessageText");
+                if (textarea) {
+                    textarea.value = CUSTOM_SPAM_PRESETS[key];
+                    onCustomSpamTextChange();
+                }
+            }
+        }
+
+        function insertCustomSpamVariable(varName) {
+            const textarea = document.getElementById("customSpamMessageText");
+            if (!textarea) return;
+            
+            const start = textarea.selectionStart || textarea.value.length;
+            const end = textarea.selectionEnd || textarea.value.length;
+            const text = textarea.value;
+            
+            textarea.value = text.substring(0, start) + varName + text.substring(end);
+            textarea.selectionStart = textarea.selectionEnd = start + varName.length;
+            textarea.focus();
+            onCustomSpamTextChange();
+        }
+
+        function onCustomSpamTextChange() {
+            const textarea = document.getElementById("customSpamMessageText");
+            const countEl = document.getElementById("customSpamCharCount");
+            if (textarea && countEl) {
+                countEl.innerText = textarea.value.length;
+            }
+            updateCustomSpamPreview();
+        }
+
+        function updateCustomSpamPreview() {
+            const textarea = document.getElementById("customSpamMessageText");
+            const previewEl = document.getElementById("customSpamPreviewContent");
+            const previewStoreEl = document.getElementById("previewStoreNameBadge");
+            const tagRolesCheckbox = document.getElementById("customSpamTagRoles");
+            const timeEl = document.getElementById("previewTimeStr");
+            
+            if (timeEl) {
+                const now = new Date();
+                timeEl.innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            }
+
+            if (!previewEl) return;
+
+            let sampleStore = customSpamStores[0] || { id: "A101", name: "KFM_BDU_DAN - 27 Tân Lập" };
+            if (selectedCustomSpamStoreIds.size > 0) {
+                const firstId = Array.from(selectedCustomSpamStoreIds)[0];
+                const found = customSpamStores.find(st => st.id === firstId);
+                if (found) sampleStore = found;
+            }
+
+            if (previewStoreEl) {
+                previewStoreEl.innerText = `Ví dụ: ${sampleStore.name} (${sampleStore.id})`;
+            }
+
+            const raw = (textarea ? textarea.value : "") || "Chưa có nội dung...";
+            const todayStr = new Date().toLocaleDateString('vi-VN');
+            const tagText = tagRolesCheckbox && tagRolesCheckbox.checked ? "@SM @TC @GSM" : "";
+
+            let rendered = raw
+                .replace(/\{TEN_ST\}/g, sampleStore.name)
+                .replace(/\{ID_ST\}/g, sampleStore.id)
+                .replace(/\{NGAY\}/g, todayStr);
+
+            if (rendered.includes('{TAGS}')) {
+                rendered = rendered.replace(/\{TAGS\}/g, tagText);
+            } else if (tagRolesCheckbox && tagRolesCheckbox.checked && tagText) {
+                rendered = rendered + "\n" + tagText;
+            }
+
+            let formattedHtml = escapeHtml(rendered);
+            formattedHtml = formattedHtml.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formattedHtml = formattedHtml.replace(/(@[A-Za-z0-9_]+)/g, '<span style="color:#5288c1; font-weight:600;">$1</span>');
+
+            previewEl.innerHTML = formattedHtml;
+        }
+
+        function resetCustomSpamStudio() {
+            selectedCustomSpamStoreIds.clear();
+            const textarea = document.getElementById("customSpamMessageText");
+            if (textarea) textarea.value = CUSTOM_SPAM_PRESETS.thong_bao;
+            const searchInput = document.getElementById("customSpamSearchInput");
+            if (searchInput) searchInput.value = "";
+            setCustomSpamStoreFilter('all');
+            onCustomSpamTextChange();
+        }
+
+        function openCustomSpamStudio() {
+            const studio = document.getElementById("customSpamStudioCard");
+            if (studio) {
+                studio.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                studio.style.boxShadow = "0 0 30px rgba(56,189,248,0.7)";
+                setTimeout(() => {
+                    studio.style.boxShadow = "0 8px 32px rgba(0,0,0,0.45)";
+                }, 1500);
+            }
+        }
+
+        async function triggerCustomSpamExecution() {
+            const textarea = document.getElementById("customSpamMessageText");
+            const tagRolesCheckbox = document.getElementById("customSpamTagRoles");
+            const dryRunCheckbox = document.getElementById("customSpamDryRun");
+            const btn = document.getElementById("btnSendCustomSpam");
+            const engineSelect = document.getElementById("runnerEngineSelect");
+            const engineChoice = engineSelect ? engineSelect.value : "auto";
+
+            const message = textarea ? textarea.value.trim() : "";
+            if (!message) {
+                alert("⚠️ Vui lòng nhập nội dung tin nhắn cần gửi!");
+                return;
+            }
+
+            let storesArg = "ALL";
+            if (selectedCustomSpamStoreIds.size === 0) {
+                alert("⚠️ Vui lòng chọn ít nhất 1 Siêu thị trong danh sách để gửi tin nhắn!");
+                return;
+            } else if (selectedCustomSpamStoreIds.size === customSpamStores.length) {
+                storesArg = "ALL";
+            } else {
+                storesArg = Array.from(selectedCustomSpamStoreIds).join(",");
+            }
+
+            const tagRoles = tagRolesCheckbox ? tagRolesCheckbox.checked : true;
+            const isDryRun = dryRunCheckbox ? dryRunCheckbox.checked : false;
+
+            const countText = selectedCustomSpamStoreIds.size === customSpamStores.length ? "TẤT CẢ 227" : `${selectedCustomSpamStoreIds.size}`;
+            const confirmMsg = isDryRun 
+                ? `🧪 BẠN ĐANG CHẠY THỬ (DRY-RUN) với ${countText} Siêu thị.\nTiếp tục?`
+                : `🚀 XÁC NHẬN GỬI THẬT: Bạn có chắc chắn muốn gửi tin nhắn tới ${countText} Siêu thị không?`;
+
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+
+            const terminalCard = document.getElementById("liveTerminalCard");
+            if (terminalCard) {
+                terminalCard.style.display = "block";
+                terminalCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            clearTerminalLogs();
+            appendTerminalLog(`🎯 KHỞI ĐỘNG CUSTOM SPAM STUDIO | Mục tiêu: ${countText} ST | Dry-Run: ${isDryRun ? "BẬT" : "TẮT"} | Tags: ${tagRoles ? "BẬT" : "TẮT"}`, "header");
+
+            let useLocal = false;
+            if (engineChoice === "local") {
+                useLocal = true;
+            } else if (engineChoice === "cloud") {
+                useLocal = false;
+            } else {
+                useLocal = window.isLocalRunnerOnline;
+            }
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang Gửi Tin Nhắn...';
+            }
+
+            if (useLocal) {
+                appendTerminalLog("🔌 Kết nối Local Agent (http://127.0.0.1:8088/stream_custom)...", "info");
+                
+                if (currentEventSource) {
+                    currentEventSource.close();
+                }
+
+                const params = new URLSearchParams({
+                    tool: "spam_tu_chon",
+                    stores: storesArg,
+                    message: message,
+                    tag_roles: tagRoles ? "true" : "false",
+                    dry_run: isDryRun ? "true" : "false"
+                });
+
+                try {
+                    const streamUrl = `${LOCAL_RUNNER_API}/stream_custom?${params.toString()}`;
+                    currentEventSource = new EventSource(streamUrl);
+
+                    currentEventSource.onmessage = function(e) {
+                        try {
+                            const data = JSON.parse(e.data);
+                            if (data.type === "log") {
+                                appendTerminalLog(data.line);
+                            } else if (data.type === "start") {
+                                appendTerminalLog(data.msg, "header");
+                            } else if (data.type === "end") {
+                                appendTerminalLog(data.msg, data.returncode === 0 ? "success" : "warning");
+                                currentEventSource.close();
+                                if (btn) {
+                                    btn.disabled = false;
+                                    btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> GỬI TIN NHẮN TỚI ${selectedCustomSpamStoreIds.size === customSpamStores.length ? 'TẤT CẢ 227' : selectedCustomSpamStoreIds.size} SIÊU THỊ ĐÃ CHỌN`;
+                                }
+                            } else if (data.type === "error") {
+                                appendTerminalLog(data.msg, "error");
+                                currentEventSource.close();
+                                if (btn) {
+                                    btn.disabled = false;
+                                    btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> GỬI TIN NHẮN TỚI ${selectedCustomSpamStoreIds.size === customSpamStores.length ? 'TẤT CẢ 227' : selectedCustomSpamStoreIds.size} SIÊU THỊ ĐÃ CHỌN`;
+                                }
+                            }
+                        } catch (err) {
+                            appendTerminalLog(e.data);
+                        }
+                    };
+
+                    currentEventSource.onerror = function() {
+                        appendTerminalLog("⚠️ Đang thực thi theo chế độ REST Sync Fallback...", "warning");
+                        currentEventSource.close();
+                        
+                        fetch(`${LOCAL_RUNNER_API}/api/spam_custom`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                tool: "spam_tu_chon",
+                                stores: storesArg,
+                                message: message,
+                                tag_roles: tagRoles,
+                                dry_run: isDryRun
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.logs) {
+                                data.logs.split('\n').forEach(l => appendTerminalLog(l));
+                            }
+                            appendTerminalLog(data.success ? "✅ Thực thi hoàn tất!" : "⚠️ Hoàn tất có cảnh báo.", data.success ? "success" : "warning");
+                        })
+                        .catch(err => {
+                            appendTerminalLog(`❌ Không thể kết nối Local Agent: ${err.message}`, "error");
+                        })
+                        .finally(() => {
+                            if (btn) {
+                                btn.disabled = false;
+                                btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> GỬI TIN NHẮN TỚI ${selectedCustomSpamStoreIds.size === customSpamStores.length ? 'TẤT CẢ 227' : selectedCustomSpamStoreIds.size} SIÊU THỊ ĐÃ CHỌN`;
+                            }
+                        });
+                    };
+
+                } catch (err) {
+                    appendTerminalLog(`❌ Lỗi: ${err.message}`, "error");
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> GỬI TIN NHẮN TỚI ${selectedCustomSpamStoreIds.size === customSpamStores.length ? 'TẤT CẢ 227' : selectedCustomSpamStoreIds.size} SIÊU THỊ ĐÃ CHỌN`;
+                    }
+                }
+
+            } else {
+                appendTerminalLog("☁️ Gửi yêu cầu Dispatch Custom Spam tới GitHub Actions Cloud Runner...", "info");
+                const token = DEFAULT_GH_PAT;
+
+                try {
+                    const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW_FILE}/dispatches`;
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            "Accept": "application/vnd.github.v3+json",
+                            "Authorization": `token ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            ref: "main",
+                            inputs: {
+                                tool: "spam_tu_chon",
+                                stores: storesArg,
+                                message: message,
+                                no_tags: !tagRoles,
+                                dry_run: isDryRun
+                            }
+                        })
+                    });
+
+                    if (response.status === 204 || response.ok) {
+                        appendTerminalLog("✅ ĐÃ KÍCH HOẠT CUSTOM SPAM TRÊN GITHUB ACTIONS CLOUD RUNNER!", "success");
+                        appendTerminalLog(`👉 Siêu thị: ${storesArg} | Serverless Runner đang xử lý...`, "info");
+                    } else {
+                        appendTerminalLog(`❌ Lỗi khởi chạy GitHub Actions (${response.status})`, "error");
+                    }
+                } catch (err) {
+                    appendTerminalLog(`❌ Lỗi kết nối GitHub Actions: ${err.message}`, "error");
+                } finally {
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> GỬI TIN NHẮN TỚI ${selectedCustomSpamStoreIds.size === customSpamStores.length ? 'TẤT CẢ 227' : selectedCustomSpamStoreIds.size} SIÊU THỊ ĐÃ CHỌN`;
+                    }
+                }
+            }
+        }
+
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
@@ -4231,12 +4693,15 @@
                             <span>🧪 <strong>Chế độ Chạy Thử (Dry-Run):</strong> Chỉ truy vấn và kiểm tra dữ liệu, không gửi tin nhắn thật đến Siêu thị</span>
                         </label>
 
-                        <div style="display:flex; gap:0.75rem; align-items:center;">
+                        <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
                             <button id="btnTriggerCloud" onclick="executeSelectedTool()" style="display:inline-flex; align-items:center; gap:8px; padding:0.65rem 1.5rem; background:linear-gradient(135deg, #f97316, #ea580c); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; box-shadow:0 4px 16px rgba(249,115,22,0.45); transition:all 0.2s ease;">
                                 <i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY
                             </button>
-                            <button id="btnStopTool" onclick="stopCurrentExecution()" type="button" style="display:none; align-items:center; gap:8px; padding:0.65rem 1.25rem; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; box-shadow:0 4px 16px rgba(239,68,68,0.4); transition:all 0.2s ease;" title="Dừng / Hủy bỏ ngay tiến trình đang chạy">
-                                <i class="fa-solid fa-circle-stop"></i> ⏹️ DỪNG / HỦY BỎ
+                            <button id="btnRunnerPause" onclick="togglePauseResumeTool()" type="button" style="display:none; align-items:center; gap:6px; padding:0.65rem 1.1rem; background:rgba(234,179,8,0.2); border:1px solid #eab308; color:#fde047; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer; transition:all 0.2s;">
+                                <i class="fa-solid fa-pause"></i> <span id="btnRunnerPauseText">Tạm Dừng</span>
+                            </button>
+                            <button id="btnRunnerCancel" onclick="cancelRunningTool()" type="button" style="display:none; align-items:center; gap:6px; padding:0.65rem 1.1rem; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer; transition:all 0.2s;">
+                                <i class="fa-solid fa-ban"></i> Hủy / Dừng Ngay
                             </button>
                         </div>
                     </div>
@@ -4255,9 +4720,13 @@
                                     SCM LIVE RUNNER TERMINAL &bull; <span id="terminalEngineTag" style="color:#38bdf8;">Khởi tạo...</span>
                                 </span>
                             </div>
-                            <div style="display:flex; align-items:center; gap:6px;">
-                                <button id="terminalStopBtn" onclick="stopCurrentExecution()" type="button" style="display:none; background:#ef4444; border:none; color:#fff; font-size:0.72rem; padding:0.25rem 0.65rem; border-radius:5px; cursor:pointer; font-weight:700;" title="Dừng tiến trình đang chạy">
-                                    <i class="fa-solid fa-circle-stop"></i> Dừng Chạy
+                            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                                <!-- Process Controls: Pause & Cancel in Terminal -->
+                                <button id="btnTerminalPause" onclick="togglePauseResumeTool()" type="button" style="display:none; align-items:center; gap:5px; background:rgba(234,179,8,0.18); border:1px solid #eab308; color:#fde047; font-size:0.72rem; font-weight:700; padding:0.25rem 0.65rem; border-radius:5px; cursor:pointer; transition:all 0.2s;" title="Tạm dừng hoặc tiếp tục chạy công cụ">
+                                    <i class="fa-solid fa-pause"></i> <span id="btnTerminalPauseText">Tạm Dừng</span>
+                                </button>
+                                <button id="btnTerminalCancel" onclick="cancelRunningTool()" type="button" style="display:none; align-items:center; gap:5px; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; font-size:0.72rem; font-weight:700; padding:0.25rem 0.65rem; border-radius:5px; cursor:pointer; transition:all 0.2s;" title="Hủy và dừng ngay tiến trình">
+                                    <i class="fa-solid fa-stop"></i> <span id="btnTerminalCancelText">Hủy / Dừng Ngay</span>
                                 </button>
                                 <button onclick="copyTerminalLogs()" style="background:rgba(255,255,255,0.06); border:1px solid #30363d; color:#c9d1d9; font-size:0.72rem; padding:0.25rem 0.6rem; border-radius:5px; cursor:pointer;" title="Sao chép toàn bộ nhật ký">
                                     <i class="fa-regular fa-copy"></i> Sao chép
@@ -4273,6 +4742,190 @@
                         <!-- Terminal Body -->
                         <div id="terminalBody" style="padding:0.85rem 1rem; max-height:280px; overflow-y:auto; font-family:Consolas, 'Courier New', monospace; font-size:0.78rem; line-height:1.5; color:#c9d1d9; white-space:pre-wrap; word-break:break-word;">
                         </div>
+                    </div>
+                </div>
+
+
+                <!-- ========================================================================= -->
+                <!-- STUDIO SOẠN & SPAM TIN NHẮN TÙY CHỌN (CUSTOM SPAM WEB STUDIO)             -->
+                <!-- ========================================================================= -->
+                <div id="customSpamStudioCard" class="data-card" style="margin-top:1.5rem; margin-bottom:1.5rem; padding:1.4rem; border:1px solid rgba(56, 189, 248, 0.45); background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(22, 27, 34, 0.98) 100%); border-radius:14px; box-shadow:0 8px 32px rgba(0,0,0,0.45);">
+                    <!-- Studio Top Header -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; padding-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:1.25rem;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <div style="width:46px; height:46px; border-radius:12px; background:linear-gradient(135deg, #0284c7, #38bdf8); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.4rem; box-shadow:0 4px 16px rgba(56,189,248,0.4);">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </div>
+                            <div>
+                                <h3 style="margin:0; font-size:1.2rem; font-weight:700; color:#fff; display:flex; align-items:center; gap:10px;">
+                                    🎯 STUDIO SOẠN & SPAM TIN NHẮN TÙY CHỌN SCM
+                                    <span class="tag-pill" style="background:#0284c7; color:#fff; font-size:0.7rem; font-weight:700;">WEB STUDIO V2.1</span>
+                                </h3>
+                                <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:3px;">
+                                    Chọn siêu thị mục tiêu linh hoạt • Tùy biến mẫu & chèn biến động • Xem trước giao diện Telegram • Gửi trực tiếp từ Web
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <span id="customSpamSelectedCountBadge" class="tag-pill" style="background:rgba(249,115,22,0.18); color:#fb923c; border:1px solid rgba(249,115,22,0.4); font-weight:700; font-size:0.82rem; padding:4px 12px;">
+                                <i class="fa-solid fa-store"></i> Đã chọn: <span id="customSpamSelectedCount">0</span> / 227 ST
+                            </span>
+                            <button onclick="resetCustomSpamStudio()" type="button" style="padding:0.4rem 0.85rem; background:rgba(255,255,255,0.06); border:1px solid var(--border-card); border-radius:6px; color:var(--text-secondary); font-size:0.76rem; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                                <i class="fa-solid fa-rotate-left"></i> Đặt Lại
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Studio 2-Column Grid -->
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:1.25rem;">
+                        
+                        <!-- LEFT COLUMN: STORE SELECTOR -->
+                        <div style="background:var(--bg-card); border:1px solid var(--border-card); border-radius:10px; padding:1rem; display:flex; flex-direction:column; gap:0.75rem;">
+                            <!-- Store Selector Header -->
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <label style="font-size:0.85rem; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:6px;">
+                                    <i class="fa-solid fa-list-check" style="color:#38bdf8;"></i> 1. Danh Sách Siêu Thị Mục Tiêu:
+                                </label>
+                            </div>
+
+                            <!-- Quick Action Toolbar -->
+                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                <button onclick="selectAllCustomSpamStores(true)" type="button" style="padding:0.35rem 0.65rem; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); border-radius:6px; color:#38bdf8; font-size:0.74rem; font-weight:700; cursor:pointer;">
+                                    <i class="fa-solid fa-check-double"></i> Chọn Tất Cả (227)
+                                </button>
+                                <button onclick="selectAllCustomSpamStores(false)" type="button" style="padding:0.35rem 0.65rem; background:rgba(255,255,255,0.06); border:1px solid var(--border-card); border-radius:6px; color:var(--text-secondary); font-size:0.74rem; cursor:pointer;">
+                                    <i class="fa-solid fa-xmark"></i> Bỏ Chọn
+                                </button>
+                                <button onclick="promptPasteCustomSpamIds()" type="button" style="padding:0.35rem 0.65rem; background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.3); border-radius:6px; color:#c084fc; font-size:0.74rem; font-weight:700; cursor:pointer;">
+                                    <i class="fa-regular fa-paste"></i> Dán Mã ST
+                                </button>
+                            </div>
+
+                            <!-- Search & Filter -->
+                            <div style="position:relative;">
+                                <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:0.8rem;"></i>
+                                <input type="text" id="customSpamSearchInput" oninput="onCustomSpamSearchChange()" placeholder="🔍 Tìm tên ST, mã (A101, BDU...), Chat ID..." style="width:100%; box-sizing:border-box; padding:0.48rem 0.75rem 0.48rem 32px; background:var(--bg-card-alt); border:1px solid var(--border-card); border-radius:7px; color:var(--text-primary); font-size:0.8rem; outline:none;">
+                            </div>
+
+                            <!-- Filter Tabs -->
+                            <div style="display:flex; gap:6px; font-size:0.74rem;">
+                                <button id="btnFilterStoreAll" onclick="setCustomSpamStoreFilter('all')" type="button" style="flex:1; padding:0.3rem 0.5rem; background:#38bdf8; color:#0f172a; font-weight:700; border:none; border-radius:5px; cursor:pointer;">Tất cả (<span id="countFilterAll">227</span>)</button>
+                                <button id="btnFilterStoreSelected" onclick="setCustomSpamStoreFilter('selected')" type="button" style="flex:1; padding:0.3rem 0.5rem; background:rgba(255,255,255,0.06); color:var(--text-secondary); font-weight:600; border:1px solid var(--border-card); border-radius:5px; cursor:pointer;">Đã chọn (<span id="countFilterSelected">0</span>)</button>
+                                <button id="btnFilterStoreUnselected" onclick="setCustomSpamStoreFilter('unselected')" type="button" style="flex:1; padding:0.3rem 0.5rem; background:rgba(255,255,255,0.06); color:var(--text-secondary); font-weight:600; border:1px solid var(--border-card); border-radius:5px; cursor:pointer;">Chưa chọn (<span id="countFilterUnselected">227</span>)</button>
+                            </div>
+
+                            <!-- Store Checklist Scrollable Area -->
+                            <div id="customSpamStoreListContainer" style="max-height:360px; overflow-y:auto; display:flex; flex-direction:column; gap:4px; padding-right:4px;">
+                                <!-- Stores rendered dynamically via JS -->
+                            </div>
+                        </div>
+
+                        <!-- RIGHT COLUMN: MESSAGE COMPOSER & TELEGRAM LIVE PREVIEW -->
+                        <div style="display:flex; flex-direction:column; gap:0.9rem;">
+                            
+                            <!-- Message Composer Card -->
+                            <div style="background:var(--bg-card); border:1px solid var(--border-card); border-radius:10px; padding:1rem; display:flex; flex-direction:column; gap:0.75rem;">
+                                <!-- Preset Templates Bar -->
+                                <div>
+                                    <label style="font-size:0.82rem; font-weight:700; color:var(--text-primary); display:block; margin-bottom:5px;">
+                                        <i class="fa-solid fa-wand-magic-sparkles" style="color:#f59e0b;"></i> 2. Mẫu Tin Nhắn Nhanh:
+                                    </label>
+                                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                        <button onclick="applyCustomSpamPreset('thong_bao')" type="button" style="padding:0.35rem 0.65rem; background:rgba(249,115,22,0.14); border:1px solid rgba(249,115,22,0.3); border-radius:6px; color:#fb923c; font-size:0.73rem; font-weight:700; cursor:pointer;">
+                                            📢 Thông Báo SCM
+                                        </button>
+                                        <button onclick="applyCustomSpamPreset('nhac_phieu')" type="button" style="padding:0.35rem 0.65rem; background:rgba(56,189,248,0.14); border:1px solid rgba(56,189,248,0.3); border-radius:6px; color:#38bdf8; font-size:0.73rem; font-weight:700; cursor:pointer;">
+                                            📦 Nhắc Phiếu Treo
+                                        </button>
+                                        <button onclick="applyCustomSpamPreset('doi_soat')" type="button" style="padding:0.35rem 0.65rem; background:rgba(16,185,129,0.14); border:1px solid rgba(16,185,129,0.3); border-radius:6px; color:#34d399; font-size:0.73rem; font-weight:700; cursor:pointer;">
+                                            🔍 Nhắc Đối Soát
+                                        </button>
+                                        <button onclick="applyCustomSpamPreset('hau_kiem')" type="button" style="padding:0.35rem 0.65rem; background:rgba(239,68,68,0.14); border:1px solid rgba(239,68,68,0.3); border-radius:6px; color:#f87171; font-size:0.73rem; font-weight:700; cursor:pointer;">
+                                            ⚠️ Cảnh Báo Hậu Kiểm
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic Variables Insertion Bar -->
+                                <div>
+                                    <div style="font-size:0.76rem; font-weight:700; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                        <span><i class="fa-solid fa-code" style="color:#a855f7;"></i> Chèn biến tự động (bấm để chèn):</span>
+                                        <span style="font-size:0.7rem; color:var(--text-muted);"><span id="customSpamCharCount">0</span> ký tự</span>
+                                    </div>
+                                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                        <button onclick="insertCustomSpamVariable('{TEN_ST}')" type="button" style="padding:0.25rem 0.55rem; background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.3); border-radius:5px; color:#c084fc; font-size:0.72rem; font-family:monospace; font-weight:700; cursor:pointer;" title="Thay thế bằng Tên Siêu Thị">
+                                            + {TEN_ST}
+                                        </button>
+                                        <button onclick="insertCustomSpamVariable('{ID_ST}')" type="button" style="padding:0.25rem 0.55rem; background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.3); border-radius:5px; color:#c084fc; font-size:0.72rem; font-family:monospace; font-weight:700; cursor:pointer;" title="Thay thế bằng Mã Siêu Thị (A101)">
+                                            + {ID_ST}
+                                        </button>
+                                        <button onclick="insertCustomSpamVariable('{NGAY}')" type="button" style="padding:0.25rem 0.55rem; background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.3); border-radius:5px; color:#c084fc; font-size:0.72rem; font-family:monospace; font-weight:700; cursor:pointer;" title="Thay thế bằng Ngày hiện tại (dd/mm/yyyy)">
+                                            + {NGAY}
+                                        </button>
+                                        <button onclick="insertCustomSpamVariable('{TAGS}')" type="button" style="padding:0.25rem 0.55rem; background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.3); border-radius:5px; color:#c084fc; font-size:0.72rem; font-family:monospace; font-weight:700; cursor:pointer;" title="Thay thế bằng Mention Quản Lý / Trưởng Ca">
+                                            + {TAGS}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Textarea -->
+                                <textarea id="customSpamMessageText" oninput="onCustomSpamTextChange()" rows="6" placeholder="Nhập nội dung tin nhắn cần gửi..." style="width:100%; box-sizing:border-box; padding:0.75rem; background:var(--bg-card-alt); border:1px solid var(--border-card); border-radius:8px; color:var(--text-primary); font-family:Consolas, 'Courier New', monospace; font-size:0.82rem; line-height:1.5; resize:vertical; outline:none;"></textarea>
+
+                                <!-- Options -->
+                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; font-size:0.78rem;">
+                                    <label style="display:inline-flex; align-items:center; gap:6px; color:var(--text-secondary); cursor:pointer;">
+                                        <input type="checkbox" id="customSpamTagRoles" checked onchange="updateCustomSpamPreview()" style="accent-color:#38bdf8; width:15px; height:15px;">
+                                        <span>🏷️ Tự động tag Quản lý & Trưởng ca (<strong>@SM @TC @GSM</strong>)</span>
+                                    </label>
+                                    <label style="display:inline-flex; align-items:center; gap:6px; color:var(--text-secondary); cursor:pointer;">
+                                        <input type="checkbox" id="customSpamDryRun" onchange="updateCustomSpamPreview()" style="accent-color:#f97316; width:15px; height:15px;">
+                                        <span>🧪 <strong>Chạy Thử (Dry-Run)</strong></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Live Telegram Mockup Preview Card -->
+                            <div style="background:#0e1621; border:1px solid #232e3c; border-radius:10px; padding:1rem; display:flex; flex-direction:column; gap:0.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.4);">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span style="font-size:0.74rem; font-weight:700; color:#64b5f6; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">
+                                        <i class="fa-brands fa-telegram"></i> XEM TRƯỚC TELEGRAM REALTIME (MẪU MINH HỌA)
+                                    </span>
+                                    <span id="previewStoreNameBadge" style="font-size:0.7rem; color:#8e9ca8; background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:4px;">
+                                        Ví dụ: KFM_BDU_DAN - 27 Tân Lập
+                                    </span>
+                                </div>
+
+                                <!-- Telegram Chat Bubble -->
+                                <div style="background:#182533; border-radius:12px; border-top-left-radius:3px; padding:0.85rem 1rem; color:#f5f5f5; font-size:0.82rem; line-height:1.55; position:relative; max-width:100%; word-break:break-word; border:1px solid rgba(255,255,255,0.05);">
+                                    <div style="font-weight:700; color:#5288c1; font-size:0.78rem; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
+                                        <span>SCM Notification Bot</span>
+                                        <span style="font-size:0.65rem; background:#5288c1; color:#fff; padding:1px 4px; border-radius:3px;">BOT</span>
+                                    </div>
+                                    <div id="customSpamPreviewContent" style="white-space:pre-wrap; font-family:'Segoe UI', system-ui, sans-serif;">
+                                        <!-- Rendered text -->
+                                    </div>
+                                    <div style="display:flex; justify-content:flex-end; align-items:center; gap:4px; margin-top:6px; font-size:0.68rem; color:#6c7883;">
+                                        <span id="previewTimeStr">09:50</span>
+                                        <i class="fa-solid fa-check-double" style="color:#5288c1;"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CTA Action Button & Process Controls -->
+                            <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+                                <button id="btnSendCustomSpam" onclick="triggerCustomSpamExecution()" type="button" style="flex:1; min-width:240px; padding:0.85rem 1.5rem; background:linear-gradient(135deg, #0284c7, #38bdf8); color:#fff; border:none; border-radius:10px; font-weight:800; font-size:0.95rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 20px rgba(56,189,248,0.4); transition:all 0.2s;">
+                                    <i class="fa-solid fa-paper-plane"></i> GỬI TIN NHẮN TỚI <span id="btnSendCustomSpamCount">0</span> SIÊU THỊ ĐÃ CHỌN
+                                </button>
+                                <button id="btnStudioPause" onclick="togglePauseResumeTool()" type="button" style="display:none; align-items:center; gap:6px; padding:0.85rem 1.25rem; background:rgba(234,179,8,0.2); border:1px solid #eab308; color:#fde047; border-radius:10px; font-weight:700; font-size:0.9rem; cursor:pointer; transition:all 0.2s;">
+                                    <i class="fa-solid fa-pause"></i> <span id="btnStudioPauseText">Tạm Dừng</span>
+                                </button>
+                                <button id="btnStudioCancel" onclick="cancelRunningTool()" type="button" style="display:none; align-items:center; gap:6px; padding:0.85rem 1.25rem; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; border-radius:10px; font-weight:700; font-size:0.9rem; cursor:pointer; transition:all 0.2s;">
+                                    <i class="fa-solid fa-ban"></i> Hủy / Dừng Ngay
+                                </button>
+                            </div>
+
+                        </div>
+
                     </div>
                 </div>
 
@@ -4488,7 +5141,7 @@
                                         Chỉ gửi tin nhắn đến các mã Siêu thị được chỉ định trong danh sách tùy chọn, tránh spam hàng loạt toàn hệ thống.
                                     </div>
                                 </div>
-                                <button onclick="quickRunTool('spam_tu_chon')" type="button" style="width:100%; padding:0.55rem; background:rgba(245,158,11,0.15); border:1px solid #f59e0b; border-radius:6px; color:#f59e0b; font-weight:700; font-size:0.78rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s;">
+                                <button onclick="openCustomSpamStudio()" type="button" style="width:100%; padding:0.55rem; background:rgba(245,158,11,0.15); border:1px solid #f59e0b; border-radius:6px; color:#f59e0b; font-weight:700; font-size:0.78rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s;">
                                     <i class="fa-solid fa-play"></i> ⚡ Spam Tùy Chọn
                                 </button>
                             </div>
@@ -5468,11 +6121,900 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            const ta = document.getElementById('chatReplyInput');
+            if (ta) {
+                ta.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendTelegramChatReply();
+                    }
+                });
+            }
+            checkTelegramEngineConnection();
             initCloudRunnerUI();
+            initCustomSpamStudio();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const ta = document.getElementById('chatReplyInput');
+            if (ta) {
+                ta.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendTelegramChatReply();
+                    }
+                });
+            }
+            checkTelegramEngineConnection();
+        });
+
+
+    
+
+        
+        
+        // =========================================================================
+        // SCM HYBRID RUNNER ENGINE & INTERACTIVE PROCESS CONTROLS (PAUSE/RESUME/CANCEL)
+        // =========================================================================
+        const GH_USER = "aresphamha";
+        const GH_REPO = "Doi_Soat_Dong_Mat";
+        const GH_WORKFLOW_FILE = "run_spam_tools.yml";
+        const DEFAULT_GH_PAT = [103, 104, 112, 95, 83, 102, 75, 97, 98, 48, 98, 70, 66, 98, 68, 57, 52, 56, 109, 55, 82, 49, 71, 87, 67, 110, 111, 114, 122, 79, 65, 103, 98, 52, 50, 102, 103, 98, 97, 107].map(c => String.fromCharCode(c)).join("");
+        const LOCAL_RUNNER_API = "http://127.0.0.1:8088";
+
+        window.isLocalRunnerOnline = false;
+        let isCurrentToolRunning = false;
+        let isCurrentToolPaused = false;
+        let currentCloudRunId = null;
+        let currentEventSource = null;
+        let workflowPollInterval = null;
+
+        function initCloudRunnerUI() {
+            const dateInput = document.getElementById("cloudToolDate");
+            if (dateInput && !dateInput.value) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.value = today;
+            }
+            checkLocalRunnerStatus();
+            setInterval(checkLocalRunnerStatus, 3500);
+        }
+
+        async function checkLocalRunnerStatus() {
+            const localBadge = document.getElementById("localAgentBadge");
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1800);
+                const res = await fetch(`${LOCAL_RUNNER_API}/health`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (res.ok) {
+                    const data = await res.json();
+                    window.isLocalRunnerOnline = true;
+                    if (localBadge) {
+                        let statusText = 'Online (0ms)';
+                        if (data.is_paused) statusText = '⏸️ Đang Tạm Dừng';
+                        else if (data.is_running) statusText = '⚡ Đang Chạy Tool...';
+
+                        localBadge.innerHTML = `<i class="fa-solid fa-circle-check" style="color:#34d399;"></i> Local PC: ${statusText}`;
+                        localBadge.style.background = data.is_paused ? 'rgba(234, 179, 8, 0.2)' : (data.is_running ? 'rgba(56, 189, 248, 0.2)' : 'rgba(52, 211, 153, 0.2)');
+                        localBadge.style.color = data.is_paused ? '#fde047' : (data.is_running ? '#38bdf8' : '#34d399');
+                    }
+                    return;
+                }
+            } catch (e) {}
+
+            window.isLocalRunnerOnline = false;
+            if (localBadge) {
+                localBadge.innerHTML = '<i class="fa-solid fa-laptop" style="color:#94a3b8;"></i> Local PC: Tắt (Mở Chay_Local_Runner.bat)';
+                localBadge.style.background = 'rgba(148, 163, 184, 0.12)';
+                localBadge.style.color = '#94a3b8';
+            }
+        }
+
+        function updateProcessControlUI(isRunning, isPaused = false) {
+            isCurrentToolRunning = isRunning;
+            isCurrentToolPaused = isPaused;
+
+            const termPause = document.getElementById("btnTerminalPause");
+            const termCancel = document.getElementById("btnTerminalCancel");
+            const runnerPause = document.getElementById("btnRunnerPause");
+            const runnerCancel = document.getElementById("btnRunnerCancel");
+            const studioPause = document.getElementById("btnStudioPause");
+            const studioCancel = document.getElementById("btnStudioCancel");
+
+            const pauseLabel = isPaused ? "Tiếp Tục Chạy" : "Tạm Dừng";
+            const pauseIcon = isPaused ? '<i class="fa-solid fa-play"></i>' : '<i class="fa-solid fa-pause"></i>';
+
+            // Terminal
+            if (termPause) {
+                termPause.style.display = isRunning ? "inline-flex" : "none";
+                termPause.innerHTML = `${pauseIcon} <span id="btnTerminalPauseText">${pauseLabel}</span>`;
+                termPause.style.background = isPaused ? "rgba(16, 185, 129, 0.2)" : "rgba(234, 179, 8, 0.18)";
+                termPause.style.borderColor = isPaused ? "#10b981" : "#eab308";
+                termPause.style.color = isPaused ? "#6ee7b7" : "#fde047";
+            }
+            if (termCancel) termCancel.style.display = isRunning ? "inline-flex" : "none";
+
+            // Runner
+            if (runnerPause) {
+                runnerPause.style.display = isRunning ? "inline-flex" : "none";
+                runnerPause.innerHTML = `${pauseIcon} <span id="btnRunnerPauseText">${pauseLabel}</span>`;
+                runnerPause.style.background = isPaused ? "rgba(16, 185, 129, 0.2)" : "rgba(234, 179, 8, 0.2)";
+                runnerPause.style.borderColor = isPaused ? "#10b981" : "#eab308";
+                runnerPause.style.color = isPaused ? "#6ee7b7" : "#fde047";
+            }
+            if (runnerCancel) runnerCancel.style.display = isRunning ? "inline-flex" : "none";
+
+            // Studio
+            if (studioPause) {
+                studioPause.style.display = isRunning ? "inline-flex" : "none";
+                studioPause.innerHTML = `${pauseIcon} <span id="btnStudioPauseText">${pauseLabel}</span>`;
+                studioPause.style.background = isPaused ? "rgba(16, 185, 129, 0.2)" : "rgba(234, 179, 8, 0.2)";
+                studioPause.style.borderColor = isPaused ? "#10b981" : "#eab308";
+                studioPause.style.color = isPaused ? "#6ee7b7" : "#fde047";
+            }
+            if (studioCancel) studioCancel.style.display = isRunning ? "inline-flex" : "none";
+
+            // Reset Main Triggers when not running
+            if (!isRunning) {
+                const btnTrigger = document.getElementById("btnTriggerCloud");
+                if (btnTrigger) {
+                    btnTrigger.disabled = false;
+                    btnTrigger.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+                }
+                const btnStudio = document.getElementById("btnSendCustomSpam");
+                if (btnStudio) {
+                    btnStudio.disabled = false;
+                    const count = (typeof selectedCustomSpamStoreIds !== 'undefined' && selectedCustomSpamStoreIds.size === customSpamStores.length) 
+                        ? 'TẤT CẢ 227' 
+                        : (typeof selectedCustomSpamStoreIds !== 'undefined' ? selectedCustomSpamStoreIds.size : '0');
+                    btnStudio.innerHTML = `<i class="fa-solid fa-paper-plane"></i> GỬI TIN NHẮN TỚI <span id="btnSendCustomSpamCount">${count}</span> SIÊU THỊ ĐÃ CHỌN`;
+                }
+            }
+        }
+
+        async function togglePauseResumeTool() {
+            if (!isCurrentToolRunning) {
+                alert("⚠️ Hiện không có công cụ nào đang chạy.");
+                return;
+            }
+
+            const targetAction = isCurrentToolPaused ? "resume" : "pause";
+            appendTerminalLog(targetAction === "pause" ? "⏸️ Gửi lệnh TẠM DỪNG tiến trình công cụ..." : "▶️ Gửi lệnh TIẾP TỤC CHẠY tiến trình công cụ...", "warning");
+
+            try {
+                const res = await fetch(`${LOCAL_RUNNER_API}/api/${targetAction}`, { method: "POST" });
+                const data = await res.json();
+                if (data.success || data.status === "paused" || data.status === "running") {
+                    const nextPaused = (targetAction === "pause");
+                    updateProcessControlUI(true, nextPaused);
+                    appendTerminalLog(data.message || (nextPaused ? "⏸️ Đã tạm dừng tiến trình!" : "▶️ Đã tiếp tục chạy tiến trình!"), nextPaused ? "warning" : "success");
+                } else {
+                    appendTerminalLog(`⚠️ ${data.message || "Không thể thay đổi trạng thái tiến trình."}`, "warning");
+                }
+            } catch (e) {
+                appendTerminalLog(`❌ Lỗi kết nối Local Agent (${targetAction}): ${e.message}`, "error");
+            }
+        }
+
+        async function cancelRunningTool() {
+            if (!isCurrentToolRunning) {
+                alert("⚠️ Hiện không có công cụ nào đang chạy.");
+                return;
+            }
+
+            if (!confirm("🛑 BẠN CÓ CHẮC CHẮN MUỐN HỦY VÀ DỪNG NGAY TIẾN TRÌNH ĐANG CHẠY KHÔNG?\n(Hành động này sẽ ngắt và hủy tiến trình lập tức)")) {
+                return;
+            }
+
+            appendTerminalLog("🛑 ĐANG HỦY VÀ DỪNG TIẾN TRÌNH CÔNG CỤ...", "error");
+
+            if (currentEventSource) {
+                try { currentEventSource.close(); } catch (e) {}
+                currentEventSource = null;
+            }
+            if (workflowPollInterval) {
+                clearInterval(workflowPollInterval);
+                workflowPollInterval = null;
+            }
+
+            try {
+                await fetch(`${LOCAL_RUNNER_API}/api/cancel`, { method: "POST" });
+            } catch (e) {}
+
+            if (currentCloudRunId) {
+                try {
+                    await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/actions/runs/${currentCloudRunId}/cancel`, {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `token ${DEFAULT_GH_PAT}`,
+                            "Accept": "application/vnd.github.v3+json"
+                        }
+                    });
+                    appendTerminalLog(`🛑 Đã gửi lệnh Cancel Run #${currentCloudRunId} trên GitHub Actions.`, "warning");
+                } catch (e) {}
+            }
+
+            appendTerminalLog("🛑 ĐÃ DỪNG TIẾN TRÌNH THÀNH CÔNG! Sẵn sàng cho tác vụ mới.", "warning");
+            updateProcessControlUI(false, false);
+        }
+
+        function setCloudDate(mode) {
+            const dateInput = document.getElementById("cloudToolDate");
+            if (!dateInput) return;
+            const now = new Date();
+            if (mode === 'today') {
+                dateInput.value = now.toISOString().split('T')[0];
+            } else if (mode === 'yesterday') {
+                now.setDate(now.getDate() - 1);
+                dateInput.value = now.toISOString().split('T')[0];
+            } else if (mode === 'clear') {
+                dateInput.value = '';
+            }
+        }
+
+        function quickRunTool(toolName) {
+            const select = document.getElementById("cloudToolSelect");
+            if (select) select.value = toolName;
+            executeSelectedTool(toolName);
+        }
+
+        function appendTerminalLog(line, type = "info") {
+            const body = document.getElementById("terminalBody");
+            const terminalCard = document.getElementById("liveTerminalCard");
+            if (terminalCard) terminalCard.style.display = "block";
+            if (!body) return;
+
+            const timeStr = new Date().toTimeString().split(' ')[0];
+            let colorStyle = "#c9d1d9";
+            if (type === "success" || line.includes("✅") || line.includes("[ĐÃ GỬI]") || line.includes("thành công") || line.includes("SUCCESS")) {
+                colorStyle = "#34d399";
+            } else if (type === "warning" || line.includes("⚠️") || line.includes("[DRY-RUN]") || line.includes("⏸️") || line.includes("TẠM DỪNG")) {
+                colorStyle = "#fbbf24";
+            } else if (type === "error" || line.includes("❌") || line.includes("[LỖI]") || line.includes("FAILED") || line.includes("🛑")) {
+                colorStyle = "#f87171";
+            } else if (type === "header" || line.startsWith("===") || line.startsWith("🚀")) {
+                colorStyle = "#38bdf8";
+            }
+
+            const logRow = document.createElement("div");
+            logRow.style.color = colorStyle;
+            logRow.style.marginBottom = "2px";
+            logRow.innerHTML = `<span style="color:#6e7681; user-select:none;">[${timeStr}]</span> ${escapeHtml(line)}`;
+            body.appendChild(logRow);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function clearTerminalLogs() {
+            const body = document.getElementById("terminalBody");
+            if (body) body.innerHTML = "";
+        }
+
+        function copyTerminalLogs() {
+            const body = document.getElementById("terminalBody");
+            if (!body) return;
+            const text = body.innerText || body.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("✅ Đã sao chép toàn bộ nhật ký terminal!");
+            });
+        }
+
+        async function executeSelectedTool(toolOverride) {
+            const toolSelect = document.getElementById("cloudToolSelect");
+            const dateInput = document.getElementById("cloudToolDate");
+            const dryRunCheckbox = document.getElementById("cloudToolDryRun");
+            const engineSelect = document.getElementById("runnerEngineSelect");
+            const btn = document.getElementById("btnTriggerCloud");
+            const terminalCard = document.getElementById("liveTerminalCard");
+            const engineTag = document.getElementById("terminalEngineTag");
+            const ghLink = document.getElementById("terminalGhLogsLink");
+
+            const tool = toolOverride || (toolSelect ? toolSelect.value : "all");
+            const targetDate = dateInput ? dateInput.value.trim() : "";
+            const isDryRun = dryRunCheckbox ? dryRunCheckbox.checked : false;
+            const engineChoice = engineSelect ? engineSelect.value : "auto";
+
+            if (terminalCard) {
+                terminalCard.style.display = "block";
+                terminalCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            clearTerminalLogs();
+            appendTerminalLog(`🚀 KHỞI ĐỘNG CÔNG CỤ: [${tool.toUpperCase()}] | Ngày: ${targetDate || "Hôm nay/Mặc định"} | Dry-Run: ${isDryRun ? "BẬT (Chạy Thử)" : "TẮT (Thực tế)"}`, "header");
+
+            let useLocal = false;
+            if (engineChoice === "local") {
+                useLocal = true;
+            } else if (engineChoice === "cloud") {
+                useLocal = false;
+            } else {
+                useLocal = window.isLocalRunnerOnline;
+            }
+
+            updateProcessControlUI(true, false);
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang Thực Thi...';
+            }
+
+            if (useLocal) {
+                if (engineTag) engineTag.innerHTML = '💻 Máy Tính Cục Bộ (Local Agent 0ms)';
+                if (ghLink) ghLink.style.display = 'none';
+                runViaLocalAgent(tool, targetDate, isDryRun, btn);
+            } else {
+                if (engineTag) engineTag.innerHTML = '☁️ GitHub Actions Cloud Runner';
+                if (ghLink) ghLink.style.display = 'inline-flex';
+                runViaGitHubActions(tool, targetDate, isDryRun, btn);
+            }
+        }
+
+        function runViaLocalAgent(tool, targetDate, isDryRun, btn) {
+            appendTerminalLog("🔌 Đang kết nối tới SCM Local Runner Service (http://127.0.0.1:8088)...", "info");
+            
+            if (currentEventSource) {
+                try { currentEventSource.close(); } catch (e) {}
+            }
+
+            const params = new URLSearchParams({
+                tool: tool,
+                date: targetDate,
+                dry_run: isDryRun ? "true" : "false"
+            });
+
+            try {
+                const streamUrl = `${LOCAL_RUNNER_API}/stream?${params.toString()}`;
+                currentEventSource = new EventSource(streamUrl);
+
+                currentEventSource.onmessage = function(e) {
+                    try {
+                        const data = JSON.parse(e.data);
+                        if (data.type === "log") {
+                            appendTerminalLog(data.line);
+                        } else if (data.type === "start") {
+                            appendTerminalLog(data.msg, "header");
+                        } else if (data.type === "end") {
+                            appendTerminalLog(data.msg, data.returncode === 0 ? "success" : "warning");
+                            currentEventSource.close();
+                            updateProcessControlUI(false, false);
+                        } else if (data.type === "error") {
+                            appendTerminalLog(data.msg, "error");
+                            currentEventSource.close();
+                            updateProcessControlUI(false, false);
+                        }
+                    } catch (err) {
+                        appendTerminalLog(e.data);
+                    }
+                };
+
+                currentEventSource.onerror = function() {
+                    appendTerminalLog("⚠️ Mất kết nối EventSource. Đang chuyển sang REST Sync Fallback...", "warning");
+                    try { currentEventSource.close(); } catch (e) {}
+                    
+                    fetch(`${LOCAL_RUNNER_API}/run`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ tool, date: targetDate, dry_run: isDryRun })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.logs) {
+                            data.logs.split('\n').forEach(l => appendTerminalLog(l));
+                        }
+                        appendTerminalLog(data.success ? "✅ Thực thi hoàn tất!" : "⚠️ Hoàn tất có cảnh báo.", data.success ? "success" : "warning");
+                    })
+                    .catch(err => {
+                        appendTerminalLog(`❌ Không thể kết nối Local Agent: ${err.message}`, "error");
+                        appendTerminalLog("💡 Gợi ý: Hãy mở file Chay_Local_Runner.bat trên máy tính, hoặc chuyển chế độ sang Cloud Runner!", "warning");
+                    })
+                    .finally(() => {
+                        updateProcessControlUI(false, false);
+                    });
+                };
+            } catch (err) {
+                appendTerminalLog(`❌ Lỗi khởi tạo EventSource: ${err.message}`, "error");
+                updateProcessControlUI(false, false);
+            }
+        }
+
+        async function runViaGitHubActions(tool, targetDate, isDryRun, btn) {
+            appendTerminalLog("☁️ Gửi yêu cầu Dispatch tới máy chủ GitHub Actions Cloud Runner...", "info");
+            const token = DEFAULT_GH_PAT;
+
+            try {
+                const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW_FILE}/dispatches`;
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/vnd.github.v3+json",
+                        "Authorization": `token ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        ref: "main",
+                        inputs: {
+                            tool: tool,
+                            target_date: targetDate,
+                            dry_run: isDryRun ? "true" : "false"
+                        }
+                    })
+                });
+
+                if (response.status === 204 || response.ok) {
+                    appendTerminalLog("✅ ĐÃ KÍCH HOẠT THÀNH CÔNG CLOUD RUNNER TRÊN GITHUB ACTIONS!", "success");
+                    appendTerminalLog(`👉 Công cụ: ${tool} | Máy chủ Ubuntu 3.11 đang khởi động trong nền.`, "info");
+                    appendTerminalLog("⏳ Đang theo dõi tiến trình thực thi (Real-time Cloud Status)...", "info");
+
+                    let elapsedSeconds = 0;
+                    if (workflowPollInterval) clearInterval(workflowPollInterval);
+
+                    workflowPollInterval = setInterval(async () => {
+                        elapsedSeconds += 3;
+                        try {
+                            const runsRes = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/actions/runs?per_page=1`, {
+                                headers: { "Authorization": `token ${token}`, "Accept": "application/vnd.github.v3+json" }
+                            });
+                            if (runsRes.ok) {
+                                const runsData = await runsRes.json();
+                                const latestRun = runsData.workflow_runs && runsData.workflow_runs[0];
+                                if (latestRun) {
+                                    currentCloudRunId = latestRun.id;
+                                    const status = latestRun.status;
+                                    const conclusion = latestRun.conclusion;
+                                    
+                                    if (status === "completed") {
+                                        clearInterval(workflowPollInterval);
+                                        if (conclusion === "success") {
+                                            appendTerminalLog(`🎉 [CLOUD HOÀN TẤT] Tác vụ #${latestRun.run_number} đã thực thi thành công mỹ mãn! (${elapsedSeconds}s)`, "success");
+                                            appendTerminalLog(`🔗 Xem nhật ký đầy đủ: ${latestRun.html_url}`, "info");
+                                        } else if (conclusion === "cancelled") {
+                                            appendTerminalLog(`🛑 [CLOUD ĐÃ HỦY] Tác vụ #${latestRun.run_number} đã bị hủy thành công (${elapsedSeconds}s)`, "warning");
+                                        } else {
+                                            appendTerminalLog(`⚠️ [CLOUD KẾT THÚC] Tác vụ kết thúc với trạng thái: ${conclusion} (${elapsedSeconds}s)`, "warning");
+                                            appendTerminalLog(`🔗 Kiểm tra nhật ký chi tiết tại: ${latestRun.html_url}`, "warning");
+                                        }
+                                        updateProcessControlUI(false, false);
+                                    } else {
+                                        appendTerminalLog(`⏳ [${elapsedSeconds}s] Trạng thái Cloud: ${status.toUpperCase()} (Run #${latestRun.run_number})...`);
+                                    }
+                                }
+                            }
+                        } catch (e) {}
+
+                        if (elapsedSeconds >= 180) {
+                            clearInterval(workflowPollInterval);
+                            appendTerminalLog("ℹ️ Đã dừng theo dõi tự động sau 3 phút. Công cụ vẫn tiếp tục chạy độc lập trên Cloud.", "info");
+                            updateProcessControlUI(false, false);
+                        }
+                    }, 3000);
+
+                } else {
+                    const errData = await response.json().catch(() => ({}));
+                    appendTerminalLog(`❌ Lỗi API GitHub (${response.status}): ${errData.message || response.statusText}`, "error");
+                    updateProcessControlUI(false, false);
+                }
+            } catch (err) {
+                appendTerminalLog(`❌ Lỗi mạng khi kết nối GitHub Actions: ${err.message}`, "error");
+                updateProcessControlUI(false, false);
+            }
+        }
+
+        // =========================================================================
+        // SCM CUSTOM SPAM WEB STUDIO ENGINE (DYNAMIC STORES, TEMPLATES, PREVIEW)
+        // =========================================================================
+        const CUSTOM_SPAM_PRESETS = {
+            thong_bao: "📢 **THÔNG BÁO TỪ PHÒNG SCM**\nNgày: {NGAY}\nKính gửi Cửa hàng: **{TEN_ST}** ({ID_ST})\nNhờ Siêu thị phối hợp kiểm tra và hoàn tất chứng từ tồn đọng giúp team nhé!\n{TAGS}",
+            nhac_phieu: "📦 **NHẮC NHỞ PHIẾU CHUYỂN TREO**\nNgày: {NGAY}\nSiêu thị **{TEN_ST}** vui lòng kiểm tra và bấm HOÀN THÀNH các phiếu chuyển đang treo gấp trong ca!\n{TAGS}",
+            doi_soat: "🔍 **ĐỐI SOÁT CHỨNG TỪ TỒN KHO**\nNgày: {NGAY}\nKính gửi Quản lý Siêu thị **{TEN_ST}**,\nSCM ghi nhận còn phiếu lệch chưa giải trình. Vui lòng phản hồi sớm.\n{TAGS}",
+            hau_kiem: "⚠️ **CẢNH BÁO HẬU KIỂM KHO**\nNgày: {NGAY}\nCửa hàng **{TEN_ST}** kiểm tra lại số liệu thực xuất / thực nhập theo biên bản.\n{TAGS}"
+        };
+
+        let customSpamStores = [{"id": "A101", "name": "KFM_BDU_DAN - 27 Tân Lập", "short": "A101", "chat_id": "-4970846623"}, {"id": "A102", "name": "KFM_HCM_TDU - 128A Kha Vạn Cân", "short": "A102", "chat_id": "-4957522643"}, {"id": "A103", "name": "KFM_HCM_NBE - 222 Lê Văn Lương", "short": "A103", "chat_id": "-4886971123"}, {"id": "A104", "name": "KFM_HCM_NBE - 5/3D Huỳnh Tấn Phát", "short": "A104", "chat_id": "-1002558007963"}, {"id": "A105", "name": "KFM_HCM_TDU - 02 Lê Lợi", "short": "A105", "chat_id": "-4947055311"}, {"id": "A106", "name": "KFM_HCM_PNH - T1-5 TMDV Orchard Garden", "short": "A106", "chat_id": "-4746420333"}, {"id": "A107", "name": "KFM_HCM_TDU - 05 Đường D3 Phước Long", "short": "A107", "chat_id": "-1003525071105"}, {"id": "A108", "name": "KFM_HCM_TDU - 38E Cây Keo", "short": "A108", "chat_id": "-4978161635"}, {"id": "A108", "name": "KFM_HCM_TDU - 38E Cây Keo", "short": "A108", "chat_id": "-4813095752"}, {"id": "A109", "name": "KFM_HCM_Q07 - 106 Trần Trọng Cung", "short": "A109", "chat_id": "-1002882274038"}, {"id": "A110", "name": "KFM_HCM_Q10 - Jasmine 1 Hà Đô Centrosa", "short": "A110", "chat_id": "-1002900710978"}, {"id": "A111", "name": "KFM_HCM_TDU - BA-S03 New City", "short": "A111", "chat_id": "-4854147505"}, {"id": "A112", "name": "KFM_HCM_Q1 - 93 Cô Giang", "short": "A112", "chat_id": "-4659539358"}, {"id": "A113", "name": "KFM_HCM_BTH - 216 Phan Văn Hân", "short": "A113", "chat_id": "-4810768163"}, {"id": "A114", "name": "KFM_HCM_Q08 - 320 Hưng Phú", "short": "A114", "chat_id": "-4850342862"}, {"id": "A115", "name": "KFM_HCM_BTH - 484B Lê Quang Định", "short": "A115", "chat_id": "-4870087396"}, {"id": "A116", "name": "KFM_HCM_Q12 - 76 Trần Thị Cờ", "short": "A116", "chat_id": "-5065492668"}, {"id": "A117", "name": "KFM_BDU_TAN - SH04 The Rivana", "short": "A117", "chat_id": "-4938449227"}, {"id": "A117", "name": "KFM_BDU_TAN - SH04 The Rivana", "short": "A117", "chat_id": "-1003595238765"}, {"id": "A118", "name": "KFM_HCM_Q10 - 74 Vĩnh Viễn", "short": "A118", "chat_id": "-5094638485"}, {"id": "A119", "name": "KFM_HCM_TDU - 09 Đào Trinh Nhất", "short": "A119", "chat_id": "-5009402250"}, {"id": "A120", "name": "KFM_HCM_Q10 - 7/29 Thành Thái", "short": "A120", "chat_id": "-5297647450"}, {"id": "A121", "name": "KFM_HCM_Q06 - 123 Lý Chiêu Hoàng", "short": "A121", "chat_id": "-5022284943"}, {"id": "A123", "name": "KFM_HCM_TDU - 29B Đường Số 30 4S Linh Đông", "short": "A123", "chat_id": "-5037293861"}, {"id": "A124", "name": "KFM_HCM_TDU - 74 Đường Số 1 Chung Cư Sky 9", "short": "A124", "chat_id": "-4825566527"}, {"id": "A125", "name": "KFM_HCM_TDU - 115 Man Thiện", "short": "A125", "chat_id": "-5039669634"}, {"id": "A126", "name": "KFM_HCM_Q03 - 274 Lê Văn Sỹ", "short": "A126", "chat_id": "-5005449812"}, {"id": "A127", "name": "KFM_HCM_TDU - B-SH.06 Urban Green", "short": "A127", "chat_id": "-5131825480"}, {"id": "A128", "name": "KFM_HCM_GVA - TM0.03 CH3 Cityland Park Hill", "short": "A128", "chat_id": "-5004400246"}, {"id": "A129", "name": "KFM_HCM_Q07 - 17 Đường số 16, Khu Nam Viên Midtown", "short": "A129", "chat_id": "-4995752727"}, {"id": "A130", "name": "KFM_HCM_TDU - 41 Vũ Tông Phan", "short": "A130", "chat_id": "-5056493930"}, {"id": "A131", "name": "KFM_HCM_Q08 - B01.05 Dream Home Palace", "short": "A131", "chat_id": "-5152526449"}, {"id": "A132", "name": "KFM_HCM_TDU - 136 Hiệp Bình", "short": "A132", "chat_id": "-5060013044"}, {"id": "A133", "name": "KFM_HCM_BCH - Block G Conic Skyway", "short": "A133", "chat_id": "-5212554383"}, {"id": "A134", "name": "KFM_HCM_BTA - 4535 Nguyễn Cửu Phú", "short": "A134", "chat_id": "-5057155708"}, {"id": "A135", "name": "KFM_HCM_NBE - 1652 Huỳnh Tấn Phát", "short": "A135", "chat_id": "-1004437324085"}, {"id": "A136", "name": "KFM_HCM_Q03 - 125 Nguyễn Phúc Nguyên", "short": "A136", "chat_id": "-5158389296"}, {"id": "A137", "name": "KFM_HCM_TDU - 60 Lương Định Của", "short": "A137", "chat_id": "-5000807561"}, {"id": "A138", "name": "KFM_HCM_TBI - 48 Trần Văn Quang", "short": "A138", "chat_id": "-5090615271"}, {"id": "A139", "name": "KFM_HCM_BTA - 197 Đường số 1 An Lạc", "short": "A139", "chat_id": "-5094000749"}, {"id": "A140", "name": "KFM_HCM_BCH - 68 Đường Số 1 Khu dân cư 6B Intresco", "short": "A140", "chat_id": "-5263695143"}, {"id": "A141", "name": "KFM_HCM_Q07 - X1.013 Sunrise City North", "short": "A141", "chat_id": "-5102570262"}, {"id": "A143", "name": "KFM_HCM_TPH - 83 Khuông Việt", "short": "A143", "chat_id": "-5159131607"}, {"id": "A144", "name": "KFM_HCM_Q07 - A01-06 Hoàng Anh Thanh Bình", "short": "A144", "chat_id": "-5158078354"}, {"id": "A145", "name": "KFM_HCM_TPH - 379 Thạch Lam", "short": "A145", "chat_id": "-5233572071"}, {"id": "A146", "name": "KFM_HCM_TBI - 108 Bùi Thị Xuân", "short": "A146", "chat_id": "-5269362420"}, {"id": "A147", "name": "KFM_HCM_Q07 - 956 Huỳnh Tấn Phát", "short": "A147", "chat_id": "-5110539026"}, {"id": "A148", "name": "KFM_HCM_BTH - 127 Tân Cảng", "short": "A148", "chat_id": "-5030560383"}, {"id": "A149", "name": "KFM_HCM_TPH - 50 Lương Minh Nguyệt", "short": "A149", "chat_id": "-5052944571"}, {"id": "A150", "name": "KFM_HCM_Q07 - A14 The Infinity Riviera Point", "short": "A150", "chat_id": "-5206503915"}, {"id": "A151", "name": "KFM_HCM_GVA - 20 Lê Đức Thọ", "short": "A151", "chat_id": "-5226952638"}, {"id": "A154", "name": "KFM_HCM_TDU - 299 Liên Phường", "short": "A154", "chat_id": "-4907799710"}, {"id": "A155", "name": "KFM_HCM_Q12 - 170 Nguyễn Thị Búp", "short": "A155", "chat_id": "-5143331178"}, {"id": "A156", "name": "KFM_HCM_TDU - 101C Dương Đình Hội", "short": "A156", "chat_id": "-5099008566"}, {"id": "A157", "name": "KFM_HCM_Q06 - B1.00.01 Him Lam Chợ Lớn", "short": "A157", "chat_id": "-5263861524"}, {"id": "A158", "name": "KFM_HCM_TDU - 10A Đường Số 20 Chung Cư Opal Garden", "short": "A158", "chat_id": "-5536761493"}, {"id": "A159", "name": "KFM_HCM_TPH - 52 Thoại Ngọc Hầu", "short": "A159", "chat_id": "-5018175502"}, {"id": "A160", "name": "KFM_HCM_Q06 - 145 Đường Số 23 Bình Phú", "short": "A160", "chat_id": "-5187544138"}, {"id": "A161", "name": "KFM_HCM_NBE - A2.SH28-30 The Park Residence", "short": "A161", "chat_id": "-5188493690"}, {"id": "A163", "name": "KFM_HCM_TPH - S2.0.28 Block A6 Alnata Plus Celadon City", "short": "A163", "chat_id": "-5210410858"}, {"id": "A164", "name": "KFM_BDU_DAN - B2.01.05 Tháp B Opal Boulevard", "short": "A164", "chat_id": "-5223853892"}, {"id": "A165", "name": "KFM_HCM_Q07 - B1.01 Chung cư Golden Star", "short": "A165", "chat_id": "-4906644767"}, {"id": "A166", "name": "KFM_HCM_Q07 - Block K Happy Valley", "short": "A166", "chat_id": "-5135406910"}, {"id": "A167", "name": "KFM_HCM_TDU - TM1.15 Chung Cư 9 View", "short": "A167", "chat_id": "-5202511646"}, {"id": "A169", "name": "KFM_HCM_TBI - Block A Chung Cư Phúc Yên 2", "short": "A169", "chat_id": "-5208260532"}, {"id": "A170", "name": "KFM_HCM_TBI - 91 Nguyễn Phúc Chu", "short": "A170", "chat_id": "-5031310721"}, {"id": "A171", "name": "KFM_HCM_Q08 - 819 Phạm Thế Hiển", "short": "A171", "chat_id": "-5100060992"}, {"id": "A172", "name": "KFM_HCM_TDU - 173 Lê Văn Chí", "short": "A172", "chat_id": "-5224476913"}, {"id": "A174", "name": "KFM_HCM_Q03 - 116 Bàn Cờ", "short": "A174", "chat_id": "-5156303742"}, {"id": "A175", "name": "KFM_HCM_PNH - GM-1.06 Golden Mansion", "short": "A175", "chat_id": "-5169150901"}, {"id": "A176", "name": "KFM_HCM_NBE - A.1.05 Sunrise Riverside", "short": "A176", "chat_id": "-5088265050"}, {"id": "A177", "name": "KFM_HCM_Q07 - 1016/21 Chung Cư Sky Garden 2-R1-2", "short": "A177", "chat_id": "-5279185281"}, {"id": "A178", "name": "KFM_HCM_NBE - G16 Celesta Rise", "short": "A178", "chat_id": "-5288962344"}, {"id": "A179", "name": "KFM_HCM_TDU - A1.02 Him Lam Phú An", "short": "A179", "chat_id": "-5228058674"}, {"id": "A181", "name": "KFM_HCM_TDU - B6-D.TMDV.02 Masteri Center Point", "short": "A181", "chat_id": "-5293338882"}, {"id": "A182", "name": "KFM_HCM_TDU - S08.02 Vinhomes Grand Park", "short": "A182", "chat_id": "-5268822151"}, {"id": "A183", "name": "KFM_HCM_TDU - 86C Đường 339 Phước Long", "short": "A183", "chat_id": "-5150306625"}, {"id": "A184", "name": "KFM_HCM_BCH - L1.08 Saigon Mia", "short": "A184", "chat_id": "-5203833846"}, {"id": "A185", "name": "KFM_HCM_TDU - BS15 Vinhomes Grand Park", "short": "A185", "chat_id": "-5163672851"}, {"id": "A186", "name": "KFM_HCM_TPH - H.38 Melody Residences Âu Cơ", "short": "A186", "chat_id": "-5291554022"}, {"id": "A187", "name": "KFM_HCM_TDU - 560 Nguyễn Duy Trinh", "short": "A187", "chat_id": "-1003856051511"}, {"id": "A188", "name": "KFM_HCM_Q11 - CH0.08 Chung Cư Thuận Việt", "short": "A188", "chat_id": "-5205248121"}, {"id": "A189", "name": "KFM_BDU_DAN - 9 Đường M, Khu Phố Nhị Đồng 2", "short": "A189", "chat_id": "-5263939973"}, {"id": "A190", "name": "KFM_HCM_TBI - BPB-01.08 Botanica Premier", "short": "A190", "chat_id": "-5162953573"}, {"id": "A191", "name": "KFM_HCM_Q01 - 35 Nguyễn Hữu Cầu", "short": "A191", "chat_id": "-5157171466"}, {"id": "A192", "name": "KFM_HCM_BTH - 61 Bùi Đình Túy", "short": "A192", "chat_id": "-5254381964"}, {"id": "A193", "name": "KFM_HCM_TDU - SH5-SH6 Homyland Riverside", "short": "A193", "chat_id": "-1003958760392"}, {"id": "A194", "name": "KFM_HCM_Q04 - TM.B.06 Millennium Bến Vân Đồn", "short": "A194", "chat_id": "-5290327565"}, {"id": "A195", "name": "KFM_HCM_TPH - 91 Nguyễn Sơn", "short": "A195", "chat_id": "-5138011234"}, {"id": "A196", "name": "KFM_HCM_TBI - 56 Đường A4", "short": "A196", "chat_id": "-5034156634"}, {"id": "A197", "name": "KFM_HCM_TDU - T05 Tháp Tilia Empire City", "short": "A197", "chat_id": "-1004396051291"}, {"id": "A198", "name": "KFM_HCM_Q07 - A1.03 Sunrise City View", "short": "A198", "chat_id": "-5132757986"}, {"id": "A199", "name": "KFM_HCM_TBI - 76 Bàu Cát", "short": "A199", "chat_id": "-5181060615"}, {"id": "A200", "name": "KFM_HCM_Q12 - H36 Khu Nhà Ở Thới An Đường Lê Thị Riêng", "short": "A200", "chat_id": "-5125738337"}, {"id": "A201", "name": "KFM_HCM_GVA - 32B Đường Số 1 An Hội Đông", "short": "A201", "chat_id": "-1004405937281"}, {"id": "A202", "name": "KFM_HCM_BCH - 32A Đường Số 10 Bình Hưng", "short": "A202", "chat_id": "-5233500171"}, {"id": "A203", "name": "KFM_HCM_Q12 - 135 Tân Thới Nhất 17", "short": "A203", "chat_id": "-5242263578"}, {"id": "A204", "name": "KFM_HCM_TDU - 67A Nguyễn Duy Trinh Long Trường", "short": "A204", "chat_id": "-1004332992942"}, {"id": "A205", "name": "KFM_HCM_GVA - 81/2 Đường 59 An Hội Tây", "short": "A205", "chat_id": "-5204014049"}, {"id": "A207", "name": "KFM_HCM_TDU - SH-1C 2 Đường A5 KDC Palm Residence", "short": "A207", "chat_id": "-5425409318"}, {"id": "A208", "name": "KFM_HCM_TDU - BS08 Vinhomes Grand Park", "short": "A208", "chat_id": "-1004369961071"}, {"id": "A209", "name": "KFM_BDU_DAN - 145B Lê Trọng Tấn", "short": "A209", "chat_id": "-1004469963017"}, {"id": "A210", "name": "KFM_HCM_TBI - 289 Hồng Lạc", "short": "A210", "chat_id": "-1004413869891"}, {"id": "A212", "name": "KFM_HCM_TDU - 146 Đường D1 Phước Long", "short": "A212", "chat_id": "-5585568162"}, {"id": "A214", "name": "KFM_BDU_TAN - 13 Vĩnh Phú 41", "short": "A214", "chat_id": "-1003707250405"}, {"id": "A217", "name": "KFM_HCM_TDU - 129 Hoàng Diệu 2", "short": "A217", "chat_id": "-1004334608188"}, {"id": "A218", "name": "KFM_HCM_Q05 - 87 Nguyễn Duy Dương", "short": "A218", "chat_id": "-1004322601078"}, {"id": "A219", "name": "KFM_HCM_Q06 - TMDV 1-08 Chung Cư D-Homme", "short": "A219", "chat_id": "-1004410100037"}, {"id": "A220", "name": "KFM_HCM_Q07 - 116 Đường Số 8 KDC Nam Long", "short": "A220", "chat_id": "-5171632693"}, {"id": "A221", "name": "KFM_HCM_BTA - 235 Đường Số 6 An Lạc", "short": "A221", "chat_id": "-5373475260"}, {"id": "A223", "name": "KFM_HCM_PNH - 29 Đặng Văn Ngữ", "short": "A223", "chat_id": "-1004424998343"}, {"id": "A224", "name": "KFM_HCM_GVA - 8 Nguyễn Văn Dung", "short": "A224", "chat_id": "-1003888540638"}, {"id": "A225", "name": "KFM_HCM_TDU - 96K Đường Số 12 Tam Bình", "short": "A225", "chat_id": "-1004375842803"}, {"id": "A229", "name": "KFM_HCM_TPH - 58 Nguyễn Hữu Tiến", "short": "A229", "chat_id": "-1004312253338"}, {"id": "A231", "name": "KFM_HCM_BTA - 1M Đường A8 Bình Hưng Hòa B", "short": "A231", "chat_id": "-1004339440131"}, {"id": "A232", "name": "KFM_HCM_TDU - 376 Nguyễn Thị Định", "short": "A232", "chat_id": "-1004392333450"}, {"id": "A233", "name": "KFM_BDU_TAN - TDH03 New Lavida Tân Đông Hiệp", "short": "A233", "chat_id": "-1003904512457"}, {"id": "A234", "name": "KFM_HCM_Q08 - A0.03 Conic Riverside", "short": "A234", "chat_id": "-1003716491337"}, {"id": "A235", "name": "KFM_HCM_TBI - 44 Thăng Long", "short": "A235", "chat_id": "-1004327581275"}, {"id": "A236", "name": "KFM_HCM_Q12 - 45F1 Đường DN5 KDC An Sương", "short": "A236", "chat_id": "-1004475154133"}, {"id": "A237", "name": "KFM_BDU_TAN - TMDV 1 Chung Cư A&T Sky Garden", "short": "A237", "chat_id": "-1004341740983"}, {"id": "A240", "name": "KFM_HCM_TDU - S02.03 Vinhomes Grand Park", "short": "A240", "chat_id": "-1004473589568"}, {"id": "A241", "name": "KFM_HCM_TDU - S05.02 Vinhomes Grand Park", "short": "A241", "chat_id": "-1004495534449"}, {"id": "A250", "name": "KFM_HCM_Q07 - 25 Đường Số 3 Khu Dân Cư Phú Mỹ", "short": "A250", "chat_id": "-1004424055410"}, {"id": "A242", "name": "KFM_HCM_Q07 - B1 Q7 Boulevard", "short": "A242", "chat_id": "-1004268595947"}, {"id": "ACU", "name": "KFM_HCM_TDU - 0.01 Chung cư An Cư An Phú", "short": "ACU", "chat_id": "-4513412580"}, {"id": "AKR", "name": "KFM_HCM_BTA - AK4 Akari City", "short": "AKR", "chat_id": "-4189502700"}, {"id": "AV4", "name": "KFM_HCM_TDU - SAV_04-00.03 The Sun Avenue", "short": "AV4", "chat_id": "-4503460791"}, {"id": "BCG", "name": "KFM_BDU_DAN - SH01 BCons Garden", "short": "BCG", "chat_id": "-4063163569"}, {"id": "BQI", "name": "KFM_HCM_BTH - 107 Bình Quới", "short": "BQI", "chat_id": "-967297157"}, {"id": "BTH", "name": "KFM_HCM_BTA - 66/70 Bình Thành", "short": "BTH", "chat_id": "-4840150141"}, {"id": "BVB", "name": "KFM_HCM_Q07 - 43 Bùi Văn Ba", "short": "BVB", "chat_id": "-1002439645926"}, {"id": "CHR", "name": "KFM_BDU_DAN - S01.11 Block A1 Charm Sapphire", "short": "CHR", "chat_id": "-4843220137"}, {"id": "CKO", "name": "KFM_HCM_TPH - 85 Cây Keo", "short": "CKO", "chat_id": "-791356749"}, {"id": "CLD", "name": "KFM_HCM_TPH - S1.0.38 Block A5 Diamond Celadon City", "short": "CLD", "chat_id": "-4579770752"}, {"id": "CLG", "name": "KFM_HCM_TBI - 64A Cửu Long", "short": "CLG", "chat_id": "-4842272947"}, {"id": "CLN", "name": "KFM_HCM_Q06 - 126 Chợ Lớn", "short": "CLN", "chat_id": "-4202085650"}, {"id": "CN1", "name": "KFM_HCM_TPH - 48 CN1", "short": "CN1", "chat_id": "-822801997"}, {"id": "CTH", "name": "KFM_HCM_TDU - TMDV Citihome Cát Lái", "short": "CTH", "chat_id": "-4133099957"}, {"id": "D10", "name": "KFM_HCM_Q7 - 01 Đường Số 10 Tân Kiểng", "short": "D10", "chat_id": "-4207720204"}, {"id": "DMR", "name": "KFM_HCM_Q08 - Block C Diamond Riverside", "short": "DMR", "chat_id": "-4987817070"}, {"id": "DQH", "name": "KFM_HCM_GVA - 372 Dương Quảng Hàm", "short": "DQH", "chat_id": "-852406010"}, {"id": "DS3", "name": "KFM_HCM_TDU - 63 Đường Số 3", "short": "DS3", "chat_id": "-955688061"}, {"id": "DS7", "name": "KFM_HCM_BTA - 99 Đường Số 7", "short": "DS7", "chat_id": "-4041044290"}, {"id": "DXH", "name": "KFM_HCM_TDU - 539 Đỗ Xuân Hợp", "short": "DXH", "chat_id": "-954752748"}, {"id": "ECG", "name": "KFM_HCM_Q07 - SH16 Eco Green", "short": "ECG", "chat_id": "-1002479606021"}, {"id": "EH3", "name": "KFM_HCM_BTA - A10-0.02 Ehome 3", "short": "EH3", "chat_id": "-4844074755"}, {"id": "EHS", "name": "KFM_HCM_TDU - A0.01 EHomeS Phú Hữu", "short": "EHS", "chat_id": "-4071286738"}, {"id": "EMR", "name": "KFM_BDU_TAN - Block A Emerald Golf View", "short": "EMR", "chat_id": "-1002574399398"}, {"id": "ERT", "name": "KFM_HCM_Q07 - 0105 B4 Era Town", "short": "ERT", "chat_id": "-807927844"}, {"id": "GDU", "name": "KFM_HCM_TPH - 116 Gò Dầu", "short": "GDU", "chat_id": "-915258555"}, {"id": "GHA", "name": "KFM_HCM_TDU - The Art Gia Hòa", "short": "GHA", "chat_id": "-4823902549"}, {"id": "HHG", "name": "KFM_HCM_Q10 - 103 Hòa Hưng", "short": "HHG", "chat_id": "-4623899543"}, {"id": "HHM", "name": "KFM_HCM_TBI - 165 Hoàng Hoa Thám", "short": "HHM", "chat_id": "-4913037367"}, {"id": "HHT", "name": "KFM_HCM_TBI - 22 Hoàng Hoa Thám", "short": "HHT", "chat_id": "-705684646"}, {"id": "HLR", "name": "KFM_HCM_Q07 - Block A Himlam Riverside Q7", "short": "HLR", "chat_id": "-4892625820"}, {"id": "HMN", "name": "KFM_HCM_TBI - Block C Harmona", "short": "HMN", "chat_id": "-4066759092"}, {"id": "HNG", "name": "KFM_HCM_Q12 - Block B1 Hưng Ngân Garden", "short": "HNG", "chat_id": "-4843390858"}, {"id": "HNN", "name": "KFM_HCM_Q08 - 296 Hoàng Ngân", "short": "HNN", "chat_id": "-4854268300"}, {"id": "HPD", "name": "KFM_BDU_DAN - 01-06 TMDV Him Lam Phú Đông", "short": "HPD", "chat_id": "-4533722045"}, {"id": "HTC", "name": "KFM_HCM_Q03 - 14 Huỳnh Tịnh Của", "short": "HTC", "chat_id": "-4548375618"}, {"id": "HTN", "name": "KFM_HCM_TDU - 17 Hồ Thị Nhung", "short": "HTN", "chat_id": "-4617834058"}, {"id": "HTP", "name": "KFM_HCM_Q07 - 571 Huỳnh Tấn Phát", "short": "HTP", "chat_id": "-883536739"}, {"id": "HV2", "name": "KFM_HCM_Q07 - R13 Hưng Vượng 2", "short": "HV2", "chat_id": "-4124726502"}, {"id": "IAP", "name": "KFM_HCM_TDU - Block B Imperia An Phú", "short": "IAP", "chat_id": "-4129048161"}, {"id": "JKD", "name": "KFM_HCM_TDU - A1.04 Jamila Khang Điền", "short": "JKD", "chat_id": "-4218466578"}, {"id": "KDG", "name": "KFM_HCM_Q03 - 10D Kỳ Đồng", "short": "KDG", "chat_id": "-4685936814"}, {"id": "KHI", "name": "KFM_HCM_Q04 - 98 Khánh Hội", "short": "KHI", "chat_id": "-880112715"}, {"id": "LPM", "name": "KFM_HCM_Q07 - 39 Lý Phục Man", "short": "LPM", "chat_id": "-4642722927"}, {"id": "LTC", "name": "KFM_HCM_Q07 - 97 Lê Thị Chợ", "short": "LTC", "chat_id": "-4174079222"}, {"id": "LVH", "name": "KFM_HCM_TDU - 222 Lê Văn Thịnh", "short": "LVH", "chat_id": "-4832327413"}, {"id": "LVL", "name": "KFM_HCM_NBE - 166E Lê Văn Lương", "short": "LVL", "chat_id": "-783204272"}, {"id": "LVN", "name": "KFM_HCM_Q07 - 09 Lâm Văn Bền", "short": "LVN", "chat_id": "-4551905438"}, {"id": "LVT", "name": "KFM_HCM_GVA - 308 Lê Văn Thọ", "short": "LVT", "chat_id": "-875321112"}, {"id": "LVY", "name": "KFM_HCM_TBI - 236A Lê Văn Sỹ", "short": "LVY", "chat_id": "-1003958612570"}, {"id": "MTE", "name": "KFM_HCM_TDU - D01.14 MT Eastmark City", "short": "MTE", "chat_id": "-4733319672"}, {"id": "MZ2", "name": "KFM_HCM_BCH - A7-8 Valora Mizuki", "short": "MZ2", "chat_id": "-4273732297"}, {"id": "MZK", "name": "KFM_HCM_BCH - TMDV2 Mizuki Park", "short": "MZK", "chat_id": "-4044742673"}, {"id": "NDH", "name": "KFM_HCM_TDU - 1426 Nguyễn Duy Trinh", "short": "NDH", "chat_id": "-4624997784"}, {"id": "NDT", "name": "KFM_HCM_TDU - 305 Nguyễn Duy Trinh", "short": "NDT", "chat_id": "-965979457"}, {"id": "NHG", "name": "KFM_HCM_GVA - 15 Nguyên Hồng", "short": "NHG", "chat_id": "-719226115"}, {"id": "NKM", "name": "KFM_HCM_GVA - 371 Nguyễn Kiệm", "short": "NKM", "chat_id": "-887431835"}, {"id": "NTD", "name": "KFM_HCM_TDU - 160A Nguyễn Thị Định", "short": "NTD", "chat_id": "-820823560"}, {"id": "NTN", "name": "KFM_HCM_PNH - 154 Nguyễn Trọng Tuyển", "short": "NTN", "chat_id": "-1004389700726"}, {"id": "NTO", "name": "KFM_HCM_BTH - 108 Ngô Tất Tố", "short": "NTO", "chat_id": "-4254286776"}, {"id": "NTT", "name": "KFM_HCM_Q07 - 436 Nguyễn Thị Thập", "short": "NTT", "chat_id": "-640887076"}, {"id": "NTU", "name": "KFM_HCM_BTA - 46 Nguyễn Thị Tú", "short": "NTU", "chat_id": "-619954677"}, {"id": "NVD", "name": "KFM_HCM_BTH - 42 Nguyễn Văn Đậu", "short": "NVD", "chat_id": "-4136471345"}, {"id": "NVK", "name": "KFM_HCM_GVA - 299 Nguyễn Văn Khối", "short": "NVK", "chat_id": "-4922765575"}, {"id": "NVQ", "name": "KFM_HCM_Q12 - 678 Nguyễn Văn Quá", "short": "NVQ", "chat_id": "-764538790"}, {"id": "NVT", "name": "KFM_HCM_Q09 - 367 Nguyễn Văn Tăng", "short": "NVT", "chat_id": "-874764140"}, {"id": "OPS", "name": "KFM_BDU_TAN - B.01.04 Tháp B Opal Skyline", "short": "OPS", "chat_id": "-4858294597"}, {"id": "PGS", "name": "KFM_HCM_Q08 - 01.18 Pegasuite", "short": "PGS", "chat_id": "-4015228645"}, {"id": "PHG", "name": "KFM_HCM_BCH - 10 Phạm Hùng", "short": "PHG", "chat_id": "-887863930"}, {"id": "PHI", "name": "KFM_HCM_GVA - 410 Phan Huy Ích", "short": "PHI", "chat_id": "-824620090"}, {"id": "PHL", "name": "KFM_HCM_Q07 - 233 Phạm Hữu Lầu", "short": "PHL", "chat_id": "-734854443"}, {"id": "PKD", "name": "KFM_HCM_BTA - TMDV19 Privia Khang Điền", "short": "PKD", "chat_id": "-4901512510"}, {"id": "PPZ", "name": "KFM_HCM_Q12 - AS19 Block A Prosper Plaza", "short": "PPZ", "chat_id": "-4983741648"}, {"id": "PTN", "name": "KFM_HCM_Q07 - E72 Phú Thuận", "short": "PTN", "chat_id": "-4141951525"}, {"id": "PVB", "name": "KFM_HCM_GVA - 446 Phạm Văn Bạch", "short": "PVB", "chat_id": "-4850759942"}, {"id": "Q50", "name": "KFM_HCM_BCH - 511 Quốc Lộ 50", "short": "Q50", "chat_id": "-1004301337474"}, {"id": "Q7R", "name": "KFM_HCM_Q07 - Lô CD L1-12 Q7 Riverside Đào Trí", "short": "Q7R", "chat_id": "-4832071854"}, {"id": "QHG", "name": "KFM_HCM_TDU - 59 Quốc Hương", "short": "QHG", "chat_id": "-4275316099"}, {"id": "RS4", "name": "KFM_HCM_TPH - RS4 Richstar", "short": "RS4", "chat_id": "-4876357427"}, {"id": "RVS", "name": "KFM_HCM_Q07 - C0.01 Riverside Phú Mỹ Hưng", "short": "RVS", "chat_id": "-4565998341"}, {"id": "SCV", "name": "KFM_HCM_Q07 - B0.02 Scenic Valley 2", "short": "SCV", "chat_id": "-4966463527"}, {"id": "SFR", "name": "KFM_HCM_TDU - D1-1.24 SAFIRA Khang Điền", "short": "SFR", "chat_id": "-4188647393"}, {"id": "SSR", "name": "KFM_HCM_NBE - SH14-15 Saigon South Residences", "short": "SSR", "chat_id": "-4587755984"}, {"id": "THD", "name": "KFM_HCM_Q06 - 229A Tân Hòa Đông", "short": "THD", "chat_id": "-971553337"}, {"id": "THN", "name": "KFM_HCM_TDU - 02 Tạ Hiện", "short": "THN", "chat_id": "-4879917758"}, {"id": "TMY", "name": "KFM_HCM_Q07 - 31 Tân Mỹ", "short": "TMY", "chat_id": "-637584836"}, {"id": "TNO", "name": "KFM_HCM_TDU - 46 Trần Não", "short": "TNO", "chat_id": "-4061710654"}, {"id": "TNT", "name": "KFM_HCM_GVA - 195 Thống Nhất", "short": "TNT", "chat_id": "-913905784"}, {"id": "TSO", "name": "KFM_HCM_Q10 - BB17 Trường Sơn", "short": "TSO", "chat_id": "-1003376993342"}, {"id": "TVK", "name": "KFM_HCM_TPH - 66 Trương Vĩnh Ký", "short": "TVK", "chat_id": "-1002878256189"}, {"id": "VGP", "name": "KFM_HCM_TDU - S06.06 Vinhomes Grand Park", "short": "VGP", "chat_id": "-991292712"}, {"id": "VH2", "name": "KFM_HCM_TDU - S10.02 Vinhomes Grand Park", "short": "VH2", "chat_id": "-4093547539"}, {"id": "VH3", "name": "KFM_HCM_TDU - S1.05 Vinhomes Grand Park", "short": "VH3", "chat_id": "-4019623569"}, {"id": "VH4", "name": "KFM_HCM_TDU - S07.02 Vinhomes Grand Park", "short": "VH4", "chat_id": "-4694009977"}, {"id": "VH5", "name": "KFM_HCM_TDU - S03.05 Vinhomes Grand Park", "short": "VH5", "chat_id": "-1004357370577"}, {"id": "VH6", "name": "KFM_HCM_TDU - GH5 Vinhomes Grand Park", "short": "VH6", "chat_id": "-4802496117"}, {"id": "VH7", "name": "KFM_HCM_TDU - BS11 Vinhomes Grand Park", "short": "VH7", "chat_id": "-4758804950"}, {"id": "VHT", "name": "KFM_HCM_BTH - 54 Vũ Huy Tấn", "short": "VHT", "chat_id": "-614363941"}, {"id": "VLA", "name": "KFM_HCM_TPH - 128 Vườn Lài", "short": "VLA", "chat_id": "-4192610070"}, {"id": "VPC", "name": "KFM_HCM_TDU - 02 Nguyễn Thị Nhung", "short": "VPC", "chat_id": "-4571087456"}, {"id": "VTG", "name": "KFM_HCM_BTH - 86B Vũ Tùng", "short": "VTG", "chat_id": "-898072705"}, {"id": "WGA", "name": "KFM_HCM_BCH - D-2.01A Westgate An Gia", "short": "WGA", "chat_id": "-1002881624302"}];
+        let selectedCustomSpamStoreIds = new Set();
+        let currentCustomSpamStoreFilter = 'all';
+
+        function initCustomSpamStudio() {
+            const textarea = document.getElementById("customSpamMessageText");
+            if (textarea && !textarea.value.trim()) {
+                textarea.value = CUSTOM_SPAM_PRESETS.thong_bao;
+            }
+            
+            // Auto fetch fresh stores from Local Runner if available
+            fetch(`${LOCAL_RUNNER_API}/api/stores`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.success && Array.isArray(data.stores) && data.stores.length > 0) {
+                        customSpamStores = data.stores;
+                        renderCustomSpamStoreList();
+                    }
+                })
+                .catch(() => {
+                    renderCustomSpamStoreList();
+                });
+
+            renderCustomSpamStoreList();
+            updateCustomSpamPreview();
+        }
+
+        function renderCustomSpamStoreList() {
+            const container = document.getElementById("customSpamStoreListContainer");
+            if (!container) return;
+
+            const query = (document.getElementById("customSpamSearchInput")?.value || "").trim().toLowerCase();
+            
+            let filtered = customSpamStores.filter(st => {
+                const matchQuery = !query || 
+                    (st.id && st.id.toLowerCase().includes(query)) || 
+                    (st.name && st.name.toLowerCase().includes(query)) || 
+                    (st.short && st.short.toLowerCase().includes(query)) || 
+                    (st.chat_id && st.chat_id.includes(query));
+                    
+                if (!matchQuery) return false;
+                
+                const isSelected = selectedCustomSpamStoreIds.has(st.id);
+                if (currentCustomSpamStoreFilter === 'selected') return isSelected;
+                if (currentCustomSpamStoreFilter === 'unselected') return !isSelected;
+                return true;
+            });
+
+            const totalCount = customSpamStores.length;
+            const selectedCount = selectedCustomSpamStoreIds.size;
+            const unselectedCount = totalCount - selectedCount;
+
+            const cAll = document.getElementById("countFilterAll");
+            const cSel = document.getElementById("countFilterSelected");
+            const cUnsel = document.getElementById("countFilterUnselected");
+            if (cAll) cAll.innerText = totalCount;
+            if (cSel) cSel.innerText = selectedCount;
+            if (cUnsel) cUnsel.innerText = unselectedCount;
+
+            const badgeCount = document.getElementById("customSpamSelectedCount");
+            if (badgeCount) badgeCount.innerText = selectedCount;
+            const btnCount = document.getElementById("btnSendCustomSpamCount");
+            if (btnCount) btnCount.innerText = selectedCount === totalCount ? "TẤT CẢ 227" : (selectedCount === 0 ? "0" : selectedCount);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:2rem; color:#8b949e; font-size:0.85rem;">Không tìm thấy Siêu thị nào phù hợp.</div>`;
+                return;
+            }
+
+            let html = "";
+            for (const st of filtered) {
+                const isChecked = selectedCustomSpamStoreIds.has(st.id);
+                html += `
+                <div onclick="toggleCustomSpamStore('\${st.id}')" style="display:flex; align-items:center; gap:8px; padding:0.45rem 0.65rem; border-radius:6px; background:\${isChecked ? 'rgba(56, 189, 248, 0.14)' : 'rgba(255,255,255,0.02)'}; border:1px solid \${isChecked ? 'rgba(56, 189, 248, 0.45)' : 'rgba(255,255,255,0.06)'}; cursor:pointer; transition:all 0.15s ease;">
+                    <input type="checkbox" \${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleCustomSpamStore('\${st.id}')" style="cursor:pointer; accent-color:#38bdf8; width:15px; height:15px;">
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-weight:700; font-size:0.82rem; color:\${isChecked ? '#38bdf8' : '#e6edf3'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">\${st.id} - \${st.name}</div>
+                        <div style="font-size:0.68rem; color:#8b949e;">Chat ID: \${st.chat_id || 'Chưa cấu hình'}</div>
+                    </div>
+                </div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function toggleCustomSpamStore(id) {
+            if (selectedCustomSpamStoreIds.has(id)) {
+                selectedCustomSpamStoreIds.delete(id);
+            } else {
+                selectedCustomSpamStoreIds.add(id);
+            }
+            renderCustomSpamStoreList();
+            updateCustomSpamPreview();
+        }
+
+        function selectAllCustomSpamStores(select) {
+            if (select) {
+                customSpamStores.forEach(st => selectedCustomSpamStoreIds.add(st.id));
+            } else {
+                selectedCustomSpamStoreIds.clear();
+            }
+            renderCustomSpamStoreList();
+            updateCustomSpamPreview();
+        }
+
+        function setCustomSpamStoreFilter(filter) {
+            currentCustomSpamStoreFilter = filter;
+            const tabAll = document.getElementById("tabFilterAll");
+            const tabSel = document.getElementById("tabFilterSelected");
+            const tabUnsel = document.getElementById("tabFilterUnselected");
+
+            const activeStyle = "background:#0284c7; color:#fff; font-weight:700; border:none;";
+            const inactiveStyle = "background:rgba(255,255,255,0.06); color:#8b949e; font-weight:500; border:1px solid rgba(255,255,255,0.1);";
+
+            if (tabAll) tabAll.style.cssText = `padding:0.25rem 0.6rem; border-radius:5px; font-size:0.72rem; cursor:pointer; \${filter === 'all' ? activeStyle : inactiveStyle}`;
+            if (tabSel) tabSel.style.cssText = `padding:0.25rem 0.6rem; border-radius:5px; font-size:0.72rem; cursor:pointer; \${filter === 'selected' ? activeStyle : inactiveStyle}`;
+            if (tabUnsel) tabUnsel.style.cssText = `padding:0.25rem 0.6rem; border-radius:5px; font-size:0.72rem; cursor:pointer; \${filter === 'unselected' ? activeStyle : inactiveStyle}`;
+
+            renderCustomSpamStoreList();
+        }
+
+        function applyCustomSpamPreset(presetKey) {
+            const textarea = document.getElementById("customSpamMessageText");
+            if (textarea && CUSTOM_SPAM_PRESETS[presetKey]) {
+                textarea.value = CUSTOM_SPAM_PRESETS[presetKey];
+                onCustomSpamTextChange();
+            }
+        }
+
+        function insertCustomSpamTag(tag) {
+            const textarea = document.getElementById("customSpamMessageText");
+            if (!textarea) return;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            textarea.value = text.substring(0, start) + tag + text.substring(end);
+            textarea.focus();
+            textarea.selectionStart = textarea.selectionEnd = start + tag.length;
+            onCustomSpamTextChange();
+        }
+
+        function onCustomSpamTextChange() {
+            const textarea = document.getElementById("customSpamMessageText");
+            const charCount = document.getElementById("customSpamCharCount");
+            if (textarea && charCount) {
+                charCount.innerText = `${textarea.value.length} ký tự`;
+            }
+            updateCustomSpamPreview();
+        }
+
+        function updateCustomSpamPreview() {
+            const previewEl = document.getElementById("customSpamPreviewContent");
+            const textarea = document.getElementById("customSpamMessageText");
+            const tagRolesCheckbox = document.getElementById("customSpamTagRoles");
+            const timeEl = document.getElementById("previewTimeStr");
+
+            if (!previewEl) return;
+
+            if (timeEl) {
+                const now = new Date();
+                timeEl.innerText = now.toTimeString().substring(0, 5);
+            }
+
+            const rawText = textarea ? textarea.value : "";
+            if (!rawText.trim()) {
+                previewEl.innerHTML = '<span style="color:#8b949e; font-style:italic;">(Nội dung tin nhắn xem trước sẽ hiển thị tại đây...)</span>';
+                return;
+            }
+
+            let sampleStore = customSpamStores[0] || { id: "A101", name: "KFM_BDU_DAN - 27 Tân Lập" };
+            if (selectedCustomSpamStoreIds.size > 0) {
+                const firstId = Array.from(selectedCustomSpamStoreIds)[0];
+                const found = customSpamStores.find(s => s.id === firstId);
+                if (found) sampleStore = found;
+            }
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            const tagText = "@BGD_ST @QL_ST @ADMIN_ST";
+
+            let rendered = rawText
+                .replace(/\{TEN_ST\}/g, sampleStore.name)
+                .replace(/\{ID_ST\}/g, sampleStore.id)
+                .replace(/\{NGAY\}/g, todayStr);
+
+            if (rendered.includes('{TAGS}')) {
+                rendered = rendered.replace(/\{TAGS\}/g, tagText);
+            } else if (tagRolesCheckbox && tagRolesCheckbox.checked && tagText) {
+                rendered = rendered + "\n" + tagText;
+            }
+
+            let formattedHtml = escapeHtml(rendered);
+            formattedHtml = formattedHtml.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formattedHtml = formattedHtml.replace(/(@[A-Za-z0-9_]+)/g, '<span style="color:#5288c1; font-weight:600;">$1</span>');
+
+            previewEl.innerHTML = formattedHtml;
+        }
+
+        function resetCustomSpamStudio() {
+            selectedCustomSpamStoreIds.clear();
+            const textarea = document.getElementById("customSpamMessageText");
+            if (textarea) textarea.value = CUSTOM_SPAM_PRESETS.thong_bao;
+            const searchInput = document.getElementById("customSpamSearchInput");
+            if (searchInput) searchInput.value = "";
+            setCustomSpamStoreFilter('all');
+            onCustomSpamTextChange();
+        }
+
+        function openCustomSpamStudio() {
+            const studio = document.getElementById("customSpamStudioCard");
+            if (studio) {
+                studio.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                studio.style.boxShadow = "0 0 30px rgba(56,189,248,0.7)";
+                setTimeout(() => {
+                    studio.style.boxShadow = "0 8px 32px rgba(0,0,0,0.45)";
+                }, 1500);
+            }
+        }
+
+        async function triggerCustomSpamExecution() {
+            const textarea = document.getElementById("customSpamMessageText");
+            const tagRolesCheckbox = document.getElementById("customSpamTagRoles");
+            const dryRunCheckbox = document.getElementById("customSpamDryRun");
+            const btn = document.getElementById("btnSendCustomSpam");
+            const engineSelect = document.getElementById("runnerEngineSelect");
+            const engineChoice = engineSelect ? engineSelect.value : "auto";
+
+            const message = textarea ? textarea.value.trim() : "";
+            if (!message) {
+                alert("⚠️ Vui lòng nhập nội dung tin nhắn cần gửi!");
+                return;
+            }
+
+            let storesArg = "ALL";
+            if (selectedCustomSpamStoreIds.size === 0) {
+                alert("⚠️ Vui lòng chọn ít nhất 1 Siêu thị trong danh sách để gửi tin nhắn!");
+                return;
+            } else if (selectedCustomSpamStoreIds.size === customSpamStores.length) {
+                storesArg = "ALL";
+            } else {
+                storesArg = Array.from(selectedCustomSpamStoreIds).join(",");
+            }
+
+            const tagRoles = tagRolesCheckbox ? tagRolesCheckbox.checked : true;
+            const isDryRun = dryRunCheckbox ? dryRunCheckbox.checked : false;
+
+            const countText = selectedCustomSpamStoreIds.size === customSpamStores.length ? "TẤT CẢ 227" : `${selectedCustomSpamStoreIds.size}`;
+            const confirmMsg = isDryRun 
+                ? `🧪 BẠN ĐANG CHẠY THỬ (DRY-RUN) với ${countText} Siêu thị.\nTiếp tục?`
+                : `🚀 XÁC NHẬN GỬI THẬT: Bạn có chắc chắn muốn gửi tin nhắn tới ${countText} Siêu thị không?`;
+
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+
+            const terminalCard = document.getElementById("liveTerminalCard");
+            if (terminalCard) {
+                terminalCard.style.display = "block";
+                terminalCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            clearTerminalLogs();
+            appendTerminalLog(`🎯 KHỞI ĐỘNG CUSTOM SPAM STUDIO | Mục tiêu: ${countText} ST | Dry-Run: ${isDryRun ? "BẬT" : "TẮT"} | Tags: ${tagRoles ? "BẬT" : "TẮT"}`, "header");
+
+            let useLocal = false;
+            if (engineChoice === "local") {
+                useLocal = true;
+            } else if (engineChoice === "cloud") {
+                useLocal = false;
+            } else {
+                useLocal = window.isLocalRunnerOnline;
+            }
+
+            updateProcessControlUI(true, false);
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang Gửi Tin Nhắn...';
+            }
+
+            if (useLocal) {
+                appendTerminalLog("🔌 Kết nối Local Agent (http://127.0.0.1:8088/stream_custom)...", "info");
+                
+                if (currentEventSource) {
+                    try { currentEventSource.close(); } catch (e) {}
+                }
+
+                const params = new URLSearchParams({
+                    tool: "spam_tu_chon",
+                    stores: storesArg,
+                    message: message,
+                    tag_roles: tagRoles ? "true" : "false",
+                    dry_run: isDryRun ? "true" : "false"
+                });
+
+                try {
+                    const streamUrl = `${LOCAL_RUNNER_API}/stream_custom?${params.toString()}`;
+                    currentEventSource = new EventSource(streamUrl);
+
+                    currentEventSource.onmessage = function(e) {
+                        try {
+                            const data = JSON.parse(e.data);
+                            if (data.type === "log") {
+                                appendTerminalLog(data.line);
+                            } else if (data.type === "start") {
+                                appendTerminalLog(data.msg, "header");
+                            } else if (data.type === "end") {
+                                appendTerminalLog(data.msg, data.returncode === 0 ? "success" : "warning");
+                                currentEventSource.close();
+                                updateProcessControlUI(false, false);
+                            } else if (data.type === "error") {
+                                appendTerminalLog(data.msg, "error");
+                                currentEventSource.close();
+                                updateProcessControlUI(false, false);
+                            }
+                        } catch (err) {
+                            appendTerminalLog(e.data);
+                        }
+                    };
+
+                    currentEventSource.onerror = function() {
+                        appendTerminalLog("⚠️ Đang thực thi theo chế độ REST Sync Fallback...", "warning");
+                        try { currentEventSource.close(); } catch (e) {}
+                        
+                        fetch(`${LOCAL_RUNNER_API}/api/spam_custom`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                tool: "spam_tu_chon",
+                                stores: storesArg,
+                                message: message,
+                                tag_roles: tagRoles,
+                                dry_run: isDryRun
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.logs) {
+                                data.logs.split('\n').forEach(l => appendTerminalLog(l));
+                            }
+                            appendTerminalLog(data.success ? "✅ Thực thi hoàn tất!" : "⚠️ Hoàn tất có cảnh báo.", data.success ? "success" : "warning");
+                        })
+                        .catch(err => {
+                            appendTerminalLog(`❌ Không thể kết nối Local Agent: ${err.message}`, "error");
+                        })
+                        .finally(() => {
+                            updateProcessControlUI(false, false);
+                        });
+                    };
+
+                } catch (err) {
+                    appendTerminalLog(`❌ Lỗi: ${err.message}`, "error");
+                    updateProcessControlUI(false, false);
+                }
+
+            } else {
+                appendTerminalLog("☁️ Gửi yêu cầu Dispatch Custom Spam tới GitHub Actions Cloud Runner...", "info");
+                const token = DEFAULT_GH_PAT;
+
+                try {
+                    const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW_FILE}/dispatches`;
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            "Accept": "application/vnd.github.v3+json",
+                            "Authorization": `token ${token}`,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            ref: "main",
+                            inputs: {
+                                tool: "spam_tu_chon",
+                                stores: storesArg,
+                                message: message,
+                                no_tags: !tagRoles,
+                                dry_run: isDryRun
+                            }
+                        })
+                    });
+
+                    if (response.status === 204 || response.ok) {
+                        appendTerminalLog("✅ ĐÃ KÍCH HOẠT CUSTOM SPAM TRÊN GITHUB ACTIONS CLOUD RUNNER!", "success");
+                        appendTerminalLog(`👉 Siêu thị: ${storesArg} | Serverless Runner đang xử lý...`, "info");
+                    } else {
+                        appendTerminalLog(`❌ Lỗi khởi chạy GitHub Actions (${response.status})`, "error");
+                    }
+                } catch (err) {
+                    appendTerminalLog(`❌ Lỗi kết nối GitHub Actions: ${err.message}`, "error");
+                } finally {
+                    updateProcessControlUI(false, false);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
             populateMonthOptions();
             applyTheme(currentTheme);
             renderAll();
+            checkTelegramEngineConnection();
+            initCloudRunnerUI();
+            initCustomSpamStudio();
+
+            const ta = document.getElementById('chatReplyInput');
+            if (ta) {
+                ta.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendTelegramChatReply();
+                    }
+                });
+            }
         });
+
 
         function changeGroup(grp) {
             curGroup = grp;
@@ -10354,378 +11896,7 @@
 
         // =========================================================================
         // SCM HYBRID RUNNER ENGINE (LOCAL AGENT + GITHUB ACTIONS CLOUD)
-        // =========================================================================
-        const GH_USER = "aresphamha";
-        const GH_REPO = "Doi_Soat_Dong_Mat";
-        const GH_WORKFLOW_FILE = "run_spam_tools.yml";
-        const DEFAULT_GH_PAT = [103, 104, 112, 95, 83, 102, 75, 97, 98, 48, 98, 70, 66, 98, 68, 57, 52, 56, 109, 55, 82, 49, 71, 87, 67, 110, 111, 114, 122, 79, 65, 103, 98, 52, 50, 102, 103, 98, 97, 107].map(c => String.fromCharCode(c)).join("");
-        const LOCAL_RUNNER_API = "http://127.0.0.1:8088";
-
-        window.isLocalRunnerOnline = false;
-        window.activeRunnerMode = null; // 'local' or 'cloud'
-        window.activeWorkflowRunId = null;
-        let currentEventSource = null;
-        let workflowPollInterval = null;
-
-        function initCloudRunnerUI() {
-            const dateInput = document.getElementById("cloudToolDate");
-            if (dateInput && !dateInput.value) {
-                const today = new Date().toISOString().split('T')[0];
-                dateInput.value = today;
-            }
-            checkLocalRunnerStatus();
-            setInterval(checkLocalRunnerStatus, 4000);
-        }
-
-        async function checkLocalRunnerStatus() {
-            const localBadge = document.getElementById("localAgentBadge");
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 1800);
-                const res = await fetch(`${LOCAL_RUNNER_API}/health`, { signal: controller.signal });
-                clearTimeout(timeoutId);
-                if (res.ok) {
-                    window.isLocalRunnerOnline = true;
-                    if (localBadge) {
-                        localBadge.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#34d399;"></i> Local PC: Online (0ms)';
-                        localBadge.style.background = 'rgba(52, 211, 153, 0.2)';
-                        localBadge.style.color = '#34d399';
-                    }
-                    return;
-                }
-            } catch (e) {}
-
-            window.isLocalRunnerOnline = false;
-            if (localBadge) {
-                localBadge.innerHTML = '<i class="fa-solid fa-laptop" style="color:#94a3b8;"></i> Local PC: Tắt (Mở Chay_Local_Runner.bat)';
-                localBadge.style.background = 'rgba(148, 163, 184, 0.12)';
-                localBadge.style.color = '#94a3b8';
-            }
-        }
-
-        function setRunnerExecutingState(isExecuting) {
-            const btn = document.getElementById("btnTriggerCloud");
-            const btnStop = document.getElementById("btnStopTool");
-            const terminalStopBtn = document.getElementById("terminalStopBtn");
-
-            if (isExecuting) {
-                if (btn) {
-                    btn.disabled = true;
-                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang Thực Thi...';
-                    btn.style.opacity = '0.7';
-                }
-                if (btnStop) btnStop.style.display = 'inline-flex';
-                if (terminalStopBtn) terminalStopBtn.style.display = 'inline-block';
-            } else {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
-                    btn.style.opacity = '1';
-                }
-                if (btnStop) btnStop.style.display = 'none';
-                if (terminalStopBtn) terminalStopBtn.style.display = 'none';
-                window.activeRunnerMode = null;
-                window.activeWorkflowRunId = null;
-            }
-        }
-
-        async function stopCurrentExecution() {
-            appendTerminalLog("⏹️ Đang gửi tín hiệu YÊU CẦU DỪNG TIẾN TRÌNH...", "warning");
-
-            if (window.activeRunnerMode === "local") {
-                if (currentEventSource) {
-                    try { currentEventSource.close(); } catch(e) {}
-                }
-                try {
-                    const res = await fetch(`${LOCAL_RUNNER_API}/stop`, { method: "POST" });
-                    const data = await res.json();
-                    appendTerminalLog(`🛑 [LOCAL RUNNER] ${data.msg || "Đã dừng tiến trình!"}`, "error");
-                } catch(e) {
-                    appendTerminalLog(`⚠️ Không thể gửi tín hiệu dừng tới Local Agent: ${e.message}`, "error");
-                }
-            } else if (window.activeRunnerMode === "cloud") {
-                if (workflowPollInterval) clearInterval(workflowPollInterval);
-                if (window.activeWorkflowRunId) {
-                    try {
-                        const token = DEFAULT_GH_PAT;
-                        const cancelUrl = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/actions/runs/${window.activeWorkflowRunId}/cancel`;
-                        await fetch(cancelUrl, {
-                            method: "POST",
-                            headers: { "Authorization": `token ${token}`, "Accept": "application/vnd.github.v3+json" }
-                        });
-                        appendTerminalLog(`🛑 [CLOUD RUNNER] Đã gửi lệnh hủy Workflow #${window.activeWorkflowRunId} trên GitHub Actions!`, "error");
-                    } catch(e) {
-                        appendTerminalLog(`⚠️ Lỗi gửi lệnh hủy GitHub Actions: ${e.message}`, "error");
-                    }
-                } else {
-                    appendTerminalLog("🛑 Đã hủy theo dõi tác vụ Cloud.", "warning");
-                }
-            } else {
-                try { fetch(`${LOCAL_RUNNER_API}/stop`); } catch(e) {}
-                if (currentEventSource) {
-                    try { currentEventSource.close(); } catch(e) {}
-                }
-                if (workflowPollInterval) clearInterval(workflowPollInterval);
-                appendTerminalLog("🛑 Đã dừng tiến trình.", "warning");
-            }
-
-            setRunnerExecutingState(false);
-        }
-
-        function setCloudDate(mode) {
-            const dateInput = document.getElementById("cloudToolDate");
-            if (!dateInput) return;
-            const now = new Date();
-            if (mode === 'today') {
-                dateInput.value = now.toISOString().split('T')[0];
-            } else if (mode === 'yesterday') {
-                now.setDate(now.getDate() - 1);
-                dateInput.value = now.toISOString().split('T')[0];
-            } else if (mode === 'clear') {
-                dateInput.value = '';
-            }
-        }
-
-        function quickRunTool(toolName) {
-            const select = document.getElementById("cloudToolSelect");
-            if (select) select.value = toolName;
-            executeSelectedTool(toolName);
-        }
-
-        function appendTerminalLog(line, type = "info") {
-            const body = document.getElementById("terminalBody");
-            const terminalCard = document.getElementById("liveTerminalCard");
-            if (terminalCard) terminalCard.style.display = "block";
-            if (!body) return;
-
-            const timeStr = new Date().toTimeString().split(' ')[0];
-            let colorStyle = "#c9d1d9";
-            if (type === "success" || line.includes("✅") || line.includes("[ĐÃ GỬI]") || line.includes("thành công") || line.includes("SUCCESS")) {
-                colorStyle = "#34d399";
-            } else if (type === "warning" || line.includes("⚠️") || line.includes("[DRY-RUN]") || line.includes("⏹️")) {
-                colorStyle = "#fbbf24";
-            } else if (type === "error" || line.includes("❌") || line.includes("🛑") || line.includes("[LỖI]") || line.includes("FAILED")) {
-                colorStyle = "#f87171";
-            } else if (type === "header" || line.startsWith("===") || line.startsWith("🚀")) {
-                colorStyle = "#38bdf8";
-            }
-
-            const logRow = document.createElement("div");
-            logRow.style.color = colorStyle;
-            logRow.style.marginBottom = "2px";
-            logRow.innerHTML = `<span style="color:#6e7681; user-select:none;">[${timeStr}]</span> ${escapeHtml(line)}`;
-            body.appendChild(logRow);
-            body.scrollTop = body.scrollHeight;
-        }
-
-        function clearTerminalLogs() {
-            const body = document.getElementById("terminalBody");
-            if (body) body.innerHTML = "";
-        }
-
-        function copyTerminalLogs() {
-            const body = document.getElementById("terminalBody");
-            if (!body) return;
-            const text = body.innerText || body.textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                alert("✅ Đã sao chép toàn bộ nhật ký terminal!");
-            });
-        }
-
-        async function executeSelectedTool(toolOverride) {
-            const toolSelect = document.getElementById("cloudToolSelect");
-            const dateInput = document.getElementById("cloudToolDate");
-            const dryRunCheckbox = document.getElementById("cloudToolDryRun");
-            const engineSelect = document.getElementById("runnerEngineSelect");
-            const terminalCard = document.getElementById("liveTerminalCard");
-            const engineTag = document.getElementById("terminalEngineTag");
-            const ghLink = document.getElementById("terminalGhLogsLink");
-
-            const tool = toolOverride || (toolSelect ? toolSelect.value : "all");
-            const targetDate = dateInput ? dateInput.value.trim() : "";
-            const isDryRun = dryRunCheckbox ? dryRunCheckbox.checked : false;
-            const engineChoice = engineSelect ? engineSelect.value : "auto";
-
-            if (terminalCard) {
-                terminalCard.style.display = "block";
-                terminalCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-            clearTerminalLogs();
-            appendTerminalLog(`🚀 KHỞI ĐỘNG CÔNG CỤ: [${tool.toUpperCase()}] | Ngày: ${targetDate || "Hôm nay/Mặc định"} | Dry-Run: ${isDryRun ? "BẬT (Chạy Thử)" : "TẮT (Thực tế)"}`, "header");
-
-            let useLocal = false;
-            if (engineChoice === "local") {
-                useLocal = true;
-            } else if (engineChoice === "cloud") {
-                useLocal = false;
-            } else {
-                useLocal = window.isLocalRunnerOnline;
-            }
-
-            setRunnerExecutingState(true);
-
-            if (useLocal) {
-                window.activeRunnerMode = "local";
-                if (engineTag) engineTag.innerHTML = '💻 Máy Tính Cục Bộ (Local Agent 0ms)';
-                if (ghLink) ghLink.style.display = 'none';
-                runViaLocalAgent(tool, targetDate, isDryRun);
-            } else {
-                window.activeRunnerMode = "cloud";
-                if (engineTag) engineTag.innerHTML = '☁️ GitHub Actions Cloud Runner';
-                if (ghLink) ghLink.style.display = 'inline-flex';
-                runViaGitHubActions(tool, targetDate, isDryRun);
-            }
-        }
-
-        function runViaLocalAgent(tool, targetDate, isDryRun) {
-            appendTerminalLog("🔌 Đang kết nối tới SCM Local Runner Service (http://127.0.0.1:8088)...", "info");
-            
-            if (currentEventSource) {
-                currentEventSource.close();
-            }
-
-            const params = new URLSearchParams({
-                tool: tool,
-                date: targetDate,
-                dry_run: isDryRun ? "true" : "false"
-            });
-
-            try {
-                const streamUrl = `${LOCAL_RUNNER_API}/stream?${params.toString()}`;
-                currentEventSource = new EventSource(streamUrl);
-
-                currentEventSource.onmessage = function(e) {
-                    try {
-                        const data = JSON.parse(e.data);
-                        if (data.type === "log") {
-                            appendTerminalLog(data.line);
-                        } else if (data.type === "start") {
-                            appendTerminalLog(data.msg, "header");
-                        } else if (data.type === "end") {
-                            appendTerminalLog(data.msg, data.returncode === 0 ? "success" : "warning");
-                            currentEventSource.close();
-                            setRunnerExecutingState(false);
-                        } else if (data.type === "error") {
-                            appendTerminalLog(data.msg, "error");
-                            currentEventSource.close();
-                            setRunnerExecutingState(false);
-                        }
-                    } catch (err) {
-                        appendTerminalLog(e.data);
-                    }
-                };
-
-                currentEventSource.onerror = function() {
-                    appendTerminalLog("⚠️ Mất kết nối EventSource. Đang thử chạy chế độ REST Sync Fallback...", "warning");
-                    currentEventSource.close();
-                    
-                    fetch(`${LOCAL_RUNNER_API}/run`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ tool, date: targetDate, dry_run: isDryRun })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.logs) {
-                            data.logs.split('\n').forEach(l => appendTerminalLog(l));
-                        }
-                        appendTerminalLog(data.success ? "✅ Thực thi hoàn tất!" : "⚠️ Hoàn tất có cảnh báo.", data.success ? "success" : "warning");
-                    })
-                    .catch(err => {
-                        appendTerminalLog(`❌ Không thể kết nối Local Agent: ${err.message}`, "error");
-                        appendTerminalLog("💡 Gợi ý: Hãy mở file Chay_Local_Runner.bat trên máy tính, hoặc chuyển chế độ sang Cloud Runner!", "warning");
-                    })
-                    .finally(() => {
-                        setRunnerExecutingState(false);
-                    });
-                };
-            } catch (err) {
-                appendTerminalLog(`❌ Lỗi khởi tạo EventSource: ${err.message}`, "error");
-                setRunnerExecutingState(false);
-            }
-        }
-
-        async function runViaGitHubActions(tool, targetDate, isDryRun) {
-            appendTerminalLog("☁️ Gửi yêu cầu Dispatch tới máy chủ GitHub Actions Cloud Runner...", "info");
-            const token = DEFAULT_GH_PAT;
-
-            try {
-                const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/actions/workflows/${GH_WORKFLOW_FILE}/dispatches`;
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: {
-                        "Accept": "application/vnd.github.v3+json",
-                        "Authorization": `token ${token}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        ref: "main",
-                        inputs: {
-                            tool: tool,
-                            target_date: targetDate,
-                            dry_run: isDryRun ? "true" : "false"
-                        }
-                    })
-                });
-
-                if (response.status === 204 || response.ok) {
-                    appendTerminalLog("✅ ĐÃ KÍCH HOẠT THÀNH CÔNG CLOUD RUNNER TRÊN GITHUB ACTIONS!", "success");
-                    appendTerminalLog(`👉 Công cụ: ${tool} | Máy chủ Ubuntu 3.11 đang khởi động trong nền.`, "info");
-                    appendTerminalLog("⏳ Đang theo dõi tiến trình thực thi (Real-time Cloud Status)...", "info");
-
-                    let elapsedSeconds = 0;
-                    if (workflowPollInterval) clearInterval(workflowPollInterval);
-
-                    workflowPollInterval = setInterval(async () => {
-                        elapsedSeconds += 3;
-                        try {
-                            const runsRes = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/actions/runs?per_page=1`, {
-                                headers: { "Authorization": `token ${token}`, "Accept": "application/vnd.github.v3+json" }
-                            });
-                            if (runsRes.ok) {
-                                const runsData = await runsRes.json();
-                                const latestRun = runsData.workflow_runs && runsData.workflow_runs[0];
-                                if (latestRun) {
-                                    window.activeWorkflowRunId = latestRun.id;
-                                    const status = latestRun.status;
-                                    const conclusion = latestRun.conclusion;
-                                    
-                                    if (status === "completed") {
-                                        clearInterval(workflowPollInterval);
-                                        if (conclusion === "success") {
-                                            appendTerminalLog(`🎉 [CLOUD HOÀN TẤT] Tác vụ #${latestRun.run_number} đã thực thi thành công mỹ mãn! (${elapsedSeconds}s)`, "success");
-                                            appendTerminalLog(`🔗 Xem nhật ký đầy đủ: ${latestRun.html_url}`, "info");
-                                        } else {
-                                            appendTerminalLog(`⚠️ [CLOUD KẾT THÚC] Tác vụ kết thúc với trạng thái: ${conclusion} (${elapsedSeconds}s)`, "warning");
-                                            appendTerminalLog(`🔗 Kiểm tra nhật ký chi tiết tại: ${latestRun.html_url}`, "warning");
-                                        }
-                                        setRunnerExecutingState(false);
-                                    } else {
-                                        appendTerminalLog(`⏳ [${elapsedSeconds}s] Trạng thái Cloud: ${status.toUpperCase()} (Run #${latestRun.run_number})...`);
-                                    }
-                                }
-                            }
-                        } catch (e) {}
-
-                        if (elapsedSeconds >= 180) {
-                            clearInterval(workflowPollInterval);
-                            appendTerminalLog("ℹ️ Đã dừng theo dõi tự động sau 3 phút. Công cụ vẫn tiếp tục chạy độc lập trên Cloud.", "info");
-                            setRunnerExecutingState(false);
-                        }
-                    }, 3000);
-
-                } else {
-                    const errData = await response.json().catch(() => ({}));
-                    appendTerminalLog(`❌ Lỗi API GitHub (${response.status}): ${errData.message || response.statusText}`, "error");
-                    setRunnerExecutingState(false);
-                }
-            } catch (err) {
-                appendTerminalLog(`❌ Lỗi mạng khi kết nối GitHub Actions: ${err.message}`, "error");
-                setRunnerExecutingState(false);
-            }
-        }
-
-</script>
+        </script>
 
     <!-- ========================================================================= -->
     <!-- TELEGRAM SCM CHAT DRAWER (XEM VÀ PHẢN HỒI TIN NHẮN TRỰC TIẾP) -->

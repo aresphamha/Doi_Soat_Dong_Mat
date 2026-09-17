@@ -190,9 +190,15 @@ async def main():
 
     print(f"📊 Tìm thấy {total_st} Siêu thị bị thiếu hàng (ĐÔNG MÁT) cần gửi tin báo.", flush=True)
 
-    session_file = find_data_file('user_session').replace('.session', '')
+    session_file = find_data_file('user_session')
+    if session_file.endswith('.session'):
+        session_file = session_file[:-8]
     client = TelegramClient(session_file, api_id, api_hash)
-    await client.start()
+    await client.connect()
+    if await client.is_user_authorized():
+        print("✅ Đã kết nối phiên đăng nhập Telegram cá nhân để Tag tên quản lý.", flush=True)
+    else:
+        print("ℹ️ Phiên Telegram cá nhân chưa xác thực. Sẽ dùng tag mặc định.", flush=True)
 
     success_count = 0
     fail_count = 0
