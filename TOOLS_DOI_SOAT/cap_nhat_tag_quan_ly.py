@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 TOOL TỰ ĐỘNG QUÉT & ĐỒNG BỘ DANH BẠ TAG QUẢN LÝ / TRƯỞNG CA (SM, GSM, TC)
-Tự động quét 220+ nhóm Telegram siêu thị, trích xuất ID Telegram mới nhất,
+Tự động quét toàn bộ nhóm Telegram siêu thị (cả Kho Rau Củ và ABA Đông Mát/Thịt Cá),
+nhận diện chính xác cú pháp vai trò SM, TC, GSM, TC(TT), SM(TT), _SM_, -SM-, v.v.,
 lưu vào group_tags_map.json và đẩy lên Cloud GitHub Repository.
 """
 
 import os
 import sys
 import json
+import re
 import asyncio
 import base64
 import urllib.request
@@ -39,17 +41,6 @@ def find_session_file():
             return os.path.abspath(c)
     return candidates[0]
 
-def find_store_excel():
-    candidates = [
-        os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "RAU_CU", "Danh sách Siêu thị.xlsx"),
-        os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "DONG_MAT", "Danh sách Siêu thị.xlsx"),
-        os.path.join(CONFIG_DATA_DIR, "Danh sách Siêu thị.xlsx")
-    ]
-    for c in candidates:
-        if os.path.exists(c):
-            return os.path.abspath(c)
-    return candidates[0]
-
 def get_target_json_paths():
     return [
         os.path.join(CONFIG_DATA_DIR, "group_tags_map.json"),
@@ -59,6 +50,12 @@ def get_target_json_paths():
         os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "THIT_CA", "Tool_Spam", "group_tags_map.json"),
         os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "DONG_MAT", "group_tags_map.json")
     ]
+
+def is_manager_role(name):
+    if not name: return False
+    name_upper = name.upper()
+    pattern = r'(^|[\s\-_(\[\./])(SM|GSM|TC)([\s\-_)\]\./(]|$)'
+    return bool(re.search(pattern, name_upper))
 
 def push_tags_to_github():
     config_file = os.path.join(ROOT_DIR, ".github_config.json")
@@ -87,8 +84,7 @@ def push_tags_to_github():
             ref_data = json.loads(resp.read().decode())
             latest_commit_sha = ref_data['object']['sha']
 
-        # 2. Upload blobs for all group_tags_map.json paths
-        json_content = ""
+        # 2. Upload blobs
         main_json = os.path.join(CONFIG_DATA_DIR, "group_tags_map.json")
         with open(main_json, 'r', encoding='utf-8') as f:
             json_content = f.read()
@@ -119,7 +115,7 @@ def push_tags_to_github():
 
         commit_url = f"https://api.github.com/repos/{owner_repo}/git/commits"
         commit_payload = {
-            "message": "🔄 Auto-Sync Updated Telegram Manager Tags Registry (SM/GSM/TC)",
+            "message": "🔄 Full Sync Telegram Manager Tags Registry (SM/GSM/TC)",
             "tree": new_tree_sha,
             "parents": [latest_commit_sha]
         }
@@ -140,30 +136,11 @@ async def main():
     print("🔄 BẮT ĐẦU QUÉT & CẬP NHẬT TỰ ĐỘNG TAG QUẢN LÝ / TRƯỞNG CA (SM, GSM, TC)")
     print("==============================================================================")
 
-    excel_path = find_store_excel()
-    if not os.path.exists(excel_path):
-        print(f"❌ Không tìm thấy file Excel siêu thị: {excel_path}")
-        return
-
-    df = pd.read_excel(excel_path, dtype=str)
-    df = df[df['CHAT ID'].notna() & (df['CHAT ID'].str.strip() != '') & (df['CHAT ID'] != 'nan')]
-    print(f"📋 Đã tìm thấy {len(df)} Siêu thị có Chat ID trong {os.path.basename(excel_path)}")
-
     session_path = find_session_file()
     session_base = session_path.replace('.session', '')
     if not os.path.exists(session_path):
         print(f"❌ Chưa có file session Telegram: {session_path}")
         return
-
-    # Load existing tag map
-    existing_tags = {}
-    main_json = os.path.join(CONFIG_DATA_DIR, "group_tags_map.json")
-    if os.path.exists(main_json):
-        try:
-            with open(main_json, 'r', encoding='utf-8') as f:
-                existing_tags = json.load(f)
-        except Exception:
-            pass
 
     client = TelegramClient(session_base, api_id, api_hash)
     await client.connect()
@@ -172,63 +149,85 @@ async def main():
         await client.disconnect()
         return
 
-    print("✅ Đã kết nối Telegram cá nhân. Đang quét từng nhóm...")
+    print("✅ Đã kết nối Telegram cá nhân thành công.")
 
-    updated_count = 0
-    new_tags_map = dict(existing_tags)
+    # 1. Thu thập toàn bộ Chat ID từ các file Excel
+    chat_info_map = {}
+    excel_files = [
+        os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "DONG_MAT", "Danh sách Siêu thị.xlsx"),
+        os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "RAU_CU", "Danh sách Siêu thị.xlsx"),
+        os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "DONG_MAT", "Danh_Sach_Sieu_Thi_Dong_Mat.xlsx"),
+        os.path.join(CONFIG_DATA_DIR, "Danh sách Siêu thị.xlsx")
+    ]
+    for ef in excel_files:
+        if os.path.exists(ef):
+            try:
+                df = pd.read_excel(ef, dtype=str)
+                if 'CHAT ID' in df.columns:
+                    valid = df[df['CHAT ID'].notna() & (df['CHAT ID'].str.strip() != '') & (df['CHAT ID'] != 'nan')]
+                    for _, row in valid.iterrows():
+                        cid_clean = str(row['CHAT ID']).replace('.0', '').strip()
+                        st_name = str(row.get('Tên Siêu thị', '')).strip()
+                        try:
+                            cid_int = int(cid_clean)
+                            chat_info_map[cid_int] = st_name
+                        except:
+                            pass
+            except Exception:
+                pass
 
-    for i, row in df.iterrows():
-        ten_st = str(row['Tên Siêu thị']).strip()
-        chat_id_raw = str(row['CHAT ID']).replace('.0', '').strip()
+    # 2. Lấy danh sách dialogs từ Telegram
+    dialogs = await client.get_dialogs()
+    for d in dialogs:
+        if d.is_group or d.is_channel:
+            if d.id not in chat_info_map:
+                chat_info_map[d.id] = d.name or str(d.id)
+
+    print(f"📋 Tổng số Group Chat ID cần quét danh bạ: {len(chat_info_map)} nhóm")
+
+    tag_map = {}
+    found_count = 0
+
+    for i, (cid, gname) in enumerate(chat_info_map.items(), 1):
+        chat_key = str(cid)
         try:
-            chat_id = int(chat_id_raw)
-        except Exception:
-            continue
-
-        chat_key = str(chat_id)
-        old_tag = existing_tags.get(chat_key, '')
-
-        try:
-            participants = await asyncio.wait_for(client.get_participants(chat_id), timeout=8)
+            participants = await asyncio.wait_for(client.get_participants(cid), timeout=12)
             tags = []
             for p in participants:
                 name = ""
                 if p.first_name: name += p.first_name
                 if p.last_name: name += " " + p.last_name
-                name_upper = name.upper()
-                if any(r in name_upper for r in [' TC', '-TC', ' SM', '-SM', ' GSM', '-GSM']):
+                name = name.strip()
+                if is_manager_role(name):
                     tags.append(f"[{name}](tg://user?id={p.id})")
 
-            current_tag = " ".join(tags) if tags else "@SM @TC @GSM"
-            new_tags_map[chat_key] = current_tag
-
-            if current_tag != old_tag:
-                updated_count += 1
-                print(f"✨ [{i+1}/{len(df)}] {ten_st} CÓ THAY ĐỔI TAG:")
-                print(f"   Cu:  {old_tag or '(Chua co)'}")
-                print(f"   Moi: {current_tag}")
+            if tags:
+                tag_map[chat_key] = " ".join(tags)
+                found_count += 1
+                print(f"✓ [{i}/{len(chat_info_map)}] {gname}: {len(tags)} quản lý")
             else:
-                print(f"✓ [{i+1}/{len(df)}] {ten_st}: OK ({len(tags)} quan ly)")
-            await asyncio.sleep(0.3)
+                tag_map[chat_key] = "@SM @TC @GSM"
         except Exception as e:
-            print(f"⚠️ [{i+1}/{len(df)}] {ten_st} ({chat_id}): Không thể quét thành viên ({e})")
+            tag_map[chat_key] = "@SM @TC @GSM"
+            print(f"⚠️ [{i}/{len(chat_info_map)}] {gname} ({cid}): {e}")
+
+        await asyncio.sleep(0.15)
 
     await client.disconnect()
 
-    # Save to all target paths
+    # 3. Ghi ra tất cả các file JSON
     for p in get_target_json_paths():
         try:
             os.makedirs(os.path.dirname(os.path.abspath(p)), exist_ok=True)
             with open(p, 'w', encoding='utf-8') as f:
-                json.dump(new_tags_map, f, ensure_ascii=False, indent=2)
+                json.dump(tag_map, f, ensure_ascii=False, indent=2)
         except Exception:
             pass
 
     print("\n==============================================================================")
-    print(f"🎉 HOÀN TẤT! Đã lưu {len(new_tags_map)} nhóm vào group_tags_map.json (Có {updated_count} nhóm thay đổi).")
+    print(f"🎉 HOÀN TẤT! Đã quét và lưu {len(tag_map)} nhóm vào group_tags_map.json ({found_count} nhóm có Quản lý đích danh).")
     print("==============================================================================")
 
-    # Push to GitHub
     push_tags_to_github()
 
 if __name__ == "__main__":
