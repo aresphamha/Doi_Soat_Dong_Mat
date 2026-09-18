@@ -147,65 +147,94 @@ async def main():
         chat_map.update(dict(zip(df_chat['Tên Siêu thị'].astype(str).str.strip(), df_chat['CHAT ID'])))
 
     print("Đang tải dữ liệu trực tiếp từ Google Sheet (ĐÔNG MÁT)...")
-    url = 'https://docs.google.com/spreadsheets/d/18LwNc2FTqSy9aKMtnqlBFmVQJPPn9E7ALnXajVXHhzI/export?format=xlsx'
-    download_success = False
+    url_csv = 'https://docs.google.com/spreadsheets/d/18LwNc2FTqSy9aKMtnqlBFmVQJPPn9E7ALnXajVXHhzI/gviz/tq?tqx=out:csv&sheet=Ch%C3%AAnnh%20l%E1%BB%87ch%20ST'
+    url_xlsx = 'https://docs.google.com/spreadsheets/d/18LwNc2FTqSy9aKMtnqlBFmVQJPPn9E7ALnXajVXHhzI/export?format=xlsx'
     cache_file = 'temp_google_sheet_dongmat.xlsx'
+    df_thieu = None
     
+    # 1. Thử tải CSV siêu tốc (1-2 giây)
     for attempt in range(1, 4):
         try:
-            print(f"📥 Đang kết nối tải Google Sheet (Lần {attempt}/3, timeout 90s)...", flush=True)
-            res = requests.get(url, timeout=90)
+            print(f"📥 Đang tải Google Sheet Đông Mát qua CSV (Lần {attempt}/3, timeout 30s)...", flush=True)
+            res = requests.get(url_csv, timeout=30)
             res.raise_for_status()
-            with open(cache_file, 'wb') as f:
-                f.write(res.content)
-            download_success = True
-            print("✅ Đã tải và đồng bộ Google Sheet thành công!", flush=True)
-            break
+            lines = res.content.decode('utf-8-sig', errors='replace').splitlines()
+            if len(lines) > 2:
+                import io
+                # Đông mát có header ở dòng 2 (skip_rows=1)
+                df_thieu = pd.read_csv(io.StringIO('\n'.join(lines[1:])), low_memory=False)
+                print(f"⚡ Đã tải thành công qua CSV: {len(df_thieu):,} dòng!", flush=True)
+                break
         except Exception as e:
-            print(f"⚠️ Cảnh báo tải lần {attempt}: {e}", flush=True)
-            time.sleep(2)
-            
-    if not download_success:
+            print(f"⚠️ Thử tải CSV lần {attempt} thất bại: {e}", flush=True)
+            time.sleep(1.5)
+
+    # 2. Nếu CSV không được, fallback sang XLSX
+    if df_thieu is None:
+        for attempt in range(1, 4):
+            try:
+                print(f"📥 Fallback tải XLSX Google Sheet Đông Mát (Lần {attempt}/3, timeout 90s)...", flush=True)
+                res = requests.get(url_xlsx, timeout=90)
+                res.raise_for_status()
+                with open(cache_file, 'wb') as f:
+                    f.write(res.content)
+                xl = pd.ExcelFile(cache_file)
+                df_thieu = xl.parse('Chênh lệch ST', header=1)
+                print("✅ Đã tải và đồng bộ XLSX Đông Mát thành công!", flush=True)
+                break
+            except Exception as e:
+                print(f"⚠️ Cảnh báo tải XLSX lần {attempt}: {e}", flush=True)
+                time.sleep(2)
+
+    # 3. Nếu vẫn không được, fallback file cache cục bộ
+    if df_thieu is None:
         if os.path.exists(cache_file) and os.path.getsize(cache_file) > 1000:
-            print(f"⚠️ [CHẾ ĐỘ DỰ PHÒNG] Không thể tải mới do mạng chậm, tự động sử dụng file cache sẵn có: {cache_file}", flush=True)
+            print(f"⚠️ [CHẾ ĐỘ DỰ PHÒNG] Không thể tải mới, tự động đọc file cache sẵn có: {cache_file}", flush=True)
+            try:
+                xl = pd.ExcelFile(cache_file)
+                df_thieu = xl.parse('Chênh lệch ST', header=1)
+            except Exception as e:
+                print(f"[LỖI] Đọc cache thất bại: {e}")
+                safe_prompt("Bấm Enter để thoát...")
+                sys.exit(1)
         else:
-            print(f"[LỖI] Không thể tải dữ liệu từ Google Sheet sau 3 lần thử: {e}")
+            print("[LỖI] Không thể tải dữ liệu từ Google Sheet sau các lần thử.")
             safe_prompt("Bấm Enter để thoát...")
             sys.exit(1)
 
-    try:
-        xl = pd.ExcelFile(cache_file)
-        df_thieu = xl.parse('Chênh lệch ST', header=1) # Dữ liệu bắt đầu từ dòng 2
-    except Exception as e:
-        print(f"[LỖI] Đọc dữ liệu file Excel thất bại: {e}")
+    # Xác định các cột theo Cột A (idx 0 - Ngày), Cột W (idx 22 - Lỗi), Cột D (idx 3 - ID ST)
+    col_ngay = df_thieu.columns[0] if len(df_thieu.columns) > 0 else 'Ngày'
+    col_id_st = df_thieu.columns[3] if len(df_thieu.columns) > 3 else 'ID ST'
+    col_loi = df_thieu.columns[22] if len(df_thieu.columns) > 22 else 'Lỗi'
+
+    # Loại bỏ các dòng không có ID ST hợp lệ (dòng trống, dòng tổng kết)
+    df_thieu = df_thieu[df_thieu[col_id_st].notna() & (df_thieu[col_id_st].astype(str).str.strip() != '') & (df_thieu[col_id_st].astype(str).str.strip().str.lower() != 'nan')]
+
+    # Lọc lấy ngày gần nhất từ Cột A
+    df_thieu[col_ngay] = pd.to_datetime(df_thieu[col_ngay], errors='coerce')
+    latest_date = df_thieu[col_ngay].dropna().max()
+    if pd.isna(latest_date):
+        print("[LỖI] Không tìm thấy dữ liệu ngày hợp lệ trong Cột A!")
         safe_prompt("Bấm Enter để thoát...")
         sys.exit(1)
 
-    if 'Ngày' not in df_thieu.columns or 'ID ST' not in df_thieu.columns:
-        print("[LỖI] Không tìm thấy cột 'Ngày' hoặc 'ID ST' trong sheet 'Chênh lệch ST'.")
-        safe_prompt("Bấm Enter để thoát...")
-        sys.exit(1)
-
-    # Lọc lấy ngày gần nhất
-    df_thieu['Ngày'] = pd.to_datetime(df_thieu['Ngày'], errors='coerce')
-    latest_date = df_thieu['Ngày'].dropna().max()
-    date_str = latest_date.strftime('%d.%m') if pd.notna(latest_date) else 'Hôm nay'
+    date_str = latest_date.strftime('%d.%m')
+    print(f"📅 Ngày có dữ liệu mới nhất trong Cột A là: {latest_date.strftime('%Y-%m-%d')} ({date_str})")
     
-    print(f"Đã lấy dữ liệu của ngày gần nhất: {date_str}")
-    df_thieu = df_thieu[df_thieu['Ngày'] == latest_date]
+    # 1. Lọc theo Ngày mới nhất (Cột A)
+    df_thieu = df_thieu[df_thieu[col_ngay] == latest_date]
+    print(f"📊 Số dòng sau khi lọc Ngày mới nhất: {len(df_thieu):,} dòng")
 
-    # Lọc lỗi DC GIAO THIẾU
-    if 'Lỗi' in df_thieu.columns:
-        df_thieu = df_thieu[df_thieu['Lỗi'].astype(str).str.strip().str.upper() == 'DC GIAO THIẾU']
-    else:
-        print("[CẢNH BÁO] Không tìm thấy cột 'Lỗi', sẽ lấy toàn bộ dữ liệu của ngày gần nhất.")
+    # 2. Lọc theo Lỗi = 'DC GIAO THIẾU' (Cột W)
+    df_thieu = df_thieu[df_thieu[col_loi].astype(str).str.upper().str.contains('DC GIAO THIẾU', na=False)]
+    print(f"🎯 Số dòng sau khi lọc Lỗi 'DC GIAO THIẾU' (Cột W): {len(df_thieu):,} dòng")
 
     # Loại bỏ khoảng trắng thừa trong ID ST
-    df_thieu['ID ST'] = df_thieu['ID ST'].astype(str).str.strip()
-    grouped = list(df_thieu.groupby('ID ST'))
+    df_thieu[col_id_st] = df_thieu[col_id_st].astype(str).str.strip()
+    grouped = list(df_thieu.groupby(col_id_st))
     total_st = len(grouped)
     
-    date_key = latest_date.strftime('%Y-%m-%d') if pd.notna(latest_date) else time.strftime('%Y-%m-%d')
+    date_key = latest_date.strftime('%Y-%m-%d')
     already_sent = load_sent_stores('dong_mat', date_key)
     if already_sent:
         print(f"🛡️ [BẢO VỆ CHỐNG TRÙNG] Đã phát hiện {len(already_sent)} ST đã gửi thành công hôm nay ({date_key}). Hệ thống sẽ tự động bỏ qua.", flush=True)
@@ -256,9 +285,14 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
  
 {tag_text}'''
 
-        cols_to_keep = ['ID ST', 'Nhóm hàng', 'Mã hàng', 'Tên SP', 'ĐVT', 'Số lượng chuyển']
-        cols_exist = [c for c in cols_to_keep if c in group.columns]
-        df_slice = group[cols_exist].reset_index(drop=True)
+        df_slice = pd.DataFrame({
+            'ID ST': group.iloc[:, 3].values,
+            'Nhóm hàng': group.iloc[:, 1].values,
+            'Mã hàng': [str(x).replace('.0', '') for x in group.iloc[:, 4].values],
+            'Tên SP': group.iloc[:, 5].values,
+            'ĐVT': group.iloc[:, 6].values,
+            'Số lượng chuyển': group.iloc[:, 7].values
+        }).reset_index(drop=True)
         img_path = f"temp_{id_st}.png"
         
         try:
