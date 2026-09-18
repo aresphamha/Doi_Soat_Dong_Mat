@@ -10940,9 +10940,9 @@ function copyChatId(chatId, btnEl) {
                             }
                         } catch (e) {}
 
-                        if (elapsedSeconds >= 180) {
+                        if (elapsedSeconds >= 600) {
                             clearInterval(workflowPollInterval);
-                            appendTerminalLog("ℹ️ Đã dừng theo dõi tự động sau 3 phút. Công cụ vẫn tiếp tục chạy độc lập trên Cloud.", "info");
+                            appendTerminalLog("ℹ️ Đã dừng theo dõi tự động sau 10 phút. Công cụ vẫn tiếp tục chạy hoàn tất trên Cloud.", "info");
                             if (btn) {
                                 btn.disabled = false;
                                 btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';

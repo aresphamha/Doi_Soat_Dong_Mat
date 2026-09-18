@@ -112,25 +112,51 @@ def disable_quickedit():
         pass
 
 async def get_tags_for_group(client, chat_id):
-    tags = []
-    try:
-        participants = await asyncio.wait_for(client.get_participants(chat_id), timeout=8)
-        for p in participants:
-            name = ""
-            if p.first_name: name += p.first_name
-            if p.last_name: name += " " + p.last_name
-            name_upper = name.upper()
-            
-            if ' TC' in name_upper or '-TC' in name_upper or ' SM' in name_upper or '-SM' in name_upper or ' GSM' in name_upper or '-GSM' in name_upper:
-                tags.append(f"[{name}](tg://user?id={p.id})")
-    except Exception as e:
-        pass
-    return " ".join(tags) if tags else "@SM @TC @GSM"
+    chat_id_int = int(str(chat_id).replace('.0', '').strip())
+    chat_key = str(chat_id_int)
+    
+    # 1. Nếu client Telegram đang hoạt động (Local PC), thử quét live trước
+    if client and hasattr(client, 'is_connected') and client.is_connected():
+        try:
+            if await client.is_user_authorized():
+                participants = await asyncio.wait_for(client.get_participants(chat_id_int), timeout=6)
+                tags = []
+                for p in participants:
+                    name = ""
+                    if p.first_name: name += p.first_name
+                    if p.last_name: name += " " + p.last_name
+                    name_upper = name.upper()
+                    if any(r in name_upper for r in [' TC', '-TC', ' SM', '-SM', ' GSM', '-GSM']):
+                        tags.append(f"[{name}](tg://user?id={p.id})")
+                if tags:
+                    return " ".join(tags)
+        except Exception:
+            pass
+
+    # 2. Nếu chạy trên Cloud Runner (không có User session) hoặc quét live lỗi: Đọc từ Tag Map Cache
+    tag_file = find_data_file('group_tags_map.json')
+    if os.path.exists(tag_file):
+        try:
+            with open(tag_file, 'r', encoding='utf-8') as f:
+                tag_map = json.load(f)
+                if chat_key in tag_map and tag_map[chat_key] and tag_map[chat_key] != '@SM @TC @GSM':
+                    return tag_map[chat_key]
+        except Exception:
+            pass
+
+    return "@SM @TC @GSM"
 
 async def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Tool Spam Telegram Đông Mát")
+    parser.add_argument("--dry-run", action="store_true", help="Chạy thử không gửi tin nhắn thật")
+    parser.add_argument("--date", default=None, help="Ngày lọc (YYYY-MM-DD)")
+    parser.add_argument("--stores", default="ALL", help="Danh sách mã ST cần gửi")
+    args = parser.parse_args()
+
     disable_quickedit()
     print("==================================================")
-    print("TOOL SPAM TELEGRAM - NGÀNH HÀNG ĐÔNG MÁT (TỪ GOOGLE SHEET)")
+    print(f"TOOL SPAM TELEGRAM - NGÀNH HÀNG ĐÔNG MÁT {'[CHẾ ĐỘ CHẠY THỬ / DRY-RUN]' if args.dry_run else ''}")
     print("==================================================")
     
     excel_path = find_data_file('Danh sách Siêu thị.xlsx')
@@ -161,7 +187,6 @@ async def main():
             lines = res.content.decode('utf-8-sig', errors='replace').splitlines()
             if len(lines) > 2:
                 import io
-                # Đông mát có header ở dòng 2 (skip_rows=1)
                 df_thieu = pd.read_csv(io.StringIO('\n'.join(lines[1:])), low_memory=False)
                 print(f"⚡ Đã tải thành công qua CSV: {len(df_thieu):,} dòng!", flush=True)
                 break
@@ -207,23 +232,32 @@ async def main():
     col_id_st = df_thieu.columns[3] if len(df_thieu.columns) > 3 else 'ID ST'
     col_loi = df_thieu.columns[22] if len(df_thieu.columns) > 22 else 'Lỗi'
 
-    # Loại bỏ các dòng không có ID ST hợp lệ (dòng trống, dòng tổng kết)
+    # Loại bỏ các dòng không có ID ST hợp lệ
     df_thieu = df_thieu[df_thieu[col_id_st].notna() & (df_thieu[col_id_st].astype(str).str.strip() != '') & (df_thieu[col_id_st].astype(str).str.strip().str.lower() != 'nan')]
 
-    # Lọc lấy ngày gần nhất từ Cột A
+    # Lọc lấy ngày
     df_thieu[col_ngay] = pd.to_datetime(df_thieu[col_ngay], errors='coerce')
-    latest_date = df_thieu[col_ngay].dropna().max()
+    if args.date:
+        try:
+            target_dt = pd.to_datetime(args.date)
+            latest_date = target_dt
+            print(f"📅 Đã chọn lọc theo ngày chỉ định: {args.date}")
+        except Exception:
+            latest_date = df_thieu[col_ngay].dropna().max()
+    else:
+        latest_date = df_thieu[col_ngay].dropna().max()
+
     if pd.isna(latest_date):
         print("[LỖI] Không tìm thấy dữ liệu ngày hợp lệ trong Cột A!")
         safe_prompt("Bấm Enter để thoát...")
         sys.exit(1)
 
     date_str = latest_date.strftime('%d.%m')
-    print(f"📅 Ngày có dữ liệu mới nhất trong Cột A là: {latest_date.strftime('%Y-%m-%d')} ({date_str})")
+    print(f"📅 Ngày dữ liệu: {latest_date.strftime('%Y-%m-%d')} ({date_str})")
     
-    # 1. Lọc theo Ngày mới nhất (Cột A)
+    # 1. Lọc theo Ngày
     df_thieu = df_thieu[df_thieu[col_ngay] == latest_date]
-    print(f"📊 Số dòng sau khi lọc Ngày mới nhất: {len(df_thieu):,} dòng")
+    print(f"📊 Số dòng sau khi lọc Ngày: {len(df_thieu):,} dòng")
 
     # 2. Lọc theo Lỗi = 'DC GIAO THIẾU' (Cột W)
     df_thieu = df_thieu[df_thieu[col_loi].astype(str).str.upper().str.contains('DC GIAO THIẾU', na=False)]
@@ -231,11 +265,18 @@ async def main():
 
     # Loại bỏ khoảng trắng thừa trong ID ST
     df_thieu[col_id_st] = df_thieu[col_id_st].astype(str).str.strip()
+    
+    # Lọc danh sách ST nếu có chỉ định
+    if args.stores and str(args.stores).strip().upper() != "ALL":
+        target_stores = [s.strip().upper() for s in str(args.stores).split(',') if s.strip()]
+        df_thieu = df_thieu[df_thieu[col_id_st].str.upper().isin(target_stores)]
+        print(f"🏪 Đã lọc theo danh sách {len(target_stores)} Siêu thị chỉ định: {target_stores}")
+
     grouped = list(df_thieu.groupby(col_id_st))
     total_st = len(grouped)
     
     date_key = latest_date.strftime('%Y-%m-%d')
-    already_sent = load_sent_stores('dong_mat', date_key)
+    already_sent = load_sent_stores('dong_mat', date_key) if not args.dry_run else set()
     if already_sent:
         print(f"🛡️ [BẢO VỆ CHỐNG TRÙNG] Đã phát hiện {len(already_sent)} ST đã gửi thành công hôm nay ({date_key}). Hệ thống sẽ tự động bỏ qua.", flush=True)
 
@@ -245,11 +286,14 @@ async def main():
     if session_file.endswith('.session'):
         session_file = session_file[:-8]
     client = TelegramClient(session_file, api_id, api_hash)
-    await client.connect()
-    if await client.is_user_authorized():
-        print("✅ Đã kết nối phiên đăng nhập Telegram cá nhân để Tag tên quản lý.", flush=True)
-    else:
-        print("ℹ️ Phiên Telegram cá nhân chưa xác thực. Sẽ dùng tag mặc định.", flush=True)
+    try:
+        await client.connect()
+        if await client.is_user_authorized():
+            print("✅ Đã kết nối phiên Telegram cá nhân (Live Tag Mode).", flush=True)
+        else:
+            print("ℹ️ Chế độ Tag Quản Lý Ngoại Tuyến (Offline Tag Map Mode).", flush=True)
+    except Exception:
+        print("ℹ️ Chế độ Tag Quản Lý Ngoại Tuyến (Offline Tag Map Mode).", flush=True)
 
     success_count = 0
     fail_count = 0
@@ -257,7 +301,7 @@ async def main():
 
     for idx, (id_st, group) in enumerate(grouped, 1):
         id_st = str(id_st).strip()
-        if id_st in already_sent:
+        if id_st in already_sent and not args.dry_run:
             print(f"⏩ [{idx}/{total_st}] [ĐÃ GỬI TRƯỚC ĐÓ] ST {id_st} đã nhận báo cáo hôm nay -> Tự động BỎ QUA tránh spam trùng lặp!", flush=True)
             skipped_sent_count += 1
             continue
@@ -267,11 +311,9 @@ async def main():
             fail_count += 1
             continue
             
-        # Loại bỏ khoảng trắng và .0 trong Chat ID
         chat_id_str = str(chat_map[id_st]).replace('.0', '').strip()
         chat_id = int(chat_id_str)
         
-        print(f"👉 [{idx}/{total_st}] Đang chuẩn bị ảnh & Tag tên quản lý cho ST {id_st} ({len(group)} dòng hàng)...", flush=True)
         tag_text = await get_tags_for_group(client, chat_id)
         
         caption_text = f'''**ĐÔNG MÁT**
@@ -295,6 +337,12 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
         }).reset_index(drop=True)
         img_path = f"temp_{id_st}.png"
         
+        if args.dry_run:
+            print(f"🔍 [DRY-RUN] [{idx}/{total_st}] ST {id_st} (Chat ID: {chat_id}) - {len(group)} dòng hàng. Tag: {tag_text}", flush=True)
+            success_count += 1
+            continue
+
+        print(f"👉 [{idx}/{total_st}] Đang chuẩn bị ảnh & Tag tên quản lý cho ST {id_st} ({len(group)} dòng hàng)...", flush=True)
         try:
             dfi.export(df_slice, img_path, table_conversion="matplotlib", dpi=200)
         except Exception as e:
@@ -309,7 +357,6 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
             retry = False
             try:
                 with open(img_path, 'rb') as f:
-                    # headers={'Connection': 'close'} triệt tiêu hoàn toàn lỗi stale keep-alive socket (RemoteDisconnected)
                     res = requests.post(
                         url_send_photo,
                         files={'photo': f},
@@ -330,20 +377,11 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
                         print(f"⏳ [{idx}/{total_st}] Telegram giới hạn tốc độ (429). Tự động chờ {retry_after}s...", flush=True)
                         await asyncio.sleep(retry_after)
                         retry = True
-                    elif res.status_code == 429:
-                        try:
-                            error_data = res.json()
-                            retry_after = error_data.get("parameters", {}).get("retry_after", 30)
-                        except:
-                            retry_after = 30
-                        print(f"[CẢNH BÁO] Telegram giới hạn tốc độ (Lỗi 429). Đang tự động chờ {retry_after} giây rồi gửi tiếp...")
-                        await asyncio.sleep(retry_after)
-                        retry = True
                     elif res.status_code == 400 and "too Many Requests" in res.text:
                         import re
                         match = re.search(r'retry after (\d+)', res.text)
                         retry_after = int(match.group(1)) if match else 30
-                        print(f"[CẢNH BÁO] Telegram giới hạn tốc độ (Lỗi 400). Đang tự động chờ {retry_after} giây rồi gửi tiếp...")
+                        print(f"[CẢNH BÁO] Telegram giới hạn tốc độ (Lỗi 400). Tool đang tự động chờ {retry_after} giây rồi gửi tiếp...")
                         await asyncio.sleep(retry_after)
                         retry = True
                     else:
@@ -363,13 +401,11 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
         if os.path.exists(img_path): os.remove(img_path)
         await asyncio.sleep(3)
 
-    await client.disconnect()
-    
-    # Đóng và xoá file excel tạm an toàn
     try:
-        xl.close()
+        await client.disconnect()
     except Exception:
         pass
+    
     try:
         if os.path.exists('temp_google_sheet_dongmat.xlsx'):
             os.remove('temp_google_sheet_dongmat.xlsx')
@@ -377,7 +413,10 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
         pass
         
     print("==================================================", flush=True)
-    print(f"🎉 HOÀN TẤT ĐÔNG MÁT! Đã gửi mới: {success_count} ST | Đã bỏ qua vì đã gửi trước đó: {skipped_sent_count} ST | Thất bại: {fail_count} ST.", flush=True)
+    if args.dry_run:
+        print(f"🎉 HOÀN TẤT KIỂM TRA (DRY-RUN)! Đã duyệt qua {success_count} Siêu thị hợp lệ (Không gửi tin nhắn).", flush=True)
+    else:
+        print(f"🎉 HOÀN TẤT ĐÔNG MÁT! Đã gửi mới: {success_count} ST | Đã bỏ qua vì đã gửi trước đó: {skipped_sent_count} ST | Thất bại: {fail_count} ST.", flush=True)
     print("==================================================", flush=True)
     safe_prompt("Bấm Enter để kết thúc...")
 
