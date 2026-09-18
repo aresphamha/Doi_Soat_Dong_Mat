@@ -130,7 +130,19 @@ async def get_tags_for_group(client, chat_id):
                     if any(r in name_upper for r in [' TC', '-TC', ' SM', '-SM', ' GSM', '-GSM']):
                         tags.append(f"[{name}](tg://user?id={p.id})")
                 if tags:
-                    return " ".join(tags)
+                    res = " ".join(tags)
+                    try:
+                        tag_file = find_data_file('group_tags_map.json')
+                        if os.path.exists(tag_file):
+                            with open(tag_file, 'r', encoding='utf-8') as f:
+                                t_map = json.load(f)
+                            if t_map.get(chat_key) != res:
+                                t_map[chat_key] = res
+                                with open(tag_file, 'w', encoding='utf-8') as f:
+                                    json.dump(t_map, f, ensure_ascii=False, indent=2)
+                    except Exception:
+                        pass
+                    return res
         except Exception:
             pass
 
