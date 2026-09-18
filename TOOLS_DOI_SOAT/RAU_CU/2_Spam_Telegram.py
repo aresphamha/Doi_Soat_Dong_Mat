@@ -40,6 +40,7 @@ def find_data_file(filename, default_dir=None):
             return os.path.abspath(c)
     return os.path.join(cur_dir, filename)
 
+import time
 import json
 import asyncio
 from telethon import TelegramClient
@@ -151,16 +152,37 @@ async def main():
 
     print("Đang tải dữ liệu trực tiếp từ Google Sheet (RAU CỦ QUẢ)...")
     url = 'https://docs.google.com/spreadsheets/d/1XBNLjZLsgaaHDBqVKsbCSYhzD4v-4qMA6rjGXGG4ThM/export?format=xlsx'
-    try:
-        res = requests.get(url, timeout=30)
-        with open('temp_google_sheet_rau_cu.xlsx', 'wb') as f:
-            f.write(res.content)
+    download_success = False
+    cache_file = 'temp_google_sheet_rau_cu.xlsx'
+    
+    for attempt in range(1, 4):
+        try:
+            print(f"📥 Đang kết nối tải Google Sheet Rau Củ (Lần {attempt}/3, timeout 90s)...", flush=True)
+            res = requests.get(url, timeout=90)
+            res.raise_for_status()
+            with open(cache_file, 'wb') as f:
+                f.write(res.content)
+            download_success = True
+            print("✅ Đã tải và đồng bộ Google Sheet Rau Củ thành công!", flush=True)
+            break
+        except Exception as e:
+            print(f"⚠️ Cảnh báo tải lần {attempt}: {e}", flush=True)
+            time.sleep(2)
             
-        xl = pd.ExcelFile('temp_google_sheet_rau_cu.xlsx')
+    if not download_success:
+        if os.path.exists(cache_file) and os.path.getsize(cache_file) > 1000:
+            print(f"⚠️ [CHẾ ĐỘ DỰ PHÒNG] Không thể tải mới do mạng chậm, tự động sử dụng file cache sẵn có: {cache_file}", flush=True)
+        else:
+            print(f"[LỖI] Không thể tải dữ liệu từ Google Sheet sau 3 lần thử: {e}")
+            safe_prompt("Bấm Enter để thoát...")
+            sys.exit(1)
+
+    try:
+        xl = pd.ExcelFile(cache_file)
         sheet_name = [s for s in xl.sheet_names if 'Chênh lệch' in s or 'ST' in s or 'Ch' in s][0]
         df_thieu = xl.parse(sheet_name, header=2) # Dữ liệu bắt đầu từ dòng 3
     except Exception as e:
-        print(f"[LỖI] Không thể tải dữ liệu từ Google Sheet: {e}")
+        print(f"[LỖI] Đọc dữ liệu file Excel thất bại: {e}")
         safe_prompt("Bấm Enter để thoát...")
         sys.exit(1)
 

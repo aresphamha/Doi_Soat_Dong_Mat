@@ -1,0 +1,4 @@
+Kho_Rau sum: 6058.343000000001
+CXD sum: 4161.0509999999995
+Qty_P sum: 10220.362000000001
+LyDo_Kho unique: ['kho thịt cá', 'chưa xác định', nan, '#ref!']

@@ -594,15 +594,25 @@ def build_and_export_web_report():
     with open(template_path, "r", encoding="utf-8") as f:
         html_content = f.read()
 
-    # Bơm BUNDLES
+    # 7.1. Xuất dữ liệu BUNDLES tách rời sang file daily_details/data_bundles.js (Kiến trúc Module hóa)
     bundles_json_str = json.dumps(bundles_dict, ensure_ascii=False)
-    if "/*__BUNDLES_JSON__*/{}" in html_content:
-        html_content = html_content.replace("/*__BUNDLES_JSON__*/{}", bundles_json_str)
-    elif "/*__BUNDLES_JSON__*/" in html_content:
-        html_content = html_content.replace("/*__BUNDLES_JSON__*/", bundles_json_str)
-    elif "const BUNDLES = " in html_content:
-        import re
-        html_content = re.sub(r'const BUNDLES\s*=\s*.*?;', f'const BUNDLES = {bundles_json_str};', html_content, count=1)
+    data_bundles_js = f"window.BUNDLES = {bundles_json_str};\n"
+
+    daily_targets = [
+        os.path.join(current_dir, "daily_details", "data_bundles.js"),
+        os.path.join(os.path.dirname(current_dir), "daily_details", "data_bundles.js"),
+        r"C:\Users\Thu Ha\Doi_Soat_Dong_Mat\daily_details\data_bundles.js",
+        r"g:\My Drive\Đối soát SCM\daily_details\data_bundles.js",
+        r"g:\My Drive\Đối soát SCM\DONG_MAT_DASHBOARD\daily_details\data_bundles.js"
+    ]
+    for dt in daily_targets:
+        try:
+            os.makedirs(os.path.dirname(dt), exist_ok=True)
+            with open(dt, "w", encoding="utf-8") as f_dt:
+                f_dt.write(data_bundles_js)
+        except Exception:
+            pass
+    print("✅ Đã xuất dữ liệu BUNDLES tách rời sang daily_details/data_bundles.js (Không ghi đè code web)")
 
     # 7.5. KIỂM TRA BẢO TOÀN KIẾN TRÚC & TÍNH TOÀN VẸN (TEMPLATE INTEGRITY GUARD)
     required_engine_functions = [

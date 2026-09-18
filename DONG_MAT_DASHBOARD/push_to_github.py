@@ -35,6 +35,23 @@ def save_config(config):
         json.dump(config, f, indent=4, ensure_ascii=False)
 
 def sync_and_push(custom_message=None):
+    # 0. PRE-FLIGHT QUALITY GATE: Kiểm tra toàn vẹn trước khi push
+    validator_path = os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "validate_web_integrity.py")
+    if os.path.exists(validator_path):
+        import subprocess
+        print("🔍 Đang chạy Pre-flight Quality Gate kiểm tra an toàn web...")
+        check_res = subprocess.run(
+            [sys.executable, validator_path, os.path.join(ROOT_DIR, "index.html")],
+            capture_output=True,
+            text=True,
+            encoding="utf-8"
+        )
+        if check_res.returncode != 0:
+            print("❌ [DỪNG DEPLOY] Phát hiện lỗi toàn vẹn web! Đã hủy push để bảo vệ hệ thống:")
+            print(check_res.stdout)
+            return False
+        print("✅ Pre-flight Quality Gate: Đạt 100% tiêu chuẩn an toàn (Cân bằng DOM & Script hợp lệ).")
+
     print("==============================================================================")
     print("🚀 BẮT ĐẦU QUY TRÌNH TỰ ĐỘNG ĐẨY BÁO CÁO LÊN GITHUB & WEB ONLINE (CI/CD)...")
     print("==============================================================================")
@@ -59,8 +76,6 @@ def sync_and_push(custom_message=None):
         "daily_details",
         "Cap_Nhat_Bao_Cao_Web.bat",
         "Mo_Bao_Cao.bat",
-        "Cap_Nhat_Telegram_Realtime.bat",
-        "Danh_Sach_Group_Telegram_SCM.xlsx",
         "LOGIC_HE_THONG_NOI_BO_THAM_KHAO.html",
         "LOGIC_HE_THONG_NOI_BO_THAM_KHAO.md",
         "DONG_MAT_DASHBOARD",
@@ -118,7 +133,7 @@ def sync_and_push(custom_message=None):
     print(f"\n📡 Đang đẩy dữ liệu lên GitHub: https://github.com/{gh_user}/{repo_name} ...")
     
     try:
-        porcelain.push(repo, remote_location=remote_url, refspecs=[b"refs/heads/main:refs/heads/main"], force=True)
+        porcelain.push(repo, remote_location=remote_url, refspecs=[b"refs/heads/main:refs/heads/main"])
         print("==============================================================================")
         print("✅ ĐÃ ĐẨY LÊN GITHUB & KÍCH HOẠT CI/CD THÀNH CÔNG 100%!")
         print(f"🔗 Link mã nguồn Repo: https://github.com/{gh_user}/{repo_name}")

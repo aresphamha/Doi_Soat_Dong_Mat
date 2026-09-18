@@ -1,0 +1,45 @@
+0: Lượt
+1: Ngày
+2: Chi nhánh nhận
+3: ID ST
+4: Mã hàng
+5: Tên Hàng
+6: ĐVT
+7: Số lượng chuyển
+8: Số lượng nhận
+9: Chênh lệch
+10: PT chuyển hàng
+11: Mã thùng
+12: TO
+13: Hạo hụt tự nhiên
+14: SL trả tồn về ST
+15: SL chênh lệch CXD
+16: PT Trả tồn về ST
+17: PT trả tồn về DC
+18: PT DC pick dư
+19: NOTE
+20: Trạng thái
+21: DC giao thiếu
+22: Hao hụt
+23: Siêu thị
+24: Kho thịt cá
+25: Xử lý
+26: Link hình ảnh
+27: DC xác nhận
+28: NOTE.1
+29: KFM phản hồi
+30: NOTE.2
+31: CLV2
+32: CLV3
+33: Loại hàng
+34: % Hao hụt
+35: Column 43
+36: Giá nhập 
+( -VAT)
+37: Tổng GT
+38: Tổng hao hụt
+39: Tổng ST
+40: Tổng kho thịt cá
+41: Tổng chưa xác định
+42: GSM phụ trách
+43: RSM phụ trách 

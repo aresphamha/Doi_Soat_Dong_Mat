@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Logic Đối Soát Thịt Cá</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #34495e;
+        }
+        p {
+            margin: 10px 0;
+        }
+        ul, ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .alert-important {
+            background-color: #fcf8e3;
+            border-left: 5px solid #f39c12;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .alert-important strong {
+            color: #e67e22;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: Consolas, monospace;
+            color: #c0392b;
+        }
+        .highlight {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 5px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CHI TIẾT LOGIC ĐỐI SOÁT THỊT CÁ</h1>
+        <p><i>(Cập nhật mới nhất)</i></p>
+        
+        <p>Dưới đây là chi tiết từng bước thuật toán đối soát hàng Thịt Cá đang được lập trình trong hệ thống (file <code>app_thit_ca.py</code>), bao gồm cả phần lấy dữ liệu từ cơ sở dữ liệu nội bộ (StarRocks) và logic khớp mã thùng.</p>
+
+        <h2>BƯỚC 1: LẤY DỮ LIỆU TỪ STARROCKS (VPN)</h2>
+        <p>Hệ thống không còn dùng Google Sheets để tìm mã thùng thiếu, mà kết nối trực tiếp vào Data Warehouse nội bộ (StarRocks) qua địa chỉ <code>172.16.2.235</code>.</p>
+        <p>Câu lệnh SQL thực thi logic sau:</p>
+        <ol>
+            <li>Lấy tất cả các phiếu chuyển (<code>kf_transfer_items</code>) có chi nhánh nhận (<code>to_branch_id</code>) là siêu thị và từ kho chuyển (<code>from_branch_id</code>) là "MeatFish - Miền Đông - SCF - Quá Cảnh".</li>
+            <li><strong>Khớp Dòng Hàng (Line Items):</strong> Nối phiếu chuyển với bảng chi tiết hàng hóa (<code>line_items</code>) bằng <code>_id = _root_id</code>. Cột này cho biết Mã Hàng, Tên Hàng, Số Lượng Chuyển, và Số Lượng Nhận của từng mã.</li>
+            <li><strong>Khớp Mã Thùng (Container Lines - Cập nhật quan trọng):</strong>
+                <ul>
+                    <li>Hệ thống nối với bảng <code>container_lines</code> thông qua <code>_parent_id</code>.</li>
+                    <li><strong>Bí mật cấu trúc:</strong> StarRocks giấu "Số thứ tự thùng" (index) đằng sau cột <code>_parent_id</code> của <code>line_items</code>, và bị phân tách bởi <strong>1 ký tự tàng hình <code>char(31)</code></strong> (Unit Separator).</li>
+                    <li><strong>Cách hệ thống xử lý:</strong> Sử dụng lệnh <code>SPLIT_PART(l._parent_id, char(31), 2)</code> để cắt chính xác cái <code>index</code> này ra, sau đó nối (JOIN) <code>index</code> đó với cột <code>_index</code> của bảng <code>container_lines</code>.</li>
+                    <li>Nhờ vậy, <strong>từng dòng hàng (line item) sẽ bốc được chính xác 100% mã thùng của nó</strong>. Không còn bị nhân bản, không còn bị lấy nhầm mã thùng HK (hậu kiểm) bằng Ghi chú.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h2>BƯỚC 2: TÍNH TOÁN CHÊNH LỆCH VÀ DƯ HÀNG</h2>
+        <p>Sau khi có dữ liệu từ Data Warehouse, hệ thống nạp vào Pandas Dataframe và xử lý:</p>
+        <ol>
+            <li>Lọc ra các dòng có phát sinh chênh lệch (Số lượng chuyển &ne; Số lượng nhận).</li>
+            <li>Tính <strong>Chênh lệch</strong> = Số lượng chuyển - Số lượng nhận (dành cho Rổ Hàng Thiếu).</li>
+            <li>Tính <strong>SL_du</strong> = Số lượng nhận - Số lượng chuyển (dành cho Rổ Hàng Thừa).</li>
+        </ol>
+
+        <h2>BƯỚC 3: GOM NHÓM ĐỂ SO KHỚP NỘI BỘ (INTERNAL MATCHING)</h2>
+        <div class="alert-important">
+            <strong>LƯU Ý QUAN TRỌNG:</strong> Đây là bước mà hệ thống quyết định sẽ hiển thị "Mã thùng" như thế nào trên file Excel cuối cùng.
+        </div>
+        <ol>
+            <li><strong>Gom nhóm theo Mã Hàng (SKU) tại 1 Siêu Thị:</strong><br>
+                Thay vì để từng dòng mã thùng rời rạc, hệ thống gộp tất cả lượng THIẾU của cùng 1 Mã Hàng tại cùng 1 Siêu Thị lại thành <strong>Tổng Lượng Thiếu</strong>.
+                <div class="highlight">
+                    <em>Ví dụ:</em> Siêu thị A thiếu 2kg Thịt Bò (Thùng 1) và thiếu 3kg Thịt Bò (Thùng 2) &rarr; Hệ thống gộp lại thành <strong>Thiếu 5kg Thịt Bò</strong>.
+                </div>
+            </li>
+            <li><strong>Xử lý cột Mã Thùng:</strong> Do số lượng đã bị gộp thành 5kg, cột Mã thùng thiếu cũng sẽ được hệ thống gom lại và phân tách bằng dấu phẩy.
+                <ul>
+                    <li><em>Kết quả hiển thị trên Excel:</em> <code>Thùng 1, Thùng 2</code>.</li>
+                    <li><em>Mục đích của việc gộp:</em> Để khi Siêu thị A có <strong>Dư 5kg Thịt Bò (thuộc Thùng 3)</strong>, hệ thống chỉ cần làm phép toán đơn giản <code>min(Tổng Thiếu 5kg, Tổng Dư 5kg)</code> để tự động cấn trừ. Nếu tách riêng ra 2 dòng (dòng 2kg và dòng 3kg), hệ thống sẽ không biết phải xé nhỏ 5kg dư ra như thế nào để đập vào từng dòng thiếu.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h2>BƯỚC 4: KẾT QUẢ ĐỐI SOÁT CUỐI CÙNG</h2>
+        <p>Sau khi so khớp nội bộ, hệ thống sẽ xuất ra các trường hợp:</p>
+        <ul>
+            <li><strong>Lỗi DC thao tác sai (Khớp 100%):</strong> Tổng lượng thiếu = Tổng lượng thừa. (Ví dụ thiếu 5kg thùng A,B - dư 5kg thùng C). Hệ thống hiểu là kho giao đủ số lượng nhưng dán nhầm tem mã thùng này sang thùng kia.</li>
+            <li><strong>Khớp 1 phần:</strong> Tổng lượng thiếu &ne; Tổng lượng thừa. Hệ thống bù trừ phần trùng nhau, phần dư/thiếu còn lại đẩy xuống bước tiếp theo.</li>
+            <li><strong>Thiếu Ròng &amp; Thừa Ròng:</strong> Những lượng hàng thực sự mất (chênh lệch tuyệt đối) hoặc thực sự dư sẽ được xuất ra ở các sheet độc lập để người dùng xử lý.</li>
+        </ul>
+    </div>
+</body>
+</html>

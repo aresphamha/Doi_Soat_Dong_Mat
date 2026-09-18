@@ -1,0 +1,2 @@
+  branch_code                      branch_name  count
+0   HCM007041  KHO RAU CỦ HÀNG GIẢM CHẤT LƯỢNG   1248
