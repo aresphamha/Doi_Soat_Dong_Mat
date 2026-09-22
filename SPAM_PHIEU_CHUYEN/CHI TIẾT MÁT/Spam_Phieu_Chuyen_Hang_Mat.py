@@ -83,18 +83,17 @@ async def main():
         utc_start = vn_start_of_day.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
         utc_end = vn_end_of_day.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
 
-        query = f"""
+        query = """
         SELECT 
             t.code as `Mã phiếu chuyển`,
             t.from_branch_id,
             t.to_branch_id,
             t.status,
-            t.ts_do_status
+            t.ts_do_status,
+            t.created_at
         FROM __cdc_kfm_kf_inventories_kf_transfer_items t
         WHERE t.from_branch_id = '6a34ee2aebb48c000760d803'
         AND t.status = 3
-        AND t.created_at >= '{utc_start}' 
-        AND t.created_at <= '{utc_end}'
         """
         df_tickets = pd.read_sql(query, conn)
         
@@ -118,7 +117,32 @@ async def main():
     # Map ts_do_status: 1 thường là Phiếu tạm
     df_tickets['Trạng thái PXK TS'] = df_tickets['ts_do_status'].map({1: 'Phiếu tạm'}).fillna('Phiếu tạm')
     
-    grouped = df_tickets.groupby('Nơi nhận')
+    # ===== LOGIC: Ưu tiên phiếu CŨ (D-1 trở về trước) =====
+    # Phiếu tạo hôm nay chưa đến hạn → không spam
+    # Chỉ spam siêu thị nào còn phiếu treo từ ngày hôm qua trở về trước
+    from datetime import date
+    vn_today_date = vn_now.date()  # Ngày hôm nay (VN timezone)
+    
+    # Chuyển created_at sang ngày VN để so sánh
+    df_tickets['created_at_vn_date'] = pd.to_datetime(df_tickets['created_at']).dt.tz_localize('UTC').dt.tz_convert('Asia/Ho_Chi_Minh').dt.date
+    
+    # Phiếu cũ = tạo trước hôm nay
+    df_old = df_tickets[df_tickets['created_at_vn_date'] < vn_today_date].copy()
+    df_new = df_tickets[df_tickets['created_at_vn_date'] >= vn_today_date].copy()
+    
+    print(f"Phiếu CŨ (D-1 trở về trước): {len(df_old)} phiếu từ {df_old['Nơi nhận'].nunique() if len(df_old)>0 else 0} ST")
+    print(f"Phiếu MỚI (hôm nay): {len(df_new)} phiếu - KHÔNG SPAM")
+    
+    # Nếu có phiếu cũ → chỉ spam phiếu cũ
+    # Nếu không có phiếu cũ → không spam gì (phiếu mới chưa đến hạn)
+    if len(df_old) == 0:
+        print("✅ Không có phiếu nào treo từ ngày cũ. Phiếu hôm nay chưa đến hạn.")
+        await client.disconnect()
+        input("Bấm Enter để kết thúc...")
+        return
+    
+    # Chỉ spam phiếu cũ
+    grouped = df_old.groupby('Nơi nhận')
 
     print("Đang khởi động module Telegram...")
     session_path = find_data_file('user_session', 'ĐÔNG MÁT').replace('.session', '')

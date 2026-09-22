@@ -74,7 +74,7 @@ async def main():
         
         vn_tz = pytz.timezone('Asia/Ho_Chi_Minh')
         vn_now = datetime.now(vn_tz)
-        vn_start_of_day = vn_now.replace(hour=0, minute=0, second=0, microsecond=0)
+        vn_start_of_day = vn_now.replace(hour=7, minute=0, second=0, microsecond=0)  # Từ 7:00 sáng (giờ mở kho)
         vn_end_of_day = vn_now.replace(hour=23, minute=59, second=59, microsecond=999999)
 
         utc_start = vn_start_of_day.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')

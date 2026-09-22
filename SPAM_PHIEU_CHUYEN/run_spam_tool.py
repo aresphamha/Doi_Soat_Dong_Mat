@@ -703,7 +703,7 @@ async def run_tool_hau_kiem_thit_ca(target_date=None, dry_run=False):
     await client.disconnect()
     print("✅ Hoàn thành Tool Hậu Kiểm Thịt Cá!")
 
-def execute_external_tool(script_path, cwd=None):
+def execute_external_tool(script_path, extra_args=None, cwd=None):
     """Thực thi file script Python cục bộ với môi trường UTF-8 chuẩn xác và in log Real-time từng dòng."""
     if not os.path.exists(script_path):
         print(f"❌ [LỖI] Không tìm thấy file script: {script_path}", flush=True)
@@ -713,9 +713,12 @@ def execute_external_tool(script_path, cwd=None):
     env["PYTHONIOENCODING"] = "utf-8"
     env["PYTHONUTF8"] = "1"
     env["PYTHONUNBUFFERED"] = "1"
+    cmd = [sys.executable, "-u", script_path]
+    if extra_args:
+        cmd.extend(extra_args)
     try:
         proc = subprocess.Popen(
-            [sys.executable, "-u", script_path],
+            cmd,
             cwd=work_dir,
             env=env,
             stdout=subprocess.PIPE,
@@ -745,12 +748,16 @@ async def run_tool_dong_mat_full(target_date=None, dry_run=False):
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "1_Doi_Soat_Dong_Mat.py")
     execute_external_tool(script_path)
 
-async def run_tool_dong_mat_spam(target_date=None, dry_run=False):
+async def run_tool_dong_mat_spam(target_date=None, dry_run=False, stores="ALL"):
     print("\n=======================================================")
     print("📨 BẮT ĐẦU CHẠY TOOL SPAM BÁO CÁO ĐÔNG MÁT...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "2_Spam_Telegram.py")
-    execute_external_tool(script_path)
+    extra_args = []
+    if dry_run: extra_args.append("--dry-run")
+    if target_date: extra_args.extend(["--date", str(target_date)])
+    if stores and str(stores).strip().upper() != "ALL": extra_args.extend(["--stores", str(stores).strip()])
+    execute_external_tool(script_path, extra_args=extra_args)
 
 async def run_tool_lay_chat_id():
     print("\n=======================================================")
@@ -766,19 +773,27 @@ async def run_tool_dong_mat_nhom_dong():
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "1_Doi_Soat_Nhom_Dong.py")
     execute_external_tool(script_path)
 
-async def run_tool_thit_ca_spam():
+async def run_tool_thit_ca_spam(target_date=None, dry_run=False, stores="ALL"):
     print("\n=======================================================")
     print("🥩 BẮT ĐẦU CHẠY TOOL SPAM BÁO CÁO THỊT CÁ...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "THIT_CA", "Tool_Spam", "2_Spam_Telegram.py")
-    execute_external_tool(script_path)
+    extra_args = []
+    if dry_run: extra_args.append("--dry-run")
+    if target_date: extra_args.extend(["--date", str(target_date)])
+    if stores and str(stores).strip().upper() != "ALL": extra_args.extend(["--stores", str(stores).strip()])
+    execute_external_tool(script_path, extra_args=extra_args)
 
-async def run_tool_rau_cu_spam():
+async def run_tool_rau_cu_spam(target_date=None, dry_run=False, stores="ALL"):
     print("\n=======================================================")
     print("🥦 BẮT ĐẦU CHẠY TOOL SPAM BÁO CÁO RAU CỦ...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "RAU_CU", "2_Spam_Telegram.py")
-    execute_external_tool(script_path)
+    extra_args = []
+    if dry_run: extra_args.append("--dry-run")
+    if target_date: extra_args.extend(["--date", str(target_date)])
+    if stores and str(stores).strip().upper() != "ALL": extra_args.extend(["--stores", str(stores).strip()])
+    execute_external_tool(script_path, extra_args=extra_args)
 
 async def run_tool_spam_tu_chon(stores="ALL", message=None, tag_roles=True, dry_run=False, photo_path=None):
     print("\n=======================================================")
@@ -831,8 +846,10 @@ async def run_tool_spam_tu_chon(stores="ALL", message=None, tag_roles=True, dry_
         print("❌ Không có Siêu thị nào hợp lệ để gửi tin nhắn.")
         return
 
-    default_msg = "📢 **THÔNG BÁO TỪ PHÒNG SCM**\nNgày: {NGAY}\nKính gửi Cửa hàng: **{TEN_ST}**\nNhờ Siêu thị phối hợp kiểm tra và hoàn tất chứng từ tồn đọng giúp team nhé!\n{TAGS}"
-    raw_message = message if message and str(message).strip() else default_msg
+    if not message or not str(message).strip():
+        print("❌ LỖI BẢO VỆ: Bạn chưa nhập nội dung tin nhắn cụ thể (--message). Đã hủy gửi để tránh spam nhầm thông báo mẫu!")
+        return
+    raw_message = str(message).strip()
 
     session_file = ensure_telegram_session()
     session_base = session_file.replace('.session', '')
@@ -985,11 +1002,11 @@ def main():
     elif args.tool == "dong_mat_nhom_dong":
         loop.run_until_complete(run_tool_dong_mat_nhom_dong())
     elif args.tool == "dong_mat_spam":
-        loop.run_until_complete(run_tool_dong_mat_spam(date_val, args.dry_run))
+        loop.run_until_complete(run_tool_dong_mat_spam(date_val, args.dry_run, args.stores))
     elif args.tool == "thit_ca_spam":
-        loop.run_until_complete(run_tool_thit_ca_spam())
+        loop.run_until_complete(run_tool_thit_ca_spam(date_val, args.dry_run, args.stores))
     elif args.tool == "rau_cu_spam":
-        loop.run_until_complete(run_tool_rau_cu_spam())
+        loop.run_until_complete(run_tool_rau_cu_spam(date_val, args.dry_run, args.stores))
     elif args.tool == "spam_tu_chon":
         loop.run_until_complete(run_tool_spam_tu_chon(args.stores, args.message, tag_roles, args.dry_run, args.photo))
     elif args.tool == "xoa_tin_nhan":
