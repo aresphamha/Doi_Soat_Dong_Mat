@@ -346,8 +346,8 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             stores = params.get('stores', ['ALL'])[0]
             message = params.get('message', [''])[0]
             tag_roles = params.get('tag_roles', ['true'])[0].lower() in ['true', '1', 'yes']
-            
-            result = run_tool_sync(tool, target_date, dry_run, stores, message, tag_roles)
+            chat_id_type = params.get('chat_id_type', ['auto'])[0]
+            result = run_tool_sync(tool, target_date, dry_run, stores, message, tag_roles, chat_id_type)
             
             self.send_response(200)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
@@ -364,6 +364,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             stores = params.get('stores', ['ALL'])[0]
             message = params.get('message', [''])[0]
             tag_roles = params.get('tag_roles', ['true'])[0].lower() in ['true', '1', 'yes']
+            chat_id_type = params.get('chat_id_type', ['auto'])[0]
 
             self.send_response(200)
             self.send_header('Content-Type', 'text/event-stream; charset=utf-8')
@@ -372,7 +373,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self._send_cors_headers()
             self.end_headers()
 
-            self._stream_tool_execution(tool, target_date, dry_run, stores, message, tag_roles)
+            self._stream_tool_execution(tool, target_date, dry_run, stores, message, tag_roles, chat_id_type)
             return
 
         else:
@@ -462,8 +463,8 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             stores = data.get('stores', 'ALL')
             message = data.get('message', '')
             tag_roles = data.get('tag_roles', True)
-            
-            result = run_tool_sync(tool, target_date, dry_run, stores, message, tag_roles)
+            chat_id_type = data.get('chat_id_type', 'auto')
+            result = run_tool_sync(tool, target_date, dry_run, stores, message, tag_roles, chat_id_type)
             
             self.send_response(200)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
@@ -476,13 +477,17 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self._send_cors_headers()
             self.end_headers()
 
-    def _stream_tool_execution(self, tool, target_date, dry_run, stores="ALL", message="", tag_roles=True):
+    def _stream_tool_execution(self, tool, target_date, dry_run, stores="ALL", message="", tag_roles=True, chat_id_type="auto"):
         global CURRENT_RUNNING_PROC, IS_CURRENT_PAUSED
         cmd = [PYTHON_EXE, SPAM_RUNNER_SCRIPT, "--tool", tool]
         if target_date:
             cmd.extend(["--date", target_date])
         if dry_run:
             cmd.append("--dry-run")
+        if chat_id_type and chat_id_type != "auto":
+            cmd.extend(["--chat-id-type", chat_id_type])
+        if chat_id_type and chat_id_type != "auto":
+            cmd.extend(["--chat-id-type", chat_id_type])
         if tool == "spam_tu_chon":
             if not message or not str(message).strip():
                 err_event = {"type": "error", "msg": "❌ LỖI BẢO VỆ: Bạn chưa nhập nội dung tin nhắn cần gửi! Đã chặn thực thi để không gửi mẫu thông báo nhầm."}
@@ -545,7 +550,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             IS_CURRENT_PAUSED = False
 
 
-def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_roles=True):
+def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_roles=True, chat_id_type="auto"):
     global LATEST_EXECUTION, CURRENT_RUNNING_PROC, IS_CURRENT_PAUSED
     with EXECUTION_LOCK:
         LATEST_EXECUTION["tool"] = tool
@@ -559,6 +564,10 @@ def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_role
             cmd.extend(["--date", target_date])
         if dry_run:
             cmd.append("--dry-run")
+        if chat_id_type and chat_id_type != "auto":
+            cmd.extend(["--chat-id-type", chat_id_type])
+        if chat_id_type and chat_id_type != "auto":
+            cmd.extend(["--chat-id-type", chat_id_type])
         if tool == "spam_tu_chon":
             if not message or not str(message).strip():
                 LATEST_EXECUTION["status"] = "error"

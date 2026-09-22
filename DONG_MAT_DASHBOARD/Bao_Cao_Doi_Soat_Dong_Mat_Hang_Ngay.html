@@ -4276,7 +4276,7 @@
                     </div>
 
                     <!-- FORM CONTROLS -->
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; margin-bottom:1rem;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:1rem; margin-bottom:1rem;">
                         <!-- Col 1: Chọn Tool -->
                         <div>
                             <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-primary); margin-bottom:5px;">
@@ -4337,6 +4337,18 @@
                                 <option value="cloud">☁️ Máy Chủ GitHub Actions Cloud (24/7)</option>
                             </select>
                         </div>
+                        <!-- Col 4: Kênh Chat ID Gửi (KRC hoặc ĐÔNG MÁT / THỊT CÁ) -->
+                        <div>
+                            <label style="display:block; font-size:0.78rem; font-weight:700; color:var(--text-primary); margin-bottom:5px;">
+                                <i class="fa-solid fa-bullhorn" style="color:#38bdf8;"></i> 4. Kênh Chat ID Gửi:
+                            </label>
+                            <select id="chatIdTargetSelect" style="width:100%; padding:0.55rem 0.85rem; background:var(--bg-card-alt); border:1px solid var(--border-card); border-radius:8px; color:var(--text-primary); font-size:0.83rem; font-weight:600; outline:none; cursor:pointer;">
+                                <option value="auto" selected>🌟 Tự Động (Theo Từng Công Cụ)</option>
+                                <option value="dong_mat">🥩 Nhóm ĐÔNG MÁT / THỊT CÁ</option>
+                                <option value="rau_cu">🥦 Nhóm KRC (RAU CỦ)</option>
+                            </select>
+                        </div>
+
                     </div>
 
                     
@@ -11383,6 +11395,7 @@ function copyChatId(chatId, btnEl) {
             const targetDate = dateInput ? dateInput.value.trim() : "";
             const isDryRun = dryRunCheckbox ? dryRunCheckbox.checked : false;
             const engineChoice = engineSelect ? engineSelect.value : "auto";
+            const chatIdType = document.getElementById("chatIdTargetSelect")?.value || "auto";
 
             let customStores = "ALL";
             let customMessage = "";
@@ -11443,15 +11456,15 @@ function copyChatId(chatId, btnEl) {
             if (useLocal) {
                 if (engineTag) engineTag.innerHTML = '💻 Máy Tính Cục Bộ (Local Agent 0ms)';
                 if (ghLink) ghLink.style.display = 'none';
-                runViaLocalAgent(tool, targetDate, isDryRun, btn, customStores, customMessage, customTagRoles);
+                runViaLocalAgent(tool, targetDate, isDryRun, btn, customStores, customMessage, customTagRoles, chatIdType);
             } else {
                 if (engineTag) engineTag.innerHTML = '☁️ GitHub Actions Cloud Runner';
                 if (ghLink) ghLink.style.display = 'inline-flex';
-                runViaGitHubActions(tool, targetDate, isDryRun, btn, customStores, customMessage, customTagRoles);
+                runViaGitHubActions(tool, targetDate, isDryRun, btn, customStores, customMessage, customTagRoles, chatIdType);
             }
         }
 
-        function runViaLocalAgent(tool, targetDate, isDryRun, btn, stores = "ALL", message = "", tagRoles = true) {
+        function runViaLocalAgent(tool, targetDate, isDryRun, btn, stores = "ALL", message = "", tagRoles = true, chatIdType = "auto") {
             appendTerminalLog("🔌 Đang kết nối tới SCM Local Runner Service (http://127.0.0.1:8088)...", "info");
             
             if (currentEventSource) {
@@ -11467,6 +11480,9 @@ function copyChatId(chatId, btnEl) {
                 params.append("stores", stores);
                 params.append("message", message);
                 params.append("tag_roles", tagRoles ? "true" : "false");
+            }
+            if (chatIdType && chatIdType !== "auto") {
+                params.append("chat_id_type", chatIdType);
             }
 
             try {
@@ -11513,7 +11529,8 @@ function copyChatId(chatId, btnEl) {
                             dry_run: isDryRun,
                             stores: stores,
                             message: message,
-                            tag_roles: tagRoles
+                            tag_roles: tagRoles,
+                            chat_id_type: chatIdType
                         })
                     })
                     .then(res => res.json())
@@ -11543,7 +11560,7 @@ function copyChatId(chatId, btnEl) {
             }
         }
 
-        async function runViaGitHubActions(tool, targetDate, isDryRun, btn, stores = "ALL", message = "", tagRoles = true) {
+        async function runViaGitHubActions(tool, targetDate, isDryRun, btn, stores = "ALL", message = "", tagRoles = true, chatIdType = "auto") {
             appendTerminalLog("☁️ Gửi yêu cầu Dispatch tới máy chủ GitHub Actions Cloud Runner...", "info");
             const token = DEFAULT_GH_PAT;
 
@@ -11556,6 +11573,9 @@ function copyChatId(chatId, btnEl) {
                 inputs.stores = stores;
                 inputs.message = message;
                 inputs.no_tags = !tagRoles;
+            }
+            if (chatIdType && chatIdType !== "auto") {
+                inputs.chat_id_type = chatIdType;
             }
 
             try {
