@@ -68,6 +68,111 @@ def get_stores_list():
         print(f"⚠️ Lỗi đọc danh sách Siêu thị: {e}")
         return []
 
+def get_all_chat_ids():
+    json_path = os.path.join(ROOT_DIR, "CONFIG_DATA_STORES.json")
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception:
+            pass
+    stores = get_stores_list()
+    for s in stores:
+        s['chat_id_dm'] = s.get('chat_id', '')
+        s['chat_id_rc'] = ''
+    return stores
+
+def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name=None):
+    if not store_id:
+        return False, "Thiếu Mã Siêu Thị (store_id)!"
+    
+    store_id = str(store_id).strip().upper()
+    
+    # 1. Update Dong Mat Excel files
+    dm_files = [
+        os.path.join(ROOT_DIR, 'SPAM_PHIEU_CHUYEN', 'CONFIG_DATA', 'Danh_Sach_Sieu_Thi_Dong_Mat.xlsx'),
+        os.path.join(ROOT_DIR, 'TOOLS_DOI_SOAT', 'DONG_MAT', 'Danh sách Siêu thị.xlsx'),
+        os.path.join(ROOT_DIR, 'SPAM_PHIEU_CHUYEN', 'HẬU KIỂM THỊ CÁ', 'Danh sách Siêu thị.xlsx'),
+        os.path.join(ROOT_DIR, 'SPAM_PHIEU_CHUYEN', 'CHI TIẾT MÁT', 'Danh sách Siêu thị.xlsx'),
+        os.path.join(ROOT_DIR, 'SPAM_PHIEU_CHUYEN', 'CHI TIẾT THỊT CÁ', 'Danh sách Siêu thị.xlsx')
+    ]
+    
+    import pandas as pd
+    if chat_id_dm is not None or store_name is not None:
+        for f in dm_files:
+            if os.path.exists(f):
+                try:
+                    df = pd.read_excel(f, dtype=str)
+                    mask = (df['ID ST'].astype(str).str.strip().str.upper() == store_id)
+                    if mask.any():
+                        if chat_id_dm is not None:
+                            df.loc[mask, 'CHAT ID'] = str(chat_id_dm).strip()
+                        if store_name is not None and 'Tên Siêu thị' in df.columns:
+                            df.loc[mask, 'Tên Siêu thị'] = str(store_name).strip()
+                    else:
+                        new_row = {'ID ST': store_id, 'Tên Siêu thị': store_name or store_id, 'Tên viết tắt': store_id, 'CHAT ID': str(chat_id_dm or '')}
+                        df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+                    df.to_excel(f, index=False)
+                except Exception as e:
+                    print(f"Error updating {f}: {e}")
+
+    # 2. Update Rau Cu Excel files
+    rc_files = [
+        os.path.join(ROOT_DIR, 'SPAM_PHIEU_CHUYEN', 'CONFIG_DATA', 'Danh_Sach_Sieu_Thi_Rau_Cu.xlsx'),
+        os.path.join(ROOT_DIR, 'TOOLS_DOI_SOAT', 'RAU_CU', 'Danh sách Siêu thị.xlsx'),
+        os.path.join(ROOT_DIR, 'SPAM_PHIEU_CHUYEN', 'HẬU KIỂM RAU', 'Danh sách Siêu thị.xlsx')
+    ]
+    
+    if chat_id_rc is not None or store_name is not None:
+        for f in rc_files:
+            if os.path.exists(f):
+                try:
+                    df = pd.read_excel(f, dtype=str)
+                    id_col = 'ID ST TƯƠNG ỨNG' if 'ID ST TƯƠNG ỨNG' in df.columns else 'ID ST'
+                    mask = (df[id_col].astype(str).str.strip().str.upper() == store_id)
+                    if mask.any():
+                        if chat_id_rc is not None:
+                            df.loc[mask, 'CHAT ID'] = str(chat_id_rc).strip()
+                        if store_name is not None and 'Tên Siêu thị' in df.columns:
+                            df.loc[mask, 'Tên Siêu thị'] = str(store_name).strip()
+                    else:
+                        new_row = {'THÔNG TIN KHO': 'KRC', id_col: store_id, 'CHAT ID': str(chat_id_rc or ''), 'Tên Siêu thị': store_name or store_id}
+                        df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+                    df.to_excel(f, index=False)
+                except Exception as e:
+                    print(f"Error updating {f}: {e}")
+
+    # 3. Update CONFIG_DATA_STORES.json
+    json_path = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')
+    try:
+        data = []
+        if os.path.exists(json_path):
+            with open(json_path, 'r', encoding='utf-8') as jf:
+                data = json.load(jf)
+        found = False
+        for item in data:
+            if item.get('id', '').strip().upper() == store_id:
+                if chat_id_dm is not None: item['chat_id_dm'] = str(chat_id_dm).strip()
+                if chat_id_rc is not None: item['chat_id_rc'] = str(chat_id_rc).strip()
+                if store_name is not None: item['name'] = str(store_name).strip()
+                found = True
+                break
+        if not found:
+            data.append({
+                'id': store_id,
+                'name': store_name or store_id,
+                'short': store_id,
+                'chat_id_dm': str(chat_id_dm or ''),
+                'chat_id_rc': str(chat_id_rc or '')
+            })
+        data = sorted(data, key=lambda x: x.get('id', ''))
+        with open(json_path, 'w', encoding='utf-8') as jf:
+            json.dump(data, jf, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Error updating JSON: {e}")
+
+    return True, f"✅ Đã cập nhật Chat ID cho Siêu thị {store_id} thành công vào toàn bộ file Excel!"
+
 import ctypes
 
 kernel32 = ctypes.windll.kernel32
@@ -157,6 +262,20 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self._send_cors_headers()
             self.end_headers()
             stores = get_stores_list()
+            resp = {
+                "success": True,
+                "total": len(stores),
+                "stores": stores
+            }
+            self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
+            return
+
+        elif path == "/api/chat_ids" or path == "/api/stores_all":
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            stores = get_all_chat_ids()
             resp = {
                 "success": True,
                 "total": len(stores),
@@ -313,6 +432,25 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
                 "success": True,
                 "status": "cancelled",
                 "message": "🛑 Đã hủy và dừng chạy công cụ ngay lập tức!"
+            }
+            self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
+            return
+
+        elif path == "/api/chat_id/update" or path == "/api/chat_ids/update":
+            store_id = data.get('store_id', data.get('id', '')).strip()
+            chat_id_dm = data.get('chat_id_dm', data.get('chat_id', None))
+            chat_id_rc = data.get('chat_id_rc', None)
+            store_name = data.get('store_name', data.get('name', None))
+            
+            ok, msg = update_store_chat_ids(store_id, chat_id_dm, chat_id_rc, store_name)
+            self.send_response(200 if ok else 400)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            resp = {
+                "success": ok,
+                "message": msg,
+                "stores": get_all_chat_ids() if ok else []
             }
             self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
             return
