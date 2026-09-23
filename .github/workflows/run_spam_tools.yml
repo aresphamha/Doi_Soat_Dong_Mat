@@ -37,6 +37,21 @@ on:
         required: false
         default: false
         type: boolean
+      stores:
+        description: 'Danh sách mã Siêu thị cần gửi (ví dụ: A101, A102 hoặc ALL)'
+        required: false
+        default: 'ALL'
+        type: string
+      message:
+        description: 'Nội dung tin nhắn tùy chọn cần gửi'
+        required: false
+        default: ''
+        type: string
+      no_tags:
+        description: 'Không tự động tag Quản lý/Trưởng ca'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -95,6 +110,9 @@ jobs:
           TOOL_ARG="${{ github.event.inputs.tool }}"
           DATE_ARG="${{ github.event.inputs.target_date }}"
           DRY_ARG="${{ github.event.inputs.dry_run }}"
+          STORES_ARG="${{ github.event.inputs.stores }}"
+          MSG_ARG="${{ github.event.inputs.message }}"
+          NOTAGS_ARG="${{ github.event.inputs.no_tags }}"
 
           CMD="python SPAM_PHIEU_CHUYEN/run_spam_tool.py --tool $TOOL_ARG"
           if [ -n "$DATE_ARG" ]; then
@@ -102,6 +120,17 @@ jobs:
           fi
           if [ "$DRY_ARG" = "true" ]; then
             CMD="$CMD --dry-run"
+          fi
+          if [ -n "$STORES_ARG" ] && [ "$STORES_ARG" != "ALL" ]; then
+            CMD="$CMD --stores \"$STORES_ARG\""
+          fi
+          if [ "$TOOL_ARG" = "spam_tu_chon" ]; then
+            if [ -n "$MSG_ARG" ]; then
+              CMD="$CMD --message \"$MSG_ARG\""
+            fi
+            if [ "$NOTAGS_ARG" = "true" ]; then
+              CMD="$CMD --no-tags"
+            fi
           fi
           echo "👉 Chạy lệnh: $CMD"
           eval $CMD
