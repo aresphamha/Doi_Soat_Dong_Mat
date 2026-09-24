@@ -9781,6 +9781,26 @@ function copyChatId(chatId, btnEl) {
             filterTelegramData();
         }
 
+        
+        function removeVietnameseTones(str) {
+            if (!str) return '';
+            str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+            str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+            str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+            str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+            str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+            str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+            str = str.replace(/đ/g, "d");
+            str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+            str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+            str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+            str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+            str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+            str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+            str = str.replace(/Đ/g, "D");
+            return str.toLowerCase();
+        }
+    
         function getFilteredDetailedGroups() {
             const data = window.TELEGRAM_GROUPS_DATA;
             if (!data) return [];
@@ -9806,6 +9826,7 @@ function copyChatId(chatId, btnEl) {
                 if (teleCurrentPrio !== 'all' && p !== teleCurrentPrio) return false;
 
                 if (!query) return true;
+                const qNorm = removeVietnameseTones(query);
                 const sCode = (g.store_code || '').toLowerCase();
                 const sName = (g.store_name || '').toLowerCase();
                 const title = (g.title || '').toLowerCase();
@@ -9813,7 +9834,14 @@ function copyChatId(chatId, btnEl) {
                 const lastMsg = (g.last_message || '').toLowerCase();
                 const reason = (g.priority_reason || '').toLowerCase();
                 const badge = (g.priority_badge || '').toLowerCase();
-                return sCode.includes(query) || sName.includes(query) || title.includes(query) || chatId.includes(query) || lastMsg.includes(query) || reason.includes(query) || badge.includes(query);
+
+                const sCodeNorm = removeVietnameseTones(g.store_code || '');
+                const sNameNorm = removeVietnameseTones(g.store_name || '');
+                const titleNorm = removeVietnameseTones(g.title || '');
+                const lastMsgNorm = removeVietnameseTones(g.last_message || '');
+
+                return sCode.includes(query) || sName.includes(query) || title.includes(query) || chatId.includes(query) || lastMsg.includes(query) || reason.includes(query) || badge.includes(query) ||
+                       sCodeNorm.includes(qNorm) || sNameNorm.includes(qNorm) || titleNorm.includes(qNorm) || lastMsgNorm.includes(qNorm);
             });
 
             // Sắp xếp các nhóm: Ưu tiên Realtime mới nhất lên đầu
