@@ -133,7 +133,7 @@ def sync_and_push(custom_message=None):
     print(f"\n📡 Đang đẩy dữ liệu lên GitHub: https://github.com/{gh_user}/{repo_name} ...")
     
     try:
-        porcelain.push(repo, remote_location=remote_url, refspecs=[b"refs/heads/main:refs/heads/main"])
+        porcelain.push(repo, remote_location=remote_url, refspecs=[b"+refs/heads/main:refs/heads/main"])
         print("==============================================================================")
         print("✅ ĐÃ ĐẨY LÊN GITHUB & KÍCH HOẠT CI/CD THÀNH CÔNG 100%!")
         print(f"🔗 Link mã nguồn Repo: https://github.com/{gh_user}/{repo_name}")

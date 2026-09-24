@@ -795,16 +795,26 @@ async def run_tool_rau_cu_spam(target_date=None, dry_run=False, stores="ALL"):
     if stores and str(stores).strip().upper() != "ALL": extra_args.extend(["--stores", str(stores).strip()])
     execute_external_tool(script_path, extra_args=extra_args)
 
-async def run_tool_spam_tu_chon(stores="ALL", message=None, tag_roles=True, dry_run=False, photo_path=None):
+async def run_tool_spam_tu_chon(stores="ALL", message=None, tag_roles=True, dry_run=False, photo_path=None, chat_id_type="dong_mat"):
+    channel_name = "🥦 RAU CỦ (KRC)" if str(chat_id_type).lower() in ["rau_cu", "rc"] else "🥩 ĐÔNG MÁT / THỊT CÁ"
     print("\n=======================================================")
-    print("🎯 BẮT ĐẦU CHẠY TOOL: SPAM TIN NHẮN TÙY CHỌN...")
+    print(f"🎯 BẮT ĐẦU CHẠY TOOL: SPAM TIN NHẮN TÙY CHỌN - KÊNH: {channel_name}...")
     print("=======================================================")
     
-    excel_path = find_mapping_file("Danh sách Siêu thị.xlsx")
-    if not os.path.exists(excel_path):
-        excel_path = find_mapping_file("Danh_Sach_Sieu_Thi_Dong_Mat.xlsx")
+    if str(chat_id_type).lower() in ["rau_cu", "rc"]:
+        excel_path = find_mapping_file("Danh_Sach_Sieu_Thi_Rau_Cu.xlsx")
+        if not os.path.exists(excel_path):
+            excel_path = os.path.join(TOOLS_BASE_DIR, "RAU_CU", "Danh sách Siêu thị.xlsx")
+        print(f"📁 Đang đọc File Chat ID KHO RAU CỦ: {excel_path}")
+    else:
+        excel_path = find_mapping_file("Danh sách Siêu thị.xlsx")
+        if not os.path.exists(excel_path):
+            excel_path = find_mapping_file("Danh_Sach_Sieu_Thi_Dong_Mat.xlsx")
+        print(f"📁 Đang đọc File Chat ID KHO ĐÔNG MÁT / THỊT CÁ: {excel_path}")
         
     df = pd.read_excel(excel_path, dtype=str)
+    id_col = 'ID ST' if 'ID ST' in df.columns else ('ID ST TƯƠNG ỨNG' if 'ID ST TƯƠNG ỨNG' in df.columns else df.columns[0])
+    df['ID ST'] = df[id_col].astype(str).str.strip()
     df = df[df['CHAT ID'].notna() & (df['CHAT ID'].str.strip() != '') & (df['CHAT ID'] != 'nan')]
     df['CHAT ID'] = df['CHAT ID'].str.replace('.0', '', regex=False).str.strip()
     if 'Tên viết tắt' not in df.columns:
@@ -977,6 +987,7 @@ def main():
     parser.add_argument("--message", default=None, help="Nội dung tin nhắn tùy chọn cần spam")
     parser.add_argument("--no-tags", action="store_true", help="Không tự động tag Quản lý/Trưởng ca")
     parser.add_argument("--photo", default=None, help="Đường dẫn file ảnh đính kèm (nếu có)")
+    parser.add_argument("--chat-id-type", "--kho", choices=["dong_mat", "rau_cu", "auto"], default="dong_mat", dest="chat_id_type", help="Chọn File Chat ID Kênh gửi (dong_mat hoặc rau_cu)")
     
     args = parser.parse_args()
     date_val = args.date.strip() if args.date and args.date.strip() else None
@@ -1008,7 +1019,7 @@ def main():
     elif args.tool == "rau_cu_spam":
         loop.run_until_complete(run_tool_rau_cu_spam(date_val, args.dry_run, args.stores))
     elif args.tool == "spam_tu_chon":
-        loop.run_until_complete(run_tool_spam_tu_chon(args.stores, args.message, tag_roles, args.dry_run, args.photo))
+        loop.run_until_complete(run_tool_spam_tu_chon(args.stores, args.message, tag_roles, args.dry_run, args.photo, args.chat_id_type))
     elif args.tool == "xoa_tin_nhan":
         loop.run_until_complete(run_tool_xoa_tin_nhan())
     elif args.tool == "lay_chat_id":
