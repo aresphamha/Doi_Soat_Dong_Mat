@@ -315,6 +315,7 @@ async def main():
 
     success_count = 0
     fail_count = 0
+    failed_list = []
     skipped_sent_count = 0
 
     for idx, (id_st, group) in enumerate(grouped, 1):
@@ -397,6 +398,17 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
                         print(f"✅ [{idx}/{total_st}] [THÀNH CÔNG] Đã tag tên & gửi ảnh RAU CỦ QUẢ cho ST {id_st} (Chat ID: {chat_id})", flush=True)
                         success_count += 1
                         record_sent_store('rau_cu', date_key, id_st)
+                    elif res.status_code == 400 and "migrate_to_chat_id" in res.text:
+                        try:
+                            err_json = res.json()
+                            new_chat_id = err_json.get("parameters", {}).get("migrate_to_chat_id")
+                            if new_chat_id:
+                                print(f"🔄 [{idx}/{total_st}] [TỰ ĐỘNG CHUYỂN SUPERGROUP] ST {id_st} đổi sang Chat ID mới: {new_chat_id}. Đang gửi lại ngay...", flush=True)
+                                chat_id = new_chat_id
+                                retry = True
+                                continue
+                        except Exception:
+                            pass
                     elif res.status_code == 429:
                         try:
                             error_data = res.json()
@@ -447,6 +459,17 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
     else:
         print(f"🎉 HOÀN TẤT RAU CỦ QUẢ! Đã gửi mới: {success_count} ST | Đã bỏ qua vì đã gửi trước đó: {skipped_sent_count} ST | Thất bại: {fail_count} ST.", flush=True)
     print("==================================================", flush=True)
+    if failed_list:
+        print("\n" + "!" * 85, flush=True)
+        print(f"🚨 BẢNG TỔNG HỢP CHI TIẾT {len(failed_list)} SIÊU THỊ THẤT BẠI CẦN XỬ LÝ:", flush=True)
+        print("-" * 85, flush=True)
+        for i, f_item in enumerate(failed_list, 1):
+            print(f"[{i:02d}] SIÊU THỊ: {f_item['id_st']} | Chat ID: {f_item.get('chat_id', 'Chưa có')}", flush=True)
+            print(f"     ❌ Nguyên nhân: {f_item.get('reason', 'Không rõ')}", flush=True)
+            print(f"     🔍 Chi tiết lỗi: {f_item.get('detail', '')}", flush=True)
+            print(f"     👉 Hướng xử lý: {f_item.get('action', '')}", flush=True)
+            print("-" * 85, flush=True)
+        print("!" * 85 + "\n", flush=True)
     safe_prompt("Bấm Enter để kết thúc...")
 
 if __name__ == '__main__':

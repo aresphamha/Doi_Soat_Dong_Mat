@@ -317,6 +317,7 @@ async def main():
     success_count = 0
     fail_count = 0
     skipped_sent_count = 0
+    failed_list = []
 
     for idx, (id_st, group) in enumerate(grouped, 1):
         id_st = str(id_st).strip()
@@ -325,9 +326,16 @@ async def main():
             skipped_sent_count += 1
             continue
 
-        if id_st not in chat_map:
+        if id_st not in chat_map or not str(chat_map[id_st]).strip() or str(chat_map[id_st]).strip() == 'nan':
             print(f"⏭️ [{idx}/{total_st}] [BỎ QUA] Không tìm thấy Chat ID của Siêu thị {id_st}.", flush=True)
             fail_count += 1
+            failed_list.append({
+                'id_st': id_st,
+                'chat_id': 'Chưa có',
+                'reason': 'Chưa có Chat ID trong file Excel',
+                'detail': f'Không tìm thấy dòng tương ứng của ST {id_st} trong file "Danh sách Siêu thị.xlsx"',
+                'action': f'Thêm mã ST {id_st} và Chat ID nhóm Telegram tương ứng vào file "Danh sách Siêu thị.xlsx".'
+            })
             continue
             
         chat_id_str = str(chat_map[id_st]).replace('.0', '').strip()
@@ -367,11 +375,21 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
         except Exception as e:
             print(f"❌ [{idx}/{total_st}] Lỗi tạo hình ảnh cho ST {id_st}: {e}", flush=True)
             fail_count += 1
+            failed_list.append({
+                'id_st': id_st,
+                'chat_id': str(chat_id),
+                'reason': 'Lỗi xuất hình ảnh',
+                'detail': str(e),
+                'action': 'Kiểm tra dữ liệu số lượng/mã hàng của ST.'
+            })
             continue
             
         max_retries = 5
         retry_count = 0
         retry = True
+        send_success = False
+        last_error_detail = ""
+
         while retry and retry_count < max_retries:
             retry = False
             try:
@@ -386,7 +404,20 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
                     if res.status_code == 200:
                         print(f"✅ [{idx}/{total_st}] [THÀNH CÔNG] Đã tag tên & gửi ảnh ĐÔNG MÁT cho ST {id_st} (Chat ID: {chat_id})", flush=True)
                         success_count += 1
+                        send_success = True
                         record_sent_store('dong_mat', date_key, id_st)
+                    elif res.status_code == 400 and "migrate_to_chat_id" in res.text:
+                        try:
+                            err_json = res.json()
+                            new_chat_id = err_json.get("parameters", {}).get("migrate_to_chat_id")
+                            if new_chat_id:
+                                print(f"🔄 [{idx}/{total_st}] [TỰ ĐỘNG CHUYỂN SUPERGROUP] ST {id_st} đổi sang Chat ID mới: {new_chat_id}. Đang gửi lại ngay...", flush=True)
+                                chat_id = new_chat_id
+                                retry = True
+                                continue
+                        except Exception:
+                            pass
+                        last_error_detail = res.text
                     elif res.status_code == 429:
                         try:
                             error_data = res.json()
@@ -404,10 +435,11 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
                         await asyncio.sleep(retry_after)
                         retry = True
                     else:
+                        last_error_detail = res.text
                         print(f"[LỖI] Không thể gửi ĐÔNG MÁT cho ST {id_st}: {res.text}")
-                        fail_count += 1
             except Exception as e:
                 retry_count += 1
+                last_error_detail = str(e)
                 if retry_count < max_retries:
                     wait_time = 3 + retry_count * 2
                     print(f"[MẠNG CHẬP CHỜN] Lỗi kết nối ST {id_st} ({e}). Đang tạo kết nối mới thử lại lần {retry_count}/{max_retries} sau {wait_time}s...")
@@ -415,8 +447,20 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
                     retry = True
                 else:
                     print(f"[LỖI] Lỗi kết nối ST {id_st} sau {max_retries} lần thử: {e}")
-                    fail_count += 1
         
+        if not send_success and not args.dry_run:
+            fail_count += 1
+            action_guide = "Kiểm tra xem Bot 'Đối soát SCM' đã được thêm vào nhóm và có quyền gửi ảnh/tin nhắn hay chưa."
+            if "migrate_to_chat_id" in last_error_detail:
+                action_guide = "Cập nhật Chat ID mới cho nhóm Supergroup vào file Excel 'Danh sách Siêu thị.xlsx'."
+            failed_list.append({
+                'id_st': id_st,
+                'chat_id': str(chat_id),
+                'reason': 'Lỗi phản hồi từ Telegram API / kết nối mạng',
+                'detail': last_error_detail,
+                'action': action_guide
+            })
+
         if os.path.exists(img_path): os.remove(img_path)
         await asyncio.sleep(3)
 
@@ -431,12 +475,24 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
     except Exception:
         pass
         
-    print("==================================================", flush=True)
+    print("\n" + "=" * 85, flush=True)
     if args.dry_run:
         print(f"🎉 HOÀN TẤT KIỂM TRA (DRY-RUN)! Đã duyệt qua {success_count} Siêu thị hợp lệ (Không gửi tin nhắn).", flush=True)
     else:
         print(f"🎉 HOÀN TẤT ĐÔNG MÁT! Đã gửi mới: {success_count} ST | Đã bỏ qua vì đã gửi trước đó: {skipped_sent_count} ST | Thất bại: {fail_count} ST.", flush=True)
-    print("==================================================", flush=True)
+    print("=" * 85, flush=True)
+
+    if failed_list:
+        print("\n" + "!" * 85, flush=True)
+        print(f"🚨 BẢNG TỔNG HỢP CHI TIẾT {len(failed_list)} SIÊU THỊ THẤT BẠI CẦN XỬ LÝ:", flush=True)
+        print("-" * 85, flush=True)
+        for i, f_item in enumerate(failed_list, 1):
+            print(f"[{i:02d}] SIÊU THỊ: {f_item['id_st']} | Chat ID: {f_item['chat_id']}", flush=True)
+            print(f"     ❌ Nguyên nhân: {f_item['reason']}", flush=True)
+            print(f"     🔍 Chi tiết lỗi: {f_item['detail']}", flush=True)
+            print(f"     👉 Hướng xử lý: {f_item['action']}", flush=True)
+            print("-" * 85, flush=True)
+        print("!" * 85 + "\n", flush=True)
     safe_prompt("Bấm Enter để kết thúc...")
 
 if __name__ == '__main__':

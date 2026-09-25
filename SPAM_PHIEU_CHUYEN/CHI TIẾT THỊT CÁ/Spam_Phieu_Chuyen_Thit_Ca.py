@@ -123,6 +123,7 @@ async def main():
 
     success_count = 0
     fail_count = 0
+    failed_list = []
     print(f"Có {len(grouped)} Siêu thị đang có phiếu treo.")
 
     date_str = vn_now.strftime('%d.%m')
