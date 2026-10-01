@@ -201,9 +201,9 @@ async def main():
             res = requests.get(url_csv, timeout=30)
             res.raise_for_status()
             lines = res.content.decode('utf-8-sig', errors='replace').splitlines()
-            if len(lines) > 3:
+            if len(lines) > 2:
                 import io
-                df_thieu = pd.read_csv(io.StringIO('\n'.join(lines[2:])), low_memory=False)
+                df_thieu = pd.read_csv(io.StringIO('\n'.join(lines[1:])), low_memory=False)
                 print(f"⚡ Đã tải thành công qua CSV: {len(df_thieu):,} dòng!", flush=True)
                 break
         except Exception as e:
@@ -221,7 +221,7 @@ async def main():
                     f.write(res.content)
                 xl = pd.ExcelFile(cache_file)
                 sheet_name = [s for s in xl.sheet_names if 'Chênh lệch' in s or 'ST' in s or 'Ch' in s][0]
-                df_thieu = xl.parse(sheet_name, header=2)
+                df_thieu = xl.parse(sheet_name, header=1)
                 print("✅ Đã tải và đồng bộ XLSX Rau Củ thành công!", flush=True)
                 break
             except Exception as e:
@@ -235,7 +235,7 @@ async def main():
             try:
                 xl = pd.ExcelFile(cache_file)
                 sheet_name = [s for s in xl.sheet_names if 'Chênh lệch' in s or 'ST' in s or 'Ch' in s][0]
-                df_thieu = xl.parse(sheet_name, header=2)
+                df_thieu = xl.parse(sheet_name, header=1)
             except Exception as e:
                 print(f"[LỖI] Đọc cache thất bại: {e}")
                 safe_prompt("Bấm Enter để thoát...")
@@ -245,10 +245,10 @@ async def main():
             safe_prompt("Bấm Enter để thoát...")
             sys.exit(1)
 
-    # Xác định các cột theo Cột B (idx 1 - Ngày), Cột V (idx 21 - Lỗi), Cột D (idx 3 - ID ST)
-    col_ngay = df_thieu.columns[1] if len(df_thieu.columns) > 1 else 'Ngày'
-    col_id_st = df_thieu.columns[3] if len(df_thieu.columns) > 3 else 'ID ST'
-    col_loi = df_thieu.columns[21] if len(df_thieu.columns) > 21 else 'Lỗi'
+    # Xác định các cột theo Cột C (idx 2 - Ngày), Cột F (idx 5 - ID ST), Cột X (idx 23 - Lỗi)
+    col_ngay = df_thieu.columns[2] if len(df_thieu.columns) > 2 else 'Ngày chuyển hàng'
+    col_id_st = df_thieu.columns[5] if len(df_thieu.columns) > 5 else 'ID ST'
+    col_loi = df_thieu.columns[23] if len(df_thieu.columns) > 23 else 'Lỗi'
 
     # Loại bỏ các dòng không có ID ST hợp lệ
     df_thieu = df_thieu[df_thieu[col_id_st].notna() & (df_thieu[col_id_st].astype(str).str.strip() != '') & (df_thieu[col_id_st].astype(str).str.strip().str.lower() != 'nan')]
@@ -266,7 +266,7 @@ async def main():
         latest_date = df_thieu[col_ngay].dropna().max()
 
     if pd.isna(latest_date):
-        print("[LỖI] Không tìm thấy dữ liệu ngày hợp lệ trong Cột B!")
+        print("[LỖI] Không tìm thấy dữ liệu ngày hợp lệ trong Cột C (Ngày chuyển hàng)!")
         safe_prompt("Bấm Enter để thoát...")
         sys.exit(1)
 
@@ -277,9 +277,9 @@ async def main():
     df_thieu = df_thieu[df_thieu[col_ngay] == latest_date]
     print(f"📊 Số dòng sau khi lọc Ngày: {len(df_thieu):,} dòng")
 
-    # 2. Lọc theo Lỗi = 'DC GIAO THIẾU' (Cột V)
+    # 2. Lọc theo Lỗi = 'DC GIAO THIẾU' (Cột X / idx 23)
     df_thieu = df_thieu[df_thieu[col_loi].astype(str).str.upper().str.contains('DC GIAO THIẾU', na=False)]
-    print(f"🎯 Số dòng sau khi lọc Lỗi 'DC GIAO THIẾU' (Cột V): {len(df_thieu):,} dòng")
+    print(f"🎯 Số dòng sau khi lọc Lỗi 'DC GIAO THIẾU' (Cột {col_loi}): {len(df_thieu):,} dòng")
 
     # Loại bỏ khoảng trắng thừa trong ID ST
     df_thieu[col_id_st] = df_thieu[col_id_st].astype(str).str.strip()
@@ -347,11 +347,11 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
 {tag_text}'''
 
         df_slice = pd.DataFrame({
-            'ID ST': group.iloc[:, 3].values,
-            'Mã hàng': [str(x).replace('.0', '') for x in group.iloc[:, 4].values],
-            'Tên Hàng': group.iloc[:, 5].values,
-            'ĐVT': group.iloc[:, 6].values,
-            'Số lượng chuyển': group.iloc[:, 7].values
+            'ID ST': group.iloc[:, 5].values,
+            'Mã hàng': [str(x).replace('.0', '') for x in group.iloc[:, 6].values],
+            'Tên Hàng': group.iloc[:, 7].values,
+            'ĐVT': group.iloc[:, 8].values,
+            'Số lượng chuyển': group.iloc[:, 9].values
         }).reset_index(drop=True)
         img_path = f"temp_{id_st}.png"
 
