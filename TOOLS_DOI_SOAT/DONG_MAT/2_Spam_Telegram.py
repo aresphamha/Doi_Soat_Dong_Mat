@@ -97,6 +97,52 @@ api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
 bot_token = '8810108114:AAHFyBEL_JoNFdn2r3V21zEDtElUBU_nV-E'
 url_send_photo = f'https://api.telegram.org/bot{bot_token}/sendPhoto'
 
+def clean_barcode(val):
+    if pd.isna(val) or val is None:
+        return ''
+    s = str(val).strip()
+    if s.endswith('.0'):
+        s = s[:-2]
+    try:
+        if 'e' in s.lower():
+            s = f"{int(float(s))}"
+    except Exception:
+        pass
+    return s
+
+def export_table_image(df_data, output_path):
+    import matplotlib.pyplot as plt
+    n_rows = len(df_data)
+    fig_height = max(1.2, 0.8 + n_rows * 0.45)
+    fig, ax = plt.subplots(figsize=(13.5, fig_height), dpi=200)
+    ax.axis('off')
+    
+    col_widths = [0.08, 0.12, 0.16, 0.44, 0.08, 0.14]
+    
+    table = ax.table(
+        cellText=df_data.values,
+        colLabels=df_data.columns,
+        colWidths=col_widths,
+        cellLoc='center',
+        loc='center'
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(11)
+    table.scale(1, 1.8)
+    
+    for (r, c), cell in table.get_celld().items():
+        if r == 0:
+            cell.set_facecolor('#0284c7')
+            cell.set_text_props(color='white', weight='bold')
+        else:
+            cell.set_facecolor('#f8fafc' if r % 2 == 1 else '#ffffff')
+            if c == 3: # Tên SP
+                cell.set_text_props(ha='left')
+                
+    plt.tight_layout()
+    plt.savefig(output_path, bbox_inches='tight', dpi=200)
+    plt.close(fig)
+
 def disable_quickedit():
     """Tắt tính năng QuickEdit của Windows Console để chuột click vào không bị treo/pause tool"""
     try:
@@ -199,7 +245,7 @@ async def main():
             lines = res.content.decode('utf-8-sig', errors='replace').splitlines()
             if len(lines) > 2:
                 import io
-                df_thieu = pd.read_csv(io.StringIO('\n'.join(lines[1:])), low_memory=False)
+                df_thieu = pd.read_csv(io.StringIO('\n'.join(lines[1:])), dtype=str, low_memory=False)
                 print(f"⚡ Đã tải thành công qua CSV: {len(df_thieu):,} dòng!", flush=True)
                 break
         except Exception as e:
@@ -216,7 +262,7 @@ async def main():
                 with open(cache_file, 'wb') as f:
                     f.write(res.content)
                 xl = pd.ExcelFile(cache_file)
-                df_thieu = xl.parse('Chênh lệch ST', header=1)
+                df_thieu = xl.parse('Chênh lệch ST', header=1, dtype=str)
                 print("✅ Đã tải và đồng bộ XLSX Đông Mát thành công!", flush=True)
                 break
             except Exception as e:
@@ -229,7 +275,7 @@ async def main():
             print(f"⚠️ [CHẾ ĐỘ DỰ PHÒNG] Không thể tải mới, tự động đọc file cache sẵn có: {cache_file}", flush=True)
             try:
                 xl = pd.ExcelFile(cache_file)
-                df_thieu = xl.parse('Chênh lệch ST', header=1)
+                df_thieu = xl.parse('Chênh lệch ST', header=1, dtype=str)
             except Exception as e:
                 print(f"[LỖI] Đọc cache thất bại: {e}")
                 safe_prompt("Bấm Enter để thoát...")
@@ -356,11 +402,11 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
 
         df_slice = pd.DataFrame({
             'ID ST': group.iloc[:, 3].values,
-            'Nhóm hàng': group.iloc[:, 1].values,
-            'Mã hàng': [str(x).replace('.0', '') for x in group.iloc[:, 4].values],
-            'Tên SP': group.iloc[:, 5].values,
-            'ĐVT': group.iloc[:, 6].values,
-            'Số lượng chuyển': group.iloc[:, 7].values
+            'Nhóm hàng': group.iloc[:, 4].values,
+            'Mã hàng': [clean_barcode(x) for x in group.iloc[:, 5].values],
+            'Tên SP': group.iloc[:, 6].values,
+            'ĐVT': group.iloc[:, 7].values,
+            'Số lượng chuyển': group.iloc[:, 8].values
         }).reset_index(drop=True)
         img_path = f"temp_{id_st}.png"
         
@@ -371,7 +417,7 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
 
         print(f"👉 [{idx}/{total_st}] Đang chuẩn bị ảnh & Tag tên quản lý cho ST {id_st} ({len(group)} dòng hàng)...", flush=True)
         try:
-            dfi.export(df_slice, img_path, table_conversion="matplotlib", dpi=200)
+            export_table_image(df_slice, img_path)
         except Exception as e:
             print(f"❌ [{idx}/{total_st}] Lỗi tạo hình ảnh cho ST {id_st}: {e}", flush=True)
             fail_count += 1
