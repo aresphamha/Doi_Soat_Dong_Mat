@@ -89,7 +89,7 @@ async def main():
             t.total_transfer_quantity as `Số lượng`,
             t.status
         FROM __cdc_kfm_kf_inventories_kf_transfer_items t
-        WHERE t.from_branch_id = '6a34ed56f23028000774139f'
+        WHERE t.from_branch_id IN ('6aabb4d0e493030007272a3f', '6a34ed56f23028000774139f')
         AND t.status = 3
         AND t.created_at >= '{utc_start}' 
         AND t.created_at <= '{utc_end}'
@@ -110,7 +110,7 @@ async def main():
         input("Bấm Enter để thoát...")
         sys.exit()
 
-    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name)
+    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name).fillna('MFA30102 _ Sóng Thần _ Quá Cảnh')
     df_tickets['Nơi nhận'] = df_tickets['to_branch_id'].map(id_to_name)
     df_tickets['Trạng thái'] = 'Đang chuyển'
     

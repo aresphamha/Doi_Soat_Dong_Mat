@@ -174,7 +174,7 @@ async def run_tool_thit_ca(target_date=None, dry_run=False):
             t.total_transfer_quantity,
             t.status
         FROM __cdc_kfm_kf_inventories_kf_transfer_items t
-        WHERE t.from_branch_id = '6a34ed56f23028000774139f'
+        WHERE t.from_branch_id IN ('6aabb4d0e493030007272a3f', '6a34ed56f23028000774139f')
         AND t.status = 3
         AND t.created_at >= '{utc_start}' 
         AND t.created_at <= '{utc_end}'
@@ -194,7 +194,7 @@ async def run_tool_thit_ca(target_date=None, dry_run=False):
         return
 
     df_tickets['Mã phiếu chuyển'] = df_tickets['code']
-    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name).fillna('KHO THỊT CÁ')
+    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name).fillna('MFA30102 _ Sóng Thần _ Quá Cảnh')
     df_tickets['Nơi nhận'] = df_tickets['to_branch_id'].map(id_to_name)
     df_tickets['Trạng thái'] = 'Đang chuyển'
     grouped = df_tickets.groupby('Nơi nhận')
@@ -315,7 +315,7 @@ async def run_tool_mat(target_date=None, dry_run=False):
             t.status,
             t.ts_do_status
         FROM __cdc_kfm_kf_inventories_kf_transfer_items t
-        WHERE t.from_branch_id = '6a34ee2aebb48c000760d803'
+        WHERE t.from_branch_id IN ('6aa6a1eedf3d880007871f3f', '6aa77de130fded00073d4521', '6a34ee2aebb48c000760d803', '6a34ec8d77173000073e64e2')
         AND t.status = 3
         AND t.created_at >= '{utc_start}' 
         AND t.created_at <= '{utc_end}'
@@ -335,7 +335,7 @@ async def run_tool_mat(target_date=None, dry_run=False):
         return
 
     df_tickets['Mã phiếu chuyển'] = df_tickets['code']
-    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name).fillna('KHO MÁT')
+    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name).fillna('CLA40102/FZA50102 _ Sóng Thần')
     df_tickets['Nơi nhận'] = df_tickets['to_branch_id'].map(id_to_name)
     df_tickets['Trạng thái'] = 'Đang chuyển'
     df_tickets['Trạng thái PXK TS'] = df_tickets['ts_do_status'].fillna('Chưa tạo')
@@ -461,7 +461,7 @@ async def run_tool_hau_kiem_rau(target_date=None, dry_run=False):
             t.total_store_quantity,
             t.total_transfer_quantity
         FROM __cdc_kfm_kf_inventories_kf_transfer_items t
-        WHERE t.from_branch_id = '5fdc170ebd89c10006f15b7c'
+        WHERE t.from_branch_id IN ('6aabb3f3f426e20007f81559', '6aabb45fd18e9d00073200a4', '5fdc170ebd89c10006f15b7c', '6a3e383fe20b440007640326')
         AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
         AND t.double_checked_status = 1
         AND t.status = 5
@@ -484,7 +484,7 @@ async def run_tool_hau_kiem_rau(target_date=None, dry_run=False):
 
     df_tickets['Mã Hậu Kiểm'] = df_tickets['double_check_code']
     df_tickets['Phiếu chuyển'] = df_tickets['code']
-    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name).fillna('KHO RAU CỦ')
+    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name).fillna('FEA20102/FEA20197 _ Bình Thắng')
     df_tickets['Nơi nhận'] = df_tickets['to_branch_id'].map(id_to_name)
     df_tickets['Trạng thái'] = 'Cần hậu kiểm'
     grouped = df_tickets.groupby('Nơi nhận')
@@ -604,7 +604,7 @@ async def run_tool_hau_kiem_thit_ca(target_date=None, dry_run=False):
             t.total_store_quantity,
             t.total_transfer_quantity
         FROM __cdc_kfm_kf_inventories_kf_transfer_items t
-        WHERE t.from_branch_id = '6a34ed56f23028000774139f'
+        WHERE t.from_branch_id IN ('6aabb4d0e493030007272a3f', '6a34ed56f23028000774139f')
         AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
         AND t.double_checked_status = 1
         AND t.status = 5
@@ -627,7 +627,7 @@ async def run_tool_hau_kiem_thit_ca(target_date=None, dry_run=False):
 
     df_tickets['Mã Hậu Kiểm'] = df_tickets['double_check_code']
     df_tickets['Phiếu chuyển'] = df_tickets['code']
-    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name).fillna('KHO THỊT CÁ')
+    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name).fillna('MFA30102 _ Sóng Thần _ Quá Cảnh')
     df_tickets['Nơi nhận'] = df_tickets['to_branch_id'].map(id_to_name)
     df_tickets['Trạng thái'] = 'Cần hậu kiểm'
     grouped = df_tickets.groupby('Nơi nhận')
@@ -702,6 +702,183 @@ async def run_tool_hau_kiem_thit_ca(target_date=None, dry_run=False):
 
     await client.disconnect()
     print("✅ Hoàn thành Tool Hậu Kiểm Thịt Cá!")
+
+# -------------------------------------------------------------
+# MODULE 5: HẬU KIỂM ĐÔNG MÁT
+# -------------------------------------------------------------
+async def run_tool_hau_kiem_dong_mat(target_date=None, dry_run=False):
+    print("\n=======================================================")
+    print("❄️ [5/5] BẮT ĐẦU CHẠY TOOL: HẬU KIỂM ĐÔNG MÁT...")
+    print("=======================================================")
+    
+    excel_path = find_mapping_file("Danh sách Siêu thị.xlsx")
+    if not os.path.exists(excel_path):
+        excel_path = find_mapping_file("Danh_Sach_Sieu_Thi_Dong_Mat.xlsx")
+        
+    df_chat = pd.read_excel(excel_path, dtype=str)
+    df_chat = df_chat[df_chat['CHAT ID'].notna() & (df_chat['CHAT ID'] != 'nan')]
+    chat_map = dict(zip(df_chat['Tên Siêu thị'].astype(str).str.strip(), df_chat['CHAT ID']))
+
+    vn_tz = pytz.timezone('Asia/Ho_Chi_Minh')
+    vn_now = datetime.now(vn_tz)
+    
+    def get_query_for_range(utc_start, utc_end):
+        return f"""
+        SELECT 
+            t.double_check_code,
+            t.code,
+            t.from_branch_id,
+            t.to_branch_id,
+            t.total_sku,
+            t.total_store_quantity,
+            t.total_transfer_quantity
+        FROM __cdc_kfm_kf_inventories_kf_transfer_items t
+        WHERE t.from_branch_id IN (
+            '6aa6a1eedf3d880007871f3f',  -- CLA40102 _ Sóng Thần _ Quá Cảnh
+            '6aa77de130fded00073d4521',  -- FZA50102 _ Sóng Thần _ Quá Cảnh
+            '6a34ee2aebb48c000760d803',  -- CL02 (Cũ)
+            '6a34ec8d77173000073e64e2'   -- FZ02 (Cũ)
+        )
+        AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
+        AND t.double_checked_status = 1
+        AND t.status = 5
+        AND t.created_at >= '{utc_start}' 
+        AND t.created_at <= '{utc_end}'
+        """
+
+    try:
+        conn = get_db_connection()
+        if target_date:
+            vn_target = datetime.strptime(target_date, '%Y-%m-%d')
+            vn_start = vn_tz.localize(vn_target.replace(hour=0, minute=0, second=0, microsecond=0))
+            vn_end = vn_tz.localize(vn_target.replace(hour=23, minute=59, second=59, microsecond=999999))
+            utc_start = vn_start.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
+            utc_end = vn_end.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
+            date_str = vn_start.strftime('%d.%m')
+            date_iso = vn_start.strftime('%Y-%m-%d')
+            print(f"⏰ [CHỈ ĐỊNH NGÀY] Truy vấn ngày: {date_iso} ({utc_start} -> {utc_end} UTC)")
+            df_tickets = pd.read_sql(get_query_for_range(utc_start, utc_end), conn)
+        else:
+            # 1. Ưu tiên kiểm tra ngày D - 1 (Hôm qua)
+            vn_d1 = vn_now - timedelta(days=1)
+            vn_d1_start = vn_d1.replace(hour=0, minute=0, second=0, microsecond=0)
+            vn_d1_end = vn_d1.replace(hour=23, minute=59, second=59, microsecond=999999)
+            utc_d1_start = vn_d1_start.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
+            utc_d1_end = vn_d1_end.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
+            
+            print(f"⏰ [ƯU TIÊN D-1] Đang kiểm tra phiếu treo ngày hôm qua ({vn_d1.strftime('%d/%m/%Y')})...")
+            df_d1 = pd.read_sql(get_query_for_range(utc_d1_start, utc_d1_end), conn)
+            
+            if len(df_d1) > 0:
+                df_tickets = df_d1
+                date_str = vn_d1.strftime('%d.%m')
+                date_iso = vn_d1.strftime('%Y-%m-%d')
+                print(f"📌 Tìm thấy {len(df_tickets)} phiếu Hậu Kiểm Đông Mát còn treo từ ngày D-1 ({date_str}) -> Tiến hành SPAM D-1.")
+            else:
+                # 2. D-1 không còn phiếu treo -> Chuyển sang ngày D (Hôm nay)
+                vn_d0_start = vn_now.replace(hour=0, minute=0, second=0, microsecond=0)
+                vn_d0_end = vn_now.replace(hour=23, minute=59, second=59, microsecond=999999)
+                utc_d0_start = vn_d0_start.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
+                utc_d0_end = vn_d0_end.astimezone(pytz.UTC).strftime('%Y-%m-%d %H:%M:%S')
+                
+                print(f"✅ Ngày D-1 đã hết phiếu treo! Chuyển sang kiểm tra phiếu ngày D Hôm nay ({vn_now.strftime('%d/%m/%Y')})...")
+                df_tickets = pd.read_sql(get_query_for_range(utc_d0_start, utc_d0_end), conn)
+                date_str = vn_now.strftime('%d.%m')
+                date_iso = vn_now.strftime('%Y-%m-%d')
+
+        df_branches = pd.read_sql("SELECT branch_id, branch_name FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard WHERE branch_name IS NOT NULL AND branch_name != '' GROUP BY branch_id, branch_name", conn)
+        id_to_name = dict(zip(df_branches['branch_id'], df_branches['branch_name']))
+        conn.close()
+    except Exception as e:
+        print(f"⚠️ [LỖI KẾT NỐI DATABASE 103.140.248.250]: {e}")
+        print("💡 Gợi ý: Database chặn IP Cloud quốc tế. Vui lòng mở Chay_Local_Runner.bat để chạy trên máy tính.")
+        return
+
+    print(f"📊 Tổng số phiếu Hậu Kiểm Đông Mát cần xử lý: {len(df_tickets)} (Ngày đối soát: {date_str})")
+    if len(df_tickets) == 0:
+        print("✅ Không có phiếu Hậu kiểm Đông Mát nào cần xử lý.")
+        return
+
+    df_tickets['Mã Hậu Kiểm'] = df_tickets['double_check_code']
+    df_tickets['Phiếu chuyển'] = df_tickets['code']
+    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name).fillna('CLA40102/FZA50102 _ Sóng Thần')
+    df_tickets['Nơi nhận'] = df_tickets['to_branch_id'].map(id_to_name)
+    df_tickets['Trạng thái'] = 'Cần hậu kiểm'
+    grouped = df_tickets.groupby('Nơi nhận')
+
+    session_file = ensure_telegram_session()
+    session_base = session_file.replace('.session', '')
+    
+    from telethon import TelegramClient
+    import dataframe_image as dfi
+    from PIL import Image
+    api_id = '28938971'
+    api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
+    bot_token = '8810108114:AAHFyBEL_JoNFdn2r3V21zEDtElUBU_nV-E'
+
+    client = TelegramClient(session_base, api_id, api_hash)
+    await client.connect()
+    
+    if not await client.is_user_authorized():
+        print("⚠️ Session Telegram chưa được xác thực. Bỏ qua bước gửi tin nhắn.")
+        await client.disconnect()
+        return
+
+    sent_today = load_sent_stores('hau_kiem_dong_mat', date_iso)
+
+    for store_name, group in grouped:
+        chat_id_raw = chat_map.get(str(store_name).strip())
+        if not chat_id_raw:
+            search_name = str(store_name).replace(' - MINI', '').replace(' - WIN', '').replace(' - SUPER', '').strip()
+            chat_id_raw = chat_map.get(search_name)
+        if not chat_id_raw:
+            continue
+        try:
+            chat_id = int(chat_id_raw)
+        except Exception:
+            continue
+
+        if str(chat_id) in sent_today:
+            print(f"⏩ [ĐÃ GỬI TRƯỚC ĐÓ] Bỏ qua {store_name} ({chat_id})")
+            continue
+
+        tag_text = await get_tags_for_group(client, chat_id)
+        caption = f"**ĐÔNG MÁT**\n{date_str}\nSiêu thị kiểm tra HOÀN THÀNH phiếu HẬU KIỂM ĐÔNG MÁT gấp nhé team \n{tag_text}"
+        
+        if dry_run:
+            print(f"🔍 [DRY-RUN] Sẽ gửi đến {store_name} ({chat_id}): {len(group)} phiếu")
+        else:
+            try:
+                img_path = f"temp_dongmat_hk_{int(chat_id)}.png"
+                cols_to_keep = ['Mã Hậu Kiểm', 'Phiếu chuyển', 'Nơi chuyển', 'Nơi nhận', 'Trạng thái']
+                df_slice = group[cols_to_keep].reset_index(drop=True)
+                dfi.export(df_slice, img_path, table_conversion="matplotlib", dpi=200)
+                
+                with Image.open(img_path) as img:
+                    width, height = img.size
+                    if width / height > 15:
+                        new_height = int(width / 15)
+                        new_img = Image.new("RGB", (width, new_height), "white")
+                        offset = (new_height - height) // 2
+                        new_img.paste(img, (0, offset))
+                        new_img.save(img_path)
+
+                with open(img_path, 'rb') as f:
+                    requests.post(
+                        f"https://api.telegram.org/bot{bot_token}/sendPhoto",
+                        data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
+                        files={'photo': f},
+                        timeout=15
+                    )
+                if os.path.exists(img_path): os.remove(img_path)
+                record_sent_store('hau_kiem_dong_mat', date_iso, str(chat_id))
+                print(f"🚀 [ĐÃ GỬI] Thành công tới {store_name} ({chat_id})")
+                await asyncio.sleep(1)
+            except Exception as e:
+                print(f"❌ [LỖI GỬI] {store_name}: {e}")
+
+    await client.disconnect()
+    print("✅ Hoàn thành Tool Hậu Kiểm Đông Mát!")
 
 def execute_external_tool(script_path, extra_args=None, cwd=None):
     """Thực thi file script Python cục bộ với môi trường UTF-8 chuẩn xác và in log Real-time từng dòng."""
@@ -976,7 +1153,7 @@ async def run_tool_export_thit_ca():
 def main():
     parser = argparse.ArgumentParser(description="Chạy Tool Đối Soát & Spam Phiếu Chuyển SCM")
     parser.add_argument("--tool", choices=[
-        "all", "thit_ca", "mat", "hau_kiem_rau", "hau_kiem_thit_ca", 
+        "all", "thit_ca", "mat", "hau_kiem_rau", "hau_kiem_thit_ca", "hau_kiem_dong_mat",
         "dong_mat_sheet", "dong_mat_nhom_dong", "dong_mat_spam", "thit_ca_spam", "rau_cu_spam",
         "spam_tu_chon", "xoa_tin_nhan", "lay_chat_id", "tra_cuu_id", "add_thanh_vien",
         "xuat_doi_soat_chuan", "export_thit_ca", "sync_report"
@@ -1008,6 +1185,8 @@ def main():
         loop.run_until_complete(run_tool_hau_kiem_rau(date_val, args.dry_run))
     elif args.tool == "hau_kiem_thit_ca":
         loop.run_until_complete(run_tool_hau_kiem_thit_ca(date_val, args.dry_run))
+    elif args.tool == "hau_kiem_dong_mat":
+        loop.run_until_complete(run_tool_hau_kiem_dong_mat(date_val, args.dry_run))
     elif args.tool == "dong_mat_sheet":
         loop.run_until_complete(run_tool_dong_mat_full(date_val, args.dry_run))
     elif args.tool == "dong_mat_nhom_dong":
@@ -1037,6 +1216,7 @@ def main():
         loop.run_until_complete(run_tool_mat(date_val, args.dry_run))
         loop.run_until_complete(run_tool_hau_kiem_rau(date_val, args.dry_run))
         loop.run_until_complete(run_tool_hau_kiem_thit_ca(date_val, args.dry_run))
+        loop.run_until_complete(run_tool_hau_kiem_dong_mat(date_val, args.dry_run))
     elif args.tool == "sync_report":
         print("📊 Đang khởi tạo tái xuất bản Báo Cáo Web Đối Soát...")
         dashboard_dir = os.path.join(os.path.dirname(ROOT_DIR), "DONG_MAT_DASHBOARD")

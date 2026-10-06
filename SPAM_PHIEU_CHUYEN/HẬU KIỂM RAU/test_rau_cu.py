@@ -90,7 +90,7 @@ async def main():
             t.total_store_quantity,
             t.total_transfer_quantity
         FROM __cdc_kfm_kf_inventories_kf_transfer_items t
-        WHERE t.from_branch_id = '5fdc170ebd89c10006f15b7c'
+        WHERE t.from_branch_id IN ('6aabb3f3f426e20007f81559', '6aabb45fd18e9d00073200a4', '5fdc170ebd89c10006f15b7c', '6a3e383fe20b440007640326')
         AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
         AND t.double_checked_status = 1
         AND t.created_at >= '{utc_start}' 
@@ -112,7 +112,7 @@ async def main():
         input("Bấm Enter để thoát...")
         sys.exit()
 
-    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name)
+    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name).fillna('FEA20102/FEA20197 _ Bình Thắng')
     df_tickets['Nơi nhận'] = df_tickets['to_branch_id'].map(id_to_name)
     df_tickets['Trạng thái'] = 'Cần hậu kiểm'
     

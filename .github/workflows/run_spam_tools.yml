@@ -12,6 +12,7 @@ on:
           - all
           - thit_ca
           - mat
+          - hau_kiem_dong_mat
           - hau_kiem_rau
           - hau_kiem_thit_ca
           - dong_mat_sheet
@@ -52,6 +53,14 @@ on:
         required: false
         default: false
         type: boolean
+      kho:
+        description: 'Chọn Nhóm Kho / File Chat ID (dong_mat hoặc rau_cu)'
+        required: false
+        default: 'dong_mat'
+        type: choice
+        options:
+          - dong_mat
+          - rau_cu
 
 permissions:
   contents: write
@@ -113,6 +122,7 @@ jobs:
           STORES_ARG="${{ github.event.inputs.stores }}"
           MSG_ARG="${{ github.event.inputs.message }}"
           NOTAGS_ARG="${{ github.event.inputs.no_tags }}"
+          KHO_ARG="${{ github.event.inputs.kho }}"
 
           CMD="python SPAM_PHIEU_CHUYEN/run_spam_tool.py --tool $TOOL_ARG"
           if [ -n "$DATE_ARG" ]; then
@@ -120,6 +130,9 @@ jobs:
           fi
           if [ "$DRY_ARG" = "true" ]; then
             CMD="$CMD --dry-run"
+          fi
+          if [ -n "$KHO_ARG" ]; then
+            CMD="$CMD --kho $KHO_ARG"
           fi
           if [ -n "$STORES_ARG" ] && [ "$STORES_ARG" != "ALL" ]; then
             CMD="$CMD --stores \"$STORES_ARG\""

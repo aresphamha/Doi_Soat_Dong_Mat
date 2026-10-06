@@ -92,7 +92,7 @@ async def main():
             t.ts_do_status,
             t.created_at
         FROM __cdc_kfm_kf_inventories_kf_transfer_items t
-        WHERE t.from_branch_id = '6a34ee2aebb48c000760d803'
+        WHERE t.from_branch_id IN ('6aa6a1eedf3d880007871f3f', '6aa77de130fded00073d4521', '6a34ee2aebb48c000760d803', '6a34ec8d77173000073e64e2')
         AND t.status = 3
         """
         df_tickets = pd.read_sql(query, conn)
@@ -111,7 +111,7 @@ async def main():
         input("Bấm Enter để thoát...")
         sys.exit()
 
-    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name)
+    df_tickets['Nơi chuyển'] = df_tickets['from_branch_id'].map(id_to_name).fillna('CLA40102/FZA50102 _ Sóng Thần')
     df_tickets['Nơi nhận'] = df_tickets['to_branch_id'].map(id_to_name)
     df_tickets['Trạng thái'] = 'Đang chuyển'
     # Map ts_do_status: 1 thường là Phiếu tạm
