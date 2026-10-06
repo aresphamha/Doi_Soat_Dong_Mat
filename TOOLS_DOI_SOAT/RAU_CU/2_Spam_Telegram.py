@@ -245,10 +245,28 @@ async def main():
             safe_prompt("Bấm Enter để thoát...")
             sys.exit(1)
 
-    # Xác định các cột theo Cột C (idx 2 - Ngày), Cột F (idx 5 - ID ST), Cột X (idx 23 - Lỗi)
-    col_ngay = df_thieu.columns[2] if len(df_thieu.columns) > 2 else 'Ngày chuyển hàng'
-    col_id_st = df_thieu.columns[5] if len(df_thieu.columns) > 5 else 'ID ST'
-    col_loi = df_thieu.columns[23] if len(df_thieu.columns) > 23 else 'Lỗi'
+    # Helper làm sạch mã hàng (loại bỏ .0 và scientific notation)
+    def clean_item_code(val):
+        if pd.isna(val):
+            return ""
+        s = str(val).strip()
+        if s.endswith('.0'):
+            s = s[:-2]
+        try:
+            if 'e+' in s.lower() or 'e-' in s.lower():
+                f = float(s)
+                if f.is_integer():
+                    return str(int(f))
+                return str(f)
+        except Exception:
+            pass
+        return s
+
+    # Xác định các cột chuẩn theo Google Sheet Rau Củ:
+    # Cột B (idx 1 - Ngày), Cột D (idx 3 - ID ST), Cột V (idx 21 - Lỗi)
+    col_ngay = df_thieu.columns[1] if len(df_thieu.columns) > 1 else 'Ngày'
+    col_id_st = df_thieu.columns[3] if len(df_thieu.columns) > 3 else 'ID ST'
+    col_loi = df_thieu.columns[21] if len(df_thieu.columns) > 21 else 'Lỗi'
 
     # Loại bỏ các dòng không có ID ST hợp lệ
     df_thieu = df_thieu[df_thieu[col_id_st].notna() & (df_thieu[col_id_st].astype(str).str.strip() != '') & (df_thieu[col_id_st].astype(str).str.strip().str.lower() != 'nan')]
@@ -266,7 +284,7 @@ async def main():
         latest_date = df_thieu[col_ngay].dropna().max()
 
     if pd.isna(latest_date):
-        print("[LỖI] Không tìm thấy dữ liệu ngày hợp lệ trong Cột C (Ngày chuyển hàng)!")
+        print("[LỖI] Không tìm thấy dữ liệu ngày hợp lệ trong Cột B (Ngày)!")
         safe_prompt("Bấm Enter để thoát...")
         sys.exit(1)
 
@@ -277,7 +295,7 @@ async def main():
     df_thieu = df_thieu[df_thieu[col_ngay] == latest_date]
     print(f"📊 Số dòng sau khi lọc Ngày: {len(df_thieu):,} dòng")
 
-    # 2. Lọc theo Lỗi = 'DC GIAO THIẾU' (Cột X / idx 23)
+    # 2. Lọc theo Lỗi = 'DC GIAO THIẾU' (Cột V / idx 21)
     df_thieu = df_thieu[df_thieu[col_loi].astype(str).str.upper().str.contains('DC GIAO THIẾU', na=False)]
     print(f"🎯 Số dòng sau khi lọc Lỗi 'DC GIAO THIẾU' (Cột {col_loi}): {len(df_thieu):,} dòng")
 
@@ -346,12 +364,13 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
  
 {tag_text}'''
 
+        # Trích xuất đúng cấu trúc cột: D (ID ST), E (Mã hàng), F (Tên Hàng), G (ĐVT), H (SL chuyển)
         df_slice = pd.DataFrame({
-            'ID ST': group.iloc[:, 5].values,
-            'Mã hàng': [str(x).replace('.0', '') for x in group.iloc[:, 6].values],
-            'Tên Hàng': group.iloc[:, 7].values,
-            'ĐVT': group.iloc[:, 8].values,
-            'Số lượng chuyển': group.iloc[:, 9].values
+            'ID ST': group.iloc[:, 3].values,
+            'Mã hàng': [clean_item_code(x) for x in group.iloc[:, 4].values],
+            'Tên Hàng': group.iloc[:, 5].values,
+            'ĐVT': group.iloc[:, 6].values,
+            'SL chuyển': group.iloc[:, 7].values
         }).reset_index(drop=True)
         img_path = f"temp_{id_st}.png"
 
