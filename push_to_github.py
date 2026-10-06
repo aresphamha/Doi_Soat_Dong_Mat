@@ -53,8 +53,10 @@ def sync_and_push(custom_message=None):
     # Danh sách các file / thư mục cần theo dõi
     tracked_items = [
         ".gitignore",
+        ".github",
         "index.html",
         "Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay.html",
+        "HUONG_DAN_LOGIC_VA_CACH_THEM_TOOL.html",
         "daily_records.js",
         "daily_details",
         "Cap_Nhat_Bao_Cao_Web.bat",
@@ -116,7 +118,7 @@ def sync_and_push(custom_message=None):
     print(f"\n📡 Đang đẩy dữ liệu lên GitHub: https://github.com/{gh_user}/{repo_name} ...")
     
     try:
-        porcelain.push(repo, remote_location=remote_url, refspecs=[b"refs/heads/main:refs/heads/main"])
+        porcelain.push(repo, remote_location=remote_url, refspecs=[b"+refs/heads/main:refs/heads/main"])
         print("==============================================================================")
         print("✅ ĐÃ ĐẨY LÊN GITHUB & KÍCH HOẠT CI/CD THÀNH CÔNG 100%!")
         print(f"🔗 Link mã nguồn Repo: https://github.com/{gh_user}/{repo_name}")
