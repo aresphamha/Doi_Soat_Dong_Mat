@@ -10622,12 +10622,35 @@ function copyChatId(chatId, btnEl) {
                             }
                         })
                     });
-                    if (ghRes.ok || ghRes.status === 204) {
-                        showToast("🚀 Đã kích hoạt Cloud Runner! Đang quét trực tiếp 588 nhóm Telegram trên Cloud...");
-                        let count = 28;
-                        const timer = setInterval(() => {
+                                        if (ghRes.ok || ghRes.status === 204) {
+                        showToast("🚀 Đã kích hoạt Cloud Runner! Đang quét trực tiếp 590 nhóm Telegram trên Cloud...");
+                        let count = 42;
+                        const initialSyncTime = window.TELEGRAM_GROUPS_DATA?.summary?.account?.synced_at || '';
+                        const timer = setInterval(async () => {
                             if (btnEl) btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Cloud đang quét (${count}s)...`;
                             count--;
+
+                            // Bắt đầu poll kiểm tra file mới từ giây 25 trở đi
+                            if (count <= 25 && count % 3 === 0) {
+                                try {
+                                    const testRes = await fetch('daily_details/telegram_groups.js?t=' + Date.now());
+                                    if (testRes.ok) {
+                                        const text = await testRes.text();
+                                        if (text.includes('synced_at') && initialSyncTime && !text.includes(initialSyncTime)) {
+                                            clearInterval(timer);
+                                            eval(text);
+                                            if (btnEl) {
+                                                btnEl.disabled = false;
+                                                btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
+                                            }
+                                            showToast("🎉 Cloud Runner: Đã hoàn tất đồng bộ dữ liệu Telegram mới nhất!");
+                                            renderTelegramTab();
+                                            return;
+                                        }
+                                    }
+                                } catch (pe) {}
+                            }
+
                             if (count < 0) {
                                 clearInterval(timer);
                                 reloadTelegramSnapshot(btnEl, true);

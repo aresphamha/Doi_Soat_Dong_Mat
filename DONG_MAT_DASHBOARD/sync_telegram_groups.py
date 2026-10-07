@@ -13,7 +13,10 @@ import re
 import asyncio
 from datetime import datetime
 from collections import defaultdict
+import pytz
 import pandas as pd
+
+VN_TZ = pytz.timezone('Asia/Ho_Chi_Minh')
 
 if sys.stdout.encoding != 'utf-8':
     try:
@@ -410,7 +413,7 @@ async def fetch_telegram_groups():
         "username": "@HaPham_SCM",
         "phone": "0978009295",
         "status": "Đã kết nối Session",
-        "synced_at": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        "synced_at": datetime.now(VN_TZ).strftime("%d/%m/%Y %H:%M:%S")
     }
 
     try:
@@ -425,7 +428,7 @@ async def fetch_telegram_groups():
         account_info["name"] = full_name or account_info["name"]
         account_info["phone"] = f"+{me.phone}" if me.phone else account_info["phone"]
         account_info["username"] = f"@{me.username}" if me.username else account_info["username"]
-        account_info["synced_at"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        account_info["synced_at"] = datetime.now(VN_TZ).strftime("%d/%m/%Y %H:%M:%S")
 
         print(f"✅ Tài khoản Telegram xác thực: {account_info['name']} ({account_info['phone']}) - {account_info['username']}")
         print(f"⏰ Thời gian đồng bộ: {account_info['synced_at']}")
@@ -491,12 +494,14 @@ async def fetch_telegram_groups():
                     # Phân tích cấp độ cho từng tin nhắn
                     m_level, m_badge, m_reason = analyze_message_priority(rm_text, not rm_is_out, rm_has_photo, rm_is_spam)
 
+                    rm_dt_vn = rm.date.astimezone(VN_TZ) if (rm.date and hasattr(rm.date, 'astimezone')) else rm.date
+
                     msg_item = {
                         "id": rm.id,
                         "text": rm_text.strip(),
-                        "time": rm.date.strftime("%d/%m/%Y %H:%M") if rm.date else "",
-                        "time_short": rm.date.strftime("%H:%M") if rm.date else "",
-                        "date_iso": rm.date.isoformat() if rm.date else "",
+                        "time": rm_dt_vn.strftime("%d/%m/%Y %H:%M") if rm_dt_vn else "",
+                        "time_short": rm_dt_vn.strftime("%H:%M") if rm_dt_vn else "",
+                        "date_iso": rm_dt_vn.isoformat() if rm_dt_vn else "",
                         "is_me": rm_is_out,
                         "sender_name": s_name,
                         "has_photo": rm_has_photo,
@@ -539,8 +544,10 @@ async def fetch_telegram_groups():
             else:
                 # Không có tin phản hồi từ Siêu thị (chỉ có tin thông báo định kỳ hoặc chưa có tin)
                 last_msg_text = ""
-                last_date_raw = d.message.date.isoformat() if d.message and d.message.date else ""
-                last_date_str = d.message.date.strftime("%d/%m/%Y %H:%M") if d.message and d.message.date else ""
+                raw_top_date = d.message.date if d.message else None
+                top_dt_vn = raw_top_date.astimezone(VN_TZ) if (raw_top_date and hasattr(raw_top_date, 'astimezone')) else raw_top_date
+                last_date_raw = top_dt_vn.isoformat() if top_dt_vn else ""
+                last_date_str = top_dt_vn.strftime("%d/%m/%Y %H:%M") if top_dt_vn else ""
                 is_from_store = False
                 has_photo = False
                 p_level = "normal"
