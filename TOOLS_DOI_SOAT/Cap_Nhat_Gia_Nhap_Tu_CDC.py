@@ -20,6 +20,8 @@ if sys.stdout.encoding != 'utf-8':
         pass
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) if os.path.basename(os.path.dirname(os.path.abspath(__file__))) == "TOOLS_DOI_SOAT" else os.path.dirname(os.path.abspath(__file__))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
 OUTPUT_JS = os.path.join(ROOT_DIR, "daily_details", "product_prices.js")
 OUTPUT_EXCEL = os.path.join(ROOT_DIR, "Bang_Gia_Nhap_San_Pham_CDC_Hada.xlsx")
 
