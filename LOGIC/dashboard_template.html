@@ -3016,6 +3016,9 @@
                 <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Chuyển đổi giao diện Phông Đen / Sáng">
                     <i class="fa-solid fa-moon"></i> <span>Phông Tối</span>
                 </button>
+                <button class="action-btn" onclick="openRealtimeSyncModal()" style="background:linear-gradient(135deg, #ec4899, #8b5cf6, #3b82f6); color:#fff; border:none; font-weight:700; box-shadow:0 0 14px rgba(236,72,153,0.5); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Cập nhật Realtime Hada & CDC">
+                    <i class="fa-solid fa-bolt-lightning"></i> Cập Nhật Realtime (Hada & CDC)
+                </button>
                 <button class="action-btn" onclick="exportExcel()">
                     <i class="fa-solid fa-download"></i> Xuất Excel
                 </button>
@@ -5339,6 +5342,9 @@
 
                     <!-- ACTION BUTTONS -->
                     <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+                        <button onclick="openRealtimeSyncModal()" id="btnSyncFromCDC" style="display:inline-flex; align-items:center; gap:8px; padding:0.6rem 1.3rem; background:linear-gradient(135deg, #ec4899, #8b5cf6, #3b82f6); color:#fff; border:none; border-radius:8px; font-weight:800; font-size:0.86rem; cursor:pointer; box-shadow:0 0 16px rgba(236,72,153,0.55); transition:all 0.2s;">
+                            <i class="fa-solid fa-bolt-lightning" id="iconSyncCDC"></i> CẬP NHẬT REALTIME (HADA & CDC)
+                        </button>
                         <button onclick="openProductPriceImportModal()" style="display:inline-flex; align-items:center; gap:6px; padding:0.5rem 0.95rem; background:#1e293b; color:#10b981; border:1px solid rgba(16,185,129,0.4); border-radius:8px; font-weight:600; font-size:0.82rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.3); transition:all 0.2s;">
                             <i class="fa-solid fa-file-import"></i> Nhập File Excel (Hada/CDC)
                         </button>
