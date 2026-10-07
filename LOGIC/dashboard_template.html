@@ -12483,198 +12483,7 @@ function copyChatId(chatId, btnEl) {
             link.click();
         }
 
-    </script>
-
-    <!-- ========================================================================= -->
-    <!-- TELEGRAM SCM CHAT DRAWER (XEM VÀ PHẢN HỒI TIN NHẮN TRỰC TIẾP) -->
-    <!-- ========================================================================= -->
-    <div class="chat-drawer-overlay" id="chatDrawerOverlay" onclick="closeTelegramChat()"></div>
-    <div class="chat-drawer" id="chatDrawer">
-        <div class="chat-drawer-header">
-            <div class="chat-group-avatar" id="chatAvatar">
-                <i class="fa-brands fa-telegram"></i>
-            </div>
-            <div class="chat-header-info">
-                <div class="chat-header-title">
-                    <span id="chatTitle">Tên Nhóm Telegram</span>
-                </div>
-                <div class="chat-header-sub">
-                    <span id="chatStoreBadge" style="display:none;" class="tele-store-code">A001</span>
-                    <span id="chatChatIdBadge" style="opacity:0.75; font-family:monospace;">-100...</span>
-                    <span id="chatEngineBadge" class="chat-engine-badge chat-engine-offline">
-                        <i class="fa-solid fa-circle" style="font-size:0.45rem;"></i> Đang kết nối...
-                    </span>
-                </div>
-            </div>
-            <div class="chat-header-actions">
-                <a id="chatDrawerOpenTg" href="#" target="_blank" class="chat-header-btn" title="Mở trên Telegram Web">
-                    <i class="fa-brands fa-telegram" style="color:#229ED9;"></i>
-                </a>
-                <button class="chat-header-btn" onclick="closeTelegramChat()" title="Đóng (Esc)">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-        </div>
-
-        <div class="chat-messages-container" id="chatMessagesBody">
-            <div style="text-align:center; padding:3rem 1rem; color:var(--text-secondary);">
-                <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:#229ED9; margin-bottom:10px;"></i>
-                <div>Đang tải tin nhắn nhóm...</div>
-            </div>
-        </div>
-
-        <!-- QUICK REPLY CHIPS -->
-        <div class="chat-quick-replies">
-            <button class="chat-quick-chip" onclick="insertQuickReply('✅ SCM đã nhận thông tin ST, đang kiểm tra đối soát.')">
-                ✅ SCM đã nhận thông tin
-            </button>
-            <button class="chat-quick-chip" onclick="insertQuickReply('🔍 Đang kiểm tra đối soát chênh lệch với Kho DC.')">
-                🔍 Đang kiểm tra đối soát
-            </button>
-            <button class="chat-quick-chip" onclick="insertQuickReply('📦 Kho DC đã xác nhận xử lý phiếu cho siêu thị.')">
-                📦 Kho DC đã xác nhận
-            </button>
-            <button class="chat-quick-chip" onclick="insertQuickReply('📋 Đề nghị ST chụp lại ảnh phiếu giao nhận thực tế giúp SCM.')">
-                📋 Đề nghị ST gửi ảnh phiếu
-            </button>
-        </div>
-
-        <!-- INPUT CONTAINER -->
-        <div class="chat-input-container">
-            <textarea id="chatReplyInput" class="chat-textarea" placeholder="Nhập tin nhắn phản hồi... (Enter để gửi, Shift+Enter xuống dòng)" rows="1" oninput="autoResizeTextarea(this)"></textarea>
-            <button class="chat-send-btn" id="chatSendBtn" onclick="sendTelegramChatReply()">
-                <i class="fa-solid fa-paper-plane"></i> Gửi
-            </button>
-        </div>
-
-        <div class="chat-offline-banner" id="chatOfflineBanner" style="display:none;">
-            <span>⚡ Khởi động <strong>Chay_Telegram_Chat_Realtime.bat</strong> để phản hồi trực tiếp không cần mở Telegram</span>
-            <span class="chat-offline-link" onclick="openActiveChatInTgWeb()">Mở Web Telegram <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
-        </div>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- MODAL QUẢN LÝ & CẬP NHẬT CHAT ID ĐÔNG MÁT & RAU CỦ -->
-    <!-- ========================================================================= -->
-    <div class="modal-overlay" id="chatIdManagerModal" onclick="if (event.target === this) closeChatIdManagerModal()" style="display:none; opacity:0; pointer-events:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); z-index:99999; align-items:center; justify-content:center; padding:1.5rem;">
-        <div style="background:var(--bg-card); width:100%; max-width:1150px; max-height:90vh; border-radius:14px; border:1px solid var(--border-card); box-shadow:0 25px 60px rgba(0,0,0,0.6); display:flex; flex-direction:column; overflow:hidden; animation:modalFadeIn 0.25s ease;">
-            
-            <!-- Modal Header -->
-            <div style="padding:1.2rem 1.5rem; background:linear-gradient(135deg, #090d16 0%, #111827 60%, #0f172a 100%); border-bottom:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:space-between;">
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <div style="width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg, #0284c7, #38bdf8); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.15rem; box-shadow:0 0 15px rgba(56,189,248,0.4);">
-                        <i class="fa-solid fa-address-book"></i>
-                    </div>
-                    <div>
-                        <div style="font-size:1.15rem; font-weight:800; color:#ffffff; display:flex; align-items:center; gap:8px;">
-                            DANH MỤC & CẬP NHẬT CHAT ID SIÊU THỊ
-                            <span id="modalTotalStoresBadge" class="tag-pill" style="background:#0284c7; color:#fff; font-size:0.7rem; font-weight:700;">225 SIÊU THỊ</span>
-                        </div>
-                        <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">
-                            Bao gồm đầy đủ Chat ID <strong>🥩 ĐÔNG MÁT (Thịt Cá/Mát)</strong> & <strong>🥦 RAU CỦ (KRC)</strong> dùng cho các Tool Spam SCM
-                        </div>
-                    </div>
-                </div>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <button onclick="exportChatIdsToExcel()" style="padding:0.45rem 0.85rem; background:rgba(52,211,153,0.15); border:1px solid #34d399; border-radius:6px; color:#34d399; font-size:0.78rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
-                        <i class="fa-solid fa-file-excel"></i> Xuất Excel
-                    </button>
-                    <button onclick="closeChatIdManagerModal()" style="width:34px; height:34px; border-radius:8px; background:rgba(255,255,255,0.08); border:none; color:var(--text-secondary); font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Đóng (Esc)">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Modal Sub-Toolbar (Search & Add) -->
-            <div style="padding:1rem 1.5rem; background:var(--bg-card-alt); border-bottom:1px solid var(--border-card); display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;">
-                <!-- Search & Filters -->
-                <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:300px;">
-                    <div style="position:relative; flex:1;">
-                        <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:0.85rem;"></i>
-                        <input type="text" id="chatIdSearchInput" oninput="filterChatIdTable()" placeholder="🔍 Tìm theo mã ST (A101...), tên siêu thị, hoặc Chat ID..." style="width:100%; padding:0.5rem 0.85rem 0.5rem 2.2rem; background:var(--input-bg); border:1px solid var(--border-card); border-radius:8px; color:var(--text-primary); font-size:0.82rem; outline:none;">
-                    </div>
-                    <div style="display:flex; gap:4px;">
-                        <button id="btnFilterChatAll" onclick="setChatIdTypeFilter('all')" class="tag-pill" style="background:#0284c7; color:#fff; cursor:pointer; font-weight:700; border:none; padding:0.4rem 0.75rem;">Tất cả</button>
-                        <button id="btnFilterChatDM" onclick="setChatIdTypeFilter('dm')" class="tag-pill" style="background:rgba(255,255,255,0.06); color:var(--text-secondary); cursor:pointer; font-weight:600; border:none; padding:0.4rem 0.75rem;">🥩 Đông Mát</button>
-                        <button id="btnFilterChatRC" onclick="setChatIdTypeFilter('rc')" class="tag-pill" style="background:rgba(255,255,255,0.06); color:var(--text-secondary); cursor:pointer; font-weight:600; border:none; padding:0.4rem 0.75rem;">🥦 Rau Củ</button>
-                    </div>
-                </div>
-
-                <!-- Toggle Add Form Button -->
-                <div>
-                    <button onclick="toggleAddChatIdForm()" id="btnToggleAddChatId" style="padding:0.5rem 1rem; background:linear-gradient(135deg, #f97316, #ea580c); border:none; border-radius:8px; color:#ffffff; font-size:0.8rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 0 12px rgba(249,115,22,0.3);">
-                        <i class="fa-solid fa-plus"></i> Cập Nhật / Thêm Chat ID Mới
-                    </button>
-                </div>
-            </div>
-
-            <!-- Quick Edit / Add Store Form (Collapsible) -->
-            <div id="quickChatIdFormBox" style="display:none; padding:1.2rem 1.5rem; background:linear-gradient(135deg, #131d31, #0f172a); border-bottom:1px solid #0284c7; animation:slideDown 0.2s ease;">
-                <div style="font-size:0.85rem; font-weight:800; color:#38bdf8; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
-                    <i class="fa-solid fa-pen-to-square"></i> CẬP NHẬT CHAT ID VÀO FILE EXCEL (ĐỒNG BỘ TOÀN HỆ THỐNG)
-                </div>
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; align-items:flex-end;">
-                    <div>
-                        <label style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); margin-bottom:4px;">1. Mã Siêu Thị (ID ST):</label>
-                        <input type="text" id="formStoreIdInput" onchange="onFormStoreIdChange()" placeholder="VD: A101, A251..." style="width:100%; padding:0.45rem 0.75rem; background:var(--bg-card); border:1px solid var(--border-card); border-radius:6px; color:#ffffff; font-size:0.82rem; font-weight:700; outline:none; text-transform:uppercase;">
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); margin-bottom:4px;">2. Tên Siêu Thị:</label>
-                        <input type="text" id="formStoreNameInput" placeholder="VD: KFM_HCM_Q07 - 25 Đường Số 3..." style="width:100%; padding:0.45rem 0.75rem; background:var(--bg-card); border:1px solid var(--border-card); border-radius:6px; color:#ffffff; font-size:0.82rem; outline:none;">
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:0.72rem; font-weight:700; color:#38bdf8; margin-bottom:4px;">3. 🥩 Chat ID ĐÔNG MÁT:</label>
-                        <input type="text" id="formStoreChatDmInput" placeholder="VD: -4970846623..." style="width:100%; padding:0.45rem 0.75rem; background:var(--bg-card); border:1px solid rgba(56,189,248,0.4); border-radius:6px; color:#38bdf8; font-family:monospace; font-size:0.82rem; font-weight:700; outline:none;">
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:0.72rem; font-weight:700; color:#34d399; margin-bottom:4px;">4. 🥦 Chat ID RAU CỦ:</label>
-                        <input type="text" id="formStoreChatRcInput" placeholder="VD: -4776256360..." style="width:100%; padding:0.45rem 0.75rem; background:var(--bg-card); border:1px solid rgba(52,211,153,0.4); border-radius:6px; color:#34d399; font-family:monospace; font-size:0.82rem; font-weight:700; outline:none;">
-                    </div>
-                    <div style="display:flex; gap:6px;">
-                        <button onclick="submitChatIdUpdate()" id="btnSaveChatId" style="flex:1; padding:0.5rem 0.85rem; background:#0284c7; border:none; border-radius:6px; color:#fff; font-size:0.8rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:5px;">
-                            <i class="fa-solid fa-floppy-disk"></i> Lưu Vào File
-                        </button>
-                        <button onclick="toggleAddChatIdForm()" style="padding:0.5rem 0.75rem; background:rgba(255,255,255,0.08); border:none; border-radius:6px; color:var(--text-secondary); font-size:0.8rem; cursor:pointer;">
-                            Hủy
-                        </button>
-                    </div>
-                </div>
-                <div id="formUpdateStatusMsg" style="margin-top:8px; font-size:0.75rem; display:none;"></div>
-            </div>
-
-            <!-- Table Container -->
-            <div style="flex:1; overflow-y:auto; padding:0;">
-                <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.82rem;">
-                    <thead style="position:sticky; top:0; background:#0f172a; border-bottom:2px solid var(--border-card); z-index:10;">
-                        <tr>
-                            <th style="padding:0.75rem 1rem; width:100px; color:var(--text-secondary); font-weight:700;">MÃ ST</th>
-                            <th style="padding:0.75rem 1rem; color:var(--text-secondary); font-weight:700;">TÊN SIÊU THỊ</th>
-                            <th style="padding:0.75rem 1rem; width:220px; color:#38bdf8; font-weight:700;">🥩 CHAT ID ĐÔNG MÁT</th>
-                            <th style="padding:0.75rem 1rem; width:220px; color:#34d399; font-weight:700;">🥦 CHAT ID RAU CỦ</th>
-                            <th style="padding:0.75rem 1rem; width:120px; text-align:center; color:var(--text-secondary); font-weight:700;">THAO TÁC</th>
-                        </tr>
-                    </thead>
-                    <tbody id="chatIdTableBody">
-                        <!-- Rendered by JS -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Modal Footer -->
-            <div style="padding:0.75rem 1.5rem; background:var(--bg-card-alt); border-top:1px solid var(--border-card); display:flex; align-items:center; justify-content:space-between; font-size:0.75rem; color:var(--text-secondary);">
-                <div>
-                    💡 <em>Khi bạn cập nhật Chat ID, hệ thống sẽ tự động cập nhật vào các file Excel (<code>Danh sách Siêu thị.xlsx</code>, <code>Danh_Sach_Sieu_Thi_Dong_Mat.xlsx</code>, <code>Danh_Sach_Sieu_Thi_Rau_Cu.xlsx</code>) để các Tool Spam nhận diện ngay lập tức!</em>
-                </div>
-                <div id="chatIdDisplayCount" style="font-weight:700; color:var(--text-primary);">
-                    Hiển thị: 225 / 225 Siêu thị
-                </div>
-            </div>
-        </div>
-    </div>
-
-</body>
-</html>
-
+    
 
         // =========================================================================
         // LOGIC TAB 6: QUẢN LÝ BẢNG GIÁ NHẬP SẢN PHẨM (CDC & HADA MASTER DATA)
@@ -13162,3 +12971,195 @@ function copyChatId(chatId, btnEl) {
             const modal = document.getElementById('productDetailModal');
             if (modal) modal.style.display = 'none';
         }
+
+    </script>
+
+    <!-- ========================================================================= -->
+    <!-- TELEGRAM SCM CHAT DRAWER (XEM VÀ PHẢN HỒI TIN NHẮN TRỰC TIẾP) -->
+    <!-- ========================================================================= -->
+    <div class="chat-drawer-overlay" id="chatDrawerOverlay" onclick="closeTelegramChat()"></div>
+    <div class="chat-drawer" id="chatDrawer">
+        <div class="chat-drawer-header">
+            <div class="chat-group-avatar" id="chatAvatar">
+                <i class="fa-brands fa-telegram"></i>
+            </div>
+            <div class="chat-header-info">
+                <div class="chat-header-title">
+                    <span id="chatTitle">Tên Nhóm Telegram</span>
+                </div>
+                <div class="chat-header-sub">
+                    <span id="chatStoreBadge" style="display:none;" class="tele-store-code">A001</span>
+                    <span id="chatChatIdBadge" style="opacity:0.75; font-family:monospace;">-100...</span>
+                    <span id="chatEngineBadge" class="chat-engine-badge chat-engine-offline">
+                        <i class="fa-solid fa-circle" style="font-size:0.45rem;"></i> Đang kết nối...
+                    </span>
+                </div>
+            </div>
+            <div class="chat-header-actions">
+                <a id="chatDrawerOpenTg" href="#" target="_blank" class="chat-header-btn" title="Mở trên Telegram Web">
+                    <i class="fa-brands fa-telegram" style="color:#229ED9;"></i>
+                </a>
+                <button class="chat-header-btn" onclick="closeTelegramChat()" title="Đóng (Esc)">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="chat-messages-container" id="chatMessagesBody">
+            <div style="text-align:center; padding:3rem 1rem; color:var(--text-secondary);">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem; color:#229ED9; margin-bottom:10px;"></i>
+                <div>Đang tải tin nhắn nhóm...</div>
+            </div>
+        </div>
+
+        <!-- QUICK REPLY CHIPS -->
+        <div class="chat-quick-replies">
+            <button class="chat-quick-chip" onclick="insertQuickReply('✅ SCM đã nhận thông tin ST, đang kiểm tra đối soát.')">
+                ✅ SCM đã nhận thông tin
+            </button>
+            <button class="chat-quick-chip" onclick="insertQuickReply('🔍 Đang kiểm tra đối soát chênh lệch với Kho DC.')">
+                🔍 Đang kiểm tra đối soát
+            </button>
+            <button class="chat-quick-chip" onclick="insertQuickReply('📦 Kho DC đã xác nhận xử lý phiếu cho siêu thị.')">
+                📦 Kho DC đã xác nhận
+            </button>
+            <button class="chat-quick-chip" onclick="insertQuickReply('📋 Đề nghị ST chụp lại ảnh phiếu giao nhận thực tế giúp SCM.')">
+                📋 Đề nghị ST gửi ảnh phiếu
+            </button>
+        </div>
+
+        <!-- INPUT CONTAINER -->
+        <div class="chat-input-container">
+            <textarea id="chatReplyInput" class="chat-textarea" placeholder="Nhập tin nhắn phản hồi... (Enter để gửi, Shift+Enter xuống dòng)" rows="1" oninput="autoResizeTextarea(this)"></textarea>
+            <button class="chat-send-btn" id="chatSendBtn" onclick="sendTelegramChatReply()">
+                <i class="fa-solid fa-paper-plane"></i> Gửi
+            </button>
+        </div>
+
+        <div class="chat-offline-banner" id="chatOfflineBanner" style="display:none;">
+            <span>⚡ Khởi động <strong>Chay_Telegram_Chat_Realtime.bat</strong> để phản hồi trực tiếp không cần mở Telegram</span>
+            <span class="chat-offline-link" onclick="openActiveChatInTgWeb()">Mở Web Telegram <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL QUẢN LÝ & CẬP NHẬT CHAT ID ĐÔNG MÁT & RAU CỦ -->
+    <!-- ========================================================================= -->
+    <div class="modal-overlay" id="chatIdManagerModal" onclick="if (event.target === this) closeChatIdManagerModal()" style="display:none; opacity:0; pointer-events:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); z-index:99999; align-items:center; justify-content:center; padding:1.5rem;">
+        <div style="background:var(--bg-card); width:100%; max-width:1150px; max-height:90vh; border-radius:14px; border:1px solid var(--border-card); box-shadow:0 25px 60px rgba(0,0,0,0.6); display:flex; flex-direction:column; overflow:hidden; animation:modalFadeIn 0.25s ease;">
+            
+            <!-- Modal Header -->
+            <div style="padding:1.2rem 1.5rem; background:linear-gradient(135deg, #090d16 0%, #111827 60%, #0f172a 100%); border-bottom:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg, #0284c7, #38bdf8); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.15rem; box-shadow:0 0 15px rgba(56,189,248,0.4);">
+                        <i class="fa-solid fa-address-book"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:1.15rem; font-weight:800; color:#ffffff; display:flex; align-items:center; gap:8px;">
+                            DANH MỤC & CẬP NHẬT CHAT ID SIÊU THỊ
+                            <span id="modalTotalStoresBadge" class="tag-pill" style="background:#0284c7; color:#fff; font-size:0.7rem; font-weight:700;">225 SIÊU THỊ</span>
+                        </div>
+                        <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">
+                            Bao gồm đầy đủ Chat ID <strong>🥩 ĐÔNG MÁT (Thịt Cá/Mát)</strong> & <strong>🥦 RAU CỦ (KRC)</strong> dùng cho các Tool Spam SCM
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button onclick="exportChatIdsToExcel()" style="padding:0.45rem 0.85rem; background:rgba(52,211,153,0.15); border:1px solid #34d399; border-radius:6px; color:#34d399; font-size:0.78rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">
+                        <i class="fa-solid fa-file-excel"></i> Xuất Excel
+                    </button>
+                    <button onclick="closeChatIdManagerModal()" style="width:34px; height:34px; border-radius:8px; background:rgba(255,255,255,0.08); border:none; color:var(--text-secondary); font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Đóng (Esc)">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Sub-Toolbar (Search & Add) -->
+            <div style="padding:1rem 1.5rem; background:var(--bg-card-alt); border-bottom:1px solid var(--border-card); display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;">
+                <!-- Search & Filters -->
+                <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:300px;">
+                    <div style="position:relative; flex:1;">
+                        <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:0.85rem;"></i>
+                        <input type="text" id="chatIdSearchInput" oninput="filterChatIdTable()" placeholder="🔍 Tìm theo mã ST (A101...), tên siêu thị, hoặc Chat ID..." style="width:100%; padding:0.5rem 0.85rem 0.5rem 2.2rem; background:var(--input-bg); border:1px solid var(--border-card); border-radius:8px; color:var(--text-primary); font-size:0.82rem; outline:none;">
+                    </div>
+                    <div style="display:flex; gap:4px;">
+                        <button id="btnFilterChatAll" onclick="setChatIdTypeFilter('all')" class="tag-pill" style="background:#0284c7; color:#fff; cursor:pointer; font-weight:700; border:none; padding:0.4rem 0.75rem;">Tất cả</button>
+                        <button id="btnFilterChatDM" onclick="setChatIdTypeFilter('dm')" class="tag-pill" style="background:rgba(255,255,255,0.06); color:var(--text-secondary); cursor:pointer; font-weight:600; border:none; padding:0.4rem 0.75rem;">🥩 Đông Mát</button>
+                        <button id="btnFilterChatRC" onclick="setChatIdTypeFilter('rc')" class="tag-pill" style="background:rgba(255,255,255,0.06); color:var(--text-secondary); cursor:pointer; font-weight:600; border:none; padding:0.4rem 0.75rem;">🥦 Rau Củ</button>
+                    </div>
+                </div>
+
+                <!-- Toggle Add Form Button -->
+                <div>
+                    <button onclick="toggleAddChatIdForm()" id="btnToggleAddChatId" style="padding:0.5rem 1rem; background:linear-gradient(135deg, #f97316, #ea580c); border:none; border-radius:8px; color:#ffffff; font-size:0.8rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 0 12px rgba(249,115,22,0.3);">
+                        <i class="fa-solid fa-plus"></i> Cập Nhật / Thêm Chat ID Mới
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Edit / Add Store Form (Collapsible) -->
+            <div id="quickChatIdFormBox" style="display:none; padding:1.2rem 1.5rem; background:linear-gradient(135deg, #131d31, #0f172a); border-bottom:1px solid #0284c7; animation:slideDown 0.2s ease;">
+                <div style="font-size:0.85rem; font-weight:800; color:#38bdf8; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-pen-to-square"></i> CẬP NHẬT CHAT ID VÀO FILE EXCEL (ĐỒNG BỘ TOÀN HỆ THỐNG)
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; align-items:flex-end;">
+                    <div>
+                        <label style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); margin-bottom:4px;">1. Mã Siêu Thị (ID ST):</label>
+                        <input type="text" id="formStoreIdInput" onchange="onFormStoreIdChange()" placeholder="VD: A101, A251..." style="width:100%; padding:0.45rem 0.75rem; background:var(--bg-card); border:1px solid var(--border-card); border-radius:6px; color:#ffffff; font-size:0.82rem; font-weight:700; outline:none; text-transform:uppercase;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.72rem; font-weight:700; color:var(--text-secondary); margin-bottom:4px;">2. Tên Siêu Thị:</label>
+                        <input type="text" id="formStoreNameInput" placeholder="VD: KFM_HCM_Q07 - 25 Đường Số 3..." style="width:100%; padding:0.45rem 0.75rem; background:var(--bg-card); border:1px solid var(--border-card); border-radius:6px; color:#ffffff; font-size:0.82rem; outline:none;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.72rem; font-weight:700; color:#38bdf8; margin-bottom:4px;">3. 🥩 Chat ID ĐÔNG MÁT:</label>
+                        <input type="text" id="formStoreChatDmInput" placeholder="VD: -4970846623..." style="width:100%; padding:0.45rem 0.75rem; background:var(--bg-card); border:1px solid rgba(56,189,248,0.4); border-radius:6px; color:#38bdf8; font-family:monospace; font-size:0.82rem; font-weight:700; outline:none;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:0.72rem; font-weight:700; color:#34d399; margin-bottom:4px;">4. 🥦 Chat ID RAU CỦ:</label>
+                        <input type="text" id="formStoreChatRcInput" placeholder="VD: -4776256360..." style="width:100%; padding:0.45rem 0.75rem; background:var(--bg-card); border:1px solid rgba(52,211,153,0.4); border-radius:6px; color:#34d399; font-family:monospace; font-size:0.82rem; font-weight:700; outline:none;">
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="submitChatIdUpdate()" id="btnSaveChatId" style="flex:1; padding:0.5rem 0.85rem; background:#0284c7; border:none; border-radius:6px; color:#fff; font-size:0.8rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:5px;">
+                            <i class="fa-solid fa-floppy-disk"></i> Lưu Vào File
+                        </button>
+                        <button onclick="toggleAddChatIdForm()" style="padding:0.5rem 0.75rem; background:rgba(255,255,255,0.08); border:none; border-radius:6px; color:var(--text-secondary); font-size:0.8rem; cursor:pointer;">
+                            Hủy
+                        </button>
+                    </div>
+                </div>
+                <div id="formUpdateStatusMsg" style="margin-top:8px; font-size:0.75rem; display:none;"></div>
+            </div>
+
+            <!-- Table Container -->
+            <div style="flex:1; overflow-y:auto; padding:0;">
+                <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.82rem;">
+                    <thead style="position:sticky; top:0; background:#0f172a; border-bottom:2px solid var(--border-card); z-index:10;">
+                        <tr>
+                            <th style="padding:0.75rem 1rem; width:100px; color:var(--text-secondary); font-weight:700;">MÃ ST</th>
+                            <th style="padding:0.75rem 1rem; color:var(--text-secondary); font-weight:700;">TÊN SIÊU THỊ</th>
+                            <th style="padding:0.75rem 1rem; width:220px; color:#38bdf8; font-weight:700;">🥩 CHAT ID ĐÔNG MÁT</th>
+                            <th style="padding:0.75rem 1rem; width:220px; color:#34d399; font-weight:700;">🥦 CHAT ID RAU CỦ</th>
+                            <th style="padding:0.75rem 1rem; width:120px; text-align:center; color:var(--text-secondary); font-weight:700;">THAO TÁC</th>
+                        </tr>
+                    </thead>
+                    <tbody id="chatIdTableBody">
+                        <!-- Rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modal Footer -->
+            <div style="padding:0.75rem 1.5rem; background:var(--bg-card-alt); border-top:1px solid var(--border-card); display:flex; align-items:center; justify-content:space-between; font-size:0.75rem; color:var(--text-secondary);">
+                <div>
+                    💡 <em>Khi bạn cập nhật Chat ID, hệ thống sẽ tự động cập nhật vào các file Excel (<code>Danh sách Siêu thị.xlsx</code>, <code>Danh_Sach_Sieu_Thi_Dong_Mat.xlsx</code>, <code>Danh_Sach_Sieu_Thi_Rau_Cu.xlsx</code>) để các Tool Spam nhận diện ngay lập tức!</em>
+                </div>
+                <div id="chatIdDisplayCount" style="font-weight:700; color:var(--text-primary);">
+                    Hiển thị: 225 / 225 Siêu thị
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
