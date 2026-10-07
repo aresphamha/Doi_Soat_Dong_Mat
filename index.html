@@ -5339,6 +5339,9 @@
 
                     <!-- ACTION BUTTONS -->
                     <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+                        <button onclick="syncProductPricesFromCDC()" id="btnSyncFromCDC" style="display:inline-flex; align-items:center; gap:6px; padding:0.5rem 1.1rem; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.83rem; cursor:pointer; box-shadow:0 3px 12px rgba(16,185,129,0.45); transition:all 0.2s;">
+                            <i class="fa-solid fa-arrows-rotate" id="iconSyncCDC"></i> Tự Động Đồng Bộ CDC Lên Web
+                        </button>
                         <button onclick="openProductPriceImportModal()" style="display:inline-flex; align-items:center; gap:6px; padding:0.5rem 0.95rem; background:#1e293b; color:#10b981; border:1px solid rgba(16,185,129,0.4); border-radius:8px; font-weight:600; font-size:0.82rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.3); transition:all 0.2s;">
                             <i class="fa-solid fa-file-import"></i> Nhập File Excel (Hada/CDC)
                         </button>
@@ -5349,7 +5352,7 @@
                             <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Kingfood Next
                         </a>
                         <div id="productPriceSyncBadge" style="font-size:0.75rem; color:#94a3b8; background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
-                            Đồng bộ lúc: 07/10/2026 12:45:00
+                            Đồng bộ lúc: 07/10/2026 14:02:00
                         </div>
                     </div>
                 </div>
@@ -12076,7 +12079,7 @@ function copyChatId(chatId, btnEl) {
                 inputs.no_tags = !tagRoles;
             }
             if (chatIdType && chatIdType !== "auto") {
-                inputs.chat_id_type = chatIdType;
+                inputs.kho = chatIdType;
             }
 
             try {
@@ -13083,6 +13086,98 @@ function copyChatId(chatId, btnEl) {
         function closeProductDetailModal() {
             const modal = document.getElementById('productDetailModal');
             if (modal) modal.style.display = 'none';
+        }
+
+        async function syncProductPricesFromCDC() {
+            const btn = document.getElementById('btnSyncFromCDC');
+            const icon = document.getElementById('iconSyncCDC');
+            if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; }
+            if (icon) icon.className = 'fa-solid fa-arrows-rotate fa-spin';
+
+            showToast("🚀 Đang kích hoạt đồng bộ toàn bộ Bảng giá & SKU trực tiếp từ CDC StarRocks...");
+
+            // Kiểm tra Local Runner Service
+            let isLocal = window.isLocalRunnerOnline;
+            if (!isLocal) {
+                try {
+                    const check = await fetch(`${LOCAL_RUNNER_API}/health`, { signal: AbortSignal.timeout(1500) });
+                    if (check.ok) isLocal = true;
+                } catch (e) {}
+            }
+
+            const terminalCard = document.getElementById("liveTerminalCard");
+            if (terminalCard) {
+                terminalCard.style.display = "block";
+                terminalCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                clearTerminalLogs();
+                appendTerminalLog("==============================================================================", "header");
+                appendTerminalLog("🚀 BẮT ĐẦU QUY TRÌNH ĐỒNG BỘ BẢNG GIÁ NHẬP & MASTER DATA TỪ CDC STARROCKS...", "header");
+                appendTerminalLog("==============================================================================", "header");
+            }
+
+            if (isLocal) {
+                appendTerminalLog("🔌 Đang kết nối tới CDC Database (103.140.248.250:9030)...", "info");
+                try {
+                    const es = new EventSource(`${LOCAL_RUNNER_API}/stream?tool=sync_cdc`);
+                    es.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            if (data.type === "log") {
+                                appendTerminalLog(data.line);
+                            } else if (data.type === "end") {
+                                es.close();
+                                appendTerminalLog("✅ HOÀN TẤT ĐỒNG BỘ DỮ LIỆU TỪ CDC STARROCKS!", "success");
+                                reloadProductPricesData();
+                                if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+                                if (icon) icon.className = 'fa-solid fa-arrows-rotate';
+                            } else if (data.type === "error") {
+                                es.close();
+                                appendTerminalLog(data.msg, "error");
+                                showToast("❌ " + data.msg);
+                                if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+                                if (icon) icon.className = 'fa-solid fa-arrows-rotate';
+                            }
+                        } catch (err) {
+                            console.error("SSE parse error:", err);
+                        }
+                    };
+                    es.onerror = (err) => {
+                        es.close();
+                        appendTerminalLog("⚠️ Mất kết nối SSE. Đang tải lại dữ liệu mới nhất...", "warning");
+                        reloadProductPricesData();
+                        if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+                        if (icon) icon.className = 'fa-solid fa-arrows-rotate';
+                    };
+                } catch (e) {
+                    appendTerminalLog("❌ Lỗi kích hoạt Local Runner: " + e.message, "error");
+                    if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+                    if (icon) icon.className = 'fa-solid fa-arrows-rotate';
+                }
+            } else {
+                appendTerminalLog("⚠️ Local Runner đang tắt trên máy tính!", "warning");
+                appendTerminalLog("💡 HƯỚNG DẪN ĐỒNG BỘ 1 CHẠM:", "info");
+                appendTerminalLog("  1. Mở file [Dong_Bo_Gia_Tu_CDC.bat] trong thư mục dự án trên máy tính.", "info");
+                appendTerminalLog("  2. Hoặc mở [Chay_Local_Runner.bat] để Web tự động bấm đồng bộ bất cứ lúc nào!", "info");
+                alert("💡 HƯỚNG DẪN ĐỒNG BỘ CDC:\n\nĐể tự động đồng bộ trực tiếp từ CDC lên Web:\n1. Mở file 'Dong_Bo_Gia_Tu_CDC.bat' trên máy tính\n2. Hoặc mở 'Chay_Local_Runner.bat' để có thể bấm nút Đồng bộ trực tiếp ngay trên Web này!");
+                if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+                if (icon) icon.className = 'fa-solid fa-arrows-rotate';
+            }
+        }
+
+        function reloadProductPricesData() {
+            const oldScript = document.querySelector('script[src*="product_prices.js"]');
+            const newScript = document.createElement('script');
+            const ts = Date.now();
+            newScript.src = `daily_details/product_prices.js?v=${ts}`;
+            newScript.onload = () => {
+                if (window.PRODUCT_PRICES_DATA && window.PRODUCT_PRICES_DATA.products) {
+                    productPricesList = window.PRODUCT_PRICES_DATA.products;
+                    updateProductPriceKPIs();
+                    applyProductFilters();
+                    showToast(`🎉 Đã đồng bộ thành công ${productPricesList.length.toLocaleString()} SKU từ CDC lên Web!`);
+                }
+            };
+            document.body.appendChild(newScript);
         }
 
     </script>

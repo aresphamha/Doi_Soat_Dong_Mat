@@ -339,6 +339,31 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
             return
 
+        elif path == "/api/sync_telegram" or path == "/sync_telegram":
+            push = params.get('push', ['false'])[0].lower() in ['true', '1', 'yes']
+            result = run_tool_sync("sync_telegram", "", False)
+            if result.get('success') and push:
+                try:
+                    from push_to_github import sync_and_push
+                    sync_and_push("Update: Realtime Telegram groups and store clusters")
+                except Exception as pe:
+                    print(f"Push error: {pe}")
+            self.send_response(200 if result.get('success') else 500)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+            return
+
+        elif path == "/api/sync_cdc" or path == "/sync_cdc":
+            result = run_tool_sync("sync_cdc", "", False)
+            self.send_response(200 if result.get('success') else 500)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+            return
+
         elif path == "/run":
             tool = params.get('tool', ['all'])[0]
             target_date = params.get('date', [''])[0]
@@ -346,7 +371,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             stores = params.get('stores', ['ALL'])[0]
             message = params.get('message', [''])[0]
             tag_roles = params.get('tag_roles', ['true'])[0].lower() in ['true', '1', 'yes']
-            chat_id_type = params.get('chat_id_type', ['auto'])[0]
+            chat_id_type = params.get('chat_id_type', params.get('kho', ['auto']))[0]
             result = run_tool_sync(tool, target_date, dry_run, stores, message, tag_roles, chat_id_type)
             
             self.send_response(200)
@@ -364,7 +389,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             stores = params.get('stores', ['ALL'])[0]
             message = params.get('message', [''])[0]
             tag_roles = params.get('tag_roles', ['true'])[0].lower() in ['true', '1', 'yes']
-            chat_id_type = params.get('chat_id_type', ['auto'])[0]
+            chat_id_type = params.get('chat_id_type', params.get('kho', ['auto']))[0]
 
             self.send_response(200)
             self.send_header('Content-Type', 'text/event-stream; charset=utf-8')
@@ -456,6 +481,31 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
             return
 
+        elif path == "/api/sync_telegram" or path == "/sync_telegram":
+            push = data.get('push', False)
+            result = run_tool_sync("sync_telegram", "", False)
+            if result.get('success') and push:
+                try:
+                    from push_to_github import sync_and_push
+                    sync_and_push("Update: Realtime Telegram groups and store clusters")
+                except Exception as pe:
+                    print(f"Push error: {pe}")
+            self.send_response(200 if result.get('success') else 500)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+            return
+
+        elif path == "/api/sync_cdc" or path == "/sync_cdc":
+            result = run_tool_sync("sync_cdc", "", False)
+            self.send_response(200 if result.get('success') else 500)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+            return
+
         elif path == "/run" or path == "/api/spam_custom":
             tool = data.get('tool', 'spam_tu_chon' if path == '/api/spam_custom' else 'all')
             target_date = data.get('date', '')
@@ -463,7 +513,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             stores = data.get('stores', 'ALL')
             message = data.get('message', '')
             tag_roles = data.get('tag_roles', True)
-            chat_id_type = data.get('chat_id_type', 'auto')
+            chat_id_type = data.get('chat_id_type', data.get('kho', 'auto'))
             result = run_tool_sync(tool, target_date, dry_run, stores, message, tag_roles, chat_id_type)
             
             self.send_response(200)
@@ -479,32 +529,37 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
 
     def _stream_tool_execution(self, tool, target_date, dry_run, stores="ALL", message="", tag_roles=True, chat_id_type="auto"):
         global CURRENT_RUNNING_PROC, IS_CURRENT_PAUSED
-        cmd = [PYTHON_EXE, SPAM_RUNNER_SCRIPT, "--tool", tool]
-        if target_date:
-            cmd.extend(["--date", target_date])
-        if dry_run:
-            cmd.append("--dry-run")
-        if chat_id_type and chat_id_type != "auto":
-            cmd.extend(["--chat-id-type", chat_id_type])
-        if chat_id_type and chat_id_type != "auto":
-            cmd.extend(["--chat-id-type", chat_id_type])
-        if tool == "spam_tu_chon":
-            if not message or not str(message).strip():
-                err_event = {"type": "error", "msg": "❌ LỖI BẢO VỆ: Bạn chưa nhập nội dung tin nhắn cần gửi! Đã chặn thực thi để không gửi mẫu thông báo nhầm."}
-                self.wfile.write(f"data: {json.dumps(err_event, ensure_ascii=False)}\n\n".encode('utf-8'))
-                self.wfile.flush()
-                return
-            if stores:
-                cmd.extend(["--stores", stores])
-            if message:
-                cmd.extend(["--message", message])
-            if not tag_roles:
-                cmd.append("--no-tags")
-
-        try:
+        if tool in ["sync_telegram", "telegram", "sync_tele"]:
+            cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "sync_telegram_groups.py")]
+            tool_title = "Đồng Bộ Realtime Telegram SCM (588 Nhóm)"
+        elif tool in ["sync_cdc", "cdc", "sync_cdc_prices", "dong_bo_cdc"]:
+            cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "Cap_Nhat_Gia_Nhap_Tu_CDC.py")]
+            tool_title = "Đồng Bộ Giá Nhập & Master Data từ CDC StarRocks"
+        else:
+            cmd = [PYTHON_EXE, SPAM_RUNNER_SCRIPT, "--tool", tool]
+            if target_date:
+                cmd.extend(["--date", target_date])
+            if dry_run:
+                cmd.append("--dry-run")
+            if chat_id_type and chat_id_type != "auto":
+                cmd.extend(["--chat-id-type", chat_id_type])
+            if tool == "spam_tu_chon":
+                if not message or not str(message).strip():
+                    err_event = {"type": "error", "msg": "❌ LỖI BẢO VỆ: Bạn chưa nhập nội dung tin nhắn cần gửi! Đã chặn thực thi để không gửi mẫu thông báo nhầm."}
+                    self.wfile.write(f"data: {json.dumps(err_event, ensure_ascii=False)}\n\n".encode('utf-8'))
+                    self.wfile.flush()
+                    return
+                if stores:
+                    cmd.extend(["--stores", stores])
+                if message:
+                    cmd.extend(["--message", message])
+                if not tag_roles:
+                    cmd.append("--no-tags")
             date_label = target_date if target_date else "Mặc định"
             tool_title = f"Spam Tùy Chọn ({stores})" if tool == "spam_tu_chon" else tool
-            start_payload = {'type': 'start', 'msg': f"🚀 Bắt đầu thực thi: {tool_title} (Date: {date_label})"}
+
+        try:
+            start_payload = {'type': 'start', 'msg': f"🚀 Bắt đầu thực thi: {tool_title}"}
             self.wfile.write(f"data: {json.dumps(start_payload, ensure_ascii=False)}\n\n".encode('utf-8'))
             self.wfile.flush()
 
@@ -559,29 +614,32 @@ def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_role
         LATEST_EXECUTION["logs"] = []
         LATEST_EXECUTION["returncode"] = None
 
-        cmd = [PYTHON_EXE, SPAM_RUNNER_SCRIPT, "--tool", tool]
-        if target_date:
-            cmd.extend(["--date", target_date])
-        if dry_run:
-            cmd.append("--dry-run")
-        if chat_id_type and chat_id_type != "auto":
-            cmd.extend(["--chat-id-type", chat_id_type])
-        if chat_id_type and chat_id_type != "auto":
-            cmd.extend(["--chat-id-type", chat_id_type])
-        if tool == "spam_tu_chon":
-            if not message or not str(message).strip():
-                LATEST_EXECUTION["status"] = "error"
-                LATEST_EXECUTION["completed_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
-                err_msg = "❌ LỖI BẢO VỆ: Bạn chưa nhập nội dung tin nhắn! Đã chặn thực thi để không gửi mẫu thông báo nhầm."
-                LATEST_EXECUTION["logs"] = [err_msg]
-                LATEST_EXECUTION["returncode"] = -1
-                return {
-                    "success": False,
-                    "tool": tool,
-                    "returncode": -1,
-                    "error": err_msg,
-                    "logs": err_msg
-                }
+        if tool in ["sync_telegram", "telegram", "sync_tele"]:
+            cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "sync_telegram_groups.py")]
+        elif tool in ["sync_cdc", "cdc", "sync_cdc_prices", "dong_bo_cdc"]:
+            cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "Cap_Nhat_Gia_Nhap_Tu_CDC.py")]
+        else:
+            cmd = [PYTHON_EXE, SPAM_RUNNER_SCRIPT, "--tool", tool]
+            if target_date:
+                cmd.extend(["--date", target_date])
+            if dry_run:
+                cmd.append("--dry-run")
+            if chat_id_type and chat_id_type != "auto":
+                cmd.extend(["--chat-id-type", chat_id_type])
+            if tool == "spam_tu_chon":
+                if not message or not str(message).strip():
+                    LATEST_EXECUTION["status"] = "error"
+                    LATEST_EXECUTION["completed_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+                    err_msg = "❌ LỖI BẢO VỆ: Bạn chưa nhập nội dung tin nhắn! Đã chặn thực thi để không gửi mẫu thông báo nhầm."
+                    LATEST_EXECUTION["logs"] = [err_msg]
+                    LATEST_EXECUTION["returncode"] = -1
+                    return {
+                        "success": False,
+                        "tool": tool,
+                        "returncode": -1,
+                        "error": err_msg,
+                        "logs": err_msg
+                    }
             if stores:
                 cmd.extend(["--stores", stores])
             if message:
