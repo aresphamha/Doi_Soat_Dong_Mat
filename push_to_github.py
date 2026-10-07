@@ -66,7 +66,8 @@ def sync_and_push(custom_message=None):
         "DONG_MAT_DASHBOARD",
         "LOGIC",
         "SPAM_PHIEU_CHUYEN",
-        "TOOLS_DOI_SOAT"
+        "TOOLS_DOI_SOAT",
+        "Bang_Gia_Nhap_San_Pham_CDC_Hada.xlsx"
     ]
     
     valid_paths = [p for p in tracked_items if os.path.exists(os.path.join(ROOT_DIR, p))]

@@ -1,124 +1,5 @@
 [
   {
-    "id": "CN1",
-    "name": "KFM_HCM_TPH - 48 CN1",
-    "short": "CN1",
-    "chat_id_dm": "-822801997",
-    "chat_id_rc": "-1001851962682"
-  },
-  {
-    "id": "HV2",
-    "name": "KFM_HCM_Q07 - R13 Hưng Vượng 2",
-    "short": "HV2",
-    "chat_id_dm": "-4124726502",
-    "chat_id_rc": "-4211335281"
-  },
-  {
-    "id": "MZ2",
-    "name": "KFM_HCM_BCH - A7-8 Valora Mizuki",
-    "short": "MZ2",
-    "chat_id_dm": "-4273732297",
-    "chat_id_rc": "-4233295350"
-  },
-  {
-    "id": "VH2",
-    "name": "KFM_HCM_TDU - S10.02 Vinhomes Grand Park",
-    "short": "VH2",
-    "chat_id_dm": "-4093547539",
-    "chat_id_rc": "-4065136928"
-  },
-  {
-    "id": "DS3",
-    "name": "KFM_HCM_TDU - 63 Đường Số 3",
-    "short": "DS3",
-    "chat_id_dm": "-955688061",
-    "chat_id_rc": "-835477767"
-  },
-  {
-    "id": "EH3",
-    "name": "KFM_HCM_BTA - A10-0.02 Ehome 3",
-    "short": "EH3",
-    "chat_id_dm": "-4844074755",
-    "chat_id_rc": "-4869461791"
-  },
-  {
-    "id": "VH3",
-    "name": "KFM_HCM_TDU - S1.05 Vinhomes Grand Park",
-    "short": "VH3",
-    "chat_id_dm": "-4019623569",
-    "chat_id_rc": "-4085868781"
-  },
-  {
-    "id": "AV4",
-    "name": "KFM_HCM_TDU - SAV_04-00.03 The Sun Avenue",
-    "short": "AV4",
-    "chat_id_dm": "-4503460791",
-    "chat_id_rc": "-4542912089"
-  },
-  {
-    "id": "RS4",
-    "name": "KFM_HCM_TPH - RS4 Richstar",
-    "short": "RS4",
-    "chat_id_dm": "-4876357427",
-    "chat_id_rc": "-1002992073784"
-  },
-  {
-    "id": "VH4",
-    "name": "KFM_HCM_TDU - S07.02 Vinhomes Grand Park",
-    "short": "VH4",
-    "chat_id_dm": "-4694009977",
-    "chat_id_rc": "-4576739871"
-  },
-  {
-    "id": "VH5",
-    "name": "KFM_HCM_TDU - S03.05 Vinhomes Grand Park",
-    "short": "VH5",
-    "chat_id_dm": "-1004357370577",
-    "chat_id_rc": "-1004357370577"
-  },
-  {
-    "id": "VH6",
-    "name": "KFM_HCM_TDU - GH5 Vinhomes Grand Park",
-    "short": "VH6",
-    "chat_id_dm": "-4802496117",
-    "chat_id_rc": "-4932789771"
-  },
-  {
-    "id": "DS7",
-    "name": "KFM_HCM_BTA - 99 Đường Số 7",
-    "short": "DS7",
-    "chat_id_dm": "-4041044290",
-    "chat_id_rc": "-4016518746"
-  },
-  {
-    "id": "Q7R",
-    "name": "KFM_HCM_Q07 - Lô CD L1-12 Q7 Riverside Đào Trí",
-    "short": "Q7R",
-    "chat_id_dm": "-4832071854",
-    "chat_id_rc": "-4855214802"
-  },
-  {
-    "id": "VH7",
-    "name": "KFM_HCM_TDU - BS11 Vinhomes Grand Park",
-    "short": "VH7",
-    "chat_id_dm": "-4758804950",
-    "chat_id_rc": "-4909139945"
-  },
-  {
-    "id": "D10",
-    "name": "KFM_HCM_Q7 - 01 Đường Số 10 Tân Kiểng",
-    "short": "D10",
-    "chat_id_dm": "-4207720204",
-    "chat_id_rc": "-4201254758"
-  },
-  {
-    "id": "Q50",
-    "name": "KFM_HCM_BCH - 511 Quốc Lộ 50",
-    "short": "Q50",
-    "chat_id_dm": "-1004301337474",
-    "chat_id_rc": "-1004301337474"
-  },
-  {
     "id": "A101",
     "name": "KFM_BDU_DAN - 27 Tân Lập",
     "short": "A101",
@@ -875,6 +756,13 @@
     "chat_id_rc": "-5493948931"
   },
   {
+    "id": "A222",
+    "name": "KFM_HCM_Q01 - Vinhomes Golden River",
+    "short": "A222",
+    "chat_id_dm": "-1004368025959",
+    "chat_id_rc": "-1004368025959"
+  },
+  {
     "id": "A223",
     "name": "KFM_HCM_PNH - 29 Đặng Văn Ngữ",
     "short": "A223",
@@ -1015,6 +903,13 @@
     "chat_id_rc": "-4172822430"
   },
   {
+    "id": "AV4",
+    "name": "KFM_HCM_TDU - SAV_04-00.03 The Sun Avenue",
+    "short": "AV4",
+    "chat_id_dm": "-4503460791",
+    "chat_id_rc": "-4542912089"
+  },
+  {
     "id": "BCG",
     "name": "KFM_BDU_DAN - SH01 BCons Garden",
     "short": "BCG",
@@ -1078,6 +973,13 @@
     "chat_id_rc": "-4259263792"
   },
   {
+    "id": "CN1",
+    "name": "KFM_HCM_TPH - 48 CN1",
+    "short": "CN1",
+    "chat_id_dm": "-822801997",
+    "chat_id_rc": "-1001851962682"
+  },
+  {
     "id": "CTH",
     "name": "KFM_HCM_TDU - TMDV Citihome Cát Lái",
     "short": "CTH",
@@ -1085,11 +987,18 @@
     "chat_id_rc": "-4126553698"
   },
   {
+    "id": "D10",
+    "name": "KFM_HCM_Q7 - 01 Đường Số 10 Tân Kiểng",
+    "short": "D10",
+    "chat_id_dm": "-4207720204",
+    "chat_id_rc": "-4201254758"
+  },
+  {
     "id": "DMR",
     "name": "KFM_HCM_Q08 - Block C Diamond Riverside",
     "short": "DMR",
     "chat_id_dm": "-4987817070",
-    "chat_id_rc": "-4987817070"
+    "chat_id_rc": "-4783198151"
   },
   {
     "id": "DQH",
@@ -1097,6 +1006,20 @@
     "short": "DQH",
     "chat_id_dm": "-852406010",
     "chat_id_rc": "-869090413"
+  },
+  {
+    "id": "DS3",
+    "name": "KFM_HCM_TDU - 63 Đường Số 3",
+    "short": "DS3",
+    "chat_id_dm": "-955688061",
+    "chat_id_rc": "-835477767"
+  },
+  {
+    "id": "DS7",
+    "name": "KFM_HCM_BTA - 99 Đường Số 7",
+    "short": "DS7",
+    "chat_id_dm": "-4041044290",
+    "chat_id_rc": "-4016518746"
   },
   {
     "id": "DXH",
@@ -1111,6 +1034,13 @@
     "short": "ECG",
     "chat_id_dm": "-1002479606021",
     "chat_id_rc": "-4804060590"
+  },
+  {
+    "id": "EH3",
+    "name": "KFM_HCM_BTA - A10-0.02 Ehome 3",
+    "short": "EH3",
+    "chat_id_dm": "-4844074755",
+    "chat_id_rc": "-4869461791"
   },
   {
     "id": "EHS",
@@ -1152,7 +1082,7 @@
     "name": "KFM_HCM_Q10 - 103 Hòa Hưng",
     "short": "HHG",
     "chat_id_dm": "-4623899543",
-    "chat_id_rc": "-4623899543"
+    "chat_id_rc": "-4794317543"
   },
   {
     "id": "HHM",
@@ -1223,6 +1153,13 @@
     "short": "HTP",
     "chat_id_dm": "-883536739",
     "chat_id_rc": "-1001705640581"
+  },
+  {
+    "id": "HV2",
+    "name": "KFM_HCM_Q07 - R13 Hưng Vượng 2",
+    "short": "HV2",
+    "chat_id_dm": "-4124726502",
+    "chat_id_rc": "-4211335281"
   },
   {
     "id": "IAP",
@@ -1307,6 +1244,13 @@
     "short": "MTE",
     "chat_id_dm": "-4733319672",
     "chat_id_rc": "-4819157472"
+  },
+  {
+    "id": "MZ2",
+    "name": "KFM_HCM_BCH - A7-8 Valora Mizuki",
+    "short": "MZ2",
+    "chat_id_dm": "-4273732297",
+    "chat_id_rc": "-4233295350"
   },
   {
     "id": "MZK",
@@ -1470,11 +1414,32 @@
     "chat_id_rc": "-4728905681"
   },
   {
+    "id": "Q50",
+    "name": "KFM_HCM_BCH - 511 Quốc Lộ 50",
+    "short": "Q50",
+    "chat_id_dm": "-1004301337474",
+    "chat_id_rc": "-1004301337474"
+  },
+  {
+    "id": "Q7R",
+    "name": "KFM_HCM_Q07 - Lô CD L1-12 Q7 Riverside Đào Trí",
+    "short": "Q7R",
+    "chat_id_dm": "-4832071854",
+    "chat_id_rc": "-4855214802"
+  },
+  {
     "id": "QHG",
     "name": "KFM_HCM_TDU - 59 Quốc Hương",
     "short": "QHG",
     "chat_id_dm": "-4275316099",
     "chat_id_rc": "-4276040181"
+  },
+  {
+    "id": "RS4",
+    "name": "KFM_HCM_TPH - RS4 Richstar",
+    "short": "RS4",
+    "chat_id_dm": "-4876357427",
+    "chat_id_rc": "-1002992073784"
   },
   {
     "id": "RVS",
@@ -1559,6 +1524,48 @@
     "short": "VGP",
     "chat_id_dm": "-991292712",
     "chat_id_rc": "-948922477"
+  },
+  {
+    "id": "VH2",
+    "name": "KFM_HCM_TDU - S10.02 Vinhomes Grand Park",
+    "short": "VH2",
+    "chat_id_dm": "-4093547539",
+    "chat_id_rc": "-4065136928"
+  },
+  {
+    "id": "VH3",
+    "name": "KFM_HCM_TDU - S1.05 Vinhomes Grand Park",
+    "short": "VH3",
+    "chat_id_dm": "-4019623569",
+    "chat_id_rc": "-4085868781"
+  },
+  {
+    "id": "VH4",
+    "name": "KFM_HCM_TDU - S07.02 Vinhomes Grand Park",
+    "short": "VH4",
+    "chat_id_dm": "-4694009977",
+    "chat_id_rc": "-4576739871"
+  },
+  {
+    "id": "VH5",
+    "name": "KFM_HCM_TDU - S03.05 Vinhomes Grand Park",
+    "short": "VH5",
+    "chat_id_dm": "-1004357370577",
+    "chat_id_rc": "-1004357370577"
+  },
+  {
+    "id": "VH6",
+    "name": "KFM_HCM_TDU - GH5 Vinhomes Grand Park",
+    "short": "VH6",
+    "chat_id_dm": "-4802496117",
+    "chat_id_rc": "-4932789771"
+  },
+  {
+    "id": "VH7",
+    "name": "KFM_HCM_TDU - BS11 Vinhomes Grand Park",
+    "short": "VH7",
+    "chat_id_dm": "-4758804950",
+    "chat_id_rc": "-4909139945"
   },
   {
     "id": "VHT",
