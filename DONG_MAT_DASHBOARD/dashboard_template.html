@@ -2969,7 +2969,7 @@
         }
 </style>
     <script src="daily_details/telegram_groups.js"></script>
-    <script src="daily_details/product_prices.js"></script>
+    <script src="daily_details/product_prices.js?v=1791354224"></script>
 <script src="daily_details/data_bundles.js"></script>
 </head>
 <body>
@@ -12597,13 +12597,25 @@ function copyChatId(chatId, btnEl) {
         let pendingImportData = [];
 
         function initProductPricesModule() {
-            if (window.PRODUCT_PRICES_DATA && window.PRODUCT_PRICES_DATA.products) {
+            if (window.PRODUCT_PRICES_DATA && window.PRODUCT_PRICES_DATA.products && window.PRODUCT_PRICES_DATA.products.length > 0) {
                 productPricesList = window.PRODUCT_PRICES_DATA.products;
+                updateProductPriceKPIs();
+                applyProductFilters();
             } else {
-                productPricesList = [];
+                // Tự động thử lại nếu script product_prices.js chưa tải xong từ CDN
+                let retryCount = 0;
+                const retryTimer = setInterval(() => {
+                    retryCount++;
+                    if (window.PRODUCT_PRICES_DATA && window.PRODUCT_PRICES_DATA.products && window.PRODUCT_PRICES_DATA.products.length > 0) {
+                        clearInterval(retryTimer);
+                        productPricesList = window.PRODUCT_PRICES_DATA.products;
+                        updateProductPriceKPIs();
+                        applyProductFilters();
+                    } else if (retryCount > 20) {
+                        clearInterval(retryTimer);
+                    }
+                }, 150);
             }
-            updateProductPriceKPIs();
-            applyProductFilters();
         }
 
         function updateProductPriceKPIs() {
@@ -12681,7 +12693,7 @@ function copyChatId(chatId, btnEl) {
             productSearchTimer = setTimeout(() => {
                 productCurPage = 1;
                 applyProductFilters();
-            }, 200);
+            }, 150);
         }
 
         function onProductPageSizeChange() {
