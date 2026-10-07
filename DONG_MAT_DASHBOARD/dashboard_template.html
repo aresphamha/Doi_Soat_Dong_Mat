@@ -10234,25 +10234,68 @@ function copyChatId(chatId, btnEl) {
             let syncSuccess = false;
             const runnerUrl = typeof LOCAL_RUNNER_API !== 'undefined' ? LOCAL_RUNNER_API : "http://127.0.0.1:8088";
             
-            // 1. Gọi Local Runner Service (cổng 8088) để quét trực tiếp từ tài khoản Telegram
+            // 1. Thử gọi Local Runner (khi mở trên máy tính có bật Chay_Local_Runner.bat hoặc localhost)
             try {
-                showToast("🚀 Đang kết nối Telethon quét realtime các nhóm Telegram...");
+                const ctrl = new AbortController();
+                const tid = setTimeout(() => ctrl.abort(), 3500);
                 const res = await fetch(`${runnerUrl}/api/sync_telegram`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ push: false })
+                    body: JSON.stringify({ push: true }),
+                    signal: ctrl.signal
                 });
+                clearTimeout(tid);
                 if (res.ok) {
                     const data = await res.json();
                     if (data.success) {
                         syncSuccess = true;
+                        showToast("🎉 Local Runner: Đã quét realtime từ Telegram và đồng bộ thành công!");
                     }
                 }
             } catch (e) {
-                console.log("Local Runner offline hoặc chưa bật, tải lại dữ liệu snapshot...", e);
+                console.log("Local Runner không khả dụng trên trình duyệt web online (Mixed Content / Offline). Chuyển sang Cloud Runner...", e);
             }
 
-            // 2. Tải lại file dữ liệu telegram_groups.js với timestamp cache-buster
+            // 2. Nếu chạy trên Web Online (GitHub Pages), tự động kích hoạt Cloud Runner qua GitHub Actions
+            if (!syncSuccess && typeof DEFAULT_GH_PAT !== 'undefined' && DEFAULT_GH_PAT) {
+                try {
+                    showToast("☁️ Đang kích hoạt Cloud Runner trên GitHub Actions...");
+                    const ghRes = await fetch("https://api.github.com/repos/aresphamha/Doi_Soat_Dong_Mat/actions/workflows/run_spam_tools.yml/dispatches", {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${DEFAULT_GH_PAT}`,
+                            "Accept": "application/vnd.github+json",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            ref: "main",
+                            inputs: {
+                                tool: "sync_telegram"
+                            }
+                        })
+                    });
+                    if (ghRes.ok || ghRes.status === 204) {
+                        showToast("🚀 Đã kích hoạt Cloud Runner! Đang quét trực tiếp 588 nhóm Telegram trên Cloud...");
+                        let count = 28;
+                        const timer = setInterval(() => {
+                            if (btnEl) btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Cloud đang quét (${count}s)...`;
+                            count--;
+                            if (count < 0) {
+                                clearInterval(timer);
+                                reloadTelegramSnapshot(btnEl, true);
+                            }
+                        }, 1000);
+                        return;
+                    }
+                } catch (ghe) {
+                    console.error("Cloud runner error:", ghe);
+                }
+            }
+
+            reloadTelegramSnapshot(btnEl, syncSuccess);
+        }
+
+        function reloadTelegramSnapshot(btnEl, wasSynced) {
             const scriptUrl = 'daily_details/telegram_groups.js?t=' + new Date().getTime();
             const s = document.createElement('script');
             s.src = scriptUrl;
@@ -10261,15 +10304,15 @@ function copyChatId(chatId, btnEl) {
                     btnEl.disabled = false;
                     btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
                 }
-                if (syncSuccess) {
-                    showToast("🎉 Đã đồng bộ thành công dữ liệu Telegram Realtime mới nhất từ tài khoản!");
+                if (wasSynced) {
+                    showToast("🎉 Đã hoàn tất đồng bộ dữ liệu Telegram mới nhất!");
                 } else {
-                    showToast("⚡ Đã cập nhật và sắp xếp tin theo thời gian mới nhất!");
+                    showToast("⚡ Đã tải snapshot Telegram mới nhất!");
                 }
                 renderTelegramTab();
             };
             s.onerror = () => {
-                showToast("⚠️ Không thể kết nối mạng để làm mới!");
+                showToast("⚠️ Không thể tải dữ liệu mới từ máy chủ!");
                 if (btnEl) {
                     btnEl.disabled = false;
                     btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';

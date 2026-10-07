@@ -28,6 +28,7 @@ on:
           - xuat_doi_soat_chuan
           - export_thit_ca
           - sync_report
+          - sync_telegram
       target_date:
         description: 'Ngày Đối Soát (YYYY-MM-DD) - Để trống để tự động lấy ngày phù hợp'
         required: false
@@ -97,7 +98,7 @@ jobs:
           TELEGRAM_SESSION_B64: ${{ secrets.TELEGRAM_SESSION_B64 }}
         run: |
           python -c "
-          import os, base64
+          import os, base64, shutil
           b64 = os.environ.get('TELEGRAM_SESSION_B64', '').strip()
           if not b64:
               b64_file = 'SPAM_PHIEU_CHUYEN/CONFIG_DATA/session_b64.txt'
@@ -106,10 +107,15 @@ jobs:
                       b64 = f.read().strip()
           if b64:
               os.makedirs('SPAM_PHIEU_CHUYEN/CONFIG_DATA', exist_ok=True)
+              os.makedirs('DONG_MAT_DASHBOARD', exist_ok=True)
               session_bytes = base64.b64decode(b64)
               with open('SPAM_PHIEU_CHUYEN/CONFIG_DATA/user_session.session', 'wb') as f:
                   f.write(session_bytes)
-              print('✅ Đã khôi phục session Telegram thành công!')
+              with open('DONG_MAT_DASHBOARD/user_session.session', 'wb') as f:
+                  f.write(session_bytes)
+              with open('user_session.session', 'wb') as f:
+                  f.write(session_bytes)
+              print('✅ Đã khôi phục session Telegram thành công vào tất cả thư mục!')
           else:
               print('ℹ️ Không tìm thấy session b64.')
           "
@@ -148,16 +154,18 @@ jobs:
           echo "👉 Chạy lệnh: $CMD"
           eval $CMD
 
-      - name: 📊 6. Tự Động Cập Nhật Báo Cáo Web & Đồng Bộ (Nếu Chạy Sync Report hoặc All)
-        if: ${{ github.event.inputs.tool == 'sync_report' || github.event.inputs.tool == 'all' }}
+      - name: 📊 6. Tự Động Cập Nhật Báo Cáo Web & Đồng Bộ (Nếu Chạy Sync Report, Sync Telegram hoặc All)
+        if: ${{ github.event.inputs.tool == 'sync_report' || github.event.inputs.tool == 'all' || github.event.inputs.tool == 'sync_telegram' }}
         run: |
-          python DONG_MAT_DASHBOARD/generate_web_report.py
+          if [ "${{ github.event.inputs.tool }}" = "sync_report" ] || [ "${{ github.event.inputs.tool }}" = "all" ]; then
+            python DONG_MAT_DASHBOARD/generate_web_report.py
+          fi
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
-          git add index.html Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay.html daily_details/
+          git add index.html Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay.html daily_details/ Danh_Sach_Group_Telegram_SCM.xlsx CONFIG_DATA_STORES.json DONG_MAT_DASHBOARD/data/
           if git diff --staged --quiet; then
             echo "Báo cáo không thay đổi."
           else
-            git commit -m "🤖 [Cloud-Runner] Tự động cập nhật Báo cáo Web sau khi chạy Tool [skip ci]"
+            git commit -m "🤖 [Cloud-Runner] Tự động cập nhật Telegram Realtime [skip ci]"
             git push origin main
           fi

@@ -1156,7 +1156,7 @@ def main():
         "all", "thit_ca", "mat", "hau_kiem_rau", "hau_kiem_thit_ca", "hau_kiem_dong_mat",
         "dong_mat_sheet", "dong_mat_nhom_dong", "dong_mat_spam", "thit_ca_spam", "rau_cu_spam",
         "spam_tu_chon", "xoa_tin_nhan", "lay_chat_id", "tra_cuu_id", "add_thanh_vien",
-        "xuat_doi_soat_chuan", "export_thit_ca", "sync_report"
+        "xuat_doi_soat_chuan", "export_thit_ca", "sync_report", "sync_telegram"
     ], default="all", help="Chọn tool cần chạy")
     parser.add_argument("--date", default=None, help="Ngày đối soát (YYYY-MM-DD)")
     parser.add_argument("--dry-run", action="store_true", help="Chế độ chạy thử không gửi tin nhắn")
@@ -1211,6 +1211,11 @@ def main():
         loop.run_until_complete(run_tool_xuat_doi_soat_chuan())
     elif args.tool == "export_thit_ca":
         loop.run_until_complete(run_tool_export_thit_ca())
+    elif args.tool == "sync_telegram":
+        print("📱 Đang quét và đồng bộ dữ liệu Realtime từ các nhóm Telegram...")
+        import subprocess
+        sync_script = os.path.join(os.path.dirname(ROOT_DIR), "DONG_MAT_DASHBOARD", "sync_telegram_groups.py")
+        subprocess.run([sys.executable, sync_script], check=True)
     elif args.tool == "all":
         loop.run_until_complete(run_tool_thit_ca(date_val, args.dry_run))
         loop.run_until_complete(run_tool_mat(date_val, args.dry_run))
