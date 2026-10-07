@@ -42,6 +42,72 @@ LATEST_EXECUTION = {
 }
 EXECUTION_LOCK = threading.Lock()
 
+CLOUDFLARE_TUNNEL_URL = ""
+CLOUDFLARED_PROC = None
+
+def init_cloudflare_tunnel():
+    """Khởi động Cloudflare Quick Tunnel để cho phép các máy tính khác / điện thoại điều khiển từ xa qua Internet."""
+    global CLOUDFLARE_TUNNEL_URL, CLOUDFLARED_PROC
+    import re, urllib.request
+    
+    tools_dir = os.path.join(ROOT_DIR, "tools")
+    os.makedirs(tools_dir, exist_ok=True)
+    cloudflared_exe = os.path.join(tools_dir, "cloudflared.exe")
+    
+    if not os.path.exists(cloudflared_exe):
+        try:
+            print("⏳ Đang tải Cloudflare Tunnel (cloudflared.exe)...")
+            url = "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe"
+            urllib.request.urlretrieve(url, cloudflared_exe)
+            print("✅ Đã tải xong cloudflared.exe!")
+        except Exception as e:
+            print(f"⚠️ Không thể tải cloudflared.exe: {e}")
+            return
+            
+    try:
+        cmd = [cloudflared_exe, "tunnel", "--url", f"http://127.0.0.1:{PORT}"]
+        CLOUDFLARED_PROC = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1,
+            encoding='utf-8',
+            errors='replace'
+        )
+        
+        for line in CLOUDFLARED_PROC.stdout:
+            m = re.search(r"https://[a-zA-Z0-9-]+\.trycloudflare\.com", line)
+            if m:
+                CLOUDFLARE_TUNNEL_URL = m.group(0)
+                print("\n" + "=" * 70)
+                print("🌐 [ĐIỀU KHIỂN TỪ XA] CLOUDFLARE REMOTE TUNNEL ĐÃ SẴN SÀNG:")
+                print(f"👉 Link Điều Khiển Từ Xa: {CLOUDFLARE_TUNNEL_URL}")
+                print("📡 Bất kỳ máy tính / điện thoại nào cũng có thể bấm chạy từ xa!")
+                print("=" * 70 + "\n")
+                
+                # Lưu vào file runner_remote_url.json
+                data = {
+                    "tunnel_url": CLOUDFLARE_TUNNEL_URL,
+                    "updated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "status": "online",
+                    "host": "SCM Local Runner Service"
+                }
+                for out_dir in [ROOT_DIR, os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD")]:
+                    try:
+                        os.makedirs(out_dir, exist_ok=True)
+                        with open(os.path.join(out_dir, "runner_remote_url.json"), "w", encoding="utf-8") as jf:
+                            json.dump(data, jf, ensure_ascii=False, indent=2)
+                    except Exception:
+                        pass
+                
+                with open(os.path.join(ROOT_DIR, "RUNNER_REMOTE_URL.txt"), "w", encoding="utf-8") as rf:
+                    rf.write(CLOUDFLARE_TUNNEL_URL)
+                break
+    except Exception as e:
+        print(f"⚠️ Lỗi khởi chạy Cloudflare Tunnel: {e}")
+
+
 def get_stores_list():
     try:
         from SPAM_PHIEU_CHUYEN.run_spam_tool import find_mapping_file
@@ -245,8 +311,9 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             resp = {
                 "status": "online",
                 "service": "SCM Local Runner Service",
-                "version": "2.2",
+                "version": "2.3",
                 "port": PORT,
+                "tunnel_url": CLOUDFLARE_TUNNEL_URL,
                 "current_status": "paused" if IS_CURRENT_PAUSED else (LATEST_EXECUTION["status"] if CURRENT_RUNNING_PROC else "idle"),
                 "is_running": CURRENT_RUNNING_PROC is not None and CURRENT_RUNNING_PROC.poll() is None,
                 "is_paused": IS_CURRENT_PAUSED,
@@ -255,6 +322,20 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             }
             self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
             return
+
+        elif path == "/api/tunnel":
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            resp = {
+                "success": True,
+                "tunnel_url": CLOUDFLARE_TUNNEL_URL,
+                "status": "online" if CLOUDFLARE_TUNNEL_URL else "initializing"
+            }
+            self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
+            return
+
 
         elif path == "/api/stores" or path == "/stores":
             self.send_response(200)
@@ -702,6 +783,10 @@ def start_server():
     try:
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Starting SCM Local Runner on port {PORT}...\n")
+        
+        # Khởi động Cloudflare Remote Tunnel ở background thread
+        threading.Thread(target=init_cloudflare_tunnel, daemon=True).start()
+
         server = ThreadingHTTPServer(('0.0.0.0', PORT), SCMRequestHandler)
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Server started successfully.\n")
@@ -710,6 +795,7 @@ def start_server():
         print(f"📡 Cho phép Web Dashboard trên GitHub Pages điều khiển trực tiếp máy tính.")
         print("=" * 70)
         server.serve_forever()
+
     except KeyboardInterrupt:
         print("\n🛑 Đang dừng server...")
         server.server_close()
