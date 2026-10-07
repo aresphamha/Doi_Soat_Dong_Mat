@@ -24,13 +24,12 @@ if sys.stdout.encoding != 'utf-8':
 from telethon import TelegramClient
 from telethon.tl.types import Channel, Chat
 
-API_ID = 28938971
-API_HASH = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-SESSION_NAME = 'user_session'
-
-# Determine directories dynamically
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(CURRENT_DIR)
+
+API_ID = 28938971
+API_HASH = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
+SESSION_NAME = os.path.join(CURRENT_DIR, 'user_session')
 
 # Ensure directories exist
 os.makedirs(os.path.join(CURRENT_DIR, 'data'), exist_ok=True)
@@ -176,10 +175,17 @@ def extract_store_code_from_title(title: str, chat_id: str, store_map: dict, nam
         if cand in store_map:
             return cand
 
-    # 5. Match theo tên siêu thị / địa chỉ
+    # 5. Match direct store codes in store_map (e.g. HHG, DMR, DXH, GDU, BCG, NHG, HTN)
+    for s_code in store_map:
+        if len(s_code) >= 2:
+            pat = r'(?:^|[\s\-_/\[(])' + re.escape(s_code) + r'(?:$|[\s\-_/)\]])'
+            if re.search(pat, t_clean, re.IGNORECASE):
+                return s_code
+
+    # 6. Match theo tên siêu thị / địa chỉ
     t_lower = t_clean.lower()
     for name, s_code in name_to_id.items():
-        if len(name) >= 5 and name in t_lower:
+        if len(name) >= 4 and name in t_lower:
             return s_code
 
     return ""
