@@ -297,6 +297,17 @@
             color: #ffffff;
         }
 
+        
+        .sidebar-tab-btn.active-tab6 {
+            background: var(--bg-card-alt) !important;
+            border: 1px solid #10b981 !important;
+            color: var(--text-primary) !important;
+        }
+        .sidebar-tab-btn.active-tab6 .tab-icon-wrap {
+            background: #10b981;
+            color: #ffffff;
+        }
+
         .sidebar-tab-btn.active-tab5 {
             background: var(--bg-card-alt) !important;
             border: 1px solid #f97316 !important;
@@ -2958,6 +2969,7 @@
         }
 </style>
     <script src="daily_details/telegram_groups.js"></script>
+    <script src="daily_details/product_prices.js"></script>
 <script src="daily_details/data_bundles.js"></script>
 </head>
 <body>
@@ -3057,6 +3069,14 @@
                     <span class="tab-desc">Chi tiết & Hậu kiểm Thịt Cá, Rau, Mát</span>
                 </div>
             </button>
+            <button class="sidebar-tab-btn" id="btn-big-tab-6" onclick="switchBigTab(6)">
+                <div class="tab-icon-wrap" style="color:#10b981;"><i class="fa-solid fa-tags" style="font-size:1.15rem;"></i></div>
+                <div class="tab-text">
+                    <span class="tab-title">GIÁ NHẬP SẢN PHẨM</span>
+                    <span class="tab-desc">CDC & Hada Master Data Giá Nhập</span>
+                </div>
+            </button>
+
 
 
             <div class="sidebar-footer">
@@ -5293,6 +5313,171 @@
                 </div>
             </div>
 
+        
+            <!-- ========================================================================= -->
+            <!-- TAB 6: BẢNG GIÁ NHẬP SẢN PHẨM (CDC & HADA MASTER DATA)                    -->
+            <!-- ========================================================================= -->
+            <div class="big-tab-panel" id="big-panel-6">
+                <!-- HERO HEADER -->
+                <div class="tele-hero-card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.14) 0%, rgba(22, 27, 34, 0.95) 100%); border-color: rgba(16, 185, 129, 0.35);">
+                    <div style="display:flex; align-items:center; gap:0.9rem;">
+                        <div style="width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg, #10b981, #059669); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.6rem; box-shadow:0 4px 12px rgba(16,185,129,0.35);">
+                            <i class="fa-solid fa-tags"></i>
+                        </div>
+                        <div>
+                            <h2 style="margin:0; font-size:1.35rem; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px;">
+                                BẢNG GIÁ NHẬP SẢN PHẨM (CDC & HADA)
+                                <span style="font-size:0.75rem; font-weight:600; background:#10b981; color:#fff; padding:2px 8px; border-radius:12px; display:inline-flex; align-items:center; gap:4px;">
+                                    <span style="width:6px; height:6px; border-radius:50%; background:#fff; display:inline-block;"></span> MASTER DATA
+                                </span>
+                            </h2>
+                            <div style="color:var(--text-secondary); font-size:0.83rem; margin-top:3px;">
+                                Tổng hợp giá nhập gần nhất cho toàn bộ hàng hóa kinh doanh • Tự động loại trừ CCDC, Vận hành, Hàng không bán & IT Test
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+                        <button onclick="openProductPriceImportModal()" style="display:inline-flex; align-items:center; gap:6px; padding:0.5rem 0.95rem; background:#1e293b; color:#10b981; border:1px solid rgba(16,185,129,0.4); border-radius:8px; font-weight:600; font-size:0.82rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.3); transition:all 0.2s;">
+                            <i class="fa-solid fa-file-import"></i> Nhập File Excel (Hada/CDC)
+                        </button>
+                        <button onclick="exportProductPricesExcel()" style="display:inline-flex; align-items:center; gap:6px; padding:0.5rem 0.95rem; background:#10b981; color:#fff; border:none; border-radius:8px; font-weight:600; font-size:0.82rem; cursor:pointer; box-shadow:0 2px 8px rgba(16,185,129,0.4); transition:all 0.2s;">
+                            <i class="fa-solid fa-file-excel"></i> Xuất Excel Danh Sách
+                        </button>
+                        <a href="https://next.kingfood.co/product-hada/product-list?tab=synced" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; padding:0.5rem 0.95rem; background:#24292f; color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:8px; font-weight:600; font-size:0.82rem; text-decoration:none; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Kingfood Next
+                        </a>
+                        <div id="productPriceSyncBadge" style="font-size:0.75rem; color:#94a3b8; background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
+                            Đồng bộ lúc: 07/10/2026 12:45:00
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 KPI SUMMARY CARDS -->
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem; margin-bottom:1.25rem;">
+                    <div class="tele-stat-card" style="border-left:4px solid #10b981;">
+                        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700; margin-bottom:4px;">Tổng SKU Kinh Doanh</div>
+                        <div id="kpiTotalSku" style="font-size:1.6rem; font-weight:800; color:#10b981;">1,053 SKU</div>
+                        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">5 Ngành hàng thương mại chính</div>
+                    </div>
+                    <div class="tele-stat-card" style="border-left:4px solid #38bdf8;">
+                        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700; margin-bottom:4px;">Độ Phủ Giá Nhập</div>
+                        <div id="kpiPriceCoverage" style="font-size:1.6rem; font-weight:800; color:#38bdf8;">100%</div>
+                        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">1,053/1,053 mã có giá nhập gần nhất</div>
+                    </div>
+                    <div class="tele-stat-card" style="border-left:4px solid #f97316;">
+                        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700; margin-bottom:4px;">Hàng Tươi Sống (Fresh Food)</div>
+                        <div id="kpiFreshFoodCount" style="font-size:1.6rem; font-weight:800; color:#f97316;">608 SKU</div>
+                        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Thịt, Cá, Thủy hải sản, Rau củ</div>
+                    </div>
+                    <div class="tele-stat-card" style="border-left:4px solid #818cf8;">
+                        <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700; margin-bottom:4px;">Hàng Mát, Sữa & FMCG</div>
+                        <div id="kpiOtherCategoryCount" style="font-size:1.6rem; font-weight:800; color:#818cf8;">445 SKU</div>
+                        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Chilled/Frozen, Dairy, Bakery, FMCG</div>
+                    </div>
+                </div>
+
+                <!-- FILTER BAR & CONTROLS -->
+                <div style="background:var(--bg-card); border:1px solid var(--border-card); border-radius:12px; padding:1rem 1.25rem; margin-bottom:1.25rem;">
+                    <!-- Search & Filter Controls -->
+                    <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; margin-bottom:0.85rem;">
+                        <!-- Instant Search Input -->
+                        <div style="position:relative; flex:1; min-width:280px;">
+                            <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
+                            <input type="text" id="productSearchInput" oninput="onProductSearchChange()" placeholder="🔍 Tìm theo Mã SKU, Mã phiên bản (VC...), Barcode, Tên sản phẩm, Thương hiệu..." style="width:100%; padding:0.55rem 0.9rem 0.55rem 2.2rem; background:var(--input-bg); border:1px solid var(--input-border); border-radius:8px; color:#fff; font-size:0.83rem; outline:none;" />
+                        </div>
+
+                        <!-- Price Range Select -->
+                        <select id="productPriceRangeFilter" onchange="applyProductFilters()" style="padding:0.55rem 0.9rem; background:var(--input-bg); border:1px solid var(--input-border); border-radius:8px; color:var(--text-primary); font-size:0.82rem; outline:none; cursor:pointer;">
+                            <option value="ALL">💰 Tất cả mức giá nhập</option>
+                            <option value="UNDER_20K">Dưới 20.000 đ</option>
+                            <option value="20K_50K">20.000 đ - 50.000 đ</option>
+                            <option value="50K_100K">50.000 đ - 100.000 đ</option>
+                            <option value="OVER_100K">Trên 100.000 đ</option>
+                        </select>
+
+                        <!-- Sort By -->
+                        <select id="productSortBy" onchange="applyProductFilters()" style="padding:0.55rem 0.9rem; background:var(--input-bg); border:1px solid var(--input-border); border-radius:8px; color:var(--text-primary); font-size:0.82rem; outline:none; cursor:pointer;">
+                            <option value="NAME_ASC">🔤 Tên sản phẩm (A ➔ Z)</option>
+                            <option value="PRICE_DESC">🔻 Giá nhập: Cao ➔ Thấp</option>
+                            <option value="PRICE_ASC">🔺 Giá nhập: Thấp ➔ Cao</option>
+                            <option value="SKU_ASC">🔢 Mã SKU tăng dần</option>
+                        </select>
+                    </div>
+
+                    <!-- Category Filter Pills (Image 3 requirements) -->
+                    <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; border-top:1px dashed var(--border-subtle); padding-top:0.75rem;">
+                        <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-right:4px;">
+                            <i class="fa-solid fa-filter"></i> Ngành Hàng:
+                        </span>
+                        <button class="tele-prio-btn active" id="pill-cat-all" onclick="setProductCategoryFilter('ALL')">🌟 Tất Cả (<span id="cntPillAll">1053</span>)</button>
+                        <button class="tele-prio-btn" id="pill-cat-fresh" onclick="setProductCategoryFilter('1.FRESH FOOD')">🥩 Fresh Food (<span id="cntPillFresh">608</span>)</button>
+                        <button class="tele-prio-btn" id="pill-cat-chilled" onclick="setProductCategoryFilter('1.CHILLED AND FROZEN')">❄️ Chilled & Frozen (<span id="cntPillChilled">59</span>)</button>
+                        <button class="tele-prio-btn" id="pill-cat-dairy" onclick="setProductCategoryFilter('1.DAIRY AND ICE CREAM')">🍦 Dairy & Ice Cream (<span id="cntPillDairy">164</span>)</button>
+                        <button class="tele-prio-btn" id="pill-cat-fmcg" onclick="setProductCategoryFilter('1.FMCG')">📦 FMCG (<span id="cntPillFmcg">195</span>)</button>
+                        <button class="tele-prio-btn" id="pill-cat-bakery" onclick="setProductCategoryFilter('1.BAKERY AND DELICA')">🥐 Bakery & Delica (<span id="cntPillBakery">27</span>)</button>
+                        
+                        <!-- Excluded info badge -->
+                        <span style="margin-left:auto; font-size:0.72rem; color:#94a3b8; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.25); border-radius:6px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px;">
+                            <i class="fa-solid fa-shield-xmark" style="color:#f87171;"></i> Đã loại bỏ: Vận hành, CCDC, Hàng không bán, IT Test
+                        </span>
+                    </div>
+                </div>
+
+                <!-- DATA TABLE CONTAINER -->
+                <div style="background:var(--bg-card); border:1px solid var(--border-card); border-radius:12px; overflow:hidden; box-shadow:var(--card-shadow);">
+                    <div style="padding:0.75rem 1.25rem; border-bottom:1px solid var(--border-card); display:flex; justify-content:space-between; align-items:center; background:var(--table-head-bg);">
+                        <div style="font-size:0.83rem; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+                            <i class="fa-solid fa-list-check" style="color:#10b981;"></i>
+                            <span>Danh Sách Giá Nhập Sản Phẩm</span>
+                            <span id="productShowingCountBadge" style="font-size:0.72rem; font-weight:600; background:rgba(16,185,129,0.15); color:#34d399; padding:2px 8px; border-radius:12px;">Đang hiển thị: 1,053 SKU</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px; font-size:0.78rem; color:var(--text-secondary);">
+                            <span>Hiển thị mỗi trang:</span>
+                            <select id="productPageSizeSelect" onchange="onProductPageSizeChange()" style="padding:2px 6px; background:var(--input-bg); border:1px solid var(--input-border); border-radius:4px; color:#fff; font-size:0.78rem;">
+                                <option value="25">25</option>
+                                <option value="50" selected>50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                                <option value="ALL">Tất cả</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.82rem; text-align:left;">
+                            <thead>
+                                <tr style="background:var(--table-head-bg); color:var(--text-secondary); border-bottom:1px solid var(--border-card);">
+                                    <th style="padding:10px 14px; width:50px; text-align:center;">#</th>
+                                    <th style="padding:10px 14px; width:110px;">Mã Nội Bộ</th>
+                                    <th style="padding:10px 14px; width:120px;">Mã Phiên Bản</th>
+                                    <th style="padding:10px 14px; width:130px;">Barcode</th>
+                                    <th style="padding:10px 14px; min-width:240px;">Tên Sản Phẩm</th>
+                                    <th style="padding:10px 14px; width:160px;">Ngành Hàng</th>
+                                    <th style="padding:10px 14px; width:60px; text-align:center;">ĐVT</th>
+                                    <th style="padding:10px 14px; width:140px; text-align:right; color:#34d399; font-weight:700;">Giá Nhập Gần Nhất</th>
+                                    <th style="padding:10px 14px; width:120px; text-align:right;">Giá Bán Lẻ</th>
+                                    <th style="padding:10px 14px; width:90px; text-align:center;">Margin</th>
+                                    <th style="padding:10px 14px; width:120px;">Thương Hiệu</th>
+                                    <th style="padding:10px 14px; width:100px; text-align:center;">Trạng Thái</th>
+                                    <th style="padding:10px 14px; width:80px; text-align:center;">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productPricesTableBody">
+                                <!-- Rows rendered dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- PAGINATION BAR -->
+                    <div id="productPaginationBar" style="padding:0.75rem 1.25rem; border-top:1px solid var(--border-card); display:flex; justify-content:space-between; align-items:center; background:var(--table-tfoot-bg); flex-wrap:wrap; gap:8px;">
+                        <div id="productPaginationInfo" style="font-size:0.78rem; color:var(--text-secondary);">Trang 1 / 22 (1 - 50 trong 1,053 SKU)</div>
+                        <div id="productPaginationBtns" style="display:flex; gap:4px; align-items:center;"></div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 <div class="modal-overlay" id="detailModal">
@@ -5390,6 +5575,81 @@
         </div>
     </div>
 
+    
+    <!-- MODAL NHẬP FILE EXCEL GIÁ NHẬP (HADA & CDC) -->
+    <div class="modal-overlay" id="importProductPriceModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); z-index:1000; align-items:center; justify-content:center;">
+        <div class="modal-box" style="background:#1e293b; border:1px solid rgba(16,185,129,0.3); border-radius:16px; width:90%; max-width:620px; padding:1.5rem; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.75rem;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:36px; height:36px; border-radius:8px; background:#10b981; color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
+                        <i class="fa-solid fa-file-excel"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin:0; font-size:1.1rem; color:#fff; font-weight:700;">Cập Nhật Giá Nhập Sản Phẩm</h3>
+                        <p style="margin:0; font-size:0.78rem; color:#94a3b8;">Nhập file Excel xuất từ Kingfood Next (Hada) hoặc CDC</p>
+                    </div>
+                </div>
+                <button onclick="closeProductPriceImportModal()" style="background:none; border:none; color:#94a3b8; font-size:1.2rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- DRAG & DROP AREA -->
+            <div id="productDropZone" onclick="document.getElementById('productExcelFileInput').click()" style="border:2px dashed rgba(16,185,129,0.5); border-radius:12px; padding:2rem 1.5rem; text-align:center; background:rgba(16,185,129,0.04); cursor:pointer; transition:all 0.2s; margin-bottom:1rem;">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size:2.5rem; color:#10b981; margin-bottom:10px;"></i>
+                <div style="font-weight:700; color:#fff; font-size:0.95rem; margin-bottom:4px;">Kéo & Thả file Excel (.xlsx, .xls, .csv) vào đây</div>
+                <div style="font-size:0.78rem; color:#94a3b8;">hoặc <span style="color:#38bdf8; text-decoration:underline;">chọn file từ máy tính</span></div>
+                <input type="file" id="productExcelFileInput" accept=".xlsx, .xls, .csv" style="display:none;" onchange="handleProductExcelUpload(event)" />
+            </div>
+
+            <div id="productUploadPreview" style="display:none; background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span id="productUploadFileName" style="font-size:0.83rem; color:#34d399; font-weight:600;"><i class="fa-solid fa-file-excel"></i> File đã chọn</span>
+                    <span id="productUploadCount" style="font-size:0.75rem; color:#94a3b8;">0 dòng</span>
+                </div>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:0.75rem 1rem; margin-bottom:1.25rem; font-size:0.75rem; color:#94a3b8; line-height:1.4;">
+                <strong style="color:#fff;">💡 Hướng dẫn định dạng file:</strong> File Excel chỉ cần chứa các cột: <code>Mã nội bộ / SKU</code>, <code>Tên sản phẩm</code>, <code>Giá nhập / Đơn giá</code> (tùy chọn: <code>Barcode</code>, <code>Danh mục</code>). Hệ thống sẽ tự động cập nhật đè giá nhập mới nhất cho từng mã sản phẩm.
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+                <button onclick="closeProductPriceImportModal()" style="padding:0.5rem 1rem; background:#334155; color:#fff; border:none; border-radius:8px; font-weight:600; font-size:0.82rem; cursor:pointer;">Hủy</button>
+                <button id="btnConfirmImportPrices" onclick="confirmImportProductPrices()" disabled style="padding:0.5rem 1.25rem; background:#10b981; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.82rem; cursor:pointer; opacity:0.5;">
+                    <i class="fa-solid fa-check"></i> Xác Nhận Cập Nhật Giá
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL XEM CHI TIẾT SẢN PHẨM HADA -->
+    <div class="modal-overlay" id="productDetailModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); z-index:1000; align-items:center; justify-content:center;">
+        <div class="modal-box" style="background:#1e293b; border:1px solid rgba(56,189,248,0.3); border-radius:16px; width:90%; max-width:650px; padding:1.5rem; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.75rem;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:36px; height:36px; border-radius:8px; background:#0284c7; color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <div>
+                        <h3 id="pDetailName" style="margin:0; font-size:1.1rem; color:#fff; font-weight:700;">Chi Tiết Sản Phẩm</h3>
+                        <p id="pDetailSku" style="margin:0; font-size:0.78rem; color:#38bdf8; font-weight:600;">SKU: ---</p>
+                    </div>
+                </div>
+                <button onclick="closeProductDetailModal()" style="background:none; border:none; color:#94a3b8; font-size:1.2rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div id="pDetailContent" style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1.25rem; font-size:0.83rem;">
+                <!-- Rendered dynamically -->
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.1); padding-top:0.75rem;">
+                <a id="pDetailHadaLink" href="https://next.kingfood.co/product-hada/product-list" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; color:#38bdf8; text-decoration:none; font-size:0.8rem; font-weight:600;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở trên Kingfood Next Hada
+                </a>
+                <button onclick="closeProductDetailModal()" style="padding:0.45rem 1.15rem; background:#334155; color:#fff; border:none; border-radius:8px; font-weight:600; font-size:0.82rem; cursor:pointer;">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Script Logic -->
     <!-- daily_records.js removed for on-demand lazy loading -->
     <script>
@@ -5457,7 +5717,7 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
         
         let curBigTab = 1;
 
-        function switchBigTab(tabNum) {
+                function switchBigTab(tabNum) {
             try {
                 curBigTab = tabNum;
 
@@ -5466,53 +5726,52 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 const btn3 = document.getElementById('btn-big-tab-3');
                 const btn4 = document.getElementById('btn-big-tab-4');
                 const btn5 = document.getElementById('btn-big-tab-5');
+                const btn6 = document.getElementById('btn-big-tab-6');
+
                 const p1 = document.getElementById('big-panel-1');
                 const p2 = document.getElementById('big-panel-2');
                 const p3 = document.getElementById('big-panel-3');
                 const p4 = document.getElementById('big-panel-4');
                 const p5 = document.getElementById('big-panel-5');
+                const p6 = document.getElementById('big-panel-6');
 
                 if (btn1) btn1.className = 'sidebar-tab-btn' + (tabNum === 1 ? ' active-tab1' : '');
                 if (btn2) btn2.className = 'sidebar-tab-btn' + (tabNum === 2 ? ' active-tab2' : '');
                 if (btn3) btn3.className = 'sidebar-tab-btn' + (tabNum === 3 ? ' active-tab3' : '');
                 if (btn4) btn4.className = 'sidebar-tab-btn' + (tabNum === 4 ? ' active-tab4' : '');
                 if (btn5) btn5.className = 'sidebar-tab-btn' + (tabNum === 5 ? ' active-tab5' : '');
+                if (btn6) btn6.className = 'sidebar-tab-btn' + (tabNum === 6 ? ' active-tab6' : '');
+
                 if (p1) p1.className = 'big-tab-panel' + (tabNum === 1 ? ' active' : '');
                 if (p2) p2.className = 'big-tab-panel' + (tabNum === 2 ? ' active' : '');
                 if (p3) p3.className = 'big-tab-panel' + (tabNum === 3 ? ' active' : '');
                 if (p4) p4.className = 'big-tab-panel' + (tabNum === 4 ? ' active' : '');
                 if (p5) p5.className = 'big-tab-panel' + (tabNum === 5 ? ' active' : '');
+                if (p6) p6.className = 'big-tab-panel' + (tabNum === 6 ? ' active' : '');
 
-                const data = getFilteredBundleData();
-                if (tabNum === 1) {
-                    try { if (data && typeof renderCharts === 'function') renderCharts(data); } catch(e) { console.error("[ERROR BOUNDARY Tab 1]", e); }
-                } else if (tabNum === 2) {
-                    try {
-                        if (typeof renderStorePriorityTable === 'function') renderStorePriorityTable();
-                        if (typeof renderMasterTable === 'function') renderMasterTable();
-                        if (typeof renderValTable === 'function') renderValTable();
-                        if (typeof renderQtyTable === 'function') renderQtyTable();
-                    } catch(e) { console.error("[ERROR BOUNDARY Tab 2]", e); }
-                } else if (tabNum === 3) {
-                    try {
-                        if (data) {
-                            if (typeof updateDCOverviewStats === 'function') updateDCOverviewStats(data);
-                            if (typeof renderDCInsights === 'function') renderDCInsights(data);
-                            if (typeof renderDCCharts === 'function') renderDCCharts(data);
-                            if (typeof renderDCTable === 'function') renderDCTable();
-                        }
-                    } catch(e) { console.error("[ERROR BOUNDARY Tab 3]", e); }
-                } else if (tabNum === 4) {
-                    try {
-                        if (typeof renderTelegramTab === 'function') renderTelegramTab();
-                    } catch(e) { console.error("[ERROR BOUNDARY Tab 4]", e); }
+                if (tabNum === 4) {
+                    setTimeout(() => {
+                        try {
+                            if (typeof renderTeleDailyTable === 'function') renderTeleDailyTable();
+                            if (typeof renderTeleTopStoresTable === 'function') renderTeleTopStoresTable();
+                            if (typeof renderTeleMessagesTable === 'function') renderTeleMessagesTable();
+                        } catch(e) {}
+                    }, 50);
                 } else if (tabNum === 5) {
-                    try {
-                        if (typeof initCloudRunnerUI === 'function') initCloudRunnerUI();
-                    } catch(e) { console.error("[ERROR BOUNDARY Tab 5]", e); }
+                    setTimeout(() => {
+                        try {
+                            if (typeof initSpamTab === 'function') initSpamTab();
+                        } catch(e) {}
+                    }, 50);
+                } else if (tabNum === 6) {
+                    setTimeout(() => {
+                        try {
+                            if (typeof initProductPricesModule === 'function') initProductPricesModule();
+                        } catch(e) {}
+                    }, 50);
                 }
-            } catch(switchErr) {
-                console.error("[ERROR BOUNDARY CRITICAL] Lỗi trong switchBigTab:", switchErr);
+            } catch (err) {
+                console.error("Lỗi chuyển big tab:", err);
             }
         }
 
@@ -12516,3 +12775,491 @@ function copyChatId(chatId, btnEl) {
 
 </body>
 </html>
+
+
+        // =========================================================================
+        // LOGIC TAB 6: QUẢN LÝ BẢNG GIÁ NHẬP SẢN PHẨM (CDC & HADA MASTER DATA)
+        // =========================================================================
+        let productPricesList = [];
+        let productPricesFiltered = [];
+        let productCurCategory = 'ALL';
+        let productCurPage = 1;
+        let productPageSize = 50;
+        let pendingImportData = [];
+
+        function initProductPricesModule() {
+            if (window.PRODUCT_PRICES_DATA && window.PRODUCT_PRICES_DATA.products) {
+                productPricesList = window.PRODUCT_PRICES_DATA.products;
+            } else {
+                productPricesList = [];
+            }
+            updateProductPriceKPIs();
+            applyProductFilters();
+        }
+
+        function updateProductPriceKPIs() {
+            const total = productPricesList.length;
+            let freshCnt = 0;
+            let otherCnt = 0;
+            let withPrice = 0;
+
+            productPricesList.forEach(p => {
+                if (p.category_lv1 === '1.FRESH FOOD') freshCnt++;
+                else otherCnt++;
+                if (p.cost_price > 0) withPrice++;
+            });
+
+            const elTotal = document.getElementById('kpiTotalSku');
+            const elCov = document.getElementById('kpiPriceCoverage');
+            const elFresh = document.getElementById('kpiFreshFoodCount');
+            const elOther = document.getElementById('kpiOtherCategoryCount');
+
+            if (elTotal) elTotal.innerText = total.toLocaleString() + ' SKU';
+            if (elCov) elCov.innerText = total > 0 ? (Math.round(withPrice / total * 100) + '%') : '0%';
+            if (elFresh) elFresh.innerText = freshCnt.toLocaleString() + ' SKU';
+            if (elOther) elOther.innerText = otherCnt.toLocaleString() + ' SKU';
+
+            // Cập nhật số đếm trên các nút pills
+            const cntPillAll = document.getElementById('cntPillAll');
+            const cntPillFresh = document.getElementById('cntPillFresh');
+            const cntPillChilled = document.getElementById('cntPillChilled');
+            const cntPillDairy = document.getElementById('cntPillDairy');
+            const cntPillFmcg = document.getElementById('cntPillFmcg');
+            const cntPillBakery = document.getElementById('cntPillBakery');
+
+            if (cntPillAll) cntPillAll.innerText = total.toLocaleString();
+            if (cntPillFresh) cntPillFresh.innerText = freshCnt.toLocaleString();
+            if (cntPillChilled) cntPillChilled.innerText = productPricesList.filter(p => p.category_lv1 === '1.CHILLED AND FROZEN').length.toLocaleString();
+            if (cntPillDairy) cntPillDairy.innerText = productPricesList.filter(p => p.category_lv1 === '1.DAIRY AND ICE CREAM').length.toLocaleString();
+            if (cntPillFmcg) cntPillFmcg.innerText = productPricesList.filter(p => p.category_lv1 === '1.FMCG').length.toLocaleString();
+            if (cntPillBakery) cntPillBakery.innerText = productPricesList.filter(p => p.category_lv1 === '1.BAKERY AND DELICA').length.toLocaleString();
+
+            const syncBadge = document.getElementById('productPriceSyncBadge');
+            if (syncBadge && window.PRODUCT_PRICES_DATA && window.PRODUCT_PRICES_DATA.sync_date) {
+                syncBadge.innerText = 'Đồng bộ lúc: ' + window.PRODUCT_PRICES_DATA.sync_date;
+            }
+        }
+
+        function setProductCategoryFilter(cat) {
+            productCurCategory = cat;
+            document.querySelectorAll('#big-panel-6 .tele-prio-btn').forEach(btn => btn.classList.remove('active'));
+            if (cat === 'ALL') {
+                const b = document.getElementById('pill-cat-all');
+                if (b) b.classList.add('active');
+            } else if (cat === '1.FRESH FOOD') {
+                const b = document.getElementById('pill-cat-fresh');
+                if (b) b.classList.add('active');
+            } else if (cat === '1.CHILLED AND FROZEN') {
+                const b = document.getElementById('pill-cat-chilled');
+                if (b) b.classList.add('active');
+            } else if (cat === '1.DAIRY AND ICE CREAM') {
+                const b = document.getElementById('pill-cat-dairy');
+                if (b) b.classList.add('active');
+            } else if (cat === '1.FMCG') {
+                const b = document.getElementById('pill-cat-fmcg');
+                if (b) b.classList.add('active');
+            } else if (cat === '1.BAKERY AND DELICA') {
+                const b = document.getElementById('pill-cat-bakery');
+                if (b) b.classList.add('active');
+            }
+            productCurPage = 1;
+            applyProductFilters();
+        }
+
+        let productSearchTimer = null;
+        function onProductSearchChange() {
+            clearTimeout(productSearchTimer);
+            productSearchTimer = setTimeout(() => {
+                productCurPage = 1;
+                applyProductFilters();
+            }, 200);
+        }
+
+        function onProductPageSizeChange() {
+            const sel = document.getElementById('productPageSizeSelect');
+            if (sel) {
+                productPageSize = sel.value === 'ALL' ? 999999 : parseInt(sel.value);
+            }
+            productCurPage = 1;
+            renderProductPricesTable();
+        }
+
+        function applyProductFilters() {
+            const query = (document.getElementById('productSearchInput')?.value || '').toLowerCase().trim();
+            const priceRange = document.getElementById('productPriceRangeFilter')?.value || 'ALL';
+            const sortBy = document.getElementById('productSortBy')?.value || 'NAME_ASC';
+
+            productPricesFiltered = productPricesList.filter(p => {
+                // 1. Lọc theo Ngành hàng
+                if (productCurCategory !== 'ALL' && p.category_lv1 !== productCurCategory) {
+                    return false;
+                }
+
+                // 2. Lọc theo Khoảng giá nhập
+                const price = p.cost_price || 0;
+                if (priceRange === 'UNDER_20K' && price >= 20000) return false;
+                if (priceRange === '20K_50K' && (price < 20000 || price >= 50000)) return false;
+                if (priceRange === '50K_100K' && (price < 50000 || price >= 100000)) return false;
+                if (priceRange === 'OVER_100K' && price < 100000) return false;
+
+                // 3. Tìm kiếm tức thì
+                if (query) {
+                    const matchName = (p.product_name || '').toLowerCase().includes(query);
+                    const matchSku = (p.sku || '').toLowerCase().includes(query);
+                    const matchInternal = (p.internal_code || '').toLowerCase().includes(query);
+                    const matchVariant = (p.variant_code || '').toLowerCase().includes(query);
+                    const matchBarcode = (p.barcode || '').toLowerCase().includes(query);
+                    const matchBrand = (p.brand || '').toLowerCase().includes(query);
+                    const matchCat = (p.category_full || '').toLowerCase().includes(query);
+                    if (!matchName && !matchSku && !matchInternal && !matchVariant && !matchBarcode && !matchBrand && !matchCat) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            // Sắp xếp
+            if (sortBy === 'NAME_ASC') {
+                productPricesFiltered.sort((a, b) => (a.product_name || '').localeCompare(b.product_name || ''));
+            } else if (sortBy === 'PRICE_DESC') {
+                productPricesFiltered.sort((a, b) => (b.cost_price || 0) - (a.cost_price || 0));
+            } else if (sortBy === 'PRICE_ASC') {
+                productPricesFiltered.sort((a, b) => (a.cost_price || 0) - (b.cost_price || 0));
+            } else if (sortBy === 'SKU_ASC') {
+                productPricesFiltered.sort((a, b) => (a.sku || '').localeCompare(b.sku || ''));
+            }
+
+            renderProductPricesTable();
+        }
+
+        function renderProductPricesTable() {
+            const tbody = document.getElementById('productPricesTableBody');
+            const showingBadge = document.getElementById('productShowingCountBadge');
+            if (showingBadge) {
+                showingBadge.innerText = 'Đang hiển thị: ' + productPricesFiltered.length.toLocaleString() + ' SKU';
+            }
+
+            if (!tbody) return;
+
+            if (productPricesFiltered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; padding:3rem; color:var(--text-muted);">
+                    <i class="fa-solid fa-box-open" style="font-size:2.5rem; margin-bottom:10px; color:rgba(255,255,255,0.15); display:block;"></i>
+                    Không tìm thấy sản phẩm nào phù hợp với bộ lọc hiện tại.
+                </td></tr>`;
+                renderProductPagination(0);
+                return;
+            }
+
+            const total = productPricesFiltered.length;
+            const startIdx = (productCurPage - 1) * productPageSize;
+            const endIdx = Math.min(startIdx + productPageSize, total);
+            const pageData = productPricesFiltered.slice(startIdx, endIdx);
+
+            const getCatBadge = (cat) => {
+                if (cat === '1.FRESH FOOD') return '<span style="background:rgba(16,185,129,0.15); color:#34d399; font-weight:700; padding:2px 7px; border-radius:4px; font-size:0.72rem;">🥩 Fresh Food</span>';
+                if (cat === '1.CHILLED AND FROZEN') return '<span style="background:rgba(56,189,248,0.15); color:#38bdf8; font-weight:700; padding:2px 7px; border-radius:4px; font-size:0.72rem;">❄️ Chilled/Frozen</span>';
+                if (cat === '1.DAIRY AND ICE CREAM') return '<span style="background:rgba(129,140,248,0.15); color:#a5b4fc; font-weight:700; padding:2px 7px; border-radius:4px; font-size:0.72rem;">🍦 Dairy & Ice</span>';
+                if (cat === '1.FMCG') return '<span style="background:rgba(244,114,182,0.15); color:#f472b6; font-weight:700; padding:2px 7px; border-radius:4px; font-size:0.72rem;">📦 FMCG</span>';
+                if (cat === '1.BAKERY AND DELICA') return '<span style="background:rgba(251,191,36,0.15); color:#fbbf24; font-weight:700; padding:2px 7px; border-radius:4px; font-size:0.72rem;">🥐 Bakery</span>';
+                return `<span style="background:rgba(255,255,255,0.1); color:#ccc; padding:2px 6px; border-radius:4px; font-size:0.72rem;">${cat}</span>`;
+            };
+
+            const getMarginBadge = (m) => {
+                if (m >= 25) return `<span style="color:#34d399; font-weight:700;">+${m}%</span>`;
+                if (m >= 15) return `<span style="color:#fbbf24; font-weight:700;">+${m}%</span>`;
+                return `<span style="color:#f87171; font-weight:700;">+${m}%</span>`;
+            };
+
+            let html = '';
+            pageData.forEach((p, index) => {
+                const rowNum = startIdx + index + 1;
+                const costFmt = (p.cost_price || 0) > 0 ? Math.round(p.cost_price).toLocaleString('vi-VN') + ' đ' : '<span style="color:var(--text-muted);">---</span>';
+                const retailFmt = (p.retail_price || 0) > 0 ? Math.round(p.retail_price).toLocaleString('vi-VN') + ' đ' : '---';
+
+                html += `
+                <tr style="border-bottom:1px solid var(--border-subtle); transition:background 0.15s ease;" onmouseover="this.style.background='var(--bg-hover)'" onmouseout="this.style.background='transparent'">
+                    <td style="padding:9px 14px; text-align:center; color:var(--text-muted);">${rowNum}</td>
+                    <td style="padding:9px 14px; font-weight:700; color:#38bdf8;">${p.internal_code || p.sku}</td>
+                    <td style="padding:9px 14px; font-family:monospace; color:#a5b4fc; font-size:0.78rem;">${p.variant_code || '---'}</td>
+                    <td style="padding:9px 14px; font-family:monospace; color:var(--text-secondary); font-size:0.78rem;">
+                        <span style="background:rgba(255,255,255,0.05); padding:2px 5px; border-radius:3px;"><i class="fa-solid fa-barcode" style="font-size:0.7rem; color:var(--text-muted); margin-right:3px;"></i>${p.barcode || p.sku}</span>
+                    </td>
+                    <td style="padding:9px 14px;">
+                        <div style="font-weight:700; color:#fff; line-height:1.35;">${p.product_name}</div>
+                        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">${p.category_full || p.category_lv1}</div>
+                    </td>
+                    <td style="padding:9px 14px;">${getCatBadge(p.category_lv1)}</td>
+                    <td style="padding:9px 14px; text-align:center; color:var(--text-secondary);">${p.unit || 'Khay'}</td>
+                    <td style="padding:9px 14px; text-align:right; font-weight:800; font-size:0.92rem; color:#34d399; font-family:monospace;">${costFmt}</td>
+                    <td style="padding:9px 14px; text-align:right; color:var(--text-secondary); font-family:monospace;">${retailFmt}</td>
+                    <td style="padding:9px 14px; text-align:center; font-size:0.78rem;">${getMarginBadge(p.margin_pct)}</td>
+                    <td style="padding:9px 14px; color:var(--text-secondary); font-size:0.78rem;">${p.brand || '---'}</td>
+                    <td style="padding:9px 14px; text-align:center;">
+                        <span style="font-size:0.72rem; color:#34d399; background:rgba(52,211,153,0.12); padding:2px 6px; border-radius:4px; font-weight:600;">Kinh doanh</span>
+                    </td>
+                    <td style="padding:9px 14px; text-align:center;">
+                        <button onclick="openProductDetailModal('${p.sku}')" title="Xem chi tiết phiên bản" style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); color:#38bdf8; width:28px; height:28px; border-radius:6px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:all 0.15s;">
+                            <i class="fa-solid fa-eye" style="font-size:0.75rem;"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            });
+
+            tbody.innerHTML = html;
+            renderProductPagination(total);
+        }
+
+        function renderProductPagination(total) {
+            const info = document.getElementById('productPaginationInfo');
+            const btns = document.getElementById('productPaginationBtns');
+            if (!info || !btns) return;
+
+            if (total === 0) {
+                info.innerText = '0 / 0 SKU';
+                btns.innerHTML = '';
+                return;
+            }
+
+            const totalPages = Math.ceil(total / productPageSize);
+            const startIdx = (productCurPage - 1) * productPageSize + 1;
+            const endIdx = Math.min(startIdx + productPageSize - 1, total);
+
+            info.innerText = `Trang ${productCurPage} / ${totalPages} (${startIdx.toLocaleString()} - ${endIdx.toLocaleString()} trong ${total.toLocaleString()} SKU)`;
+
+            let html = '';
+            html += `<button onclick="goProductPage(1)" ${productCurPage === 1 ? 'disabled' : ''} style="padding:3px 8px; background:var(--input-bg); border:1px solid var(--border-card); border-radius:4px; color:#fff; font-size:0.75rem; cursor:pointer; opacity:${productCurPage === 1 ? '0.4' : '1'};"><i class="fa-solid fa-angles-left"></i></button>`;
+            html += `<button onclick="goProductPage(${productCurPage - 1})" ${productCurPage === 1 ? 'disabled' : ''} style="padding:3px 8px; background:var(--input-bg); border:1px solid var(--border-card); border-radius:4px; color:#fff; font-size:0.75rem; cursor:pointer; opacity:${productCurPage === 1 ? '0.4' : '1'};"><i class="fa-solid fa-angle-left"></i></button>`;
+
+            const maxVisible = 5;
+            let startPage = Math.max(1, productCurPage - Math.floor(maxVisible / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+            if (endPage - startPage + 1 < maxVisible) {
+                startPage = Math.max(1, endPage - maxVisible + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const isActive = (i === productCurPage);
+                html += `<button onclick="goProductPage(${i})" style="padding:3px 9px; background:${isActive ? '#10b981' : 'var(--input-bg)'}; border:1px solid ${isActive ? '#10b981' : 'var(--border-card)'}; border-radius:4px; color:#fff; font-size:0.75rem; font-weight:${isActive ? '700' : '500'}; cursor:pointer;">${i}</button>`;
+            }
+
+            html += `<button onclick="goProductPage(${productCurPage + 1})" ${productCurPage === totalPages ? 'disabled' : ''} style="padding:3px 8px; background:var(--input-bg); border:1px solid var(--border-card); border-radius:4px; color:#fff; font-size:0.75rem; cursor:pointer; opacity:${productCurPage === totalPages ? '0.4' : '1'};"><i class="fa-solid fa-angle-right"></i></button>`;
+            html += `<button onclick="goProductPage(${totalPages})" ${productCurPage === totalPages ? 'disabled' : ''} style="padding:3px 8px; background:var(--input-bg); border:1px solid var(--border-card); border-radius:4px; color:#fff; font-size:0.75rem; cursor:pointer; opacity:${productCurPage === totalPages ? '0.4' : '1'};"><i class="fa-solid fa-angles-right"></i></button>`;
+
+            btns.innerHTML = html;
+        }
+
+        function goProductPage(p) {
+            const totalPages = Math.ceil(productPricesFiltered.length / productPageSize);
+            if (p < 1 || p > totalPages) return;
+            productCurPage = p;
+            renderProductPricesTable();
+            const el = document.getElementById('big-panel-6');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function exportProductPricesExcel() {
+            if (!productPricesFiltered.length) {
+                showToast("⚠️ Không có sản phẩm nào để xuất!");
+                return;
+            }
+            showToast("📊 Đang tạo file Excel Bảng Giá Nhập...");
+            const dataToExport = productPricesFiltered.map(p => ({
+                "STT": p.stt,
+                "Mã Nội Bộ": p.internal_code || p.sku,
+                "Mã Phiên Bản": p.variant_code || '',
+                "Barcode": p.barcode || p.sku,
+                "Mã SKU": p.sku,
+                "Tên Sản Phẩm": p.product_name,
+                "Ngành Hàng": p.category_lv1,
+                "Danh Mục Đầy Đủ": p.category_full,
+                "ĐVT": p.unit,
+                "Giá Nhập Gần Nhất (VNĐ)": p.cost_price,
+                "Giá Bán Lẻ (VNĐ)": p.retail_price,
+                "Margin (%)": p.margin_pct,
+                "Thương Hiệu": p.brand,
+                "Trạng Thái": p.status,
+                "Nguồn Dữ Liệu": p.source,
+                "Cập Nhật Lúc": p.last_updated
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(dataToExport);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Gia_Nhap_Master_Data");
+            const fileName = `Bang_Gia_Nhap_San_Pham_Kingfoodmart_${new Date().toISOString().slice(0,10)}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+            showToast("✅ Đã xuất file Excel thành công!");
+        }
+
+        function openProductPriceImportModal() {
+            const modal = document.getElementById('importProductPriceModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeProductPriceImportModal() {
+            const modal = document.getElementById('importProductPriceModal');
+            if (modal) modal.style.display = 'none';
+            pendingImportData = [];
+            const prev = document.getElementById('productUploadPreview');
+            if (prev) prev.style.display = 'none';
+            const btn = document.getElementById('btnConfirmImportPrices');
+            if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+        }
+
+        function handleProductExcelUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonRows = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+                    if (!jsonRows.length) {
+                        showToast("⚠️ File Excel không có dữ liệu!");
+                        return;
+                    }
+
+                    pendingImportData = [];
+                    jsonRows.forEach(row => {
+                        let sku = '', name = '', price = 0, barcode = '', cat = '';
+                        for (let k in row) {
+                            const kl = k.toLowerCase().trim();
+                            const val = String(row[k]).trim();
+                            if (kl.includes('mã nội bộ') || kl.includes('mã hàng') || kl === 'sku' || kl.includes('mã sp')) sku = val;
+                            if (kl.includes('tên sản phẩm') || kl.includes('tên hàng') || kl.includes('tên sp')) name = val;
+                            if (kl.includes('giá nhập') || kl.includes('đơn giá') || kl.includes('cost') || kl.includes('max of giá')) {
+                                price = parseFloat(val.replace(/,/g, '')) || 0;
+                            }
+                            if (kl.includes('barcode') || kl.includes('mã vạch')) barcode = val;
+                            if (kl.includes('danh mục') || kl.includes('ngành hàng')) cat = val;
+                        }
+                        if (sku && (name || price > 0)) {
+                            pendingImportData.push({ sku, name, price, barcode, cat });
+                        }
+                    });
+
+                    const prev = document.getElementById('productUploadPreview');
+                    const fn = document.getElementById('productUploadFileName');
+                    const fc = document.getElementById('productUploadCount');
+                    const btn = document.getElementById('btnConfirmImportPrices');
+
+                    if (prev && fn && fc && btn) {
+                        prev.style.display = 'block';
+                        fn.innerHTML = `<i class="fa-solid fa-file-excel"></i> ${file.name}`;
+                        fc.innerText = `Tìm thấy ${pendingImportData.length.toLocaleString()} mã sản phẩm hợp lệ`;
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                    }
+                    showToast(`✅ Đã đọc thành công ${pendingImportData.length} mã sản phẩm từ file!`);
+                } catch (err) {
+                    console.error("Excel parse error:", err);
+                    showToast("❌ Lỗi khi đọc file Excel: " + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function confirmImportProductPrices() {
+            if (!pendingImportData.length) return;
+
+            let updatedCount = 0;
+            let addedCount = 0;
+            const nowStr = new Date().toLocaleString('vi-VN');
+
+            pendingImportData.forEach(item => {
+                const existing = productPricesList.find(p => p.sku === item.sku || (item.barcode && p.barcode === item.barcode));
+                if (existing) {
+                    if (item.price > 0) existing.cost_price = item.price;
+                    if (item.name) existing.product_name = item.name;
+                    if (item.barcode) existing.barcode = item.barcode;
+                    existing.last_updated = nowStr;
+                    existing.source = "Hada Excel Import";
+                    updatedCount++;
+                } else if (item.name && item.sku) {
+                    productPricesList.push({
+                        stt: productPricesList.length + 1,
+                        internal_code: item.sku,
+                        variant_code: 'VC_' + item.sku,
+                        barcode: item.barcode || item.sku,
+                        sku: item.sku,
+                        product_name: item.name,
+                        category_lv1: item.cat || '1.FRESH FOOD',
+                        category_full: item.cat || '1.FRESH FOOD',
+                        unit: 'Gói',
+                        cost_price: item.price,
+                        retail_price: Math.round(item.price * 1.25),
+                        margin_pct: 20,
+                        brand: 'Kingfoodmart',
+                        status: 'KDF - Kinh doanh',
+                        last_updated: nowStr,
+                        source: 'Hada Excel Import'
+                    });
+                    addedCount++;
+                }
+            });
+
+            closeProductPriceImportModal();
+            updateProductPriceKPIs();
+            applyProductFilters();
+            showToast(`🎉 Đã cập nhật thành công ${updatedCount} mã và thêm mới ${addedCount} mã sản phẩm!`);
+        }
+
+        function openProductDetailModal(sku) {
+            const p = productPricesList.find(x => x.sku === sku);
+            if (!p) return;
+
+            const modal = document.getElementById('productDetailModal');
+            const pName = document.getElementById('pDetailName');
+            const pSku = document.getElementById('pDetailSku');
+            const pContent = document.getElementById('pDetailContent');
+            const pHada = document.getElementById('pDetailHadaLink');
+
+            if (pName) pName.innerText = p.product_name;
+            if (pSku) pSku.innerText = `Mã nội bộ: ${p.internal_code || p.sku} • Mã phiên bản: ${p.variant_code || '---'}`;
+            if (pHada) pHada.href = `https://next.kingfood.co/product-hada/product-list?tab=synced`;
+
+            if (pContent) {
+                pContent.innerHTML = `
+                    <div style="background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:8px;">
+                        <span style="color:var(--text-muted); font-size:0.72rem; text-transform:uppercase;">Barcode:</span>
+                        <div style="color:#fff; font-weight:700; font-family:monospace; margin-top:2px;">${p.barcode || p.sku}</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:8px;">
+                        <span style="color:var(--text-muted); font-size:0.72rem; text-transform:uppercase;">Ngành Hàng / Danh Mục:</span>
+                        <div style="color:#34d399; font-weight:700; margin-top:2px;">${p.category_lv1}</div>
+                    </div>
+                    <div style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); padding:8px 12px; border-radius:8px;">
+                        <span style="color:#34d399; font-size:0.72rem; text-transform:uppercase; font-weight:700;">Giá Nhập Gần Nhất:</span>
+                        <div style="color:#34d399; font-weight:800; font-size:1.1rem; font-family:monospace; margin-top:2px;">${(p.cost_price || 0).toLocaleString('vi-VN')} VNĐ</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:8px;">
+                        <span style="color:var(--text-muted); font-size:0.72rem; text-transform:uppercase;">Giá Bán Lẻ Ước Tính:</span>
+                        <div style="color:#fff; font-weight:700; font-size:1rem; font-family:monospace; margin-top:2px;">${(p.retail_price || 0).toLocaleString('vi-VN')} VNĐ</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:8px;">
+                        <span style="color:var(--text-muted); font-size:0.72rem; text-transform:uppercase;">Đơn Vị Tính:</span>
+                        <div style="color:#fff; font-weight:600; margin-top:2px;">${p.unit || 'Khay / Gói'}</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:8px;">
+                        <span style="color:var(--text-muted); font-size:0.72rem; text-transform:uppercase;">Thương Hiệu / Xuất Xứ:</span>
+                        <div style="color:#fff; font-weight:600; margin-top:2px;">${p.brand || 'Kingfoodmart'} (VIETNAM)</div>
+                    </div>
+                    <div style="grid-column:1 / -1; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:8px;">
+                        <span style="color:var(--text-muted); font-size:0.72rem; text-transform:uppercase;">Cây Danh Mục Chi Tiết (CDC / Hada Tree):</span>
+                        <div style="color:#94a3b8; font-size:0.78rem; margin-top:2px;">${p.category_full || p.category_lv1}</div>
+                    </div>
+                `;
+            }
+
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeProductDetailModal() {
+            const modal = document.getElementById('productDetailModal');
+            if (modal) modal.style.display = 'none';
+        }
