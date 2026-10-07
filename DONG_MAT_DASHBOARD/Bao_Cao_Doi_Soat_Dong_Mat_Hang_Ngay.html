@@ -5601,6 +5601,27 @@
                 <button onclick="closeRealtimeSyncModal()" style="background:none; border:none; color:#94a3b8; font-size:1.3rem; cursor:pointer; padding:4px;"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
+                        <!-- LIVE STATUS RUNNING CONSOLE (HIỂN THỊ KHI ĐANG QUÉT) -->
+            <div id="cdcSyncRunningBox" style="display:none; background:#0b0f19; border:1px solid rgba(16,185,129,0.4); border-radius:14px; padding:1.25rem; margin-bottom:1.25rem; animation:fadeIn 0.25s ease;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                    <span style="color:#34d399; font-weight:700; font-size:0.9rem; display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-circle-notch fa-spin text-success" id="cdcRunningSpinner"></i>
+                        <span id="cdcProgressStatusText">Đang khởi tạo kết nối CDC StarRocks...</span>
+                    </span>
+                    <span id="cdcProgressPercent" style="color:#38bdf8; font-weight:800; font-family:monospace; font-size:0.95rem;">0%</span>
+                </div>
+                
+                <!-- PROGRESS BAR -->
+                <div style="width:100%; height:8px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden; margin-bottom:12px;">
+                    <div id="cdcProgressBar" style="width:0%; height:100%; background:linear-gradient(90deg, #10b981, #38bdf8); border-radius:10px; transition:width 0.3s ease;"></div>
+                </div>
+
+                <!-- LIVE LOG OUTPUT -->
+                <div id="cdcLogTerminal" style="background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px 12px; font-family:Consolas, monospace; font-size:0.75rem; color:#cbd5e1; max-height:110px; overflow-y:auto; line-height:1.5;">
+                    <div>> Khởi động tiến trình quét Realtime...</div>
+                </div>
+            </div>
+
             <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:1.25rem;">
                 <div style="background:linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(30, 41, 59, 0.7) 100%); border:1px solid rgba(16, 185, 129, 0.35); border-radius:12px; padding:1.1rem; display:flex; align-items:center; justify-content:space-between; gap:1rem;">
                     <div style="display:flex; align-items:flex-start; gap:12px;">
@@ -5617,7 +5638,7 @@
                             </div>
                         </div>
                     </div>
-                    <button onclick="closeRealtimeSyncModal(); syncProductPricesFromCDC();" style="padding:0.6rem 1.1rem; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.8rem; cursor:pointer; white-space:nowrap; box-shadow:0 2px 8px rgba(16,185,129,0.4);">
+                    <button onclick="startInteractiveCdcSync();" style="padding:0.6rem 1.1rem; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.8rem; cursor:pointer; white-space:nowrap; box-shadow:0 2px 8px rgba(16,185,129,0.4);">
                         <i class="fa-solid fa-arrows-rotate"></i> Quét CDC Ngay
                     </button>
                 </div>
