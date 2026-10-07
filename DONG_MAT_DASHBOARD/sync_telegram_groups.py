@@ -37,11 +37,9 @@ os.makedirs(os.path.join(CURRENT_DIR, 'data'), exist_ok=True)
 os.makedirs(os.path.join(ROOT_DIR, 'daily_details'), exist_ok=True)
 
 # Find store map excel
+# Find store map sources
 STORE_EXCEL_PATH = os.path.join(CURRENT_DIR, 'data', 'Danh_Sach_Sieu_Thi.xlsx')
-if not os.path.exists(STORE_EXCEL_PATH):
-    c_excel = r'C:\Users\Thu Ha\Desktop\ĐỐI SOÁT\ĐÔNG MÁT\Danh sách Siêu thị.xlsx'
-    if os.path.exists(c_excel):
-        STORE_EXCEL_PATH = c_excel
+STORE_JSON_PATH = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')
 
 OUTPUT_JSON_PATH = os.path.join(CURRENT_DIR, 'data', 'telegram_groups.json')
 OUTPUT_JS_PATH = os.path.join(ROOT_DIR, 'daily_details', 'telegram_groups.js')
@@ -53,6 +51,47 @@ def load_store_map():
     name_to_id = {}
     chat_to_store = {}
 
+    # 1. Load from CONFIG_DATA_STORES.json
+    if os.path.exists(STORE_JSON_PATH):
+        try:
+            with open(STORE_JSON_PATH, 'r', encoding='utf-8') as f:
+                store_list = json.load(f)
+            for item in store_list:
+                id_st = str(item.get('id', '') or '').strip().upper()
+                name_st = str(item.get('name', '') or '').strip()
+                short_st = str(item.get('short', '') or '').strip()
+                cid_dm = str(item.get('chat_id_dm', '') or '').strip()
+                cid_rc = str(item.get('chat_id_rc', '') or '').strip()
+
+                if id_st and id_st.lower() != 'nan':
+                    m = re.search(r'\d+', id_st)
+                    std_code = f"A{int(m.group(0)):03d}" if m else id_st
+                    clean_name = re.sub(r'^KFM_[A-Z0-9]+_[A-Z0-9]+\s*-\s*', '', name_st)
+
+                    store_map[std_code] = {
+                        "store_code": std_code,
+                        "raw_id": id_st,
+                        "store_name": clean_name or name_st or std_code,
+                        "full_name": name_st,
+                        "chat_id_dm": cid_dm,
+                        "chat_id_rc": cid_rc
+                    }
+                    if clean_name and len(clean_name) >= 3:
+                        name_to_id[clean_name.lower()] = std_code
+                    if name_st and len(name_st) >= 4:
+                        name_to_id[name_st.lower()] = std_code
+                    if short_st and len(short_st) >= 2:
+                        name_to_id[short_st.lower()] = std_code
+
+                    for cid in [cid_dm, cid_rc]:
+                        if cid and cid != 'nan' and cid != '0':
+                            chat_to_store[cid] = std_code
+                            if not cid.startswith('-100') and cid.startswith('-'):
+                                chat_to_store['-100' + cid[1:]] = std_code
+        except Exception as e:
+            print(f"⚠️ Lỗi đọc JSON danh sách siêu thị: {e}")
+
+    # 2. Fallback / Supplement from Excel
     if os.path.exists(STORE_EXCEL_PATH):
         try:
             df = pd.read_excel(STORE_EXCEL_PATH, dtype=str)
@@ -66,23 +105,18 @@ def load_store_map():
                 chat_id = str(row.get(chat_col, '') or '').strip() if chat_col else ''
                 
                 if id_st and id_st.lower() != 'nan':
-                    # Format as standard A### e.g. A101
                     m = re.search(r'\d+', id_st)
-                    if m:
-                        std_code = f"A{int(m.group(0)):03d}"
-                    else:
-                        std_code = id_st
-
-                    # Clean store address
+                    std_code = f"A{int(m.group(0)):03d}" if m else id_st
                     clean_name = re.sub(r'^KFM_[A-Z0-9]+_[A-Z0-9]+\s*-\s*', '', name_st)
 
-                    store_map[std_code] = {
-                        "store_code": std_code,
-                        "raw_id": id_st,
-                        "store_name": clean_name or name_st,
-                        "full_name": name_st,
-                        "chat_id_excel": chat_id
-                    }
+                    if std_code not in store_map:
+                        store_map[std_code] = {
+                            "store_code": std_code,
+                            "raw_id": id_st,
+                            "store_name": clean_name or name_st,
+                            "full_name": name_st,
+                            "chat_id_excel": chat_id
+                        }
 
                     if clean_name and len(clean_name) >= 4:
                         name_to_id[clean_name.lower()] = std_code
@@ -95,7 +129,7 @@ def load_store_map():
                             chat_to_store['-100' + chat_id[1:]] = std_code
 
         except Exception as e:
-            print(f"⚠️ Không thể đọc file danh sách siêu thị: {e}")
+            print(f"⚠️ Không thể đọc file danh sách siêu thị Excel: {e}")
 
     return store_map, name_to_id, chat_to_store
 
@@ -679,22 +713,23 @@ def export_all(groups_data, account_info, store_clusters):
     def save_to_all(paths, content, is_json=False):
         for p in paths:
             try:
-                os.makedirs(os.path.dirname(p), exist_ok=True)
+                parent_dir = os.path.dirname(p)
+                if not os.path.exists(parent_dir):
+                    try:
+                        os.makedirs(parent_dir, exist_ok=True)
+                    except Exception:
+                        continue
                 with open(p, 'w', encoding='utf-8') as f:
                     if is_json:
                         json.dump(content, f, ensure_ascii=False, indent=2)
                     else:
                         f.write(content)
-            except Exception as e:
-                print(f"Warning writing to {p}: {e}")
-
-    g_root = r'g:\My Drive\Đối soát SCM'
-    c_root = r'C:\Users\Thu Ha\Doi_Soat_Dong_Mat'
+            except Exception:
+                pass
 
     json_paths = [
         os.path.join(CURRENT_DIR, 'data', 'telegram_groups.json'),
-        os.path.join(g_root, 'DONG_MAT_DASHBOARD', 'data', 'telegram_groups.json'),
-        os.path.join(c_root, 'DONG_MAT_DASHBOARD', 'data', 'telegram_groups.json'),
+        os.path.join(ROOT_DIR, 'DONG_MAT_DASHBOARD', 'data', 'telegram_groups.json'),
     ]
     save_to_all(json_paths, full_payload, is_json=True)
 
@@ -702,12 +737,7 @@ def export_all(groups_data, account_info, store_clusters):
     js_paths = [
         os.path.join(ROOT_DIR, 'daily_details', 'telegram_groups.js'),
         os.path.join(CURRENT_DIR, 'daily_details', 'telegram_groups.js'),
-        os.path.join(g_root, 'daily_details', 'telegram_groups.js'),
-        os.path.join(g_root, 'DONG_MAT_DASHBOARD', 'daily_details', 'telegram_groups.js'),
-        os.path.join(g_root, 'LOGIC', 'daily_details', 'telegram_groups.js'),
-        os.path.join(c_root, 'daily_details', 'telegram_groups.js'),
-        os.path.join(c_root, 'DONG_MAT_DASHBOARD', 'daily_details', 'telegram_groups.js'),
-        os.path.join(c_root, 'LOGIC', 'daily_details', 'telegram_groups.js'),
+        os.path.join(ROOT_DIR, 'LOGIC', 'daily_details', 'telegram_groups.js'),
     ]
     save_to_all(js_paths, js_content, is_json=False)
 
@@ -753,10 +783,13 @@ def export_all(groups_data, account_info, store_clusters):
 
     excel_paths = [
         OUTPUT_EXCEL_PATH,
-        os.path.join(g_root, 'Danh_Sach_Group_Telegram_SCM.xlsx'),
-        os.path.join(c_root, 'Danh_Sach_Group_Telegram_SCM.xlsx'),
+        os.path.join(ROOT_DIR, 'Danh_Sach_Group_Telegram_SCM.xlsx'),
     ]
+    seen_excel = set()
     for exp in excel_paths:
+        if exp in seen_excel:
+            continue
+        seen_excel.add(exp)
         try:
             with pd.ExcelWriter(exp, engine='openpyxl') as writer:
                 pd.DataFrame(rows_clusters).to_excel(writer, sheet_name='Gom_Cum_Sieu_Thi', index=False)

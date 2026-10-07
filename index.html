@@ -10225,19 +10225,46 @@ function copyChatId(chatId, btnEl) {
             renderDetailedGroupsTable(visible);
         }
 
-        function refreshTelegramRealtime(btnEl) {
+        async function refreshTelegramRealtime(btnEl) {
             if (btnEl) {
                 btnEl.disabled = true;
-                btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang đồng bộ realtime...';
+                btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang quét 588 nhóm Telegram...';
             }
+
+            let syncSuccess = false;
+            const runnerUrl = typeof LOCAL_RUNNER_API !== 'undefined' ? LOCAL_RUNNER_API : "http://127.0.0.1:8088";
+            
+            // 1. Gọi Local Runner Service (cổng 8088) để quét trực tiếp từ tài khoản Telegram
+            try {
+                showToast("🚀 Đang kết nối Telethon quét realtime các nhóm Telegram...");
+                const res = await fetch(`${runnerUrl}/api/sync_telegram`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ push: false })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success) {
+                        syncSuccess = true;
+                    }
+                }
+            } catch (e) {
+                console.log("Local Runner offline hoặc chưa bật, tải lại dữ liệu snapshot...", e);
+            }
+
+            // 2. Tải lại file dữ liệu telegram_groups.js với timestamp cache-buster
             const scriptUrl = 'daily_details/telegram_groups.js?t=' + new Date().getTime();
             const s = document.createElement('script');
             s.src = scriptUrl;
             s.onload = () => {
-                showToast("⚡ Đã cập nhật và sắp xếp tin theo thời gian Realtime mới nhất!");
                 if (btnEl) {
                     btnEl.disabled = false;
                     btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
+                }
+                if (syncSuccess) {
+                    showToast("🎉 Đã đồng bộ thành công dữ liệu Telegram Realtime mới nhất từ tài khoản!");
+                } else {
+                    showToast("⚡ Đã cập nhật và sắp xếp tin theo thời gian mới nhất!");
                 }
                 renderTelegramTab();
             };
