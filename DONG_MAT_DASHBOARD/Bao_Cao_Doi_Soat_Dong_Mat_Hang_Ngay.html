@@ -5578,7 +5578,7 @@
     
     
     <!-- MODAL TÙY CHỌN ĐỒNG BỘ REALTIME HADA & CDC -->
-    <div class="modal-overlay" id="realtimeHadaSyncModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.78); backdrop-filter:blur(8px); z-index:1000; align-items:center; justify-content:center;">
+    <div class="modal-overlay" id="realtimeHadaSyncModal" onclick="if(event.target===this)closeRealtimeSyncModal()" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.82); backdrop-filter:blur(8px); z-index:99999; align-items:center; justify-content:center;">
         <div class="modal-box" style="background:#131d31; border:1px solid rgba(16,185,129,0.4); border-radius:18px; width:92%; max-width:680px; padding:1.75rem; box-shadow:0 20px 50px rgba(0,0,0,0.6);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.85rem;">
                 <div style="display:flex; align-items:center; gap:12px;">
@@ -12901,14 +12901,28 @@ function copyChatId(chatId, btnEl) {
         }
 
         
+        
         function openRealtimeSyncModal() {
             const m = document.getElementById('realtimeHadaSyncModal');
-            if (m) m.style.display = 'flex';
+            if (m) {
+                m.classList.add('active');
+                m.style.display = 'flex';
+                m.style.opacity = '1';
+                m.style.pointerEvents = 'auto';
+                m.style.zIndex = '99999';
+            }
         }
         function closeRealtimeSyncModal() {
             const m = document.getElementById('realtimeHadaSyncModal');
-            if (m) m.style.display = 'none';
+            if (m) {
+                m.classList.remove('active');
+                m.style.display = 'none';
+                m.style.opacity = '0';
+                m.style.pointerEvents = 'none';
+            }
         }
+        window.openRealtimeSyncModal = openRealtimeSyncModal;
+        window.closeRealtimeSyncModal = closeRealtimeSyncModal;
 
         function openProductPriceImportModal() {
             const modal = document.getElementById('importProductPriceModal');
