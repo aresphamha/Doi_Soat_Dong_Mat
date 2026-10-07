@@ -27,8 +27,8 @@ from telethon.tl.types import Channel, Chat
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(CURRENT_DIR)
 
-API_ID = 28938971
-API_HASH = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
+API_ID = 31209455
+API_HASH = 'f636ffaebfaf0bfb52d8709a4cdaaa0e'
 SESSION_NAME = os.path.join(CURRENT_DIR, 'user_session')
 
 # Ensure directories exist
