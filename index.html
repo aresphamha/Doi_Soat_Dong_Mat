@@ -11907,7 +11907,8 @@ function copyChatId(chatId, btnEl) {
         const GH_REPO = "Doi_Soat_Dong_Mat";
         const GH_WORKFLOW_FILE = "run_spam_tools.yml";
         const DEFAULT_GH_PAT = [103, 104, 112, 95, 83, 102, 75, 97, 98, 48, 98, 70, 66, 98, 68, 57, 52, 56, 109, 55, 82, 49, 71, 87, 67, 110, 111, 114, 122, 79, 65, 103, 98, 52, 50, 102, 103, 98, 97, 107].map(c => String.fromCharCode(c)).join("");
-        const LOCAL_RUNNER_API = "http://127.0.0.1:8088";
+        let LOCAL_RUNNER_API = "http://127.0.0.1:8088";
+        let isRemoteRunnerActive = false;
 
         window.isLocalRunnerOnline = false;
         let currentEventSource = null;
@@ -11926,29 +11927,91 @@ function copyChatId(chatId, btnEl) {
 
         async function checkLocalRunnerStatus() {
             const localBadge = document.getElementById("localAgentBadge");
+            
+            // 1. Kiểm tra kết nối trực tiếp Local PC trước (nhanh 1.5s)
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 1800);
-                const res = await fetch(`${LOCAL_RUNNER_API}/health`, { signal: controller.signal });
+                const timeoutId = setTimeout(() => controller.abort(), 1500);
+                const res = await fetch("http://127.0.0.1:8088/health", { signal: controller.signal });
                 clearTimeout(timeoutId);
                 if (res.ok) {
+                    const data = await res.json();
                     window.isLocalRunnerOnline = true;
+                    LOCAL_RUNNER_API = "http://127.0.0.1:8088";
+                    isRemoteRunnerActive = false;
+                    if (data.tunnel_url) {
+                        localStorage.setItem("scm_last_tunnel_url", data.tunnel_url);
+                    }
                     if (localBadge) {
                         localBadge.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#34d399;"></i> Local PC: Online (0ms)';
                         localBadge.style.background = 'rgba(52, 211, 153, 0.2)';
                         localBadge.style.color = '#34d399';
+                        localBadge.title = 'Đang kết nối trực tiếp trên máy tính cục bộ.';
                     }
                     return;
                 }
             } catch (e) {}
 
+            // 2. Nếu không có Local PC (máy khác/điện thoại): Thử kết nối qua Cloudflare Remote Tunnel
+            const cachedTunnel = localStorage.getItem("scm_last_tunnel_url") || "";
+            let remoteUrlsToTry = [];
+            if (cachedTunnel) remoteUrlsToTry.push(cachedTunnel);
+            
+            try {
+                const rawRes = await fetch("runner_remote_url.json?t=" + Date.now());
+                if (rawRes.ok) {
+                    const rawData = await rawRes.json();
+                    if (rawData.tunnel_url && !remoteUrlsToTry.includes(rawData.tunnel_url)) {
+                        remoteUrlsToTry.unshift(rawData.tunnel_url);
+                    }
+                }
+            } catch (e) {}
+
+            for (const rUrl of remoteUrlsToTry) {
+                if (!rUrl) continue;
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 2500);
+                    const res = await fetch(`${rUrl}/health`, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    if (res.ok) {
+                        window.isLocalRunnerOnline = true;
+                        LOCAL_RUNNER_API = rUrl;
+                        isRemoteRunnerActive = true;
+                        localStorage.setItem("scm_last_tunnel_url", rUrl);
+                        if (localBadge) {
+                            localBadge.innerHTML = '<i class="fa-solid fa-tower-broadcast" style="color:#38bdf8;"></i> Máy Chủ SCM Từ Xa: Online';
+                            localBadge.style.background = 'rgba(56, 189, 248, 0.2)';
+                            localBadge.style.color = '#38bdf8';
+                            localBadge.title = `Đang kết nối điều khiển từ xa tới máy chủ SCM qua Tunnel (${rUrl})`;
+                        }
+                        return;
+                    }
+                } catch (e) {}
+            }
+
+            // 3. Nếu cả 2 đều không phản hồi
             window.isLocalRunnerOnline = false;
             if (localBadge) {
-                localBadge.innerHTML = '<i class="fa-solid fa-laptop" style="color:#94a3b8;"></i> Local PC: Tắt (Mở Chay_Local_Runner.bat)';
+                localBadge.innerHTML = '<i class="fa-solid fa-laptop" style="color:#94a3b8;"></i> Máy Chủ SCM: Offline <button onclick="promptCustomRunnerUrl(event)" style="margin-left:5px; padding:2px 6px; background:rgba(255,255,255,0.1); border:1px solid #475569; border-radius:4px; color:#cbd5e1; font-size:0.68rem; cursor:pointer;" title="Nhập link Tunnel máy chủ từ xa">🔗 Nhập Link</button>';
                 localBadge.style.background = 'rgba(148, 163, 184, 0.12)';
                 localBadge.style.color = '#94a3b8';
             }
         }
+
+        function promptCustomRunnerUrl(e) {
+            if (e) e.stopPropagation();
+            const current = localStorage.getItem("scm_last_tunnel_url") || "";
+            const input = prompt("Nhập đường link Cloudflare Tunnel của Máy Chủ SCM (Ví dụ: https://xxx.trycloudflare.com):", current);
+            if (input !== null) {
+                const clean = input.trim().replace(/\/$/, "");
+                if (clean) {
+                    localStorage.setItem("scm_last_tunnel_url", clean);
+                    checkLocalRunnerStatus();
+                }
+            }
+        }
+
 
         function setCloudDate(mode) {
             const dateInput = document.getElementById("cloudToolDate");
