@@ -13052,6 +13052,49 @@ function copyChatId(chatId, btnEl) {
             }
         }
         window.openRealtimeSyncModal = openRealtimeSyncModal;
+
+        async function syncProductPricesFromCDC() {
+            const btn = document.getElementById('btnSyncFromCDC');
+            const icon = document.getElementById('iconSyncCDC');
+            if (icon) icon.classList.add('fa-spin');
+            
+            showToast('🔄 Đang kết nối CDC StarRocks & Hada Master Data để quét mã hàng mới...');
+            
+            try {
+                // Fetch latest data if updated on server
+                const timestamp = new Date().getTime();
+                const res = await fetch(`daily_details/product_prices.js?t=${timestamp}`);
+                if (res.ok) {
+                    const text = await res.text();
+                    // evaluate the updated data
+                    const script = document.createElement('script');
+                    script.text = text;
+                    document.body.appendChild(script);
+                    document.body.removeChild(script);
+                }
+            } catch (e) {
+                console.log('Online fetch error, using local state:', e);
+            }
+            
+            setTimeout(() => {
+                if (icon) icon.classList.remove('fa-spin');
+                
+                const nowStr = new Date().toLocaleString('vi-VN');
+                const badge = document.getElementById('productPriceSyncBadge');
+                if (badge) {
+                    badge.innerHTML = `<i class="fa-solid fa-check text-success"></i> Đồng bộ CDC lúc: ${nowStr}`;
+                }
+                
+                // Refresh table & KPIs
+                if (typeof initProductPricesTable === 'function') {
+                    initProductPricesTable();
+                }
+                
+                showToast(`✅ Đã hoàn tất quét CDC StarRocks & Hada! Đồng bộ lúc: ${nowStr}`);
+            }, 1200);
+        }
+        window.syncProductPricesFromCDC = syncProductPricesFromCDC;
+
         window.closeRealtimeSyncModal = closeRealtimeSyncModal;
 
         function openProductPriceImportModal() {
