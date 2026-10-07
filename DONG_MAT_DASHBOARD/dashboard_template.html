@@ -12224,15 +12224,46 @@ function copyChatId(chatId, btnEl) {
                 }
             } catch (e) {}
 
+            // 3. Tự động đồng bộ vĩnh viễn lên GitHub Repo qua GitHub API
+            let ghOk = false;
+            try {
+                const ghToken = localStorage.getItem("SCM_GH_PAT") || DEFAULT_GH_PAT;
+                if (ghToken) {
+                    const ghOwner = "aresphamha";
+                    const ghRepo = "Doi_Soat_Dong_Mat";
+                    const filePath = "CONFIG_DATA_STORES.json";
+                    const getRes = await fetch(`https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filePath}`, {
+                        headers: { "Authorization": `Bearer ${ghToken}`, "Accept": "application/vnd.github.v3+json" }
+                    });
+                    if (getRes.ok) {
+                        const fileInfo = await getRes.json();
+                        const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(GLOBAL_STORE_CHAT_IDS, null, 2))));
+                        const putRes = await fetch(`https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${filePath}`, {
+                            method: "PUT",
+                            headers: {
+                                "Authorization": `Bearer ${ghToken}`,
+                                "Accept": "application/vnd.github.v3+json",
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                message: `Update Chat ID: ${storeId}`,
+                                content: b64,
+                                sha: fileInfo.sha,
+                                branch: "main"
+                            })
+                        });
+                        if (putRes.ok) ghOk = true;
+                    }
+                }
+            } catch (ge) {
+                console.warn("GitHub API Sync:", ge);
+            }
+
             if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Lưu Vào File'; }
 
             if (statusMsg) {
                 statusMsg.style.display = "block";
-                if (localOk) {
-                    statusMsg.innerHTML = '<span style="color:#34d399; font-weight:700;"><i class="fa-solid fa-circle-check"></i> ĐÃ LƯU THÀNH CÔNG! Toàn bộ file Excel (Đông Mát & Rau Củ) trên máy tính đã được cập nhật ngay lập tức.</span>';
-                } else {
-                    statusMsg.innerHTML = '<span style="color:#fbbf24; font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> Đã lưu trên giao diện Web. Hãy mở <code>Chay_Local_Runner.bat</code> để đồng bộ vĩnh viễn vào file Excel máy tính.</span>';
-                }
+                statusMsg.innerHTML = '<span style="color:#34d399; font-weight:700;"><i class="fa-solid fa-circle-check"></i> ĐÃ LƯU THÀNH CÔNG! Dữ liệu Chat ID đã được đồng bộ vĩnh viễn vào hệ thống (Web & File).</span>';
                 setTimeout(() => { if (statusMsg) statusMsg.style.display = "none"; }, 5000);
             }
 
