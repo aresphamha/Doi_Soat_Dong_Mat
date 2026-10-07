@@ -99,12 +99,13 @@ jobs:
         run: |
           python -c "
           import os, base64, shutil
-          b64 = os.environ.get('TELEGRAM_SESSION_B64', '').strip()
+          b64 = ''
+          b64_file = 'SPAM_PHIEU_CHUYEN/CONFIG_DATA/session_b64.txt'
+          if os.path.exists(b64_file):
+              with open(b64_file, 'r', encoding='utf-8') as f:
+                  b64 = f.read().strip()
           if not b64:
-              b64_file = 'SPAM_PHIEU_CHUYEN/CONFIG_DATA/session_b64.txt'
-              if os.path.exists(b64_file):
-                  with open(b64_file, 'r', encoding='utf-8') as f:
-                      b64 = f.read().strip()
+              b64 = os.environ.get('TELEGRAM_SESSION_B64', '').strip()
           if b64:
               os.makedirs('SPAM_PHIEU_CHUYEN/CONFIG_DATA', exist_ok=True)
               os.makedirs('DONG_MAT_DASHBOARD', exist_ok=True)
