@@ -6,7 +6,7 @@ conn = pymysql.connect(
     host='103.140.248.250',
     port=9030,
     user='kfm_scm_tho_nguyen',
-    password='oh1dtJwR4ihLGrX4E7bs',
+    password='TnAM0WEsv4kmasw878wt',
     database='kfm_scm',
 )
 

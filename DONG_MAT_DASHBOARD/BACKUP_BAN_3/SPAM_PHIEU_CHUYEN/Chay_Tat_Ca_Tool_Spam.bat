@@ -62,6 +62,6 @@ goto MENU
 :TEST_DB
 cls
 echo [ĐANG KIỂM TRA] Kết nối MySQL Database Cloud...
-python -c "import pymysql; conn = pymysql.connect(host='103.147.122.103', port=9030, user='kfm_scm_tho_nguyen', password='oh1dtJwR4ihLGrX4E7bs', database='kfm_scm', connect_timeout=5); print('✅ KẾT NỐI DATABASE THÀNH CÔNG!'); conn.close()"
+python -c "import pymysql; conn = pymysql.connect(host='103.147.122.103', port=9030, user='kfm_scm_tho_nguyen', password='TnAM0WEsv4kmasw878wt', database='kfm_scm', connect_timeout=5); print('✅ KẾT NỐI DATABASE THÀNH CÔNG!'); conn.close()"
 pause
 goto MENU

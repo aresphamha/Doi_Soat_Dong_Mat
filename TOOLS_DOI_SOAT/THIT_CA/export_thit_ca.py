@@ -24,7 +24,7 @@ warnings.filterwarnings('ignore')
 def fetch_data_to_df(sql_query):
     conn = pymysql.connect(
         host='103.140.248.250', port=9030,
-        user='kfm_scm_tho_nguyen', password='oh1dtJwR4ihLGrX4E7bs',
+        user='kfm_scm_tho_nguyen', password='TnAM0WEsv4kmasw878wt',
         database='kfm_scm'
     )
     df = pd.read_sql(sql_query, conn)
