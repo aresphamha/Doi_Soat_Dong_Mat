@@ -3,6 +3,7 @@
 TỰ ĐỘNG ĐỒNG BỘ TOÀN BỘ BẢNG GIÁ NHẬP & MASTER DATA TỪ CDC STARROCKS LÊN WEB DASHBOARD & GITHUB
 - Kết nối trực tiếp CDC: 103.140.248.250:9030
 - User: kfm_scm_tho_nguyen / Pass: TnAM0WEsv4kmasw878wt
+- Lấy giá nhập / giá vốn gần nhất theo thời gian (ORDER BY created_at DESC)
 - Loại trừ 4 danh mục không bán: CCDC, Vận hành, Hàng không bán, IT Test
 - Đẩy dữ liệu lên GitHub Pages & xuất file Excel tự động.
 """
@@ -70,7 +71,7 @@ def get_norm_cat(cat_1, cat_2, name):
 
     return "1.FMCG"
 
-def main():
+def sync_cdc():
     print("=" * 80)
     print("🚀 BẮT ĐẦU ĐỒNG BỘ TOÀN BỘ BẢNG GIÁ NHẬP & MASTER DATA TỪ CDC STARROCKS...")
     print("=" * 80)
@@ -87,24 +88,46 @@ def main():
         print("💡 Vui lòng đảm bảo WireGuard VPN đang hoạt động.")
         return False
 
-    print("📥 1. Kéo Stockcard (Giá vốn & Barcode & Internal Code)...")
+    cursor = conn.cursor()
+    cursor.execute("SET exec_mem_limit = 8589934592;")
+
+    print("📥 1. Kéo Giao dịch Stockcard gần nhất (Giá vốn / Giá nhập mới nhất theo thời gian)...")
     sql_sc = """
     SELECT 
         barcode, 
         product_internal_code, 
         product_name, 
-        MAX(IF(cost > 0, cost, price)) as latest_cost,
-        MAX(receipt_price) as receipt_price,
-        MAX(vendor_name) as vendor_name,
-        MAX(base_variant_id) as variant_id
-    FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard
-    WHERE (barcode IS NOT NULL AND barcode != '') OR (product_internal_code IS NOT NULL AND product_internal_code != '')
-    GROUP BY barcode, product_internal_code, product_name
+        base_variant_id as variant_id,
+        vendor_name,
+        cost,
+        price,
+        receipt_price,
+        created_at
+    FROM (
+        SELECT 
+            barcode, 
+            product_internal_code, 
+            product_name, 
+            base_variant_id,
+            vendor_name,
+            cost,
+            price,
+            receipt_price,
+            created_at,
+            ROW_NUMBER() OVER (
+                PARTITION BY barcode
+                ORDER BY created_at DESC
+            ) as rn
+        FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard
+        WHERE barcode IS NOT NULL AND barcode != ''
+          AND created_at >= DATE_SUB(NOW(), INTERVAL 90 DAY)
+    ) t
+    WHERE rn = 1;
     """
     df_sc = pd.read_sql(sql_sc, conn)
-    print(f"  -> Stockcard: {len(df_sc):,} bản ghi")
+    print(f"  -> Stockcard (90 ngày gần nhất): {len(df_sc):,} SKU")
 
-    print("📥 2. Kéo L2 & L3 Line Items...")
+    print("📥 2. Kéo L2 & L3 Master Data (Danh mục, Tên chuẩn, Đơn vị tính)...")
     sql_l2 = """
     SELECT barcode, name, base_variant__unit__name as unit_name, variant_id
     FROM __cdc_kfm_ec9d24ab_1a050070_L2___product_lines
@@ -121,7 +144,7 @@ def main():
     """
     df_l3 = pd.read_sql(sql_l3, conn)
 
-    print("📥 3. Kéo Transfer Ticket Lines & Claim Rates...")
+    print("📥 3. Kéo Transfer Tickets & Claim Rates...")
     sql_tt = """
     SELECT barcode, name, unit_name, variant_id
     FROM __cdc_kfm_kf_transfer_tickets_kf_transfer_ticket_lines
@@ -138,29 +161,16 @@ def main():
     """
     df_cr = pd.read_sql(sql_cr, conn)
 
-    print("📥 4. Kéo Bảng Giá Nhập & Cây Danh Mục...")
+    print("📥 4. Kéo Cây Danh Mục...")
     df_cats = pd.read_sql("SELECT barcode, cate_1, cate_2, ten_hang FROM krc_dashboard_slg_cate_mapping", conn)
     df_dm_cats = pd.read_sql("SELECT ma_hang as barcode, cate_l3, cate_l4, ten_hang, dvt FROM krc_dashboard_dm_cate_mapping", conn)
-    df_prices1 = pd.read_sql("SELECT barcode, ten_sp, dvt, cate_2, cate_3, gia_cost FROM krc_cdc_cost_price", conn)
-    df_prices2 = pd.read_sql("SELECT ma_hang as barcode, don_gia FROM krc_sku_prices_temp", conn)
 
     conn.close()
     print("🔌 Đã ngắt kết nối CDC an toàn.")
 
-    # 1. Price Map
-    price_map = {}
-    for _, r in df_prices2.iterrows():
-        bc = str(r['barcode']).strip()
-        p = float(r['don_gia'] or 0)
-        if bc and p > 0: price_map[bc] = p
-
-    for _, r in df_prices1.iterrows():
-        bc = str(r['barcode']).strip()
-        p = float(r['gia_cost'] or 0)
-        if bc and p > 0: price_map[bc] = p
-
-    # 2. Cat Map
+    # Cat Map
     cat_map = {}
+    unit_map = {}
     for _, r in df_cats.iterrows():
         bc = str(r['barcode']).strip()
         c1 = str(r.get('cate_1', ''))
@@ -173,7 +183,9 @@ def main():
         c1 = str(r.get('cate_l3', ''))
         c2 = str(r.get('cate_l4', ''))
         tn = str(r.get('ten_hang', ''))
+        dvt = str(r.get('dvt', '')).strip()
         if bc and bc not in cat_map: cat_map[bc] = (c1, c2, tn)
+        if bc and dvt: unit_map[bc] = dvt
 
     master = {}
 
@@ -191,9 +203,10 @@ def main():
         norm_cat = get_norm_cat(c1, c2, name)
         if not norm_cat: return # Loại trừ CCDC, Vận hành, Không bán, IT Test
 
+        if key in unit_map and (not unit or unit in ['Khay / Gói', '', 'nan']):
+            unit = unit_map[key]
+
         final_cost = float(cost or 0)
-        if key in price_map and price_map[key] > 0:
-            final_cost = price_map[key]
 
         if key not in master:
             master[key] = {
@@ -208,18 +221,31 @@ def main():
                 'category_full': f"{norm_cat} > {c2 if c2 else norm_cat}"
             }
         else:
-            if final_cost > master[key]['cost_price']:
+            if final_cost > 0 and (master[key]['cost_price'] <= 0 or final_cost != master[key]['cost_price']):
                 master[key]['cost_price'] = final_cost
             if len(str(name).strip()) > len(master[key]['name']):
                 master[key]['name'] = str(name).strip()
             if unit and master[key]['unit'] in ['Khay / Gói', '', 'nan']:
                 master[key]['unit'] = str(unit).strip()
+            if variant_id and (not master[key]['variant_id'] or master[key]['variant_id'].startswith('VC_')):
+                master[key]['variant_id'] = str(variant_id).strip()
 
-    # 1. Stockcard
+    # 1. Stockcard (Latest transactions)
     for _, r in df_sc.iterrows():
-        c = float(r.get('latest_cost') or 0)
+        c = float(r.get('cost') or 0)
+        p = float(r.get('price') or 0)
         rp = float(r.get('receipt_price') or 0)
-        add_item(r['barcode'], r.get('product_internal_code'), r['product_name'], 'Khay / Gói', r.get('variant_id'), max(c, rp), r.get('vendor_name'))
+        # Xác định giá gần nhất: ưu tiên cost > 0, fallback price hoặc receipt_price
+        chosen_cost = c if c > 0 else (rp if rp > 0 else p)
+        add_item(
+            r['barcode'],
+            r.get('product_internal_code'),
+            r['product_name'],
+            'Khay / Gói',
+            r.get('variant_id'),
+            chosen_cost,
+            r.get('vendor_name')
+        )
 
     # 2. L2 Product Lines
     for _, r in df_l2.iterrows():
@@ -237,11 +263,7 @@ def main():
     for _, r in df_cr.iterrows():
         add_item(r['barcode'], r['barcode'], r['name'], 'Khay / Gói', '', 0, 'Kingfoodmart')
 
-    # 6. Cost Price Table
-    for _, r in df_prices1.iterrows():
-        add_item(r['barcode'], r['barcode'], r.get('ten_sp'), r.get('dvt'), '', r.get('gia_cost'), 'Kingfoodmart', r.get('cate_2'), r.get('cate_3'))
-
-    # 7. Cate Mappings
+    # 6. Cate Mappings
     for _, r in df_cats.iterrows():
         add_item(r['barcode'], r['barcode'], r.get('ten_hang'), 'Khay / Gói', '', 0, 'Kingfoodmart', r.get('cate_1'), r.get('cate_2'))
 
@@ -328,4 +350,4 @@ def main():
     return True
 
 if __name__ == '__main__':
-    main()
+    sync_cdc()
