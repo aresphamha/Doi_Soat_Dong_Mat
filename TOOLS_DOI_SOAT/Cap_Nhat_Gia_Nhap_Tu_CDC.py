@@ -4,6 +4,7 @@ TỰ ĐỘNG ĐỒNG BỘ TOÀN BỘ BẢNG GIÁ NHẬP & MASTER DATA TỪ CDC S
 - Kết nối trực tiếp CDC: 103.140.248.250:9030
 - User: kfm_scm_tho_nguyen / Pass: TnAM0WEsv4kmasw878wt
 - Lấy giá nhập / giá vốn gần nhất theo thời gian (ORDER BY created_at DESC)
+- Khử trùng lặp Barcode (Tự động hợp nhất barcode có/không có số 0 ở đầu)
 - Loại trừ 4 danh mục không bán: CCDC, Vận hành, Hàng không bán, IT Test
 - Đẩy dữ liệu lên GitHub Pages & xuất file Excel tự động.
 """
@@ -70,6 +71,19 @@ def get_norm_cat(cat_1, cat_2, name):
         return "1.BAKERY AND DELICA"
 
     return "1.FMCG"
+
+def normalize_barcode(bc):
+    """
+    Chuẩn hóa barcode để gộp các mã có/không có số 0 ở đầu (ví dụ: '074570052028' và '74570052028')
+    """
+    bc_str = str(bc or '').strip()
+    if bc_str.lower() in ['nan', 'none', '']:
+        return '', ''
+    if bc_str.isdigit():
+        canon = bc_str.lstrip('0')
+        if not canon: canon = '0'
+        return canon, bc_str
+    return bc_str.lower(), bc_str
 
 def sync_cdc():
     print("=" * 80)
@@ -176,7 +190,10 @@ def sync_cdc():
         c1 = str(r.get('cate_1', ''))
         c2 = str(r.get('cate_2', ''))
         tn = str(r.get('ten_hang', ''))
-        if bc: cat_map[bc] = (c1, c2, tn)
+        if bc:
+            canon, _ = normalize_barcode(bc)
+            cat_map[canon] = (c1, c2, tn)
+            cat_map[bc] = (c1, c2, tn)
 
     for _, r in df_dm_cats.iterrows():
         bc = str(r['barcode']).strip()
@@ -184,58 +201,114 @@ def sync_cdc():
         c2 = str(r.get('cate_l4', ''))
         tn = str(r.get('ten_hang', ''))
         dvt = str(r.get('dvt', '')).strip()
-        if bc and bc not in cat_map: cat_map[bc] = (c1, c2, tn)
-        if bc and dvt: unit_map[bc] = dvt
+        if bc:
+            canon, _ = normalize_barcode(bc)
+            if canon not in cat_map: cat_map[canon] = (c1, c2, tn)
+            if bc not in cat_map: cat_map[bc] = (c1, c2, tn)
+            if dvt:
+                unit_map[canon] = dvt
+                unit_map[bc] = dvt
 
     master = {}
+    canon_index = {} # Map canon_bc -> key trong master
+    code_index = {}  # Map internal_code -> key trong master
 
     def add_item(bc, internal_code, name, unit, variant_id, cost, vendor, c1='', c2=''):
         bc = str(bc or '').strip()
-        internal_code = str(internal_code or bc).strip()
-        key = bc if bc and bc.lower() not in ['nan', 'none', ''] else internal_code
-        if not key or not name or str(name).strip().lower() in ['nan', 'none', '']: return
+        internal_code = str(internal_code or '').strip()
+        name = str(name or '').strip()
 
-        if key in cat_map:
-            c1_lk, c2_lk, tn_lk = cat_map[key]
-            c1 = c1 or c1_lk
-            c2 = c2 or c2_lk
+        if not bc and not internal_code:
+            return
+        if not name or name.lower() in ['nan', 'none', '']:
+            return
+
+        canon_bc, raw_bc = normalize_barcode(bc)
+        canon_ic, raw_ic = normalize_barcode(internal_code)
+
+        # Lookup xem sản phẩm đã có trong master chưa
+        existing_key = None
+        if canon_bc and canon_bc in canon_index:
+            existing_key = canon_index[canon_bc]
+        elif canon_ic and canon_ic in canon_index:
+            existing_key = canon_index[canon_ic]
+        elif internal_code and internal_code in code_index:
+            existing_key = code_index[internal_code]
+        elif bc and bc in master:
+            existing_key = bc
+
+        # Lookup category
+        c1_lk, c2_lk = '', ''
+        if canon_bc in cat_map:
+            c1_lk, c2_lk, _ = cat_map[canon_bc]
+        elif bc in cat_map:
+            c1_lk, c2_lk, _ = cat_map[bc]
+        elif canon_ic in cat_map:
+            c1_lk, c2_lk, _ = cat_map[canon_ic]
+
+        c1 = c1 or c1_lk
+        c2 = c2 or c2_lk
 
         norm_cat = get_norm_cat(c1, c2, name)
-        if not norm_cat: return # Loại trừ CCDC, Vận hành, Không bán, IT Test
+        if not norm_cat:
+            return # Loại trừ CCDC, Vận hành, Không bán, IT Test
 
-        if key in unit_map and (not unit or unit in ['Khay / Gói', '', 'nan']):
-            unit = unit_map[key]
+        # Lookup unit
+        dvt = unit
+        if (not dvt or dvt in ['Khay / Gói', '', 'nan']):
+            dvt = unit_map.get(canon_bc, unit_map.get(bc, unit_map.get(canon_ic, 'Khay / Gói')))
 
         final_cost = float(cost or 0)
+        chosen_bc = raw_bc if raw_bc and raw_bc.lower() not in ['nan', 'none'] else raw_ic
+        chosen_ic = raw_ic if raw_ic and raw_ic.lower() not in ['nan', 'none'] and raw_ic != raw_bc else (raw_bc or chosen_bc)
 
-        if key not in master:
-            master[key] = {
-                'barcode': key,
-                'internal_code': internal_code or key,
-                'name': str(name).strip(),
-                'unit': str(unit or 'Khay / Gói').strip(),
-                'variant_id': str(variant_id or f"VC_{key[-8:] if len(key)>=8 else key}").strip(),
+        if not existing_key:
+            # Tạo mới
+            item_key = chosen_bc or chosen_ic
+            master[item_key] = {
+                'barcode': chosen_bc,
+                'internal_code': chosen_ic or chosen_bc,
+                'name': name,
+                'unit': dvt or 'Khay / Gói',
+                'variant_id': str(variant_id or f"VC_{item_key[-8:] if len(item_key)>=8 else item_key}").strip(),
                 'cost_price': final_cost,
                 'vendor': str(vendor or 'Kingfoodmart').strip(),
                 'category_lv1': norm_cat,
                 'category_full': f"{norm_cat} > {c2 if c2 else norm_cat}"
             }
+            if canon_bc: canon_index[canon_bc] = item_key
+            if canon_ic: canon_index[canon_ic] = item_key
+            if chosen_ic: code_index[chosen_ic] = item_key
         else:
-            if final_cost > 0 and (master[key]['cost_price'] <= 0 or final_cost != master[key]['cost_price']):
-                master[key]['cost_price'] = final_cost
-            if len(str(name).strip()) > len(master[key]['name']):
-                master[key]['name'] = str(name).strip()
-            if unit and master[key]['unit'] in ['Khay / Gói', '', 'nan']:
-                master[key]['unit'] = str(unit).strip()
-            if variant_id and (not master[key]['variant_id'] or master[key]['variant_id'].startswith('VC_')):
-                master[key]['variant_id'] = str(variant_id).strip()
+            # Hợp nhất dữ liệu
+            item = master[existing_key]
+            # Ưu tiên barcode đầy đủ (ví dụ có số 0 ở đầu dài hơn)
+            if len(chosen_bc) > len(item['barcode']):
+                item['barcode'] = chosen_bc
+            # Ưu tiên mã nội bộ chuẩn (ví dụ 100100...)
+            if chosen_ic and chosen_ic.startswith('1001') and not item['internal_code'].startswith('1001'):
+                item['internal_code'] = chosen_ic
+            # Cập nhật giá vốn nếu có
+            if final_cost > 0 and (item['cost_price'] <= 0 or final_cost != item['cost_price']):
+                item['cost_price'] = final_cost
+            # Cập nhật tên dài hơn / chi tiết hơn
+            if len(name) > len(item['name']):
+                item['name'] = name
+            # Cập nhật đơn vị tính chuẩn
+            if dvt and item['unit'] in ['Khay / Gói', '', 'nan']:
+                item['unit'] = dvt
+            # Cập nhật variant_id chuẩn
+            if variant_id and (not item['variant_id'] or item['variant_id'].startswith('VC_')):
+                item['variant_id'] = str(variant_id).strip()
+
+            if canon_bc: canon_index[canon_bc] = existing_key
+            if canon_ic: canon_index[canon_ic] = existing_key
 
     # 1. Stockcard (Latest transactions)
     for _, r in df_sc.iterrows():
         c = float(r.get('cost') or 0)
         p = float(r.get('price') or 0)
         rp = float(r.get('receipt_price') or 0)
-        # Xác định giá gần nhất: ưu tiên cost > 0, fallback price hoặc receipt_price
         chosen_cost = c if c > 0 else (rp if rp > 0 else p)
         add_item(
             r['barcode'],
@@ -267,7 +340,7 @@ def sync_cdc():
     for _, r in df_cats.iterrows():
         add_item(r['barcode'], r['barcode'], r.get('ten_hang'), 'Khay / Gói', '', 0, 'Kingfoodmart', r.get('cate_1'), r.get('cate_2'))
 
-    print(f"\n🎉 ĐÃ ĐỒNG BỘ THÀNH CÔNG: {len(master):,} SKU THƯƠNG MẠI TỪ CDC!")
+    print(f"\n🎉 ĐÃ ĐỒNG BỘ THÀNH CÔNG: {len(master):,} SKU THƯƠNG MẠI (ĐÃ KHỬ TRÙNG LẶP SỐ 0 ĐẦU)!")
 
     # Format list
     now_str = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
