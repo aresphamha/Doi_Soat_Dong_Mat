@@ -6017,14 +6017,20 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
             const raw = BUNDLES[curGroup];
             if (!raw || !raw.daily_matrix) return;
             
-            const months = [...new Set(raw.daily_matrix.map(d => d.month))];
+            const months = [...new Set(raw.daily_matrix.map(d => d.month).filter(Boolean))];
+            months.sort((a, b) => {
+                const numA = parseInt(String(a).replace(/\D/g, '')) || 0;
+                const numB = parseInt(String(b).replace(/\D/g, '')) || 0;
+                return numB - numA;
+            });
+            
             const selectEl = document.getElementById('globalMonthFilter');
             if (!selectEl) return;
 
-            let html = '<option value="all">📅 Tất Cả Các Tháng</option>';
+            let html = '<option value="all">📅 Tất Cả Các Tháng (T7 - T10)</option>';
             months.forEach(m => {
-                const label = m.includes('Tháng') ? m + '/2026' : 'Tháng ' + m;
-                html += `<option value="${m}">${label}</option>`;
+                const label = m.includes('Tháng') ? `${m}/2026` : `Tháng ${m}/2026`;
+                html += `<option value="${m}">🗓️ ${label}</option>`;
             });
             selectEl.innerHTML = html;
             if (months.includes(curMonth) || curMonth === 'all') {
