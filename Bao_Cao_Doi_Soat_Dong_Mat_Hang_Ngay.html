@@ -4342,6 +4342,7 @@
                                     <option value="dong_mat_sheet">❄️ Đối Soát ĐÔNG MÁT (Google Sheet - 1_Doi_Soat_Dong_Mat)</option>
                                     <option value="dong_mat_nhom_dong">🧊 Đối Soát Chuyên Biệt NHÓM ĐÔNG (1_Doi_Soat_Nhom_Dong)</option>
                                     <option value="dong_mat_spam">📨 Spam Báo Cáo Đông Mát (2_Spam_Telegram)</option>
+                                    <option value="dong_spam">❄️ Spam Báo Cáo HÀNG ĐÔNG (Tháng 10 - 2_Spam_Telegram_Dong)</option>
                                     <option value="thit_ca_spam">🥩 Spam Báo Cáo THỊT CÁ (THIT_CA/2_Spam_Telegram)</option>
                                     <option value="rau_cu_spam">🥦 Spam Báo Cáo RAU CỦ (RAU_CU/2_Spam_Telegram)</option>
                                     <option value="spam_tu_chon">🎯 Spam Tin Nhắn Tùy Chọn Cửa Hàng (5_Spam_Tu_Chon)</option>
@@ -4784,7 +4785,7 @@
                             <span style="display:flex; align-items:center; gap:8px;">
                                 <i class="fa-solid fa-snowflake" style="color:#6366f1;"></i> KHỐI 2: ĐỐI SOÁT GOOGLE SHEETS & SPAM BÁO CÁO TELEGRAM
                             </span>
-                            <span class="tag-pill" style="background:rgba(99,102,241,0.15); color:#818cf8; font-size:0.72rem; font-weight:700;">7 Công cụ</span>
+                            <span class="tag-pill" style="background:rgba(99,102,241,0.15); color:#818cf8; font-size:0.72rem; font-weight:700;">8 Công cụ</span>
                         </div>
                         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem;">
                             
@@ -4842,6 +4843,25 @@
                                 </div>
                                 <button onclick="quickRunTool('dong_mat_spam')" type="button" style="width:100%; padding:0.55rem; background:rgba(236,72,153,0.15); border:1px solid #ec4899; border-radius:6px; color:#f472b6; font-weight:700; font-size:0.78rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s;">
                                     <i class="fa-solid fa-play"></i> ⚡ Spam Đông Mát
+                                </button>
+                            </div>
+
+                            <!-- Card 8: Spam Telegram Hàng Đông (Tháng 10) -->
+                            <div class="data-card" style="padding:1.1rem; border-top:3px solid #0284c7; display:flex; flex-direction:column; justify-content:space-between;">
+                                <div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                                        <span class="tag-pill" style="background:rgba(2,132,199,0.15); color:#38bdf8; font-weight:700;">❄️ SPAM HÀNG ĐÔNG</span>
+                                        <span style="font-size:0.72rem; color:var(--text-muted);"><i class="fa-brands fa-telegram"></i> Telegram Bot</span>
+                                    </div>
+                                    <div style="font-weight:700; font-size:0.92rem; color:var(--text-primary); margin-bottom:0.35rem;">
+                                        2_Spam_Telegram_Dong.py (Hàng Đông T10)
+                                    </div>
+                                    <div style="font-size:0.78rem; color:var(--text-secondary); line-height:1.45; margin-bottom:0.75rem;">
+                                        Xuất ảnh bảng số liệu đối soát HÀNG ĐÔNG (Tháng 10) từ Sheet Chênh Lệch ST và tự động gửi tin nhắn đến các nhóm Telegram quản lý cửa hàng.
+                                    </div>
+                                </div>
+                                <button onclick="quickRunTool('dong_spam')" type="button" style="width:100%; padding:0.55rem; background:rgba(2,132,199,0.15); border:1px solid #0284c7; border-radius:6px; color:#38bdf8; font-weight:700; font-size:0.78rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s;">
+                                    <i class="fa-solid fa-play"></i> ⚡ Spam Hàng Đông
                                 </button>
                             </div>
 
@@ -5228,6 +5248,8 @@
                             </div>
                             <ul style="padding-left:1.1rem; margin:0; font-size:0.78rem; color:var(--text-secondary); line-height:1.6;">
                                 <li><code>1_Doi_Soat_Dong_Mat.py</code>: Đối soát chéo tổng thể kho Đông Mát</li>
+                                <li><code>2_Spam_Telegram.py</code>: Spam đối soát Đông Mát</li>
+                                <li><code>2_Spam_Telegram_Dong.py</code>: Spam đối soát Hàng Đông Tháng 10</li>
                                 <li><code>1_Lay_Chat_ID.py</code>: Quét và cập nhật toàn bộ Chat ID nhóm ABA</li>
                                 <li><code>5_Spam_Tu_Chon.py</code>: Công cụ gửi tin nhắn tùy chọn theo danh sách ST</li>
                                 <li><code>4_Add_Thanh_Vien.py</code>: Tự động mời thành viên SCM vào nhóm ST</li>

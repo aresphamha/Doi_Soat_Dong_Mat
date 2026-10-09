@@ -976,6 +976,17 @@ async def run_tool_dong_mat_spam(target_date=None, dry_run=False, stores="ALL"):
     if stores and str(stores).strip().upper() != "ALL": extra_args.extend(["--stores", str(stores).strip()])
     execute_external_tool(script_path, extra_args=extra_args)
 
+async def run_tool_dong_spam(target_date=None, dry_run=False, stores="ALL"):
+    print("\n=======================================================")
+    print("❄️ BẮT ĐẦU CHẠY TOOL SPAM BÁO CÁO HÀNG ĐÔNG (THÁNG 10)...")
+    print("=======================================================")
+    script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "2_Spam_Telegram_Dong.py")
+    extra_args = []
+    if dry_run: extra_args.append("--dry-run")
+    if target_date: extra_args.extend(["--date", str(target_date)])
+    if stores and str(stores).strip().upper() != "ALL": extra_args.extend(["--stores", str(stores).strip()])
+    execute_external_tool(script_path, extra_args=extra_args)
+
 async def run_tool_lay_chat_id():
     print("\n=======================================================")
     print("🆔 BẮT ĐẦU CHẠY TOOL QUÉT & CẬP NHẬT CHAT ID TELEGRAM...")
@@ -1194,7 +1205,7 @@ def main():
     parser = argparse.ArgumentParser(description="Chạy Tool Đối Soát & Spam Phiếu Chuyển SCM")
     parser.add_argument("--tool", choices=[
         "all", "thit_ca", "mat", "hau_kiem_rau", "hau_kiem_thit_ca", "hau_kiem_dong_mat",
-        "dong_mat_sheet", "dong_mat_nhom_dong", "dong_mat_spam", "thit_ca_spam", "rau_cu_spam",
+        "dong_mat_sheet", "dong_mat_nhom_dong", "dong_mat_spam", "dong_spam", "dong", "thit_ca_spam", "rau_cu_spam",
         "spam_tu_chon", "xoa_tin_nhan", "lay_chat_id", "tra_cuu_id", "add_thanh_vien",
         "xuat_doi_soat_chuan", "export_thit_ca", "sync_report", "sync_telegram"
     ], default="all", help="Chọn tool cần chạy")
@@ -1233,6 +1244,8 @@ def main():
         loop.run_until_complete(run_tool_dong_mat_nhom_dong())
     elif args.tool == "dong_mat_spam":
         loop.run_until_complete(run_tool_dong_mat_spam(date_val, args.dry_run, args.stores))
+    elif args.tool in ["dong_spam", "dong"]:
+        loop.run_until_complete(run_tool_dong_spam(date_val, args.dry_run, args.stores))
     elif args.tool == "thit_ca_spam":
         loop.run_until_complete(run_tool_thit_ca_spam(date_val, args.dry_run, args.stores))
     elif args.tool == "rau_cu_spam":
