@@ -255,15 +255,23 @@ async def run_tool_thit_ca(target_date=None, dry_run=False):
                         new_img.save(img_path)
 
                 with open(img_path, 'rb') as f:
-                    requests.post(
+                    resp = requests.post(
                         f"https://api.telegram.org/bot{bot_token}/sendPhoto",
                         data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
                         files={'photo': f},
                         timeout=15
                     )
                 if os.path.exists(img_path): os.remove(img_path)
-                record_sent_store('thit_ca', date_iso, str(chat_id))
-                print(f"🚀 [ĐÃ GỬI] Thành công tới {store_name} ({chat_id})")
+                try:
+                    res_json = resp.json()
+                except Exception:
+                    res_json = {}
+                if resp.status_code == 200 and res_json.get('ok'):
+                    record_sent_store('thit_ca', date_iso, str(chat_id))
+                    print(f"🚀 [ĐÃ GỬI] Thành công tới {store_name} ({chat_id})")
+                else:
+                    err_msg = res_json.get('description', f'HTTP {resp.status_code}')
+                    print(f"❌ [LỖI GỬI TELEGRAM] {store_name} ({chat_id}): {err_msg}")
                 await asyncio.sleep(1)
             except Exception as e:
                 print(f"❌ [LỖI GỬI] {store_name}: {e}")
@@ -401,15 +409,23 @@ async def run_tool_mat(target_date=None, dry_run=False):
                         new_img.save(img_path)
 
                 with open(img_path, 'rb') as f:
-                    requests.post(
+                    resp = requests.post(
                         f"https://api.telegram.org/bot{bot_token}/sendPhoto",
                         data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
                         files={'photo': f},
                         timeout=15
                     )
                 if os.path.exists(img_path): os.remove(img_path)
-                record_sent_store('mat', date_iso, str(chat_id))
-                print(f"🚀 [ĐÃ GỬI] Thành công tới {store_name} ({chat_id})")
+                try:
+                    res_json = resp.json()
+                except Exception:
+                    res_json = {}
+                if resp.status_code == 200 and res_json.get('ok'):
+                    record_sent_store('mat', date_iso, str(chat_id))
+                    print(f"🚀 [ĐÃ GỬI] Thành công tới {store_name} ({chat_id})")
+                else:
+                    err_msg = res_json.get('description', f'HTTP {resp.status_code}')
+                    print(f"❌ [LỖI GỬI TELEGRAM] {store_name} ({chat_id}): {err_msg}")
                 await asyncio.sleep(1)
             except Exception as e:
                 print(f"❌ [LỖI GỬI] {store_name}: {e}")
@@ -544,15 +560,23 @@ async def run_tool_hau_kiem_rau(target_date=None, dry_run=False):
                         new_img.save(img_path)
 
                 with open(img_path, 'rb') as f:
-                    requests.post(
+                    resp = requests.post(
                         f"https://api.telegram.org/bot{bot_token}/sendPhoto",
                         data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
                         files={'photo': f},
                         timeout=15
                     )
                 if os.path.exists(img_path): os.remove(img_path)
-                record_sent_store('hau_kiem_rau', date_iso, str(chat_id))
-                print(f"🚀 [ĐÃ GỬI] Thành công tới {store_name} ({chat_id})")
+                try:
+                    res_json = resp.json()
+                except Exception:
+                    res_json = {}
+                if resp.status_code == 200 and res_json.get('ok'):
+                    record_sent_store('hau_kiem_rau', date_iso, str(chat_id))
+                    print(f"🚀 [ĐÃ GỬI] Thành công tới {store_name} ({chat_id})")
+                else:
+                    err_msg = res_json.get('description', f'HTTP {resp.status_code}')
+                    print(f"❌ [LỖI GỬI TELEGRAM] {store_name} ({chat_id}): {err_msg}")
                 await asyncio.sleep(1)
             except Exception as e:
                 print(f"❌ [LỖI GỬI] {store_name}: {e}")
@@ -687,15 +711,23 @@ async def run_tool_hau_kiem_thit_ca(target_date=None, dry_run=False):
                         new_img.save(img_path)
 
                 with open(img_path, 'rb') as f:
-                    requests.post(
+                    resp = requests.post(
                         f"https://api.telegram.org/bot{bot_token}/sendPhoto",
                         data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
                         files={'photo': f},
                         timeout=15
                     )
                 if os.path.exists(img_path): os.remove(img_path)
-                record_sent_store('hau_kiem_thit_ca', date_iso, str(chat_id))
-                print(f"🚀 [ĐÃ GỬI] Thành công tới {store_name} ({chat_id})")
+                try:
+                    res_json = resp.json()
+                except Exception:
+                    res_json = {}
+                if resp.status_code == 200 and res_json.get('ok'):
+                    record_sent_store('hau_kiem_thit_ca', date_iso, str(chat_id))
+                    print(f"🚀 [ĐÃ GỬI] Thành công tới {store_name} ({chat_id})")
+                else:
+                    err_msg = res_json.get('description', f'HTTP {resp.status_code}')
+                    print(f"❌ [LỖI GỬI TELEGRAM] {store_name} ({chat_id}): {err_msg}")
                 await asyncio.sleep(1)
             except Exception as e:
                 print(f"❌ [LỖI GỬI] {store_name}: {e}")
@@ -864,15 +896,23 @@ async def run_tool_hau_kiem_dong_mat(target_date=None, dry_run=False):
                         new_img.save(img_path)
 
                 with open(img_path, 'rb') as f:
-                    requests.post(
+                    resp = requests.post(
                         f"https://api.telegram.org/bot{bot_token}/sendPhoto",
                         data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
                         files={'photo': f},
                         timeout=15
                     )
                 if os.path.exists(img_path): os.remove(img_path)
-                record_sent_store('hau_kiem_dong_mat', date_iso, str(chat_id))
-                print(f"🚀 [ĐÃ GỬI] Thành công tới {store_name} ({chat_id})")
+                try:
+                    res_json = resp.json()
+                except Exception:
+                    res_json = {}
+                if resp.status_code == 200 and res_json.get('ok'):
+                    record_sent_store('hau_kiem_dong_mat', date_iso, str(chat_id))
+                    print(f"🚀 [ĐÃ GỬI] Thành công tới {store_name} ({chat_id})")
+                else:
+                    err_msg = res_json.get('description', f'HTTP {resp.status_code}')
+                    print(f"❌ [LỖI GỬI TELEGRAM] {store_name} ({chat_id}): {err_msg}")
                 await asyncio.sleep(1)
             except Exception as e:
                 print(f"❌ [LỖI GỬI] {store_name}: {e}")
