@@ -499,65 +499,70 @@ def build_and_export_web_report():
 
     st_col = "ID ST" if "ID ST" in df_enriched.columns else "Chi nhánh nhận"
     
+    # Chuẩn bị DataFrame xuất daily siêu tốc (Vectorized)
+    df_export_base = pd.DataFrame({
+        "st": df_enriched[st_col].astype(str),
+        "store_name": df_enriched["Chi nhánh nhận"].fillna("").astype(str),
+        "group": df_enriched["Nhóm hàng"].fillna("").astype(str),
+        "sku": df_enriched["Mã hàng"].fillna("").astype(str),
+        "sku_name": df_enriched["Tên SP"].fillna("").astype(str),
+        "qty_transfer": df_enriched["Qty_Chuyen"].fillna(0.0).round(2),
+        "qty_receive": df_enriched["Qty_Nhan"].fillna(0.0).round(2),
+        "qty_diff": df_enriched["Qty_Lech"].fillna(0.0).round(2),
+        "price": df_enriched["Gia_Nhap_Num"].fillna(0.0),
+        "val_total": df_enriched["Val_Tong_GT"].fillna(0.0),
+        "destination": df_enriched["Destination"].fillna("").astype(str),
+        "error": df_enriched["Lỗi"].fillna("").astype(str),
+        "is_store_over_100k": df_enriched["Is_Store_Over_100k"].fillna(False).astype(bool),
+        "store_day_total": df_enriched["Store_Day_Val_Total"].fillna(0.0),
+        "status_3level": df_enriched["Status_3Level"].fillna("").astype(str),
+        "dc_confirm": df_enriched["DC_Confirm"].fillna("").astype(str) if "DC_Confirm" in df_enriched.columns else "",
+        "dc_note": df_enriched["DC_Note"].fillna("").astype(str) if "DC_Note" in df_enriched.columns else "",
+        "kfm_reply": df_enriched["KFM_Reply"].fillna("").astype(str) if "KFM_Reply" in df_enriched.columns else "",
+        "kfm_note": df_enriched["KFM_Note"].fillna("").astype(str) if "KFM_Note" in df_enriched.columns else "",
+        "Date_Str": df_enriched["Date_Str"]
+    })
+
     for d_str in unique_days:
         safe_date = str(d_str).replace('/', '_').replace('-', '_')
-        group = df_enriched[df_enriched["Date_Str"] == d_str]
-        records = []
-        for _, r in group.iterrows():
-            records.append({
-                "st": str(r.get(st_col, "")),
-                "store_name": str(r.get("Chi nhánh nhận", "")),
-                "group": str(r.get("Nhóm hàng", "")),
-                "sku": str(r.get("Mã hàng", "")),
-                "sku_name": str(r.get("Tên SP", "")),
-                "qty_transfer": round(float(r.get("Qty_Chuyen", 0.0)), 2),
-                "qty_receive": round(float(r.get("Qty_Nhan", 0.0)), 2),
-                "qty_diff": round(float(r.get("Qty_Lech", 0.0)), 2),
-                "price": float(r.get("Gia_Nhap_Num", 0.0)),
-                "val_total": float(r.get("Val_Tong_GT", 0.0)),
-                "destination": str(r.get("Destination", "")),
-                "error": str(r.get("Lỗi", "")),
-                "is_store_over_100k": bool(r.get("Is_Store_Over_100k", False)),
-                "store_day_total": float(r.get("Store_Day_Val_Total", 0.0)),
-                "status_3level": str(r.get("Status_3Level", "")),
-                "dc_confirm": str(r.get("DC_Confirm", "") or ""),
-                "dc_note": str(r.get("DC_Note", "") or ""),
-                "kfm_reply": str(r.get("KFM_Reply", "") or ""),
-                "kfm_note": str(r.get("KFM_Note", "") or "")
-            })
+        day_sub = df_export_base[df_export_base["Date_Str"] == d_str].drop(columns=["Date_Str"])
+        records = day_sub.to_dict(orient="records")
         js_content = f"window.LOADED_DAILY_RECORDS = window.LOADED_DAILY_RECORDS || {{}};\nwindow.LOADED_DAILY_RECORDS['{d_str}'] = {json.dumps(records, ensure_ascii=False)};"
         with open(os.path.join(daily_details_dir, f"d_{safe_date}.js"), "w", encoding="utf-8") as f:
             f.write(js_content)
 
-    # 4. Xuất DC Cases riêng
-    df_dc_all = df_enriched[df_enriched["Destination"] == "Kho ĐÔNG MÁT"]
-    dc_records = []
-    for _, r in df_dc_all.iterrows():
-        d_parsed = r.get("Date_Parsed")
-        month_str = f"Tháng {d_parsed.month}" if pd.notnull(d_parsed) else "Tháng 8"
-        dc_records.append({
-            "date": str(r.get("Date_Str", "")),
-            "month": month_str,
-            "st": str(r.get(st_col, "")),
-            "store_name": str(r.get("Chi nhánh nhận", "")),
-            "group": str(r.get("Nhóm hàng", "")),
-            "sku": str(r.get("Mã hàng", "")),
-            "sku_name": str(r.get("Tên SP", "")),
-            "qty_diff": round(float(r.get("Qty_Lech", 0.0)), 2),
-            "val_total": float(r.get("Val_Tong_GT", 0.0)),
-            "dc_confirm": str(r.get("DC_Confirm", "") or ""),
-            "dc_note": str(r.get("DC_Note", "") or ""),
-            "kfm_reply": str(r.get("KFM_Reply", "") or ""),
-            "kfm_note": str(r.get("KFM_Note", "") or ""),
-            "destination": str(r.get("Destination", "")),
-            "is_store_over_100k": bool(r.get("Is_Store_Over_100k", False)),
-            "status_3level": str(r.get("Status_3Level", ""))
+    # 4. Xuất DC Cases riêng siêu tốc
+    mask_dc = df_enriched["Destination"] == "Kho ĐÔNG MÁT"
+    df_dc_enriched = df_enriched[mask_dc]
+    if len(df_dc_enriched) > 0:
+        months_series = df_dc_enriched["Date_Parsed"].apply(lambda d: f"Tháng {d.month}" if pd.notnull(d) else "Tháng 8")
+        df_dc_export = pd.DataFrame({
+            "date": df_dc_enriched["Date_Str"].astype(str),
+            "month": months_series.astype(str),
+            "st": df_dc_enriched[st_col].astype(str),
+            "store_name": df_dc_enriched["Chi nhánh nhận"].fillna("").astype(str),
+            "group": df_dc_enriched["Nhóm hàng"].fillna("").astype(str),
+            "sku": df_dc_enriched["Mã hàng"].fillna("").astype(str),
+            "sku_name": df_dc_enriched["Tên SP"].fillna("").astype(str),
+            "qty_diff": df_dc_enriched["Qty_Lech"].fillna(0.0).round(2),
+            "val_total": df_dc_enriched["Val_Tong_GT"].fillna(0.0),
+            "dc_confirm": df_dc_enriched["DC_Confirm"].fillna("").astype(str) if "DC_Confirm" in df_dc_enriched.columns else "",
+            "dc_note": df_dc_enriched["DC_Note"].fillna("").astype(str) if "DC_Note" in df_dc_enriched.columns else "",
+            "kfm_reply": df_dc_enriched["KFM_Reply"].fillna("").astype(str) if "KFM_Reply" in df_dc_enriched.columns else "",
+            "kfm_note": df_dc_enriched["KFM_Note"].fillna("").astype(str) if "KFM_Note" in df_dc_enriched.columns else "",
+            "destination": df_dc_enriched["Destination"].fillna("").astype(str),
+            "is_store_over_100k": df_dc_enriched["Is_Store_Over_100k"].fillna(False).astype(bool),
+            "status_3level": df_dc_enriched["Status_3Level"].fillna("").astype(str)
         })
+        dc_records = df_dc_export.to_dict(orient="records")
+    else:
+        dc_records = []
+        
     with open(os.path.join(daily_details_dir, "dc_cases.js"), "w", encoding="utf-8") as f:
         f.write(f"window.DC_CASES_DATA = {json.dumps(dc_records, ensure_ascii=False)};")
 
     # 5. Đồng bộ thư mục daily_details sang root & LOGIC
-    for target_parent in [os.path.dirname(current_dir), os.path.join(os.path.dirname(current_dir), "LOGIC"), "C:\\Users\\Thu Ha\\Doi_Soat_Dong_Mat"]:
+    for target_parent in [os.path.dirname(current_dir), os.path.join(os.path.dirname(current_dir), "LOGIC")]:
         try:
             target_dt_dir = os.path.join(target_parent, "daily_details")
             os.makedirs(target_dt_dir, exist_ok=True)
