@@ -64,6 +64,10 @@ def get_monthly_summary_matrix(df: pd.DataFrame, threshold: float = 100000.0, df
     agg_clean = {k: v for k, v in agg_dict.items() if k in df_daily.columns}
     
     monthly = df_daily.groupby("Tháng").agg(agg_clean).reset_index()
+    if len(monthly) > 0:
+        monthly["Month_Num"] = monthly["Tháng"].astype(str).str.extract(r'(\d+)').astype(float)
+        monthly.sort_values(by="Month_Num", ascending=False, inplace=True)
+        monthly.drop(columns=["Month_Num"], inplace=True)
     
     monthly["Pct_Da_Xu_Ly"] = monthly.apply(
         lambda r: round((r["Val_Da_Xu_Ly"] / r["Tong_Gia_Tri"] * 100.0), 1) if r.get("Tong_Gia_Tri", 0.0) > 0 else 0.0, axis=1

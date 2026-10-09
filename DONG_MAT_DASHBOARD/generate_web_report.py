@@ -142,6 +142,10 @@ def compute_group_bundle(df_sub: pd.DataFrame, df_full: pd.DataFrame, threshold:
     }
     agg_clean = {k: v for k, v in agg_dict.items() if k in df_daily_th.columns}
     df_monthly = df_daily_th.groupby("Tháng").agg(agg_clean).reset_index() if len(df_daily_th) > 0 else pd.DataFrame()
+    if len(df_monthly) > 0:
+        df_monthly["Month_Num"] = df_monthly["Tháng"].astype(str).str.extract(r'(\d+)').astype(float)
+        df_monthly.sort_values(by="Month_Num", ascending=False, inplace=True)
+        df_monthly.drop(columns=["Month_Num"], inplace=True)
 
     daily_matrix_list = []
     for _, tr in df_daily_th.iterrows():
@@ -391,6 +395,7 @@ def compute_group_bundle(df_sub: pd.DataFrame, df_full: pd.DataFrame, threshold:
     non_agree_items = [x for x in non_agree_items if x["val"] > 0]
 
     grand_total = {
+        "total_days": int(len(df_daily_th)) if len(df_daily_th) > 0 else 0,
         "total_cases": int(df_daily_th["Tong_So_Vu"].sum()) if len(df_daily_th) > 0 else 0,
         "qty_chuyen": round(float(df_daily_th["Tong_SL_Chuyen"].sum()), 2) if len(df_daily_th) > 0 else 0.0,
         "qty_nhan": round(float(df_daily_th["Tong_SL_Nhan"].sum()), 2) if len(df_daily_th) > 0 else 0.0,
