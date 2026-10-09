@@ -3830,6 +3830,7 @@
                         </select>
                         <select id="dcDetailFilterGroup" onchange="filterDCDetailTable()" style="padding:0.4rem 0.65rem; border-radius:6px; font-size:0.82rem; font-weight:600;">
                             <option value="all">🥩❄️ Tất cả nhóm hàng</option>
+                            <option value="THỊT CÁ">🍗 Thịt Cá</option>
                             <option value="MÁT">🥩 Hàng Mát</option>
                             <option value="ĐÔNG">❄️ Hàng Đông</option>
                         </select>
@@ -5818,26 +5819,44 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
             document.head.appendChild(script);
         }
 
+        let isDCCasesLoading = false;
+        let dcCasesCallbacks = [];
+
         function loadDCCases(callback) {
-            if (window.DC_CASES_DATA) {
-                callback(window.DC_CASES_DATA);
+            if (window.DC_CASES_DATA && Array.isArray(window.DC_CASES_DATA)) {
+                if (callback) callback(window.DC_CASES_DATA);
                 return;
             }
+            if (callback) dcCasesCallbacks.push(callback);
+            if (isDCCasesLoading) return;
+            isDCCasesLoading = true;
+
             const tbody = document.getElementById('dcDetailTableBody');
-            if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding:2.5rem;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.8rem; color:#38bdf8;"></i><div style="margin-top:10px; color:var(--text-secondary); font-size:0.9rem;">Đang nạp danh sách chi tiết các vụ trả DC...</div></td></tr>';
+            if (tbody && (!window.DC_CASES_DATA || window.DC_CASES_DATA.length === 0)) {
+                tbody.innerHTML = '<tr><td colspan="13" class="text-center" style="padding:2.5rem;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.8rem; color:#38bdf8;"></i><div style="margin-top:10px; color:var(--text-secondary); font-size:0.9rem;">Đang nạp danh sách chi tiết các vụ trả DC...</div></td></tr>';
             }
             const script = document.createElement('script');
             script.src = 'daily_details/dc_cases.js';
             script.onload = () => {
-                callback(window.DC_CASES_DATA || []);
+                isDCCasesLoading = false;
+                const data = window.DC_CASES_DATA || [];
+                const cbs = dcCasesCallbacks;
+                dcCasesCallbacks = [];
+                cbs.forEach(cb => {
+                    try { cb(data); } catch(e) { console.error(e); }
+                });
             };
             script.onerror = () => {
+                isDCCasesLoading = false;
                 console.error("Không thể nạp danh sách DC Cases");
                 if (tbody) {
-                    tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding:2rem; color:#f87171;">⚠️ Không tìm thấy file dữ liệu dc_cases.js</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="13" class="text-center" style="padding:2rem; color:#f87171;">⚠️ Không tìm thấy file dữ liệu dc_cases.js</td></tr>';
                 }
-                callback([]);
+                const cbs = dcCasesCallbacks;
+                dcCasesCallbacks = [];
+                cbs.forEach(cb => {
+                    try { cb([]); } catch(e) { console.error(e); }
+                });
             };
             document.head.appendChild(script);
         }
@@ -5877,7 +5896,20 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 if (p5) p5.className = 'big-tab-panel' + (tabNum === 5 ? ' active' : '');
                 if (p6) p6.className = 'big-tab-panel' + (tabNum === 6 ? ' active' : '');
 
-                if (tabNum === 4) {
+                if (tabNum === 3) {
+                    setTimeout(() => {
+                        try {
+                            if (typeof loadDCCases === 'function') {
+                                loadDCCases(() => {
+                                    if (typeof updateDCOverviewStats === 'function') updateDCOverviewStats();
+                                    if (typeof curDCViewMode !== 'undefined' && curDCViewMode === 'detail' && typeof filterDCDetailTable === 'function') {
+                                        filterDCDetailTable();
+                                    }
+                                });
+                            }
+                        } catch(e) {}
+                    }, 20);
+                } else if (tabNum === 4) {
                     setTimeout(() => {
                         try {
                             if (typeof renderTeleDailyTable === 'function') renderTeleDailyTable();
@@ -7977,21 +8009,35 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
         // Render Chế độ 2: Tra Cứu Chi Tiết 4 Cột AD - AG
         let curDCFilteredRecords = [];
 
-                function renderDCDetailTable() {
-            loadDCCases((list) => {
-                allDCCasesCache = list.filter(r => {
-                    if (curMonth !== 'all' && r.month !== curMonth) return false;
-                    if (curGroup === 'mat' && !r.group.includes('MÁT')) return false;
-                    if (curGroup === 'dong' && !r.group.includes('ĐÔNG')) return false;
-                    return true;
-                });
+        function renderDCDetailTable() {
+            loadDCCases(() => {
                 filterDCDetailTable();
             });
         }
 
         function filterDCDetailTable() {
-            if (!allDCCasesCache || allDCCasesCache.length === 0) {
-                allDCCasesCache = getAllDCCases();
+            if (!window.DC_CASES_DATA || !Array.isArray(window.DC_CASES_DATA)) {
+                loadDCCases(() => {
+                    filterDCDetailTable();
+                });
+                return;
+            }
+
+            allDCCasesCache = getAllDCCases();
+
+            // Populate date filter dropdown dynamically based on available records
+            const selDate = document.getElementById('dcDetailFilterDate');
+            if (selDate && allDCCasesCache.length > 0) {
+                const curVal = selDate.value;
+                const uniqueDates = [...new Set(allDCCasesCache.map(r => r.date).filter(Boolean))];
+                if (selDate.options.length <= 1) {
+                    let dOpts = '<option value="all">📅 Tất cả các ngày</option>';
+                    uniqueDates.forEach(d => {
+                        dOpts += `<option value="${d}">${d}</option>`;
+                    });
+                    selDate.innerHTML = dOpts;
+                    if (uniqueDates.includes(curVal)) selDate.value = curVal;
+                }
             }
 
             const query = (document.getElementById('dcDetailSearch')?.value || '').trim().toLowerCase();
@@ -8007,7 +8053,9 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 // Lọc theo Cột AD (DC xác nhận)
                 if (filterConfirm !== 'all') {
                     if (filterConfirm === 'Chưa phản hồi') {
-                        if (['Đồng ý claim', 'Từ chối claim', 'Kiểm tra lại'].includes(r.dc_confirm)) return false;
+                        if (['Đồng ý claim', 'Từ chối claim', 'Kiểm tra lại', 'KFM Kiểm tra lại', 'DC kiểm tra'].includes(r.dc_confirm)) return false;
+                    } else if (filterConfirm === 'Kiểm tra lại') {
+                        if (!['Kiểm tra lại', 'KFM Kiểm tra lại', 'DC kiểm tra'].includes(r.dc_confirm)) return false;
                     } else if (r.dc_confirm !== filterConfirm) {
                         return false;
                     }
@@ -8016,7 +8064,9 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 // Lọc theo Cột AF (KFM phản hồi)
                 if (filterReply !== 'all') {
                     if (filterReply === 'Chưa phản hồi') {
-                        if (['DONE', 'Cấp HLV quyết định', 'DC check lại thông tin'].includes(r.kfm_reply)) return false;
+                        if (['DONE', 'Cấp HLV quyết định', 'DC check lại thông tin', 'Hủy TO', 'ĐÃ HỦY TO', 'Trả tồn ST'].includes(r.kfm_reply) || (r.kfm_reply && r.kfm_reply.trim() !== '')) return false;
+                    } else if (filterReply === 'DONE') {
+                        if (!['DONE', 'Hủy TO', 'ĐÃ HỦY TO'].includes(r.kfm_reply)) return false;
                     } else if (r.kfm_reply !== filterReply) {
                         return false;
                     }
@@ -8052,11 +8102,11 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 let badgeAD = '<span class="tag-ad-chua">⏳ Chưa phản hồi</span>';
                 if (r.dc_confirm === 'Đồng ý claim') badgeAD = '<span class="tag-ad-dongy">🟢 Đồng ý claim</span>';
                 else if (r.dc_confirm === 'Từ chối claim') badgeAD = '<span class="tag-ad-tuchoi">🔴 Từ chối claim</span>';
-                else if (r.dc_confirm === 'Kiểm tra lại') badgeAD = '<span class="tag-ad-kiemtra">🟡 Kiểm tra lại</span>';
+                else if (['Kiểm tra lại', 'KFM Kiểm tra lại', 'DC kiểm tra'].includes(r.dc_confirm)) badgeAD = '<span class="tag-ad-kiemtra">🟡 Kiểm tra lại</span>';
 
                 // Badge Cột AF
                 let badgeAF = '<span class="tag-af-pending">⏳ Chưa phản hồi</span>';
-                if (r.kfm_reply === 'DONE') badgeAF = '<span class="tag-af-done">🟢 DONE</span>';
+                if (['DONE', 'Hủy TO', 'ĐÃ HỦY TO'].includes(r.kfm_reply)) badgeAF = '<span class="tag-af-done">🟢 DONE</span>';
                 else if (r.kfm_reply === 'Cấp HLV quyết định') badgeAF = '<span class="tag-af-hlv">⚖️ Cấp HLV quyết định</span>';
                 else if (r.kfm_reply === 'DC check lại thông tin') badgeAF = '<span class="tag-af-check">🔄 DC check lại</span>';
 
@@ -8067,7 +8117,7 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 // Group tag
                 const tagGrp = r.group.includes('MÁT') 
                     ? '<span class="tag-pill" style="background:rgba(16,185,129,0.18); color:#34d399; font-size:0.7rem;">MÁT</span>'
-                    : '<span class="tag-pill" style="background:rgba(99,102,241,0.18); color:#818cf8; font-size:0.7rem;">ĐÔNG</span>';
+                    : (r.group.includes('ĐÔNG') ? '<span class="tag-pill" style="background:rgba(99,102,241,0.18); color:#818cf8; font-size:0.7rem;">ĐÔNG</span>' : '<span class="tag-pill" style="background:rgba(234,88,12,0.18); color:#fb923c; font-size:0.7rem;">THỊT CÁ</span>');
 
                 // Image Link
                 const imgHtml = r.img_link && r.img_link.startsWith('http')
