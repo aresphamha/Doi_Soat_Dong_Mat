@@ -18,6 +18,7 @@ on:
           - dong_mat_sheet
           - dong_mat_nhom_dong
           - dong_mat_spam
+          - dong_spam
           - thit_ca_spam
           - rau_cu_spam
           - spam_tu_chon
