@@ -861,6 +861,13 @@
     "chat_id_rc": "-1004268595947"
   },
   {
+    "id": "A246",
+    "name": "A246",
+    "short": "A246",
+    "chat_id_dm": "-1003957832728",
+    "chat_id_rc": "-1003957832728"
+  },
+  {
     "id": "A247",
     "name": "KFM_HCM_BTA - DC - A247 (Lê Cơ)",
     "short": "A247",
@@ -887,6 +894,20 @@
     "short": "A255",
     "chat_id_dm": "-1003991560755",
     "chat_id_rc": "-1003991560755"
+  },
+  {
+    "id": "A258",
+    "name": "A258",
+    "short": "A258",
+    "chat_id_dm": "-1004327654400",
+    "chat_id_rc": "-1004327654400"
+  },
+  {
+    "id": "A259",
+    "name": "KFM_BDU_TAN - 275 D33 KDC Viet Sing",
+    "short": "A259",
+    "chat_id_dm": "-1004469485931",
+    "chat_id_rc": "-1004469485931"
   },
   {
     "id": "ACU",
