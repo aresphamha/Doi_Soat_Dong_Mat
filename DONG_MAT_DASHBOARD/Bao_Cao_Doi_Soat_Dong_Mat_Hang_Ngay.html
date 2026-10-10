@@ -2968,9 +2968,8 @@
             box-shadow: 0 2px 8px rgba(31, 111, 235, 0.3) !important;
         }
 </style>
-    <script src="daily_details/telegram_groups.js"></script>
-    <script src="daily_details/product_prices.js?v=1791354224"></script>
-<script src="daily_details/data_bundles.js"></script>
+    <!-- Dữ liệu BUNDLES siêu nhẹ cho Tab 1 & 2 (~300 KB) -->
+    <script src="daily_details/data_bundles.js"></script>
 </head>
 <body>
 
@@ -5814,6 +5813,123 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
         // ========================================================
         window.LOADED_DAILY_RECORDS = window.LOADED_DAILY_RECORDS || {};
         window.DC_CASES_DATA = null;
+        window.STORE_PRIORITY_DATA = null;
+        window.TELEGRAM_GROUPS_DATA = null;
+        window.PRODUCT_PRICES_DATA = null;
+
+        // --- LAZY LOAD TAB 2.4: STORE PRIORITY ---
+        let isStorePriorityLoading = false;
+        let storePriorityCallbacks = [];
+        function loadStorePriorityData(callback) {
+            if (window.STORE_PRIORITY_DATA && Array.isArray(window.STORE_PRIORITY_DATA)) {
+                if (callback) callback(window.STORE_PRIORITY_DATA);
+                return;
+            }
+            if (callback) storePriorityCallbacks.push(callback);
+            if (isStorePriorityLoading) return;
+            isStorePriorityLoading = true;
+
+            const tbody = document.getElementById('storePriorityTableBody');
+            if (tbody && (!window.STORE_PRIORITY_DATA || window.STORE_PRIORITY_DATA.length === 0)) {
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding:2.5rem;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.8rem; color:#38bdf8;"></i><div style="margin-top:10px; color:var(--text-secondary); font-size:0.9rem;">Đang nạp danh sách siêu thị ưu tiên xử lý (Step-by-step)...</div></td></tr>';
+            }
+            const script = document.createElement('script');
+            script.src = 'daily_details/store_priority.js';
+            script.onload = () => {
+                isStorePriorityLoading = false;
+                const data = window.STORE_PRIORITY_DATA || [];
+                const cbs = storePriorityCallbacks;
+                storePriorityCallbacks = [];
+                cbs.forEach(cb => { try { cb(data); } catch(e) { console.error(e); } });
+            };
+            script.onerror = () => {
+                isStorePriorityLoading = false;
+                console.error("Không thể nạp file store_priority.js");
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding:2rem; color:#f87171;">⚠️ Không tìm thấy file dữ liệu store_priority.js</td></tr>';
+                }
+                const cbs = storePriorityCallbacks;
+                storePriorityCallbacks = [];
+                cbs.forEach(cb => { try { cb([]); } catch(e) { console.error(e); } });
+            };
+            document.head.appendChild(script);
+        }
+
+        // --- LAZY LOAD TAB 4: TELEGRAM SCM HUB ---
+        let isTelegramLoading = false;
+        let telegramCallbacks = [];
+        function loadTelegramGroupsData(callback) {
+            if (window.TELEGRAM_GROUPS_DATA && window.TELEGRAM_GROUPS_DATA.summary) {
+                if (callback) callback(window.TELEGRAM_GROUPS_DATA);
+                return;
+            }
+            if (callback) telegramCallbacks.push(callback);
+            if (isTelegramLoading) return;
+            isTelegramLoading = true;
+
+            const tbody = document.getElementById('teleDailyBody');
+            if (tbody && !window.TELEGRAM_GROUPS_DATA) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:2.5rem;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.8rem; color:#229ED9;"></i><div style="margin-top:10px; color:var(--text-secondary); font-size:0.9rem;">Đang nạp dữ liệu nhóm Telegram & thống kê...</div></td></tr>';
+            }
+            const script = document.createElement('script');
+            script.src = 'daily_details/telegram_groups.js';
+            script.onload = () => {
+                isTelegramLoading = false;
+                const data = window.TELEGRAM_GROUPS_DATA;
+                const cbs = telegramCallbacks;
+                telegramCallbacks = [];
+                cbs.forEach(cb => { try { cb(data); } catch(e) { console.error(e); } });
+            };
+            script.onerror = () => {
+                isTelegramLoading = false;
+                console.error("Không thể nạp file telegram_groups.js");
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding:2rem; color:#f87171;">⚠️ Không tìm thấy file dữ liệu telegram_groups.js</td></tr>';
+                }
+                const cbs = telegramCallbacks;
+                telegramCallbacks = [];
+                cbs.forEach(cb => { try { cb(null); } catch(e) { console.error(e); } });
+            };
+            document.head.appendChild(script);
+        }
+
+        // --- LAZY LOAD TAB 6: PRODUCT PRICES MASTER DATA ---
+        let isProductPricesLoading = false;
+        let productPricesCallbacks = [];
+        function loadProductPricesData(callback) {
+            if (window.PRODUCT_PRICES_DATA && window.PRODUCT_PRICES_DATA.products && window.PRODUCT_PRICES_DATA.products.length > 0) {
+                if (callback) callback(window.PRODUCT_PRICES_DATA);
+                return;
+            }
+            if (callback) productPricesCallbacks.push(callback);
+            if (isProductPricesLoading) return;
+            isProductPricesLoading = true;
+
+            const tbody = document.getElementById('productPricesTableBody');
+            if (tbody && (!window.PRODUCT_PRICES_DATA || !window.PRODUCT_PRICES_DATA.products)) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center" style="padding:2.5rem;"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.8rem; color:#10b981;"></i><div style="margin-top:10px; color:var(--text-secondary); font-size:0.9rem;">Đang nạp danh mục 13,777 SKU giá nhập CDC & Hada...</div></td></tr>';
+            }
+            const script = document.createElement('script');
+            script.src = 'daily_details/product_prices.js';
+            script.onload = () => {
+                isProductPricesLoading = false;
+                const data = window.PRODUCT_PRICES_DATA;
+                const cbs = productPricesCallbacks;
+                productPricesCallbacks = [];
+                cbs.forEach(cb => { try { cb(data); } catch(e) { console.error(e); } });
+            };
+            script.onerror = () => {
+                isProductPricesLoading = false;
+                console.error("Không thể nạp file product_prices.js");
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center" style="padding:2rem; color:#f87171;">⚠️ Không tìm thấy file dữ liệu product_prices.js</td></tr>';
+                }
+                const cbs = productPricesCallbacks;
+                productPricesCallbacks = [];
+                cbs.forEach(cb => { try { cb(null); } catch(e) { console.error(e); } });
+            };
+            document.head.appendChild(script);
+        }
 
         function loadDailyDetail(dateStr, callback) {
             if (window.LOADED_DAILY_RECORDS && window.LOADED_DAILY_RECORDS[dateStr]) {
@@ -5934,11 +6050,16 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 } else if (tabNum === 4) {
                     setTimeout(() => {
                         try {
-                            if (typeof renderTeleDailyTable === 'function') renderTeleDailyTable();
-                            if (typeof renderTeleTopStoresTable === 'function') renderTeleTopStoresTable();
-                            if (typeof renderTeleMessagesTable === 'function') renderTeleMessagesTable();
+                            if (typeof loadTelegramGroupsData === 'function') {
+                                loadTelegramGroupsData(() => {
+                                    if (typeof renderTelegramTab === 'function') renderTelegramTab();
+                                    if (typeof renderTeleDailyTable === 'function') renderTeleDailyTable();
+                                    if (typeof renderTeleTopStoresTable === 'function') renderTeleTopStoresTable();
+                                    if (typeof renderTeleMessagesTable === 'function') renderTeleMessagesTable();
+                                });
+                            }
                         } catch(e) {}
-                    }, 50);
+                    }, 20);
                 } else if (tabNum === 5) {
                     setTimeout(() => {
                         try {
@@ -5948,9 +6069,13 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 } else if (tabNum === 6) {
                     setTimeout(() => {
                         try {
-                            if (typeof initProductPricesModule === 'function') initProductPricesModule();
+                            if (typeof loadProductPricesData === 'function') {
+                                loadProductPricesData(() => {
+                                    if (typeof initProductPricesModule === 'function') initProductPricesModule();
+                                });
+                            }
                         } catch(e) {}
-                    }, 50);
+                    }, 20);
                 }
             } catch (err) {
                 console.error("Lỗi chuyển big tab:", err);
@@ -5977,6 +6102,14 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
             if (p2) p2.style.display = subNum === 2 ? 'block' : 'none';
             if (p3) p3.style.display = subNum === 3 ? 'block' : 'none';
             if (p4) p4.style.display = subNum === 4 ? 'block' : 'none';
+
+            if (subNum === 4) {
+                if (typeof loadStorePriorityData === 'function') {
+                    loadStorePriorityData(() => {
+                        if (typeof renderStorePriorityTable === 'function') renderStorePriorityTable();
+                    });
+                }
+            }
         }
 
         let curGroup = 'all';
@@ -6105,18 +6238,8 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 casesDone: 0, casesPending: 0, casesIgnored: 0
             };
 
-            let stList = (BUNDLES && BUNDLES.store_priority_list) || [];
-            if (curGroup === 'mat') stList = stList.filter(r => (r.group || '').includes('MÁT'));
-            else if (curGroup === 'dong') stList = stList.filter(r => (r.group || '').includes('ĐÔNG'));
-            else if (curGroup === 'thit_ca') stList = stList.filter(r => (r.group || '').includes('THỊT') || (r.group || '').includes('CÁ') || (r.group || '').includes('MEAT') || (r.group || '').includes('FISH'));
-            if (curMonth !== 'all') stList = stList.filter(item => item.month === curMonth);
             const dailyMatrix = (rawBundle.daily_matrix || []).filter(d => curMonth === 'all' || d.month === curMonth);
-
-            const stSetTotal = new Set();
-            const stSetDone = new Set();
-            const stSetPending = new Set();
-            const stSetIgnored = new Set();
-            const stOverSet = new Set();
+            const gt = rawBundle.grand_total || {};
 
             let storeDaysDone = 0, storeDaysPending = 0, storeDaysIgnored = 0;
             let casesDone = 0, casesPending = 0, casesIgnored = 0;
@@ -6125,31 +6248,52 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 casesDone += (Number(d.cases_over_da_xl) || 0) + (Number(d.cases_under_da_xl) || 0);
                 casesPending += (Number(d.cases_over_dang_xl) || 0);
                 casesIgnored += (Number(d.cases_under_khong_xl) || 0);
+                storeDaysDone += (Number(d.st_over_da_xl) || 0) + (Number(d.st_under_da_xl) || 0);
+                storeDaysPending += (Number(d.st_over_dang_xl) || 0);
+                storeDaysIgnored += (Number(d.st_under_khong_xl) || 0);
             });
 
-            stList.forEach(stItem => {
-                stSetTotal.add(stItem.st);
-                if (stItem.is_store_over_100k) {
-                    stOverSet.add(stItem.st);
-                }
-                if (stItem.priority === 'p1') {
-                    stSetPending.add(stItem.st);
-                    storeDaysPending++;
-                } else if (stItem.priority === 'p2') {
-                    stSetIgnored.add(stItem.st);
-                    storeDaysIgnored++;
-                } else {
-                    stSetDone.add(stItem.st);
-                    storeDaysDone++;
-                }
-            });
+            let stList = window.STORE_PRIORITY_DATA || (BUNDLES && BUNDLES.store_priority_list) || [];
+            let uniqueStTotal = 0, uniqueStOver = 0, uniqueStDone = 0, uniqueStPending = 0, uniqueStIgnored = 0;
+
+            if (stList.length > 0) {
+                if (curGroup === 'mat') stList = stList.filter(r => (r.group || '').includes('MÁT'));
+                else if (curGroup === 'dong') stList = stList.filter(r => (r.group || '').includes('ĐÔNG'));
+                else if (curGroup === 'thit_ca') stList = stList.filter(r => (r.group || '').includes('THỊT') || (r.group || '').includes('CÁ') || (r.group || '').includes('MEAT') || (r.group || '').includes('FISH'));
+                if (curMonth !== 'all') stList = stList.filter(item => item.month === curMonth);
+
+                const stSetTotal = new Set();
+                const stSetDone = new Set();
+                const stSetPending = new Set();
+                const stSetIgnored = new Set();
+                const stOverSet = new Set();
+
+                stList.forEach(stItem => {
+                    stSetTotal.add(stItem.st);
+                    if (stItem.is_store_over_100k) stOverSet.add(stItem.st);
+                    if (stItem.priority === 'p1') stSetPending.add(stItem.st);
+                    else if (stItem.priority === 'p2') stSetIgnored.add(stItem.st);
+                    else stSetDone.add(stItem.st);
+                });
+                uniqueStTotal = stSetTotal.size;
+                uniqueStOver = stOverSet.size;
+                uniqueStDone = stSetDone.size;
+                uniqueStPending = stSetPending.size;
+                uniqueStIgnored = stSetIgnored.size;
+            } else {
+                uniqueStTotal = gt.stores_count || 0;
+                uniqueStOver = gt.stores_over_100k || 0;
+                uniqueStDone = gt.st_da_xl || 0;
+                uniqueStPending = gt.st_dang_xl || 0;
+                uniqueStIgnored = gt.st_khong_xl || 0;
+            }
 
             return {
-                uniqueStTotal: stSetTotal.size,
-                uniqueStOver: stOverSet.size,
-                uniqueStDone: stSetDone.size,
-                uniqueStPending: stSetPending.size,
-                uniqueStIgnored: stSetIgnored.size,
+                uniqueStTotal,
+                uniqueStOver,
+                uniqueStDone,
+                uniqueStPending,
+                uniqueStIgnored,
                 storeDaysDone,
                 storeDaysPending,
                 storeDaysIgnored,
@@ -6405,7 +6549,7 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
         }
 
         function getStorePriorityData() {
-            let list = (BUNDLES && BUNDLES.store_priority_list) || [];
+            let list = window.STORE_PRIORITY_DATA || (BUNDLES && BUNDLES.store_priority_list) || [];
             if (curGroup === 'mat') {
                 list = list.filter(r => (r.group || '').includes('MÁT'));
             } else if (curGroup === 'dong') {
@@ -6420,6 +6564,14 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
         let curStoreData = [];
 
         function renderStorePriorityTable() {
+            if (!window.STORE_PRIORITY_DATA && (!BUNDLES || !BUNDLES.store_priority_list)) {
+                if (typeof loadStorePriorityData === 'function') {
+                    loadStorePriorityData(() => {
+                        renderStorePriorityTable();
+                    });
+                }
+                return;
+            }
             curStoreData = getStorePriorityData();
             
             const parseDateScore = (dStr) => {
@@ -12840,19 +12992,15 @@ function copyChatId(chatId, btnEl) {
                 updateProductPriceKPIs();
                 applyProductFilters();
             } else {
-                // Tự động thử lại nếu script product_prices.js chưa tải xong từ CDN
-                let retryCount = 0;
-                const retryTimer = setInterval(() => {
-                    retryCount++;
-                    if (window.PRODUCT_PRICES_DATA && window.PRODUCT_PRICES_DATA.products && window.PRODUCT_PRICES_DATA.products.length > 0) {
-                        clearInterval(retryTimer);
-                        productPricesList = window.PRODUCT_PRICES_DATA.products;
-                        updateProductPriceKPIs();
-                        applyProductFilters();
-                    } else if (retryCount > 20) {
-                        clearInterval(retryTimer);
-                    }
-                }, 150);
+                if (typeof loadProductPricesData === 'function') {
+                    loadProductPricesData((data) => {
+                        if (data && data.products) {
+                            productPricesList = data.products;
+                            updateProductPriceKPIs();
+                            applyProductFilters();
+                        }
+                    });
+                }
             }
         }
 
