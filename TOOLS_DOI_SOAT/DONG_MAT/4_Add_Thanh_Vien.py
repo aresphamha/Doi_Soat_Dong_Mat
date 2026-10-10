@@ -137,7 +137,8 @@ async def main():
 
                 print('✅ THÊM THÀNH CÔNG!')
                 success_cnt += 1
-                await asyncio.sleep(2)
+                print('⏳ Đang nghỉ giãn cách an toàn 45 giây trước khi add nhóm tiếp theo...')
+                await asyncio.sleep(45)
 
             except UserAlreadyParticipantError:
                 print('ℹ️ ĐÃ CÓ TRONG NHÓM')
