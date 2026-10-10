@@ -592,8 +592,7 @@ def build_and_export_web_report():
         "all": bundle_all,
         "thit_ca": bundle_thit_ca,
         "mat": bundle_mat,
-        "dong": bundle_dong,
-        "store_priority_list": store_prio_all
+        "dong": bundle_dong
     }
 
     # 7. Đọc template HTML và bơm dữ liệu BUNDLES
@@ -604,9 +603,13 @@ def build_and_export_web_report():
     with open(template_path, "r", encoding="utf-8") as f:
         html_content = f.read()
 
-    # 7.1. Xuất dữ liệu BUNDLES tách rời sang file daily_details/data_bundles.js (Kiến trúc Module hóa)
+    # 7.1. Xuất dữ liệu BUNDLES siêu nhẹ sang file daily_details/data_bundles.js (~300 KB)
     bundles_json_str = json.dumps(bundles_dict, ensure_ascii=False)
     data_bundles_js = f"window.BUNDLES = {bundles_json_str};\n"
+
+    # 7.2. Xuất dữ liệu Store Priority riêng sang daily_details/store_priority.js (Lazy load Tab 2.4)
+    store_prio_json_str = json.dumps(store_prio_all, ensure_ascii=False)
+    store_prio_js = f"window.STORE_PRIORITY_DATA = {store_prio_json_str};\n"
 
     daily_targets = [
         os.path.join(current_dir, "daily_details", "data_bundles.js"),
@@ -622,7 +625,22 @@ def build_and_export_web_report():
                 f_dt.write(data_bundles_js)
         except Exception:
             pass
-    print("✅ Đã xuất dữ liệu BUNDLES tách rời sang daily_details/data_bundles.js (Không ghi đè code web)")
+
+    store_prio_targets = [
+        os.path.join(current_dir, "daily_details", "store_priority.js"),
+        os.path.join(os.path.dirname(current_dir), "daily_details", "store_priority.js"),
+        r"C:\Users\Thu Ha\Doi_Soat_Dong_Mat\daily_details\store_priority.js",
+        r"g:\My Drive\Đối soát SCM\daily_details\store_priority.js",
+        r"g:\My Drive\Đối soát SCM\DONG_MAT_DASHBOARD\daily_details\store_priority.js"
+    ]
+    for sp_path in store_prio_targets:
+        try:
+            os.makedirs(os.path.dirname(sp_path), exist_ok=True)
+            with open(sp_path, "w", encoding="utf-8") as f_sp:
+                f_sp.write(store_prio_js)
+        except Exception:
+            pass
+    print("✅ Đã xuất dữ liệu BUNDLES (~300 KB) & Store Priority riêng biệt sang daily_details/")
 
     # 7.5. KIỂM TRA BẢO TOÀN KIẾN TRÚC & TÍNH TOÀN VẸN (TEMPLATE INTEGRITY GUARD)
     required_engine_functions = [
