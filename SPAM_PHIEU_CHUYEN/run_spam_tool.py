@@ -208,7 +208,7 @@ async def run_tool_thit_ca(target_date=None, dry_run=False):
     from PIL import Image
     api_id = '28938971'
     api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-    bot_token = '8810108114:AAHFyBEL_JoNFdn2r3V21zEDtElUBU_nV-E'
+    bot_token = '8810108114:AAFjfU-DZb5cIcDBuGYBHtVQVNNthavALOc'
 
     client = TelegramClient(session_base, api_id, api_hash)
     await client.connect()
@@ -358,7 +358,7 @@ async def run_tool_mat(target_date=None, dry_run=False):
     from PIL import Image
     api_id = '28938971'
     api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-    bot_token = '8810108114:AAHFyBEL_JoNFdn2r3V21zEDtElUBU_nV-E'
+    bot_token = '8810108114:AAFjfU-DZb5cIcDBuGYBHtVQVNNthavALOc'
 
     client = TelegramClient(session_base, api_id, api_hash)
     await client.connect()
@@ -513,7 +513,7 @@ async def run_tool_hau_kiem_rau(target_date=None, dry_run=False):
     from PIL import Image
     api_id = '28938971'
     api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-    bot_token = '8810108114:AAHFyBEL_JoNFdn2r3V21zEDtElUBU_nV-E'
+    bot_token = '8810108114:AAFjfU-DZb5cIcDBuGYBHtVQVNNthavALOc'
 
     client = TelegramClient(session_base, api_id, api_hash)
     await client.connect()
@@ -664,7 +664,7 @@ async def run_tool_hau_kiem_thit_ca(target_date=None, dry_run=False):
     from PIL import Image
     api_id = '28938971'
     api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-    bot_token = '8810108114:AAHFyBEL_JoNFdn2r3V21zEDtElUBU_nV-E'
+    bot_token = '8810108114:AAFjfU-DZb5cIcDBuGYBHtVQVNNthavALOc'
 
     client = TelegramClient(session_base, api_id, api_hash)
     await client.connect()
@@ -846,7 +846,7 @@ async def run_tool_hau_kiem_dong_mat(target_date=None, dry_run=False):
     from PIL import Image
     api_id = '28938971'
     api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-    bot_token = '8810108114:AAHFyBEL_JoNFdn2r3V21zEDtElUBU_nV-E'
+    bot_token = '8810108114:AAFjfU-DZb5cIcDBuGYBHtVQVNNthavALOc'
 
     client = TelegramClient(session_base, api_id, api_hash)
     await client.connect()
@@ -1095,7 +1095,7 @@ async def run_tool_spam_tu_chon(stores="ALL", message=None, tag_roles=True, dry_
     from telethon import TelegramClient
     api_id = '28938971'
     api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-    bot_token = '8810108114:AAHFyBEL_JoNFdn2r3V21zEDtElUBU_nV-E'
+    bot_token = '8810108114:AAFjfU-DZb5cIcDBuGYBHtVQVNNthavALOc'
 
     client = TelegramClient(session_base, api_id, api_hash)
     await client.connect()

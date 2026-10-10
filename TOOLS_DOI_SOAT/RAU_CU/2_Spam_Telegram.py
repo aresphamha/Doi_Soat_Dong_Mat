@@ -95,7 +95,7 @@ def record_sent_store(tool_name, date_str, id_st):
 
 api_id = '28938971'
 api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-bot_token = '8810108114:AAHFyBEL_JoNFdn2r3V21zEDtElUBU_nV-E'
+bot_token = '8810108114:AAFjfU-DZb5cIcDBuGYBHtVQVNNthavALOc'
 url_send_photo = f'https://api.telegram.org/bot{bot_token}/sendPhoto'
 
 def disable_quickedit():
