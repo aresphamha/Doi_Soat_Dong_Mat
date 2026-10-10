@@ -11892,34 +11892,23 @@ function copyChatId(chatId, btnEl) {
             rebuildCustomSpamStoresList();
         }
 
-                function onCloudToolChange(toolName) {
+                        function onCloudToolChange(toolName) {
             const studio = document.getElementById("customSpamStudioContainer");
             const cleanStudio = document.getElementById("cleanSpamStudioContainer");
-            
+            const addStudio = document.getElementById("addMemberStudioContainer");
+
             if (studio) {
+                studio.style.display = (toolName === "spam_tu_chon") ? "block" : "none";
                 if (toolName === "spam_tu_chon") {
-                    studio.style.display = "block";
                     rebuildCustomSpamStoresList();
                     updateCustomSpamPreview();
-                } else {
-                    studio.style.display = "none";
                 }
             }
-            
             if (cleanStudio) {
-                if (toolName === "xoa_tin_nhan") {
-                    cleanStudio.style.display = "block";
-                }
-            const addStudio = document.getElementById("addMemberStudioContainer");
+                cleanStudio.style.display = (toolName === "xoa_tin_nhan") ? "block" : "none";
+            }
             if (addStudio) {
-                if (toolName === "add_thanh_vien") {
-                    addStudio.style.display = "block";
-                } else {
-                    addStudio.style.display = "none";
-                }
-            } else {
-                    cleanStudio.style.display = "none";
-                }
+                addStudio.style.display = (toolName === "add_thanh_vien") ? "block" : "none";
             }
         }
 

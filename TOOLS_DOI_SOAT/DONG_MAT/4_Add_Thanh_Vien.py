@@ -26,7 +26,6 @@ if not os.path.exists(session_path + '.session'):
 if not os.path.exists(session_path + '.session'):
     session_path = os.path.join(r'C:\Users\Thu Ha\Desktop\ĐỐI SOÁT\ĐÔNG MÁT', 'user_session')
 
-# Lấy cấu hình từ Web truyền xuống
 TARGET_MEMBER = os.environ.get('TARGET_MEMBER', '@doi_soat_SCM_bot').strip()
 if not TARGET_MEMBER.startswith('@') and not TARGET_MEMBER.isdigit():
     TARGET_MEMBER = '@' + TARGET_MEMBER
@@ -75,7 +74,6 @@ async def main():
     df['CHAT ID'] = df['CHAT ID'].str.replace('.0', '', regex=False).str.strip()
     df = df.reset_index(drop=True)
 
-    # Lọc theo danh sách Chat ID hoặc mã ST yêu cầu từ Web
     if TARGET_CHAT_IDS and TARGET_CHAT_IDS != 'ALL':
         req_list = [x.strip() for x in TARGET_CHAT_IDS.replace(',', ' ').split() if x.strip()]
         
@@ -94,16 +92,15 @@ async def main():
         print('⚠️ Không tìm thấy nhóm nào khớp với danh sách Chat ID bạn yêu cầu!')
         return
 
-    print(f'📊 Tìm thấy {len(df)} nhóm cần xử lý theo yêu cầu.
-')
+    print(f'📊 Tìm thấy {len(df)} nhóm cần xử lý theo yêu cầu.\n')
 
     async with TelegramClient(session_path, api_id, api_hash) as client:
         print('✅ Đăng nhập Telegram chính chủ thành công!')
         
-        # 1. Tìm Entity của User/Bot cần add
         try:
             user_entity = await client.get_entity(TARGET_MEMBER)
-            print(f'👤 Tìm thấy đối tượng: {getattr(user_entity, "first_name", TARGET_MEMBER)} (ID: {user_entity.id})\n')
+            name = getattr(user_entity, "first_name", TARGET_MEMBER)
+            print(f'👤 Tìm thấy đối tượng: {name} (ID: {user_entity.id})\n')
         except Exception as e:
             print(f'❌ Không tìm thấy user/bot "{TARGET_MEMBER}" trên Telegram: {e}')
             return
@@ -127,14 +124,12 @@ async def main():
             try:
                 group_entity = await client.get_entity(cid)
                 
-                # Kiểm tra xem đã có trong nhóm chưa
                 is_in = await check_is_participant(client, group_entity, user_entity)
                 if is_in:
                     print('ℹ️ ĐÃ CÓ SẴN TRONG NHÓM (Bỏ qua)')
                     already_cnt += 1
                     continue
 
-                # Mời vào nhóm
                 if isinstance(group_entity, Channel):
                     await client(InviteToChannelRequest(channel=group_entity, users=[user_entity]))
                 elif isinstance(group_entity, Chat):
@@ -152,7 +147,7 @@ async def main():
                 if 'already in' in err_str.lower():
                     print('ℹ️ ĐÃ CÓ TRONG NHÓM')
                     already_cnt += 1
-                elif 'can\'t be added' in err_str.lower() or 'not allowed' in err_str.lower():
+                elif "can't be added" in err_str.lower() or 'not allowed' in err_str.lower():
                     print('⚠️ Bot chưa được mở quyền vào nhóm trên BotFather!')
                     fail_cnt += 1
                 else:
