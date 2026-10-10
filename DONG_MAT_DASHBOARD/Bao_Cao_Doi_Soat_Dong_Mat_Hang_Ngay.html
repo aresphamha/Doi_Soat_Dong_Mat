@@ -4398,7 +4398,114 @@
 
                     
                     <!-- ================= SCM CUSTOM SPAM STUDIO COMPONENT ================= -->
-                    <div id="customSpamStudioContainer" style="display:none; margin-top:1.25rem; margin-bottom:1.25rem; padding:1.25rem; background:linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(15, 23, 42, 0.95) 100%); border:1px solid rgba(56, 189, 248, 0.4); border-radius:12px; box-shadow:0 6px 24px rgba(0,0,0,0.45);">
+                    
+                    <!-- CLEAN SPAM STUDIO CONTAINER (THU HỒI & XÓA TIN NHẮN CHÍNH XÁC THEO TỪ KHÓA) -->
+                    <div id="cleanSpamStudioContainer" style="display:none; margin-top:1.25rem; margin-bottom:1.25rem; background:linear-gradient(145deg, #131b2e, #0b1120); border:2px solid #38bdf8; border-radius:12px; padding:1.25rem; box-shadow:0 10px 25px rgba(56,189,248,0.15);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(56,189,248,0.25); padding-bottom:0.75rem; margin-bottom:1rem;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <span style="background:rgba(56,189,248,0.2); color:#38bdf8; padding:4px 10px; border-radius:8px; font-size:0.85rem; font-weight:800; border:1px solid rgba(56,189,248,0.4);">
+                                    <i class="fa-solid fa-broom"></i> THU HỒI & XÓA TIN NHẮN THEO TỪ KHÓA
+                                </span>
+                                <span style="color:#94a3b8; font-size:0.8rem;">(Lọc chính xác 100% câu từ - Không xóa nhầm tin đối soát)</span>
+                            </div>
+                            <span style="font-size:0.75rem; color:#38bdf8; background:rgba(56,189,248,0.1); padding:3px 8px; border-radius:6px; font-weight:700;">
+                                <i class="fa-solid fa-shield-halved"></i> Chống Xóa Nhầm
+                            </span>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: 2fr 1fr; gap:1rem; margin-bottom:1rem;">
+                            <!-- Ô nhập từ khóa -->
+                            <div>
+                                <label style="display:block; font-size:0.82rem; font-weight:700; color:#f8fafc; margin-bottom:6px;">
+                                    <i class="fa-solid fa-key" style="color:#f59e0b;"></i> 1. Nhập chính xác câu / từ khóa cần lọc để xóa:
+                                </label>
+                                <input type="text" id="cleanSpamKeywordInput" value="To use this bot, you must join our channel:" placeholder="Nhập câu từ muốn xóa (Ví dụ: To use this bot, you must join our channel:)" style="width:100%; padding:0.65rem 0.9rem; background:#0f172a; border:1px solid #38bdf8; border-radius:8px; color:#ffffff; font-size:0.85rem; font-weight:600; outline:none; box-shadow:inset 0 2px 4px rgba(0,0,0,0.5);">
+                                <small style="display:block; color:#94a3b8; font-size:0.72rem; margin-top:4px;">
+                                    💡 <em>Chỉ những tin nhắn có chứa chính xác đoạn chữ này mới bị xóa khỏi các group.</em>
+                                </small>
+                            </div>
+
+                            <!-- Chọn độ sâu quét -->
+                            <div>
+                                <label style="display:block; font-size:0.82rem; font-weight:700; color:#f8fafc; margin-bottom:6px;">
+                                    <i class="fa-solid fa-magnifying-glass" style="color:#38bdf8;"></i> 2. Số tin nhắn gần nhất quét / group:
+                                </label>
+                                <select id="cleanSpamLimitSelect" style="width:100%; padding:0.65rem 0.9rem; background:#0f172a; border:1px solid var(--border-card); border-radius:8px; color:#ffffff; font-size:0.85rem; font-weight:600; outline:none;">
+                                    <option value="30">30 tin gần nhất</option>
+                                    <option value="50" selected>50 tin gần nhất (Khuyên dùng)</option>
+                                    <option value="100">100 tin gần nhất</option>
+                                    <option value="200">200 tin gần nhất</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Thống kê nhanh và lưu ý -->
+                        <div style="background:rgba(15,23,42,0.6); border:1px dashed rgba(56,189,248,0.3); border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center;">
+                            <div style="font-size:0.78rem; color:#cbd5e1;">
+                                🛡️ <strong>Chế độ hoạt động:</strong> Tự động quét toàn bộ <strong>All Group Telegram</strong>, đếm số lượng tin rác trong từng nhóm và chỉ xóa các tin chứa đúng câu trên.
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <button type="button" onclick="setCleanKeyword('To use this bot, you must join our channel:')" style="padding:0.3rem 0.6rem; background:rgba(56,189,248,0.15); border:1px solid #38bdf8; border-radius:6px; color:#38bdf8; font-size:0.72rem; font-weight:700; cursor:pointer;">
+                                    Bot Spam Join Channel
+                                </button>
+                                <button type="button" onclick="setCleanKeyword('')" style="padding:0.3rem 0.6rem; background:rgba(255,255,255,0.06); border:1px solid var(--border-card); border-radius:6px; color:#94a3b8; font-size:0.72rem; cursor:pointer;">
+                                    Xóa ô trắng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- ADD MEMBER STUDIO CONTAINER (THÊM BOT VÀO GROUP THEO CHAT ID YÊU CẦU) -->
+                    <div id="addMemberStudioContainer" style="display:none; margin-top:1.25rem; margin-bottom:1.25rem; background:linear-gradient(145deg, #1e1b4b, #0f172a); border:2px solid #818cf8; border-radius:12px; padding:1.25rem; box-shadow:0 10px 25px rgba(129,140,248,0.15);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(129,140,248,0.25); padding-bottom:0.75rem; margin-bottom:1rem;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <span style="background:rgba(129,140,248,0.2); color:#a5b4fc; padding:4px 10px; border-radius:8px; font-size:0.85rem; font-weight:800; border:1px solid rgba(129,140,248,0.4);">
+                                    <i class="fa-solid fa-user-plus"></i> THÊM BOT VÀO GROUP THEO CHAT ID YÊU CẦU
+                                </span>
+                                <span style="color:#94a3b8; font-size:0.8rem;">(Tự động mời Bot vào đúng các nhóm bạn chỉ định)</span>
+                            </div>
+                            <span style="font-size:0.75rem; color:#a5b4fc; background:rgba(129,140,248,0.1); padding:3px 8px; border-radius:6px; font-weight:700;">
+                                <i class="fa-solid fa-robot"></i> Telegram Bot Adder
+                            </span>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 2fr; gap:1.25rem; margin-bottom:1rem;">
+                            <!-- Cột 1: Username Bot cần thêm -->
+                            <div>
+                                <label style="display:block; font-size:0.82rem; font-weight:700; color:#f8fafc; margin-bottom:6px;">
+                                    <i class="fa-solid fa-robot" style="color:#818cf8;"></i> 1. Username Bot cần thêm vào nhóm:
+                                </label>
+                                <input type="text" id="addMemberUsernameInput" value="@doi_soat_SCM_bot" placeholder="@doi_soat_SCM_bot" style="width:100%; padding:0.65rem 0.9rem; background:#0f172a; border:1px solid #818cf8; border-radius:8px; color:#ffffff; font-size:0.85rem; font-weight:700; outline:none; box-shadow:inset 0 2px 4px rgba(0,0,0,0.5);">
+                                <small style="display:block; color:#94a3b8; font-size:0.72rem; margin-top:4px;">
+                                    💡 <em>Mặc định là Bot <code>@doi_soat_SCM_bot</code>.</em>
+                                </small>
+                            </div>
+
+                            <!-- Cột 2: Nhập Chat ID hoặc Mã Siêu Thị cần thêm -->
+                            <div>
+                                <label style="display:block; font-size:0.82rem; font-weight:700; color:#f8fafc; margin-bottom:6px;">
+                                    <i class="fa-solid fa-list-check" style="color:#38bdf8;"></i> 2. Dán Danh Sách Chat ID hoặc Mã Siêu Thị Yêu Cầu:
+                                </label>
+                                <textarea id="addMemberTargetChatIds" rows="2" placeholder="Ví dụ: -1002439645926, -1001705324344, A209, A208, LVY... (Để trống hoặc gõ ALL để add vào toàn bộ 225 nhóm)" style="width:100%; padding:0.65rem 0.9rem; background:#0f172a; border:1px solid var(--border-card); border-radius:8px; color:#ffffff; font-size:0.83rem; font-weight:600; outline:none; resize:vertical;"></textarea>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                                    <small style="color:#94a3b8; font-size:0.72rem;">
+                                        💡 Phân cách các Chat ID hoặc Mã ST bằng dấu phẩy hoặc khoảng trắng.
+                                    </small>
+                                    <button type="button" onclick="document.getElementById('addMemberTargetChatIds').value='ALL'" style="padding:2px 8px; background:rgba(129,140,248,0.15); border:1px solid #818cf8; border-radius:4px; color:#a5b4fc; font-size:0.7rem; font-weight:700; cursor:pointer;">
+                                        Add Tất Cả 225 Group
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gợi ý nhanh -->
+                        <div style="background:rgba(15,23,42,0.6); border:1px dashed rgba(129,140,248,0.3); border-radius:8px; padding:0.75rem 1rem; font-size:0.78rem; color:#cbd5e1;">
+                            🛡️ <strong>Lưu ý:</strong> Tài khoản chính của bạn sẽ tự động kiểm tra nếu bot đã có sẵn trong nhóm thì sẽ bỏ qua để tránh trùng lặp. Chỉ những nhóm bot chưa tham gia mới được tự động thêm vào.
+                        </div>
+                    </div>
+
+<div id="customSpamStudioContainer" style="display:none; margin-top:1.25rem; margin-bottom:1.25rem; padding:1.25rem; background:linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(15, 23, 42, 0.95) 100%); border:1px solid rgba(56, 189, 248, 0.4); border-radius:12px; box-shadow:0 6px 24px rgba(0,0,0,0.45);">
                         <!-- Header Bar -->
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px dashed rgba(56, 189, 248, 0.25);">
                             <div style="display:flex; align-items:center; gap:10px;">
@@ -6459,7 +6566,7 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            initCloudRunnerUI();
+            initCloudRunnerUI(); setTimeout(() => { const sel = document.getElementById("cloudToolSelect"); if (sel && sel.value === "xoa_tin_nhan") { const c = document.getElementById("cleanSpamStudioContainer"); if (c) c.style.display = "block"; } }, 300);
             initCustomSpamStudio();
             populateMonthOptions();
             applyTheme(currentTheme);
@@ -6884,7 +6991,7 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 // 8. Render Runner (Tab 5)
                 try {
                     if (typeof initCloudRunnerUI === 'function') {
-                        initCloudRunnerUI();
+                        initCloudRunnerUI(); setTimeout(() => { const sel = document.getElementById("cloudToolSelect"); if (sel && sel.value === "xoa_tin_nhan") { const c = document.getElementById("cleanSpamStudioContainer"); if (c) c.style.display = "block"; } }, 300);
                     }
                 } catch(e) {
                     console.error("[ERROR BOUNDARY] Lỗi initCloudRunnerUI (Tab 5):", e);
@@ -11785,15 +11892,42 @@ function copyChatId(chatId, btnEl) {
             rebuildCustomSpamStoresList();
         }
 
-        function onCloudToolChange(toolName) {
+                function onCloudToolChange(toolName) {
             const studio = document.getElementById("customSpamStudioContainer");
-            if (!studio) return;
-            if (toolName === "spam_tu_chon") {
-                studio.style.display = "block";
-                rebuildCustomSpamStoresList();
-                updateCustomSpamPreview();
+            const cleanStudio = document.getElementById("cleanSpamStudioContainer");
+            
+            if (studio) {
+                if (toolName === "spam_tu_chon") {
+                    studio.style.display = "block";
+                    rebuildCustomSpamStoresList();
+                    updateCustomSpamPreview();
+                } else {
+                    studio.style.display = "none";
+                }
+            }
+            
+            if (cleanStudio) {
+                if (toolName === "xoa_tin_nhan") {
+                    cleanStudio.style.display = "block";
+                }
+            const addStudio = document.getElementById("addMemberStudioContainer");
+            if (addStudio) {
+                if (toolName === "add_thanh_vien") {
+                    addStudio.style.display = "block";
+                } else {
+                    addStudio.style.display = "none";
+                }
             } else {
-                studio.style.display = "none";
+                    cleanStudio.style.display = "none";
+                }
+            }
+        }
+
+        function setCleanKeyword(kw) {
+            const input = document.getElementById("cleanSpamKeywordInput");
+            if (input) {
+                input.value = kw;
+                input.focus();
             }
         }
 

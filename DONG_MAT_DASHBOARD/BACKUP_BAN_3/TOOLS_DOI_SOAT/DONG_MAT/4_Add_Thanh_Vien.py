@@ -1,21 +1,6 @@
-
-def find_data_file(filename, default_dir=None):
-    cur_dir = os.path.dirname(os.path.abspath(__file__))
-    candidates = [
-        os.path.join(cur_dir, filename),
-        os.path.join(cur_dir, '..', 'CONFIG_DATA', filename),
-        os.path.join(cur_dir, '..', filename),
-        os.path.join(r'C:\Users\PC\Desktop\AI\Đối soát\ĐÔNG MÁT', filename),
-        os.path.join(r'C:\Users\PC\Desktop\AI\Đối soát\THỊT CÁ', filename),
-        os.path.join(r'C:\Users\PC\Desktop\AI\Đối soát\RAU CỦ', filename)
-    ]
-    for c in candidates:
-        if os.path.exists(c):
-            return os.path.abspath(c)
-    return os.path.join(cur_dir, filename)
-
 import asyncio
-import random
+import os
+import sys
 import pandas as pd
 from telethon import TelegramClient
 from telethon.tl.functions.channels import InviteToChannelRequest, GetParticipantRequest
@@ -30,232 +15,156 @@ from telethon.errors import (
     UserNotParticipantError,
 )
 
-# ============================================================
-# CẤU HÌNH
-# ============================================================
-api_id   = 28938971
+sys.stdout.reconfigure(encoding='utf-8', errors='ignore')
+
+api_id = 28938971
 api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-session  = 'user_session'
+current_dir = os.path.dirname(os.path.abspath(__file__))
+session_path = os.path.join(current_dir, 'user_session')
+if not os.path.exists(session_path + '.session'):
+    session_path = os.path.join(r'G:\My Drive\Đối soát SCM', 'user_session')
+if not os.path.exists(session_path + '.session'):
+    session_path = os.path.join(r'C:\Users\Thu Ha\Desktop\ĐỐI SOÁT\ĐÔNG MÁT', 'user_session')
 
-DELAY_MIN = 60
-DELAY_MAX = 80
-# ============================================================
+# Lấy cấu hình từ Web truyền xuống
+TARGET_MEMBER = os.environ.get('TARGET_MEMBER', '@doi_soat_SCM_bot').strip()
+if not TARGET_MEMBER.startswith('@') and not TARGET_MEMBER.isdigit():
+    TARGET_MEMBER = '@' + TARGET_MEMBER
 
-async def kiem_tra_da_co_trong_group(client, group_entity, user_entity):
-    """
-    Kiểm tra user đã là thành viên của group chưa.
-    Trả về True nếu đã có, False nếu chưa có.
-    """
+TARGET_CHAT_IDS = os.environ.get('TARGET_CHAT_IDS', 'ALL').strip()
+
+def find_excel():
+    candidates = [
+        os.path.join(current_dir, 'Danh sách Siêu thị.xlsx'),
+        os.path.join(r'G:\My Drive\Đối soát SCM\SPAM_PHIEU_CHUYEN\CONFIG_DATA', 'Danh sách Siêu thị.xlsx'),
+        r'C:\Users\Thu Ha\Desktop\ĐỐI SOÁT\ĐÔNG MÁT\Danh sách Siêu thị.xlsx'
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    return candidates[0]
+
+async def check_is_participant(client, group_entity, user_entity):
     try:
         if isinstance(group_entity, Channel):
-            await client(GetParticipantRequest(
-                channel=group_entity,
-                participant=user_entity
-            ))
-            return True  # Có kết quả → đã là thành viên
+            await client(GetParticipantRequest(channel=group_entity, participant=user_entity))
+            return True
         elif isinstance(group_entity, Chat):
             full = await client(GetFullChatRequest(group_entity.id))
-            user_ids = [u.id for u in full.users]
-            return user_entity.id in user_ids
+            return user_entity.id in [u.id for u in full.users]
     except UserNotParticipantError:
         return False
     except Exception:
-        return False  # Lỗi khác → coi như chưa có để thử add
+        return False
+    return False
 
 async def main():
-    print("=" * 60)
-    print("   TOOL ADD THÀNH VIÊN VÀO TẤT CẢ GROUP SIÊU THỊ")
-    print("=" * 60)
+    print('=' * 75)
+    print('👥 TOOL TỰ ĐỘNG THÊM BOT / THÀNH VIÊN VÀO GROUP THEO YÊU CẦU')
+    print(f'🤖 USERNAME CẦN ADD: {TARGET_MEMBER}')
+    print(f'🎯 DANH SÁCH CHAT ID YÊU CẦU: {TARGET_CHAT_IDS if TARGET_CHAT_IDS != "ALL" else "TẤT CẢ CÁC GROUP CÓ TRONG DANH BẠ"}')
+    print('=' * 75)
 
-    # ── Nhập username ─────────────────────────────────────────
-    print()
-    username_input = input("  Nhập username cần add (VD: @nguyenvana): ").strip()
-    if not username_input:
-        print("[LỖI] Bạn chưa nhập username!")
-        input("Bấm Enter để thoát...")
+    excel_file = find_excel()
+    if not os.path.exists(excel_file):
+        print(f'❌ Không tìm thấy file danh bạ Siêu thị tại: {excel_file}')
         return
-    if not username_input.startswith('@'):
-        username_input = '@' + username_input
-    print(f"  → Sẽ add: {username_input}\n")
 
-    # ── Đọc danh sách siêu thị ────────────────────────────────
-    df = pd.read_excel(find_data_file('Danh sách Siêu thị.xlsx'), dtype=str)
+    df = pd.read_excel(excel_file, dtype=str)
     df = df[df['CHAT ID'].notna() & (df['CHAT ID'].str.strip() != '') & (df['CHAT ID'] != 'nan')]
     df['CHAT ID'] = df['CHAT ID'].str.replace('.0', '', regex=False).str.strip()
     df = df.reset_index(drop=True)
 
-    success_list = []
-    skip_list    = []
-    fail_list    = []
+    # Lọc theo danh sách Chat ID hoặc mã ST yêu cầu từ Web
+    if TARGET_CHAT_IDS and TARGET_CHAT_IDS != 'ALL':
+        req_list = [x.strip() for x in TARGET_CHAT_IDS.replace(',', ' ').split() if x.strip()]
+        
+        def match_row(r):
+            cid = str(r['CHAT ID']).strip()
+            id_st = str(r.get('ID ST', '')).strip()
+            ten_st = str(r.get('Tên Siêu thị', '')).strip()
+            for q in req_list:
+                if q == cid or q == id_st or q in cid or q in ten_st:
+                    return True
+            return False
+            
+        df = df[df.apply(match_row, axis=1)].reset_index(drop=True)
 
-    async with TelegramClient(session, api_id, api_hash) as client:
-        print("✅ Đăng nhập Telegram thành công!\n")
+    if df.empty:
+        print('⚠️ Không tìm thấy nhóm nào khớp với danh sách Chat ID bạn yêu cầu!')
+        return
 
-        # Lấy entity của user cần add
+    print(f'📊 Tìm thấy {len(df)} nhóm cần xử lý theo yêu cầu.
+')
+
+    async with TelegramClient(session_path, api_id, api_hash) as client:
+        print('✅ Đăng nhập Telegram chính chủ thành công!')
+        
+        # 1. Tìm Entity của User/Bot cần add
         try:
-            user_entity = await client.get_entity(username_input)
-            print(f"  Tìm thấy user: {user_entity.first_name} (ID: {user_entity.id})\n")
+            user_entity = await client.get_entity(TARGET_MEMBER)
+            print(f'👤 Tìm thấy đối tượng: {getattr(user_entity, "first_name", TARGET_MEMBER)} (ID: {user_entity.id})\n')
         except Exception as e:
-            print(f"[LỖI] Không tìm được user '{username_input}': {e}")
-            input("Bấm Enter để thoát...")
+            print(f'❌ Không tìm thấy user/bot "{TARGET_MEMBER}" trên Telegram: {e}')
             return
 
-        # ══════════════════════════════════════════════════════
-        # GIAI ĐOẠN 1: QUÉT NHANH — KIỂM TRA TƯ CÁCH THÀNH VIÊN
-        # ══════════════════════════════════════════════════════
-        print("=" * 60)
-        print("  GIAI ĐOẠN 1: QUÉT KIỂM TRA TƯ CÁCH THÀNH VIÊN...")
-        print("=" * 60)
-
-        can_add_rows  = []   # Danh sách group chưa có user → cần add
-        da_co_rows    = []   # Danh sách group đã có user → bỏ qua
-        loi_lay_group = []   # Không lấy được entity
+        success_cnt = 0
+        already_cnt = 0
+        fail_cnt = 0
 
         for idx, row in df.iterrows():
-            ten_st  = str(row.get('Tên Siêu thị', ''))
-            id_st   = str(row.get('ID ST', ''))
-            chat_id = int(row['CHAT ID'])
+            id_st = str(row.get('ID ST', ''))
+            ten_st = str(row.get('Tên Siêu thị', id_st))
+            raw_cid = str(row['CHAT ID']).strip()
+            
+            try:
+                cid = int(raw_cid)
+            except Exception:
+                continue
 
-            print(f"  [{idx+1}/{len(df)}] {ten_st} ({id_st}) ... ", end='', flush=True)
+            print(f'[{idx+1}/{len(df)}] ST: {ten_st} (Chat ID: {cid}) ... ', end='', flush=True)
 
             try:
-                group_entity = await client.get_entity(chat_id)
-                da_co = await kiem_tra_da_co_trong_group(client, group_entity, user_entity)
+                group_entity = await client.get_entity(cid)
+                
+                # Kiểm tra xem đã có trong nhóm chưa
+                is_in = await check_is_participant(client, group_entity, user_entity)
+                if is_in:
+                    print('ℹ️ ĐÃ CÓ SẴN TRONG NHÓM (Bỏ qua)')
+                    already_cnt += 1
+                    continue
 
-                if da_co:
-                    print("✅ Đã có")
-                    da_co_rows.append(row)
-                    skip_list.append(f"{ten_st} ({id_st})")
-                else:
-                    print("➕ Chưa có → Cần add")
-                    can_add_rows.append((row, group_entity))
-
-            except Exception as e:
-                print(f"❌ Lỗi: {e}")
-                loi_lay_group.append(f"{ten_st} ({id_st}) - {e}")
-
-            await asyncio.sleep(0.5)  # Delay nhẹ khi quét để tránh rate limit
-
-        print()
-        print(f"  ─── KẾT QUẢ QUÉT ───────────────────────────────")
-        print(f"  ✅ Đã là thành viên : {len(da_co_rows)} group (bỏ qua)")
-        print(f"  ➕ Chưa có, cần add : {len(can_add_rows)} group")
-        print(f"  ❌ Không lấy được  : {len(loi_lay_group)} group")
-        print()
-
-        if not can_add_rows:
-            print("  🎉 Không còn group nào cần add! Đã hoàn tất.")
-            input("Bấm Enter để thoát...")
-            return
-
-        input(f"  Bấm Enter để bắt đầu ADD {len(can_add_rows)} group còn lại...")
-
-        # ══════════════════════════════════════════════════════
-        # GIAI ĐOẠN 2: ADD VÀO CÁC GROUP CHƯA CÓ
-        # ══════════════════════════════════════════════════════
-        print()
-        print("=" * 60)
-        print(f"  GIAI ĐOẠN 2: ADD '{username_input}' VÀO {len(can_add_rows)} GROUP")
-        print("=" * 60 + "\n")
-
-        for i, (row, group_entity) in enumerate(can_add_rows, start=1):
-            ten_st  = str(row.get('Tên Siêu thị', ''))
-            id_st   = str(row.get('ID ST', ''))
-
-            print(f"[{i}/{len(can_add_rows)}] {ten_st} ({id_st})")
-
-            try:
-                # ── Supergroup / Channel ──────────────────────
+                # Mời vào nhóm
                 if isinstance(group_entity, Channel):
-                    try:
-                        await client(InviteToChannelRequest(
-                            channel=group_entity,
-                            users=[user_entity]
-                        ))
-                        print(f"  ✅ ADD THÀNH CÔNG (supergroup)")
-                        success_list.append(f"{ten_st} ({id_st})")
-                    except UserAlreadyParticipantError:
-                        print(f"  ⏭️  Đã là thành viên - bỏ qua")
-                        skip_list.append(f"{ten_st} ({id_st})")
-                    except UserPrivacyRestrictedError:
-                        print(f"  ❌ User bật chế độ riêng tư")
-                        fail_list.append(f"{ten_st} ({id_st}) - Privacy restricted")
-                    except UserNotMutualContactError:
-                        print(f"  ❌ Chưa có liên hệ chung")
-                        fail_list.append(f"{ten_st} ({id_st}) - Not mutual contact")
-                    except FloodWaitError as e:
-                        print(f"  ⚠️  Flood! Đợi {e.seconds}s...")
-                        await asyncio.sleep(e.seconds + 5)
-                        try:
-                            await client(InviteToChannelRequest(group_entity, [user_entity]))
-                            print(f"  ✅ ADD THÀNH CÔNG (sau flood)")
-                            success_list.append(f"{ten_st} ({id_st})")
-                        except Exception as re_e:
-                            print(f"  ❌ Vẫn thất bại: {re_e}")
-                            fail_list.append(f"{ten_st} ({id_st}) - {re_e}")
-                    except PeerFloodError:
-                        print(f"  ⛔ Tài khoản bị giới hạn spam. Dừng!")
-                        fail_list.append(f"{ten_st} ({id_st}) - PeerFlood")
-                        break
-                    except Exception as e:
-                        print(f"  ❌ {e}")
-                        fail_list.append(f"{ten_st} ({id_st}) - {e}")
-
-                # ── Chat thường ───────────────────────────────
+                    await client(InviteToChannelRequest(channel=group_entity, users=[user_entity]))
                 elif isinstance(group_entity, Chat):
-                    try:
-                        await client(AddChatUserRequest(
-                            chat_id=group_entity.id,
-                            user_id=user_entity,
-                            fwd_limit=0
-                        ))
-                        print(f"  ✅ ADD THÀNH CÔNG (chat thường)")
-                        success_list.append(f"{ten_st} ({id_st})")
-                    except UserAlreadyParticipantError:
-                        print(f"  ⏭️  Đã là thành viên - bỏ qua")
-                        skip_list.append(f"{ten_st} ({id_st})")
-                    except UserPrivacyRestrictedError:
-                        print(f"  ❌ User bật chế độ riêng tư")
-                        fail_list.append(f"{ten_st} ({id_st}) - Privacy restricted")
-                    except FloodWaitError as e:
-                        print(f"  ⚠️  Flood! Đợi {e.seconds}s...")
-                        await asyncio.sleep(e.seconds + 5)
-                    except PeerFloodError:
-                        print(f"  ⛔ Tài khoản bị giới hạn spam. Dừng!")
-                        fail_list.append(f"{ten_st} ({id_st}) - PeerFlood")
-                        break
-                    except Exception as e:
-                        print(f"  ❌ {e}")
-                        fail_list.append(f"{ten_st} ({id_st}) - {e}")
+                    await client(AddChatUserRequest(chat_id=group_entity.id, user_id=user_entity, fwd_limit=100))
 
-            except Exception as e:
-                print(f"  ❌ Lỗi: {e}")
-                fail_list.append(f"{ten_st} ({id_st}) - {e}")
+                print('✅ THÊM THÀNH CÔNG!')
+                success_cnt += 1
+                await asyncio.sleep(2)
 
-            # Đếm ngược delay (chỉ delay nếu còn group tiếp theo)
-            if i < len(can_add_rows):
-                wait_sec = random.randint(DELAY_MIN, DELAY_MAX)
-                for remaining in range(wait_sec, 0, -1):
-                    print(f"  ⏳ Chờ {remaining}s trước group tiếp theo...", end='\r')
-                    await asyncio.sleep(1)
-                print(" " * 55, end='\r')
+            except UserAlreadyParticipantError:
+                print('ℹ️ ĐÃ CÓ TRONG NHÓM')
+                already_cnt += 1
+            except Exception as ex:
+                err_str = str(ex)
+                if 'already in' in err_str.lower():
+                    print('ℹ️ ĐÃ CÓ TRONG NHÓM')
+                    already_cnt += 1
+                elif 'can\'t be added' in err_str.lower() or 'not allowed' in err_str.lower():
+                    print('⚠️ Bot chưa được mở quyền vào nhóm trên BotFather!')
+                    fail_cnt += 1
+                else:
+                    print(f'❌ Lỗi: {err_str[:40]}')
+                    fail_cnt += 1
 
-    # ── Báo cáo kết quả ──────────────────────────────────────
-    print("\n" + "=" * 60)
-    print(f"  📊 KẾT QUẢ CUỐI CÙNG — {username_input}")
-    print("=" * 60)
-    print(f"  ✅ Add thành công       : {len(success_list)} group")
-    print(f"  ⏭️  Đã là thành viên    : {len(skip_list)} group")
-    print(f"  ❌ Thất bại             : {len(fail_list)} group")
-
-    if fail_list:
-        print("\n  --- DANH SÁCH THẤT BẠI ---")
-        for item in fail_list:
-            print(f"    • {item}")
-
-    print("\n" + "=" * 60)
-    input("  Bấm Enter để thoát...")
-
+        print('\n' + '=' * 75)
+        print('🎉 HOÀN TẤT TIẾN TRÌNH THÊM THÀNH VIÊN THEO YÊU CẦU!')
+        print(f'- ✅ Thêm mới thành công : {success_cnt} group')
+        print(f'- ℹ️ Đã có sẵn từ trước : {already_cnt} group')
+        print(f'- ❌ Thất bại / Lỗi      : {fail_cnt} group')
+        print('=' * 75)
 
 if __name__ == '__main__':
     asyncio.run(main())

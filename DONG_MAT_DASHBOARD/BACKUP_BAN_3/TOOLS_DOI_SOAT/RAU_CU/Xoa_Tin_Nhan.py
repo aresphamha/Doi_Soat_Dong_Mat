@@ -1,101 +1,72 @@
-
-def find_data_file(filename, default_dir=None):
-    cur_dir = os.path.dirname(os.path.abspath(__file__))
-    candidates = [
-        os.path.join(cur_dir, filename),
-        os.path.join(cur_dir, '..', 'CONFIG_DATA', filename),
-        os.path.join(cur_dir, '..', filename),
-        os.path.join(r'C:\Users\PC\Desktop\AI\Đối soát\ĐÔNG MÁT', filename),
-        os.path.join(r'C:\Users\PC\Desktop\AI\Đối soát\THỊT CÁ', filename),
-        os.path.join(r'C:\Users\PC\Desktop\AI\Đối soát\RAU CỦ', filename)
-    ]
-    for c in candidates:
-        if os.path.exists(c):
-            return os.path.abspath(c)
-    return os.path.join(cur_dir, filename)
-
 import asyncio
-import pandas as pd
 import os
 import sys
-sys.stdout.reconfigure(encoding='utf-8')
+import datetime
+import requests
+import pandas as pd
 from telethon import TelegramClient
 
-api_id   = 28938971
-api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
+sys.stdout.reconfigure(encoding='utf-8', errors='ignore')
 
-current_dir  = os.path.dirname(os.path.abspath(__file__))
-session_path = os.path.join(current_dir, '..', 'ĐÔNG MÁT', 'user_session')
+API_ID = 28938971
+API_HASH = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
+BOT_TOKEN = '8810108114:AAHWJjis5O3bFyx98-qjOs1PQKTAKMem_zU'
+URL_DELETE = f'https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage'
 
-BOT_ID        = 8810108114
-TU_KHOA       = ['RAU CU', 'RAU CỦ', 'HẬU KIỂM', 'HAU KIEM']
-SO_TIN_QUET   = 30
+current_dir = os.path.dirname(os.path.abspath(__file__))
+session_path = os.path.join(current_dir, '..', 'DONG_MAT', 'user_session')
+if not os.path.exists(session_path + '.session'):
+    session_path = os.path.join(r'C:\Users\Thu Ha\Desktop\ĐỐI SOÁT\ĐÔNG MÁT', 'user_session')
+
+KEYWORD_TO_DELETE = os.environ.get('CLEAN_KEYWORD', 'To use this bot, you must join our channel:')
 
 async def main():
-    print("=" * 55)
-    print("  XOÁ TIN NHẮN BOT - RAU CỦ QUẢ")
-    print("=" * 55)
+    print('=' * 80)
+    print('🧹 TRẠM THU HỒI & XÓA TIN NHẮN TẬN GỐC BẰNG BOT API (CHẮC CHẮN 100%)')
+    print(f'🔑 TỪ KHÓA BẮT BUỘC KHỚP: "{KEYWORD_TO_DELETE}"')
+    print('🛡️ CƠ CHẾ: Dùng quyền của chính Bot gửi tin để xóa trực tiếp trên server Telegram')
+    print('=' * 80)
 
-    excel_path = os.path.join(current_dir, 'Danh sách Siêu thị.xlsx')
-    df = pd.read_excel(excel_path, dtype=str)
-    df = df[df['CHAT ID'].notna() & (df['CHAT ID'] != 'nan')]
-    df['CHAT ID'] = df['CHAT ID'].str.replace('.0', '', regex=False).str.strip()
-    df = df.reset_index(drop=True)
+    client = TelegramClient(session_path, API_ID, API_HASH)
+    await client.connect()
 
-    print(f"  Tổng group: {len(df)}\n")
+    if not await client.is_user_authorized():
+        print('❌ LỖI: Session Telegram chưa được xác thực!')
+        await client.disconnect()
+        return
 
-    xoa_dc, khong_co, loi = [], [], []
+    print('✅ Đăng nhập Telegram thành công!')
+    
+    deleted_count = 0
+    
+    # 1. Tìm kiếm toàn cục
+    print(f'🔍 Đang tìm kiếm tin nhắn có chứa "{KEYWORD_TO_DELETE}"...')
+    async for m in client.iter_messages(None, search=KEYWORD_TO_DELETE, limit=500):
+        txt = (getattr(m, 'text', '') or '') + ' ' + (getattr(m, 'caption', '') or '')
+        if KEYWORD_TO_DELETE.lower() in txt.lower():
+            chat = await m.get_chat()
+            chat_name = getattr(chat, 'title', None) or getattr(chat, 'first_name', 'Unknown')
+            
+            # Xóa bằng Bot API
+            res = requests.post(URL_DELETE, data={'chat_id': m.chat_id, 'message_id': m.id}, timeout=10).json()
+            if res.get('ok'):
+                deleted_count += 1
+                print(f'  ✅ [XÓA THẬT THÀNH CÔNG] Nhóm: "{chat_name}" (ID: {m.chat_id}) | Msg ID: {m.id}')
+            else:
+                try:
+                    await client.delete_messages(m.chat_id, [m.id], revoke=True)
+                    deleted_count += 1
+                    print(f'  ✅ [XÓA USER THÀNH CÔNG] Nhóm: "{chat_name}" | Msg ID: {m.id}')
+                except Exception as e:
+                    pass
+            await asyncio.sleep(0.04)
 
-    async with TelegramClient(session_path, api_id, api_hash) as client:
-        print("  ✅ Đăng nhập thành công!\n")
+    await client.disconnect()
+    
+    print('\n' + '=' * 80)
+    print(f'🎉 HOÀN TẤT THU HỒI SẠCH TIN RÁC BẰNG BOT API!')
+    print(f'- TỔNG CỘNG ĐÃ XÓA THẬT THÀNH CÔNG: {deleted_count} tin nhắn.')
+    print('=' * 80)
 
-        for idx, row in df.iterrows():
-            id_st   = str(row.get('ID ST TƯƠNG ỨNG', row.get('ID ST', '')))
-            chat_id = int(row['CHAT ID'])
-
-            print(f"[{idx+1}/{len(df)}] {id_st} | Chat: {chat_id}", end=' ... ')
-
-            try:
-                entity = await client.get_entity(chat_id)
-                to_del = []
-
-                async for msg in client.iter_messages(entity, limit=SO_TIN_QUET):
-                    # Xác định sender
-                    sid = None
-                    try:
-                        sid = msg.sender_id or (msg.from_id.user_id if msg.from_id else None)
-                    except:
-                        pass
-
-                    if sid != BOT_ID:
-                        continue
-
-                    # Kiểm tra nội dung (caption có thể không tồn tại)
-                    txt = (getattr(msg, 'text', '') or '') + (getattr(msg, 'caption', '') or '')
-                    txt = txt.upper()
-                    if any(kw.upper() in txt for kw in TU_KHOA):
-                        to_del.append(msg.id)
-
-                if to_del:
-                    await client.delete_messages(entity, to_del)
-                    print(f"🗑️  Đã xoá {len(to_del)} tin")
-                    xoa_dc.append(id_st)
-                else:
-                    print(f"ℹ️  Không có tin")
-                    khong_co.append(id_st)
-
-            except Exception as e:
-                print(f"❌ Lỗi: {str(e)[:50]}")
-                loi.append(id_st)
-
-            await asyncio.sleep(0.3)
-
-    print("\n" + "=" * 55)
-    print(f"  🗑️  Đã xoá  : {len(xoa_dc)} group")
-    print(f"  ℹ️  Không có: {len(khong_co)} group")
-    print(f"  ❌ Lỗi     : {len(loi)} group")
-    if loi:
-        print(f"     {', '.join(loi)}")
-    print("=" * 55)
-
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.run(main())

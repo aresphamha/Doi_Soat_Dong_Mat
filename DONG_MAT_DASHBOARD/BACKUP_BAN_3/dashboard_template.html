@@ -5575,7 +5575,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            initCloudRunnerUI();
+            initCloudRunnerUI(); setTimeout(() => { const sel = document.getElementById("cloudToolSelect"); if (sel && sel.value === "xoa_tin_nhan") { const c = document.getElementById("cleanSpamStudioContainer"); if (c) c.style.display = "block"; } }, 300);
             populateMonthOptions();
             applyTheme(currentTheme);
             renderAll();
