@@ -1186,9 +1186,9 @@ async def run_tool_add_thanh_vien(member=None, chat_ids=None):
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "4_Add_Thanh_Vien.py")
     extra_args = []
     if member:
-        extra_args.extend(["--member", member])
+        extra_args.append(f"--member={member}")
     if chat_ids:
-        extra_args.extend(["--chat-ids", chat_ids])
+        extra_args.append(f"--chat-ids={chat_ids}")
     execute_external_tool(script_path, extra_args=extra_args)
 
 async def run_tool_xuat_doi_soat_chuan():
@@ -1222,7 +1222,19 @@ def main():
     parser.add_argument("--photo", default=None, help="Đường dẫn file ảnh đính kèm (nếu có)")
     parser.add_argument("--chat-id-type", "--kho", choices=["dong_mat", "rau_cu", "auto"], default="dong_mat", dest="chat_id_type", help="Chọn File Chat ID Kênh gửi (dong_mat hoặc rau_cu)")
     
-    args = parser.parse_args()
+    raw_argv = sys.argv[1:]
+    clean_argv = []
+    i = 0
+    while i < len(raw_argv):
+        a = raw_argv[i]
+        if a in ["--stores", "--message", "--date", "--tool", "--chat-id-type", "--kho", "--photo"] and i + 1 < len(raw_argv):
+            clean_argv.append(f"{a}={raw_argv[i+1]}")
+            i += 2
+            continue
+        clean_argv.append(a)
+        i += 1
+
+    args = parser.parse_args(clean_argv)
     date_val = args.date.strip() if args.date and args.date.strip() else None
     tag_roles = not args.no_tags
     

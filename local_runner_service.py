@@ -638,9 +638,9 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
         elif tool in ["add_thanh_vien", "4_Add_Thanh_Vien", "4_add_thanh_vien"]:
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "DONG_MAT", "4_Add_Thanh_Vien.py")]
             if message and str(message).strip():
-                cmd.extend(["--member", str(message).strip()])
+                cmd.append(f"--member={str(message).strip()}")
             if stores and stores != "ALL" and str(stores).strip():
-                cmd.extend(["--chat-ids", str(stores).strip()])
+                cmd.append(f"--chat-ids={str(stores).strip()}")
             total_custom = len([x for x in str(stores).replace(',', ' ').split() if x.strip()]) if (stores and stores != 'ALL') else 0
             tool_title = f"Thêm Bot vào {total_custom} Chat ID Yêu Cầu" if total_custom > 0 else "Thêm Bot Vào Toàn Bộ Group Telegram"
         else:
@@ -658,7 +658,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
                     self.wfile.flush()
                     return
                 if stores:
-                    cmd.extend(["--stores", stores])
+                    cmd.append(f"--stores={stores}")
                 if message:
                     cmd.extend(["--message", message])
                 if not tag_roles:
@@ -729,11 +729,11 @@ def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_role
         elif tool in ["add_thanh_vien", "4_Add_Thanh_Vien", "4_add_thanh_vien"]:
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "DONG_MAT", "4_Add_Thanh_Vien.py")]
             if message and str(message).strip():
-                cmd.extend(["--member", str(message).strip()])
+                cmd.append(f"--member={str(message).strip()}")
             if stores and stores != "ALL" and str(stores).strip():
-                cmd.extend(["--chat-ids", str(stores).strip()])
+                cmd.append(f"--chat-ids={str(stores).strip()}")
             else:
-                cmd.extend(["--chat-ids", "ALL"])
+                cmd.append("--chat-ids=ALL")
         else:
             cmd = [PYTHON_EXE, SPAM_RUNNER_SCRIPT, "--tool", tool]
             if target_date:
@@ -757,7 +757,7 @@ def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_role
                         "logs": err_msg
                     }
             if stores:
-                cmd.extend(["--stores", stores])
+                cmd.append(f"--stores={stores}")
             if message:
                 cmd.extend(["--message", message])
             if not tag_roles:

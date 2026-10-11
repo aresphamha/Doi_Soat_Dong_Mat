@@ -140,7 +140,27 @@ async def main():
     parser = argparse.ArgumentParser(description="Tool thêm Bot / Thành viên vào Group Telegram theo Danh Sách Chat ID")
     parser.add_argument("--member", default=os.environ.get('TARGET_MEMBER', '@doi_soat_SCM_bot'), help="Username hoặc ID của Bot/User cần thêm")
     parser.add_argument("--chat-ids", "--stores", default=os.environ.get('TARGET_CHAT_IDS', ''), dest="chat_ids", help="Danh sách Chat ID hoặc Mã Siêu Thị cần thêm")
-    args = parser.parse_args()
+
+    # Tiền xử lý argv: nếu argument tiếp theo của --chat-ids hoặc --stores bắt đầu bằng dấu trừ '-' (Chat ID âm của Telegram)
+    # argparse mặc định sẽ coi đó là flag không hợp lệ và văng lỗi 'expected one argument'.
+    # Gộp thành --chat-ids=... để argparse nhận diện chính xác 100%.
+    raw_argv = sys.argv[1:]
+    clean_argv = []
+    i = 0
+    while i < len(raw_argv):
+        a = raw_argv[i]
+        if a in ["--chat-ids", "--stores"] and i + 1 < len(raw_argv):
+            clean_argv.append(f"{a}={raw_argv[i+1]}")
+            i += 2
+            continue
+        elif a == "--member" and i + 1 < len(raw_argv):
+            clean_argv.append(f"{a}={raw_argv[i+1]}")
+            i += 2
+            continue
+        clean_argv.append(a)
+        i += 1
+
+    args = parser.parse_args(clean_argv)
 
     target_member = args.member.strip() if args.member else '@doi_soat_SCM_bot'
     if not target_member.startswith('@') and not target_member.isdigit() and not target_member.startswith('-'):
