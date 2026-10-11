@@ -93,7 +93,7 @@ def record_sent_store(tool_name, date_str, id_st):
 
 api_id = '28938971'
 api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-bot_token = '8810108114:AAFjfU-DZb5cIcDBuGYBHtVQVNNthavALOc'
+bot_token = '8810108114:AAHWJjis5O3bFyx98-qjOs1PQKTAKMem_zU'
 url_send_photo = f'https://api.telegram.org/bot{bot_token}/sendPhoto'
 
 def clean_barcode(val):
@@ -131,7 +131,7 @@ def export_table_image(df_data, output_path):
     
     for (r, c), cell in table.get_celld().items():
         if r == 0:
-            cell.set_facecolor('#0284c7')
+            cell.set_facecolor('#14B8A6')
             cell.set_text_props(color='white', weight='bold')
         else:
             cell.set_facecolor('#f8fafc' if r % 2 == 1 else '#ffffff')

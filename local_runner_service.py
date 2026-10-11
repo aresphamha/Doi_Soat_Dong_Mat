@@ -616,6 +616,14 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
         elif tool in ["sync_cdc", "cdc", "sync_cdc_prices", "dong_bo_cdc"]:
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "Cap_Nhat_Gia_Nhap_Tu_CDC.py")]
             tool_title = "Đồng Bộ Giá Nhập & Master Data từ CDC StarRocks"
+        elif tool in ["add_thanh_vien", "4_Add_Thanh_Vien", "4_add_thanh_vien"]:
+            cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "DONG_MAT", "4_Add_Thanh_Vien.py")]
+            if message and str(message).strip():
+                cmd.extend(["--member", str(message).strip()])
+            if stores and stores != "ALL" and str(stores).strip():
+                cmd.extend(["--chat-ids", str(stores).strip()])
+            total_custom = len([x for x in str(stores).replace(',', ' ').split() if x.strip()]) if (stores and stores != 'ALL') else 0
+            tool_title = f"Thêm Bot vào {total_custom} Chat ID Yêu Cầu" if total_custom > 0 else "Thêm Bot Vào Toàn Bộ Group Telegram"
         else:
             cmd = [PYTHON_EXE, SPAM_RUNNER_SCRIPT, "--tool", tool]
             if target_date:
@@ -699,6 +707,14 @@ def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_role
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "sync_telegram_groups.py")]
         elif tool in ["sync_cdc", "cdc", "sync_cdc_prices", "dong_bo_cdc"]:
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "Cap_Nhat_Gia_Nhap_Tu_CDC.py")]
+        elif tool in ["add_thanh_vien", "4_Add_Thanh_Vien", "4_add_thanh_vien"]:
+            cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "DONG_MAT", "4_Add_Thanh_Vien.py")]
+            if message and str(message).strip():
+                cmd.extend(["--member", str(message).strip()])
+            if stores and stores != "ALL" and str(stores).strip():
+                cmd.extend(["--chat-ids", str(stores).strip()])
+            else:
+                cmd.extend(["--chat-ids", "ALL"])
         else:
             cmd = [PYTHON_EXE, SPAM_RUNNER_SCRIPT, "--tool", tool]
             if target_date:

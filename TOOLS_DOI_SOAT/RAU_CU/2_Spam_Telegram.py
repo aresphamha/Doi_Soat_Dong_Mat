@@ -95,8 +95,40 @@ def record_sent_store(tool_name, date_str, id_st):
 
 api_id = '28938971'
 api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-bot_token = '8810108114:AAFjfU-DZb5cIcDBuGYBHtVQVNNthavALOc'
+bot_token = '8810108114:AAHWJjis5O3bFyx98-qjOs1PQKTAKMem_zU'
 url_send_photo = f'https://api.telegram.org/bot{bot_token}/sendPhoto'
+
+def export_table_image(df_data, output_path, header_color='#EA580C'):
+    import matplotlib.pyplot as plt
+    n_rows = len(df_data)
+    fig_height = max(1.2, 0.8 + n_rows * 0.45)
+    fig, ax = plt.subplots(figsize=(13.5, fig_height), dpi=200)
+    ax.axis('off')
+    
+    col_widths = [0.10, 0.18, 0.46, 0.10, 0.16]
+    table = ax.table(
+        cellText=df_data.values,
+        colLabels=df_data.columns,
+        colWidths=col_widths,
+        cellLoc='center',
+        loc='center'
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(11)
+    table.scale(1, 1.8)
+    
+    for (r, c), cell in table.get_celld().items():
+        if r == 0:
+            cell.set_facecolor(header_color)
+            cell.set_text_props(color='white', weight='bold')
+        else:
+            cell.set_facecolor('#f8fafc' if r % 2 == 1 else '#ffffff')
+            if c == 2: # Tên Hàng
+                cell.set_text_props(ha='left')
+                
+    plt.tight_layout()
+    plt.savefig(output_path, bbox_inches='tight', dpi=200)
+    plt.close(fig)
 
 def disable_quickedit():
     """Tắt tính năng QuickEdit của Windows Console để chuột click vào không bị treo/pause tool"""
@@ -381,19 +413,7 @@ ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên 
         
         print(f"👉 [{idx}/{total_st}] Đang chuẩn bị ảnh & Tag tên quản lý cho ST {id_st} ({len(group)} dòng hàng)...", flush=True)
         try:
-            styled = df_slice.style.set_properties(**{
-                'background-color': '#ffffff',
-                'color': 'black',
-                'border-color': 'gray',
-                'border-style': 'solid',
-                'border-width': '1px',
-                'text-align': 'center',
-                'padding': '10px 20px'
-            }).set_table_styles([{
-                'selector': 'th',
-                'props': [('background-color', '#4CAF50'), ('color', 'white'), ('font-weight', 'bold'), ('text-align', 'center'), ('border', '1px solid gray'), ('padding', '10px 20px')]
-            }])
-            dfi.export(styled, img_path, table_conversion="matplotlib", dpi=200)
+            export_table_image(df_slice, img_path, header_color='#EA580C')
         except Exception as e:
             print(f"❌ [{idx}/{total_st}] Lỗi tạo hình ảnh cho ST {id_st}: {e}", flush=True)
             fail_count += 1
