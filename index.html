@@ -12599,6 +12599,13 @@ function copyChatId(chatId, btnEl) {
                 currentEventSource.close();
             }
 
+            // Mở khóa nút ngay lập tức để giao diện không bị kẹt
+            const btn = document.getElementById("btnTriggerCloud");
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+            }
+
             fetch(`${LOCAL_RUNNER_API}/cancel`, { method: "POST" })
                 .then(r => r.json())
                 .then(res => {

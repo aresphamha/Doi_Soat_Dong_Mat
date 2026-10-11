@@ -279,12 +279,31 @@ def terminate_process(proc):
     global CURRENT_RUNNING_PROC, IS_CURRENT_PAUSED
     if proc and proc.poll() is None:
         try:
+            # 1. Bắt buộc resume tiến trình nếu đang bị tạm dừng (suspend) để Windows có thể kill dứt điểm
+            resume_process(proc)
+        except Exception:
+            pass
+        try:
             subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)], capture_output=True)
-            proc.terminate()
+            proc.kill()
         except Exception as e:
             print(f"Error terminating process: {e}")
     CURRENT_RUNNING_PROC = None
     IS_CURRENT_PAUSED = False
+    
+    # 2. Quét dọn an toàn bất kỳ tiến trình python worker mồ côi nào còn sót lại
+    try:
+        cleanup_cmd = (
+            'Get-Process python -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne $PID } | '
+            'ForEach-Object { '
+            '$cmd = (Get-CimInstance Win32_Process -Filter ("ProcessId = " + $_.Id)).CommandLine; '
+            'if ($cmd -match "run_spam_tool" -or $cmd -match "4_Add_Thanh_Vien" -or $cmd -match "2_Spam_Telegram") { '
+            'Stop-Process -Id $_.Id -Force '
+            '} }'
+        )
+        subprocess.run(["powershell", "-NoProfile", "-Command", cleanup_cmd], capture_output=True, timeout=5)
+    except Exception as e:
+        print(f"Error cleaning worker processes: {e}")
 
 class SCMRequestHandler(BaseHTTPRequestHandler):
     def _send_cors_headers(self):
