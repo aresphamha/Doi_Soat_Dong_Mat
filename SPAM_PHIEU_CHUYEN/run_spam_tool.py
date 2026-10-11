@@ -1179,12 +1179,17 @@ async def run_tool_tra_cuu_id():
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "3_Tra_Cuu_ID.py")
     execute_external_tool(script_path)
 
-async def run_tool_add_thanh_vien():
+async def run_tool_add_thanh_vien(member=None, chat_ids=None):
     print("\n=======================================================")
     print("👥 BẮT ĐẦU CHẠY TOOL TỰ ĐỘNG THÊM THÀNH VIÊN VÀO GROUP TELEGRAM...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "DONG_MAT", "4_Add_Thanh_Vien.py")
-    execute_external_tool(script_path)
+    extra_args = []
+    if member:
+        extra_args.extend(["--member", member])
+    if chat_ids:
+        extra_args.extend(["--chat-ids", chat_ids])
+    execute_external_tool(script_path, extra_args=extra_args)
 
 async def run_tool_xuat_doi_soat_chuan():
     print("\n=======================================================")
@@ -1212,7 +1217,7 @@ def main():
     parser.add_argument("--date", default=None, help="Ngày đối soát (YYYY-MM-DD)")
     parser.add_argument("--dry-run", action="store_true", help="Chế độ chạy thử không gửi tin nhắn")
     parser.add_argument("--stores", default="ALL", help="Danh sách mã ST cần gửi (ngăn cách bởi dấu phẩy hoặc ALL)")
-    parser.add_argument("--message", default=None, help="Nội dung tin nhắn tùy chọn cần spam")
+    parser.add_argument("--message", default=None, help="Nội dung tin nhắn tùy chọn cần spam hoặc username bot")
     parser.add_argument("--no-tags", action="store_true", help="Không tự động tag Quản lý/Trưởng ca")
     parser.add_argument("--photo", default=None, help="Đường dẫn file ảnh đính kèm (nếu có)")
     parser.add_argument("--chat-id-type", "--kho", choices=["dong_mat", "rau_cu", "auto"], default="dong_mat", dest="chat_id_type", help="Chọn File Chat ID Kênh gửi (dong_mat hoặc rau_cu)")
@@ -1259,7 +1264,7 @@ def main():
     elif args.tool == "tra_cuu_id":
         loop.run_until_complete(run_tool_tra_cuu_id())
     elif args.tool == "add_thanh_vien":
-        loop.run_until_complete(run_tool_add_thanh_vien())
+        loop.run_until_complete(run_tool_add_thanh_vien(member=args.message, chat_ids=args.stores if args.stores != 'ALL' else ''))
     elif args.tool == "xuat_doi_soat_chuan":
         loop.run_until_complete(run_tool_xuat_doi_soat_chuan())
     elif args.tool == "export_thit_ca":

@@ -12444,6 +12444,12 @@ function copyChatId(chatId, btnEl) {
                         return;
                     }
                 }
+            } else if (tool === "add_thanh_vien") {
+                const targetChatIdsInput = document.getElementById("addMemberTargetChatIds");
+                const usernameInput = document.getElementById("addMemberUsernameInput");
+                const pastedVal = targetChatIdsInput ? targetChatIdsInput.value.trim() : "";
+                customStores = pastedVal || "ALL";
+                customMessage = usernameInput ? usernameInput.value.trim() : "@doi_soat_SCM_bot";
             }
 
             if (terminalCard) {

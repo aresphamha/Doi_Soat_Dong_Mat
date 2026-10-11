@@ -12344,8 +12344,8 @@ function copyChatId(chatId, btnEl) {
                 select.value = toolName;
                 onCloudToolChange(toolName);
             }
-            if (toolName === "spam_tu_chon") {
-                const studio = document.getElementById("customSpamStudioContainer");
+            if (toolName === "spam_tu_chon" || toolName === "add_thanh_vien") {
+                const studio = (toolName === "add_thanh_vien") ? document.getElementById("addMemberStudioContainer") : document.getElementById("customSpamStudioContainer");
                 if (studio) {
                     studio.style.display = "block";
                     studio.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -12444,6 +12444,21 @@ function copyChatId(chatId, btnEl) {
                         return;
                     }
                 }
+            } else if (tool === "add_thanh_vien") {
+                const targetChatIdsInput = document.getElementById("addMemberTargetChatIds");
+                const usernameInput = document.getElementById("addMemberUsernameInput");
+                const pastedVal = targetChatIdsInput ? targetChatIdsInput.value.trim() : "";
+                if (!pastedVal) {
+                    alert("❌ CHƯA CÓ DANH SÁCH CHAT ID!\nVui lòng dán danh sách Chat ID cần thêm vào ô số 2 trước khi bấm chạy.");
+                    const studio = document.getElementById("addMemberStudioContainer");
+                    if (studio) {
+                        studio.style.display = "block";
+                        targetChatIdsInput?.focus();
+                    }
+                    return;
+                }
+                customStores = pastedVal;
+                customMessage = usernameInput ? usernameInput.value.trim() : "@doi_soat_SCM_bot";
             }
 
             if (terminalCard) {
@@ -12490,7 +12505,7 @@ function copyChatId(chatId, btnEl) {
                 date: targetDate,
                 dry_run: isDryRun ? "true" : "false"
             });
-            if (tool === "spam_tu_chon") {
+            if (tool === "spam_tu_chon" || tool === "add_thanh_vien") {
                 params.append("stores", stores);
                 params.append("message", message);
                 params.append("tag_roles", tagRoles ? "true" : "false");
