@@ -132,7 +132,7 @@ def export_table_image(df_data, output_path):
     
     for (r, c), cell in table.get_celld().items():
         if r == 0:
-            cell.set_facecolor('#0284c7')
+            cell.set_facecolor('#4F86C6')
             cell.set_text_props(color='white', weight='bold')
         else:
             cell.set_facecolor('#f8fafc' if r % 2 == 1 else '#ffffff')
