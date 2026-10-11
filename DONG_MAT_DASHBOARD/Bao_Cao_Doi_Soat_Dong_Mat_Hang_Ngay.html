@@ -4739,9 +4739,15 @@
                             <span>🧪 <strong>Chế độ Chạy Thử (Dry-Run):</strong> Chỉ truy vấn và kiểm tra dữ liệu, không gửi tin nhắn thật đến Siêu thị</span>
                         </label>
 
-                        <div style="display:flex; gap:0.75rem; align-items:center;">
+                        <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
                             <button id="btnTriggerCloud" onclick="executeSelectedTool()" style="display:inline-flex; align-items:center; gap:8px; padding:0.65rem 1.5rem; background:linear-gradient(135deg, #f97316, #ea580c); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; box-shadow:0 4px 16px rgba(249,115,22,0.45); transition:all 0.2s ease;">
                                 <i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY
+                            </button>
+                            <button id="btnPauseCloud" onclick="togglePauseTool()" type="button" style="display:none; align-items:center; gap:6px; padding:0.65rem 1.15rem; background:linear-gradient(135deg, #eab308, #ca8a04); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer; box-shadow:0 4px 12px rgba(234,179,8,0.35); transition:all 0.2s;">
+                                <i class="fa-solid fa-pause"></i> Tạm Dừng
+                            </button>
+                            <button id="btnCancelCloud" onclick="stopToolExecution()" type="button" style="display:none; align-items:center; gap:6px; padding:0.65rem 1.15rem; background:linear-gradient(135deg, #ef4444, #dc2626); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer; box-shadow:0 4px 12px rgba(239,68,68,0.35); transition:all 0.2s;">
+                                <i class="fa-solid fa-stop"></i> Dừng Chạy / Hủy
                             </button>
                         </div>
                     </div>
@@ -4761,6 +4767,12 @@
                                 </span>
                             </div>
                             <div style="display:flex; align-items:center; gap:6px;">
+                                <button id="terminalPauseBtn" onclick="togglePauseTool()" type="button" style="display:none; background:#ca8a04; border:none; color:#fff; font-size:0.72rem; padding:0.25rem 0.65rem; border-radius:5px; cursor:pointer; font-weight:700;">
+                                    <i class="fa-solid fa-pause"></i> Tạm Dừng
+                                </button>
+                                <button id="terminalStopBtn" onclick="stopToolExecution()" type="button" style="display:none; background:#dc2626; border:none; color:#fff; font-size:0.72rem; padding:0.25rem 0.65rem; border-radius:5px; cursor:pointer; font-weight:700;">
+                                    <i class="fa-solid fa-stop"></i> Dừng Hẳn
+                                </button>
                                 <button onclick="copyTerminalLogs()" style="background:rgba(255,255,255,0.06); border:1px solid #30363d; color:#c9d1d9; font-size:0.72rem; padding:0.25rem 0.6rem; border-radius:5px; cursor:pointer;" title="Sao chép toàn bộ nhật ký">
                                     <i class="fa-regular fa-copy"></i> Sao chép
                                 </button>
@@ -12498,7 +12510,86 @@ function copyChatId(chatId, btnEl) {
             }
         }
 
+        
+        let isCurrentToolPaused = false;
+
+        function showRunningControls() {
+            const pauseBtn = document.getElementById("btnPauseCloud");
+            const cancelBtn = document.getElementById("btnCancelCloud");
+            const termPauseBtn = document.getElementById("terminalPauseBtn");
+            const termStopBtn = document.getElementById("terminalStopBtn");
+            isCurrentToolPaused = false;
+            if (pauseBtn) { pauseBtn.style.display = "inline-flex"; pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Tạm Dừng'; }
+            if (cancelBtn) { cancelBtn.style.display = "inline-flex"; }
+            if (termPauseBtn) { termPauseBtn.style.display = "inline-block"; termPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Tạm Dừng'; }
+            if (termStopBtn) { termStopBtn.style.display = "inline-block"; }
+        }
+
+        function hideRunningControls() {
+            const btn = document.getElementById("btnTriggerCloud");
+            const pauseBtn = document.getElementById("btnPauseCloud");
+            const cancelBtn = document.getElementById("btnCancelCloud");
+            const termPauseBtn = document.getElementById("terminalPauseBtn");
+            const termStopBtn = document.getElementById("terminalStopBtn");
+            isCurrentToolPaused = false;
+            if (pauseBtn) pauseBtn.style.display = "none";
+            if (cancelBtn) cancelBtn.style.display = "none";
+            if (termPauseBtn) termPauseBtn.style.display = "none";
+            if (termStopBtn) termStopBtn.style.display = "none";
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+            }
+        }
+
+        function togglePauseTool() {
+            const pauseBtn = document.getElementById("btnPauseCloud");
+            const termPauseBtn = document.getElementById("terminalPauseBtn");
+            const targetEndpoint = isCurrentToolPaused ? "/resume" : "/pause";
+
+            appendTerminalLog(isCurrentToolPaused ? "▶️ Đang gửi yêu cầu TIẾP TỤC chạy công cụ..." : "⏸️ Đang gửi yêu cầu TẠM DỪNG công cụ...", "warning");
+
+            fetch(`${LOCAL_RUNNER_API}${targetEndpoint}`, { method: "POST" })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        isCurrentToolPaused = !isCurrentToolPaused;
+                        const label = isCurrentToolPaused ? '<i class="fa-solid fa-play"></i> Tiếp Tục' : '<i class="fa-solid fa-pause"></i> Tạm Dừng';
+                        if (pauseBtn) pauseBtn.innerHTML = label;
+                        if (termPauseBtn) termPauseBtn.innerHTML = label;
+                        appendTerminalLog(res.message, isCurrentToolPaused ? "warning" : "success");
+                    } else {
+                        appendTerminalLog(res.message || "⚠️ Không thể thay đổi trạng thái tiến trình.", "error");
+                    }
+                })
+                .catch(err => {
+                    appendTerminalLog(`❌ Lỗi gửi lệnh: ${err.message}`, "error");
+                });
+        }
+
+        function stopToolExecution() {
+            if (!confirm("Bạn có chắc chắn muốn DỪNG & HỦY tiến trình công cụ đang chạy không?")) return;
+
+            appendTerminalLog("🛑 Đang gửi lệnh HỦY và DỪNG tiến trình ngay lập tức...", "error");
+            if (currentEventSource) {
+                currentEventSource.close();
+            }
+
+            fetch(`${LOCAL_RUNNER_API}/cancel`, { method: "POST" })
+                .then(r => r.json())
+                .then(res => {
+                    appendTerminalLog(res.message || "🛑 Đã hủy và dừng công cụ thành công!", "error");
+                })
+                .catch(err => {
+                    appendTerminalLog(`⚠️ Không thể kết nối để dừng: ${err.message}`, "error");
+                })
+                .finally(() => {
+                    hideRunningControls();
+                });
+        }
+
         function runViaLocalAgent(tool, targetDate, isDryRun, btn, stores = "ALL", message = "", tagRoles = true, chatIdType = "auto") {
+            showRunningControls();
             appendTerminalLog("🔌 Đang kết nối tới SCM Local Runner Service (http://127.0.0.1:8088)...", "info");
             
             if (currentEventSource) {
@@ -12533,17 +12624,11 @@ function copyChatId(chatId, btnEl) {
                         } else if (data.type === "end") {
                             appendTerminalLog(data.msg, data.returncode === 0 ? "success" : "warning");
                             currentEventSource.close();
-                            if (btn) {
-                                btn.disabled = false;
-                                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
-                            }
+                            hideRunningControls();
                         } else if (data.type === "error") {
                             appendTerminalLog(data.msg, "error");
                             currentEventSource.close();
-                            if (btn) {
-                                btn.disabled = false;
-                                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
-                            }
+                            hideRunningControls();
                         }
                     } catch (err) {
                         appendTerminalLog(e.data);
