@@ -232,8 +232,8 @@ async def main():
                 print('✅ THÊM THÀNH CÔNG!')
                 success_cnt += 1
                 
-                print('⏳ Nghỉ an toàn 3s...')
-                await asyncio.sleep(3)
+                print('⏳ Nghỉ an toàn 45s (chống Telegram Rate Limit)...')
+                await asyncio.sleep(45)
 
             except UserAlreadyParticipantError:
                 print('ℹ️ ĐÃ CÓ TRONG NHÓM')
