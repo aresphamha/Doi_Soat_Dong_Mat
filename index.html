@@ -4311,7 +4311,7 @@
                             <span id="cloudRunnerBadge" class="tag-pill" style="background:rgba(35,134,54,0.25); color:#3fb950; font-weight:600; font-size:0.74rem;">
                                 <i class="fa-solid fa-cloud"></i> Cloud Runner: Sẵn Sàng
                             </span>
-                            <button onclick="openChatIdManagerModal()" style="display:inline-flex; align-items:center; gap:5px; padding:0.35rem 0.75rem; background:linear-gradient(135deg, #0284c7, #0369a1); border:1px solid #38bdf8; border-radius:6px; color:#ffffff; font-size:0.75rem; font-weight:700; cursor:pointer; box-shadow:0 0 10px rgba(56,189,248,0.25);" title="Xem & Cập Nhật Chat ID Đông Mát và Rau Củ"><i class="fa-solid fa-address-book"></i> 📋 Quản Lý Chat ID (225 ST)</button>
+                            <button onclick="openChatIdManagerModal()" style="display:inline-flex; align-items:center; gap:5px; padding:0.35rem 0.75rem; background:linear-gradient(135deg, #0284c7, #0369a1); border:1px solid #38bdf8; border-radius:6px; color:#ffffff; font-size:0.75rem; font-weight:700; cursor:pointer; box-shadow:0 0 10px rgba(56,189,248,0.25);" title="Xem & Cập Nhật Chat ID Đông Mát và Rau Củ"><i class="fa-solid fa-address-book"></i> 📋 Quản Lý Chat ID (232 ST)</button>
                             <a href="https://github.com/aresphamha/Doi_Soat_Dong_Mat/actions/workflows/run_spam_tools.yml" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:5px; padding:0.35rem 0.75rem; background:rgba(255,255,255,0.06); border:1px solid var(--border-card); border-radius:6px; color:var(--text-secondary); font-size:0.75rem; text-decoration:none;" title="Mở trang quản lý GitHub Actions">
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Actions Runner
                             </a>
@@ -4487,13 +4487,13 @@
                                 <label style="display:block; font-size:0.82rem; font-weight:700; color:#f8fafc; margin-bottom:6px;">
                                     <i class="fa-solid fa-list-check" style="color:#38bdf8;"></i> 2. Dán Danh Sách Chat ID hoặc Mã Siêu Thị Yêu Cầu:
                                 </label>
-                                <textarea id="addMemberTargetChatIds" rows="2" placeholder="Ví dụ: -1002439645926, -1001705324344, A209, A208, LVY... (Để trống hoặc gõ ALL để add vào toàn bộ 225 nhóm)" style="width:100%; padding:0.65rem 0.9rem; background:#0f172a; border:1px solid var(--border-card); border-radius:8px; color:#ffffff; font-size:0.83rem; font-weight:600; outline:none; resize:vertical;"></textarea>
+                                <textarea id="addMemberTargetChatIds" rows="2" placeholder="Dán danh sách Chat ID cần thêm vào đây (Ví dụ: -1002439645926, -1001705324344, A209, A208...). Bot sẽ chỉ được thêm vào đúng các nhóm do bạn cung cấp sau khi kiểm tra nick chính đã có trong nhóm." style="width:100%; padding:0.65rem 0.9rem; background:#0f172a; border:1px solid var(--border-card); border-radius:8px; color:#ffffff; font-size:0.83rem; font-weight:600; outline:none; resize:vertical;"></textarea>
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
                                     <small style="color:#94a3b8; font-size:0.72rem;">
                                         💡 Phân cách các Chat ID hoặc Mã ST bằng dấu phẩy hoặc khoảng trắng.
                                     </small>
-                                    <button type="button" onclick="document.getElementById('addMemberTargetChatIds').value='ALL'" style="padding:2px 8px; background:rgba(129,140,248,0.15); border:1px solid #818cf8; border-radius:4px; color:#a5b4fc; font-size:0.7rem; font-weight:700; cursor:pointer;">
-                                        Add Tất Cả 225 Group
+                                    <button type="button" onclick="document.getElementById('addMemberTargetChatIds').value=''" style="padding:2px 8px; background:rgba(255,255,255,0.06); border:1px solid var(--border-card); border-radius:4px; color:#94a3b8; font-size:0.7rem; cursor:pointer;" title="Xóa toàn bộ nội dung trong ô">
+                                        <i class="fa-solid fa-eraser"></i> Xóa danh sách
                                     </button>
                                 </div>
                             </div>
@@ -4501,7 +4501,7 @@
 
                         <!-- Gợi ý nhanh -->
                         <div style="background:rgba(15,23,42,0.6); border:1px dashed rgba(129,140,248,0.3); border-radius:8px; padding:0.75rem 1rem; font-size:0.78rem; color:#cbd5e1;">
-                            🛡️ <strong>Lưu ý:</strong> Tài khoản chính của bạn sẽ tự động kiểm tra nếu bot đã có sẵn trong nhóm thì sẽ bỏ qua để tránh trùng lặp. Chỉ những nhóm bot chưa tham gia mới được tự động thêm vào.
+                            🛡️ <strong>Quy trình thực thi:</strong> Tài khoản chính (Hà Phạm) sẽ kiểm tra: (1) Nhóm đó nick chính đã tham gia chưa (nếu chưa có -> báo lỗi &amp; bỏ qua); (2) Kiểm tra bot đã có trong nhóm chưa (nếu có rồi -> bỏ qua); (3) Mời bot vào nhóm và <strong>nghỉ an toàn đúng 45 giây</strong> giữa mỗi lần add để chống Telegram giới hạn (FloodWait).
                         </div>
                     </div>
 
@@ -4734,9 +4734,15 @@
                             <span>🧪 <strong>Chế độ Chạy Thử (Dry-Run):</strong> Chỉ truy vấn và kiểm tra dữ liệu, không gửi tin nhắn thật đến Siêu thị</span>
                         </label>
 
-                        <div style="display:flex; gap:0.75rem; align-items:center;">
-                            <button id="btnTriggerCloud" onclick="executeSelectedTool()" style="display:inline-flex; align-items:center; gap:8px; padding:0.65rem 1.5rem; background:linear-gradient(135deg, #f97316, #ea580c); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; box-shadow:0 4px 16px rgba(249,115,22,0.45); transition:all 0.2s ease;">
+                                                <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
+                            <button id="btnTriggerCloud" onclick="executeSelectedTool()" style="display:inline-flex; align-items:center; gap:8px; padding:0.65rem 1.4rem; background:linear-gradient(135deg, #f97316, #ea580c); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.88rem; cursor:pointer; box-shadow:0 4px 16px rgba(249,115,22,0.45); transition:all 0.2s ease;">
                                 <i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY
+                            </button>
+                            <button id="btnPauseCloud" onclick="togglePauseTool()" type="button" style="display:inline-flex; align-items:center; gap:6px; padding:0.65rem 1.15rem; background:linear-gradient(135deg, #eab308, #ca8a04); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer; box-shadow:0 4px 12px rgba(234,179,8,0.35); transition:all 0.2s;" title="Tạm dừng tiến trình đang chạy (hoặc bấm tiếp tục)">
+                                <i class="fa-solid fa-pause"></i> Tạm Dừng
+                            </button>
+                            <button id="btnCancelCloud" onclick="stopToolExecution()" type="button" style="display:inline-flex; align-items:center; gap:6px; padding:0.65rem 1.15rem; background:linear-gradient(135deg, #ef4444, #dc2626); color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer; box-shadow:0 4px 12px rgba(239,68,68,0.35); transition:all 0.2s;" title="Dừng và hủy bỏ tiến trình ngay lập tức">
+                                <i class="fa-solid fa-stop"></i> Dừng Chạy / Hủy
                             </button>
                         </div>
                     </div>
@@ -4755,7 +4761,13 @@
                                     SCM LIVE RUNNER TERMINAL &bull; <span id="terminalEngineTag" style="color:#38bdf8;">Khởi tạo...</span>
                                 </span>
                             </div>
-                            <div style="display:flex; align-items:center; gap:6px;">
+                                                        <div style="display:flex; align-items:center; gap:6px;">
+                                <button id="terminalPauseBtn" onclick="togglePauseTool()" type="button" style="display:inline-flex; align-items:center; gap:4px; background:#ca8a04; border:none; color:#fff; font-size:0.72rem; padding:0.25rem 0.65rem; border-radius:5px; cursor:pointer; font-weight:700;">
+                                    <i class="fa-solid fa-pause"></i> Tạm Dừng
+                                </button>
+                                <button id="terminalStopBtn" onclick="stopToolExecution()" type="button" style="display:inline-flex; align-items:center; gap:4px; background:#dc2626; border:none; color:#fff; font-size:0.72rem; padding:0.25rem 0.65rem; border-radius:5px; cursor:pointer; font-weight:700;">
+                                    <i class="fa-solid fa-stop"></i> Dừng Hẳn
+                                </button>
                                 <button onclick="copyTerminalLogs()" style="background:rgba(255,255,255,0.06); border:1px solid #30363d; color:#c9d1d9; font-size:0.72rem; padding:0.25rem 0.6rem; border-radius:5px; cursor:pointer;" title="Sao chép toàn bộ nhật ký">
                                     <i class="fa-regular fa-copy"></i> Sao chép
                                 </button>
@@ -12304,6 +12316,7 @@ function copyChatId(chatId, btnEl) {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 1800);
                 const res = await fetch(`${LOCAL_RUNNER_API}/health`, { signal: controller.signal });
+                if (res.ok) { try { const sData = await res.clone().json(); updateRunnerButtonsState(sData); } catch(e){} }
                 clearTimeout(timeoutId);
                 if (res.ok) {
                     window.isLocalRunnerOnline = true;
@@ -12491,6 +12504,120 @@ function copyChatId(chatId, btnEl) {
                 if (ghLink) ghLink.style.display = 'inline-flex';
                 runViaGitHubActions(tool, targetDate, isDryRun, btn, customStores, customMessage, customTagRoles, chatIdType);
             }
+        }
+
+        
+        let isCurrentToolPaused = false;
+
+        function updateRunnerButtonsState(data) {
+            const btn = document.getElementById("btnTriggerCloud");
+            const pauseBtn = document.getElementById("btnPauseCloud");
+            const cancelBtn = document.getElementById("btnCancelCloud");
+            const termPauseBtn = document.getElementById("terminalPauseBtn");
+            const termStopBtn = document.getElementById("terminalStopBtn");
+            
+            if (data && data.is_running) {
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang Thực Thi...';
+                }
+                if (data.is_paused) {
+                    isCurrentToolPaused = true;
+                    if (pauseBtn) {
+                        pauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Tiếp Tục';
+                        pauseBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                    }
+                    if (termPauseBtn) {
+                        termPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Tiếp Tục';
+                        termPauseBtn.style.background = '#059669';
+                    }
+                } else {
+                    isCurrentToolPaused = false;
+                    if (pauseBtn) {
+                        pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Tạm Dừng';
+                        pauseBtn.style.background = 'linear-gradient(135deg, #eab308, #ca8a04)';
+                    }
+                    if (termPauseBtn) {
+                        termPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Tạm Dừng';
+                        termPauseBtn.style.background = '#ca8a04';
+                    }
+                }
+            } else {
+                isCurrentToolPaused = false;
+                if (btn && !window.isRunningViaGitHub) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+                }
+                if (pauseBtn) {
+                    pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Tạm Dừng';
+                    pauseBtn.style.background = 'linear-gradient(135deg, #eab308, #ca8a04)';
+                }
+                if (termPauseBtn) {
+                    termPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Tạm Dừng';
+                    termPauseBtn.style.background = '#ca8a04';
+                }
+            }
+        }
+
+        function togglePauseTool() {
+            const pauseBtn = document.getElementById("btnPauseCloud");
+            const termPauseBtn = document.getElementById("terminalPauseBtn");
+            const targetEndpoint = isCurrentToolPaused ? "/resume" : "/pause";
+
+            appendTerminalLog(isCurrentToolPaused ? "▶️ Đang gửi yêu cầu TIẾP TỤC chạy công cụ..." : "⏸️ Đang gửi yêu cầu TẠM DỪNG công cụ...", "warning");
+
+            fetch(`${LOCAL_RUNNER_API}${targetEndpoint}`, { method: "POST" })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        isCurrentToolPaused = !isCurrentToolPaused;
+                        if (pauseBtn) {
+                            pauseBtn.innerHTML = isCurrentToolPaused ? '<i class="fa-solid fa-play"></i> Tiếp Tục' : '<i class="fa-solid fa-pause"></i> Tạm Dừng';
+                            pauseBtn.style.background = isCurrentToolPaused ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #eab308, #ca8a04)';
+                        }
+                        if (termPauseBtn) {
+                            termPauseBtn.innerHTML = isCurrentToolPaused ? '<i class="fa-solid fa-play"></i> Tiếp Tục' : '<i class="fa-solid fa-pause"></i> Tạm Dừng';
+                            termPauseBtn.style.background = isCurrentToolPaused ? '#059669' : '#ca8a04';
+                        }
+                        appendTerminalLog(res.message, isCurrentToolPaused ? "warning" : "success");
+                    } else {
+                        alert(res.message || "⚠️ Không thể thay đổi trạng thái tiến trình.");
+                        appendTerminalLog(res.message || "⚠️ Không có tiến trình nào đang chạy.", "error");
+                    }
+                })
+                .catch(err => {
+                    alert("❌ Lỗi gửi lệnh: " + err.message);
+                    appendTerminalLog(`❌ Lỗi gửi lệnh: ${err.message}`, "error");
+                });
+        }
+
+        function stopToolExecution() {
+            if (!confirm("Bạn có chắc chắn muốn DỪNG & HỦY tiến trình công cụ đang chạy không?")) return;
+
+            appendTerminalLog("🛑 Đang gửi lệnh HỦY và DỪNG tiến trình ngay lập tức...", "error");
+            if (currentEventSource) {
+                currentEventSource.close();
+            }
+
+            fetch(`${LOCAL_RUNNER_API}/cancel`, { method: "POST" })
+                .then(r => r.json())
+                .then(res => {
+                    appendTerminalLog(res.message || "🛑 Đã hủy và dừng công cụ thành công!", "error");
+                    alert(res.message || "🛑 Đã dừng công cụ thành công!");
+                })
+                .catch(err => {
+                    appendTerminalLog(`⚠️ Không thể kết nối để dừng: ${err.message}`, "error");
+                })
+                .finally(() => {
+                    const btn = document.getElementById("btnTriggerCloud");
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-bolt"></i> BẮT ĐẦU CHẠY CÔNG CỤ NGAY';
+                    }
+                    if (typeof checkLocalRunnerStatus === 'function') {
+                        checkLocalRunnerStatus();
+                    }
+                });
         }
 
         function runViaLocalAgent(tool, targetDate, isDryRun, btn, stores = "ALL", message = "", tagRoles = true, chatIdType = "auto") {
