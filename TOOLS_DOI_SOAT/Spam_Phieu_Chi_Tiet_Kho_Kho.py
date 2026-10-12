@@ -91,7 +91,6 @@ def load_store_and_dc_chat_mappings():
     st_to_code = {}
     dc_code_map = {}
     dc_title_map = {}
-    fallback_map = {}
 
     # 1. Đọc ánh xạ từ Danh_Sach_Chat_ID_Nhom_DC.xlsx
     excel_dc = os.path.join(ROOT_DIR, 'Danh_Sach_Chat_ID_Nhom_DC.xlsx')
@@ -115,7 +114,7 @@ def load_store_and_dc_chat_mappings():
         except Exception as e:
             print(f"⚠️ Cảnh báo đọc file Excel DC: {e}")
 
-    # 2. Đọc mapping Siêu thị -> Mã ST & Chat ID từ CONFIG_DATA_STORES.json
+    # 2. Đọc mapping Siêu thị -> Mã ST & Chat ID DC từ CONFIG_DATA_STORES.json
     stores_json = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')
     if os.path.exists(stores_json):
         try:
@@ -125,9 +124,6 @@ def load_store_and_dc_chat_mappings():
                     sid = s.get('id', '').strip().upper()
                     sname = s.get('name', '').strip()
                     cid_dc = str(s.get('chat_id_dc', '')).strip()
-                    cid_dm = str(s.get('chat_id_dm', '')).strip()
-                    cid_rc = str(s.get('chat_id_rc', '')).strip()
-                    fallback_cid = cid_dm or cid_rc
 
                     if sid:
                         if sname:
@@ -139,12 +135,10 @@ def load_store_and_dc_chat_mappings():
                                 st_to_code[parts[-1].strip()] = sid
                         if cid_dc and sid not in dc_code_map:
                             dc_code_map[sid] = cid_dc
-                        if fallback_cid:
-                            fallback_map[sid] = fallback_cid
         except Exception:
             pass
 
-    return st_to_code, dc_code_map, dc_title_map, fallback_map
+    return st_to_code, dc_code_map, dc_title_map
 
 async def get_tags_for_group(client, chat_id):
     tags = []
@@ -164,7 +158,7 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False):
     print("📦 BẮT ĐẦU CHẠY TOOL: PHIẾU CHI TIẾT KHO KHÔ (FGA10101 & FGA10103)")
     print("=======================================================")
 
-    st_to_code, dc_code_map, dc_title_map, fallback_map = load_store_and_dc_chat_mappings()
+    st_to_code, dc_code_map, dc_title_map = load_store_and_dc_chat_mappings()
     print(f"📋 Đã tải {len(dc_code_map)} Chat ID DC và {len(st_to_code)} mapping Siêu thị.")
 
     vn_tz = pytz.timezone('Asia/Ho_Chi_Minh')
@@ -292,12 +286,8 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False):
                     chat_id_raw = cid
                     break
 
-        # Fallback sang chat_id_dm / chat_id_rc nếu chưa có chat_id_dc
-        if not chat_id_raw and st_code:
-            chat_id_raw = fallback_map.get(st_code)
-
         if not chat_id_raw:
-            print(f"⚠️ [BỎ QUA] Không tìm thấy Chat ID nhóm cho ST/Kho: {st_name} (Mã: {st_code or 'N/A'})")
+            print(f"⚠️ [LOẠI BỎ - KHÔNG CÓ GROUP DC] Siêu thị: {st_name} (Mã: {st_code or 'N/A'}) - Bỏ qua vì không có nhóm DC.")
             fail_count += 1
             continue
 
