@@ -41,8 +41,11 @@ SESSION_PATH = os.path.join(ROOT_DIR, 'DONG_MAT_DASHBOARD', 'user_session')
 if not os.path.exists(SESSION_PATH + '.session'):
     SESSION_PATH = os.path.join(ROOT_DIR, 'user_session')
 
-FGA_BRANCH_ID = '6aabb0a2f426e20007f80123'
-FGA_BRANCH_NAME = 'FGA10101 _ Bình Thắng _ Lưu Hàng'
+FGA_BRANCHES = {
+    '6aabb0a2f426e20007f80123': 'FGA10101 _ Bình Thắng _ Lưu Hàng',
+    '6aabb0d73c46470007f935ce': 'FGA10103 _ Bình Thắng _ Khai Trương'
+}
+FGA_BRANCH_IDS = "('6aabb0a2f426e20007f80123', '6aabb0d73c46470007f935ce')"
 HIST_FILE = os.path.join(ROOT_DIR, 'CONFIG_DATA', 'sent_history.json')
 
 def get_db_connection():
@@ -158,7 +161,7 @@ async def get_tags_for_group(client, chat_id):
 
 async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False):
     print("\n=======================================================")
-    print("⚖️ BẮT ĐẦU CHẠY TOOL: PHIẾU HẬU KIỂM KHO KHÔ (FGA10101)")
+    print("⚖️ BẮT ĐẦU CHẠY TOOL: PHIẾU HẬU KIỂM KHO KHÔ (FGA10101 & FGA10103)")
     print("=======================================================")
 
     st_to_code, dc_code_map, dc_title_map, fallback_map = load_store_and_dc_chat_mappings()
@@ -185,17 +188,18 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False):
         """)
         id_to_name = {bid: bname for bid, bname in cur.fetchall() if bname}
 
-        # Query phiếu hậu kiểm của kho FGA10101
+        # Query phiếu hậu kiểm của kho FGA10101 & FGA10103
         sql = f"""
         SELECT 
             t.double_check_code,
             t.code,
+            t.from_branch_id,
             t.to_branch_id,
             t.transfer_date,
             t.created_at,
             t.status
         FROM __cdc_kfm_kf_inventories_kf_transfer_items t
-        WHERE t.from_branch_id = '{FGA_BRANCH_ID}'
+        WHERE t.from_branch_id IN {FGA_BRANCH_IDS}
           AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
           AND t.double_checked_status = 1
           AND t.status = 5
@@ -209,7 +213,7 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False):
 
     # Lọc theo ngày từ cũ nhất đến D-1 (< hôm nay)
     pending_hk = []
-    for hk_code, pt_code, to_id, tdate_str, cat, stt in tickets:
+    for hk_code, pt_code, from_id, to_id, tdate_str, cat, stt in tickets:
         td_date = None
         if tdate_str:
             try:
@@ -241,6 +245,7 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False):
             pending_hk.append({
                 'hk_code': hk_code,
                 'pt_code': pt_code,
+                'from_branch_id': from_id,
                 'st_name': st_name,
                 'st_code': st_code,
                 'to_id': to_id,
@@ -315,17 +320,17 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False):
         newest_d = group[-1]['transfer_date_short']
         total_p = len(group)
 
-        # Xây dựng cú pháp Caption chuẩn:
+        # Xây dựng cú pháp Caption chuẩn theo yêu cầu:
         if total_p == 1:
-            ticket_clause = f"còn 1 phiếu hậu kiểm kho khô chưa nhận ngày {oldest_d}"
+            ticket_clause = f"còn 1 phiếu hậu kiểm kho khô chưa nhận ngày {oldest_d}."
         else:
             if oldest_d == newest_d:
-                ticket_clause = f"còn {total_p} phiếu hậu kiểm kho khô chưa nhận ngày {oldest_d}"
+                ticket_clause = f"còn {total_p} phiếu hậu kiểm kho khô chưa nhận ngày {oldest_d}."
             else:
-                ticket_clause = f"còn {total_p} phiếu hậu kiểm kho khô chưa nhận từ ngày {oldest_d} đến {newest_d}"
+                ticket_clause = f"còn {total_p} phiếu hậu kiểm kho khô chưa nhận từ ngày {oldest_d} đến {newest_d}."
 
         tag_text = await get_tags_for_group(client, chat_id)
-        caption = f"**PHIẾU HẬU KIỂM KHO KHÔ**\n{today_str}\n⚠️ Siêu thị {ticket_clause}.\nNhờ ST nhận giúp em ạ!\n{tag_text}"
+        caption = f"**PHIẾU HẬU KIỂM KHO KHÔ**\n{today_str}\n⚠️ Siêu thị {ticket_clause}\nSiêu thị kiểm tra HOÀN THÀNH phiếu HẬU KIỂM KHO KHÔ gấp nhé team\n{tag_text}"
 
         if dry_run:
             print(f"🔍 [DRY-RUN] Sẽ gửi đến {st_name} (Mã: {st_code}, CID: {chat_id}): {total_p} phiếu [{ticket_clause}]")
@@ -334,11 +339,12 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False):
         # Tạo ảnh bảng Gradient Pastel
         rows = []
         for item in group:
+            from_name = FGA_BRANCHES.get(item.get('from_branch_id'), 'FGA10101 _ Bình Thắng _ Lưu Hàng')
             rows.append([
                 item['hk_code'],
                 item['pt_code'],
                 item['transfer_date_str'],
-                FGA_BRANCH_NAME,
+                from_name,
                 item['st_name'],
                 "Cần hậu kiểm"
             ])
