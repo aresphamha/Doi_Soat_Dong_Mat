@@ -62,30 +62,41 @@ def render_pastel_gradient_table(headers, rows, output_path, col_widths=None):
     img = Image.new("RGB", (img_w, img_h), "#FFFFFF")
     draw = ImageDraw.Draw(img)
 
-    # 3. Vẽ Header với Gradient Pastel tươi sáng: Xanh bạc hà pastel -> Nắng pastel -> Cam ấm pastel
-    # Giữ tông màu pastel mềm mại nhưng tươi sáng, tránh bị xỉn màu ở giữa khi chuyển sắc
-    start_r, start_g, start_b = 150, 240, 195  # Mint pastel tươi sáng
-    mid_r, mid_g, mid_b = 254, 238, 140        # Nắng pastel trong trẻo
-    end_r, end_g, end_b = 254, 190, 125        # Cam đào pastel tươi ấm
+    # 3. Vẽ Header với Gradient 4-Stop Pastel cao cấp:
+    # Xanh mint pastel -> Nắng pastel -> Cam đào ấm -> Đỏ san hô pastel cảnh báo
+    c_mint = (150, 240, 195)   # Mint pastel tươi sáng
+    c_sun = (254, 238, 140)    # Nắng pastel trong trẻo
+    c_peach = (254, 190, 125)  # Cam đào ấm pastel
+    c_red = (254, 145, 155)    # Đỏ san hô pastel tạo điểm nhấn cảnh báo ở cột Trạng thái
+
+    stops = [
+        (0.0, c_mint),
+        (0.33, c_sun),
+        (0.67, c_peach),
+        (1.0, c_red)
+    ]
 
     header_x0 = margin
     header_y0 = margin
     header_x1 = margin + total_width
     header_y1 = margin + header_height
 
-    # Vẽ từng dải màu gradient theo chiều ngang (3-stop chuyển sắc mượt mà)
+    # Vẽ từng dải màu gradient theo chiều ngang (4-stop chuyển sắc mượt mà)
     for x in range(header_x0, header_x1):
         ratio = (x - header_x0) / max(total_width - 1, 1)
-        if ratio < 0.5:
-            sub_r = ratio / 0.5
-            r = int(start_r + (mid_r - start_r) * sub_r)
-            g = int(start_g + (mid_g - start_g) * sub_r)
-            b = int(start_b + (mid_b - start_b) * sub_r)
+        if ratio <= stops[1][0]:
+            sub_r = ratio / stops[1][0]
+            c0, c1 = stops[0][1], stops[1][1]
+        elif ratio <= stops[2][0]:
+            sub_r = (ratio - stops[1][0]) / (stops[2][0] - stops[1][0])
+            c0, c1 = stops[1][1], stops[2][1]
         else:
-            sub_r = (ratio - 0.5) / 0.5
-            r = int(mid_r + (end_r - mid_r) * sub_r)
-            g = int(mid_g + (end_g - mid_g) * sub_r)
-            b = int(mid_b + (end_b - mid_b) * sub_r)
+            sub_r = (ratio - stops[2][0]) / (stops[3][0] - stops[2][0])
+            c0, c1 = stops[2][1], stops[3][1]
+
+        r = int(c0[0] + (c1[0] - c0[0]) * sub_r)
+        g = int(c0[1] + (c1[1] - c0[1]) * sub_r)
+        b = int(c0[2] + (c1[2] - c0[2]) * sub_r)
         draw.line([(x, header_y0), (x, header_y1)], fill=(r, g, b))
 
     # Vẽ chữ Header
