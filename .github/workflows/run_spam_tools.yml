@@ -10,11 +10,14 @@ on:
         type: choice
         options:
           - all
+          - all_with_kho_kho
           - thit_ca
           - mat
           - hau_kiem_dong_mat
           - hau_kiem_rau
           - hau_kiem_thit_ca
+          - chi_tiet_kho_kho
+          - hau_kiem_kho_kho
           - dong_mat_sheet
           - dong_mat_nhom_dong
           - dong_mat_spam
