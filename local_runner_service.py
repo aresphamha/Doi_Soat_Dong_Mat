@@ -148,7 +148,7 @@ def get_all_chat_ids():
         s['chat_id_rc'] = ''
     return stores
 
-def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name=None):
+def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name=None, chat_id_dc=None):
     if not store_id:
         return False, "Thiếu Mã Siêu Thị (store_id)!"
     
@@ -208,7 +208,20 @@ def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name
                 except Exception as e:
                     print(f"Error updating {f}: {e}")
 
-    # 3. Update CONFIG_DATA_STORES.json
+    # 3. Update DC Excel file
+    dc_file = os.path.join(ROOT_DIR, 'Danh_Sach_Chat_ID_Nhom_DC.xlsx')
+    if chat_id_dc is not None and os.path.exists(dc_file):
+        try:
+            df = pd.read_excel(dc_file, dtype=str)
+            if 'MÃ SIÊU THỊ' in df.columns and 'CHAT ID (SỐ CHUẨN)' in df.columns:
+                mask = (df['MÃ SIÊU THỊ'].astype(str).str.strip().str.upper() == store_id)
+                if mask.any():
+                    df.loc[mask, 'CHAT ID (SỐ CHUẨN)'] = str(chat_id_dc).strip()
+                    df.to_excel(dc_file, index=False)
+        except Exception as e:
+            print(f"Error updating {dc_file}: {e}")
+
+    # 4. Update CONFIG_DATA_STORES.json
     json_path = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')
     try:
         data = []
@@ -220,6 +233,7 @@ def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name
             if item.get('id', '').strip().upper() == store_id:
                 if chat_id_dm is not None: item['chat_id_dm'] = str(chat_id_dm).strip()
                 if chat_id_rc is not None: item['chat_id_rc'] = str(chat_id_rc).strip()
+                if chat_id_dc is not None: item['chat_id_dc'] = str(chat_id_dc).strip()
                 if store_name is not None: item['name'] = str(store_name).strip()
                 found = True
                 break
@@ -229,10 +243,12 @@ def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name
                 'name': store_name or store_id,
                 'short': store_id,
                 'chat_id_dm': str(chat_id_dm or ''),
-                'chat_id_rc': str(chat_id_rc or '')
+                'chat_id_rc': str(chat_id_rc or ''),
+                'chat_id_dc': str(chat_id_dc or '')
             })
         data = sorted(data, key=lambda x: x.get('id', ''))
         with open(json_path, 'w', encoding='utf-8') as jf:
+            json.dump(data, jf, ensure_ascii=False, indent=2)
             json.dump(data, jf, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"Error updating JSON: {e}")
@@ -566,9 +582,10 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             store_id = data.get('store_id', data.get('id', '')).strip()
             chat_id_dm = data.get('chat_id_dm', data.get('chat_id', None))
             chat_id_rc = data.get('chat_id_rc', None)
+            chat_id_dc = data.get('chat_id_dc', None)
             store_name = data.get('store_name', data.get('name', None))
             
-            ok, msg = update_store_chat_ids(store_id, chat_id_dm, chat_id_rc, store_name)
+            ok, msg = update_store_chat_ids(store_id, chat_id_dm, chat_id_rc, store_name, chat_id_dc)
             self.send_response(200 if ok else 400)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self._send_cors_headers()

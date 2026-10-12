@@ -1210,6 +1210,7 @@ def main():
     parser = argparse.ArgumentParser(description="Chạy Tool Đối Soát & Spam Phiếu Chuyển SCM")
     parser.add_argument("--tool", choices=[
         "all", "thit_ca", "mat", "hau_kiem_rau", "hau_kiem_thit_ca", "hau_kiem_dong_mat",
+        "chi_tiet_kho_kho", "hau_kiem_kho_kho",
         "dong_mat_sheet", "dong_mat_nhom_dong", "dong_mat_spam", "dong_spam", "dong", "thit_ca_spam", "rau_cu_spam",
         "spam_tu_chon", "xoa_tin_nhan", "lay_chat_id", "tra_cuu_id", "add_thanh_vien",
         "xuat_doi_soat_chuan", "export_thit_ca", "sync_report", "sync_telegram"
@@ -1255,6 +1256,14 @@ def main():
         loop.run_until_complete(run_tool_hau_kiem_thit_ca(date_val, args.dry_run))
     elif args.tool == "hau_kiem_dong_mat":
         loop.run_until_complete(run_tool_hau_kiem_dong_mat(date_val, args.dry_run))
+    elif args.tool == "chi_tiet_kho_kho":
+        sys.path.insert(0, TOOLS_BASE_DIR)
+        from Spam_Phieu_Chi_Tiet_Kho_Kho import run_spam_chi_tiet_kho_kho
+        loop.run_until_complete(run_spam_chi_tiet_kho_kho(date_val, args.dry_run))
+    elif args.tool == "hau_kiem_kho_kho":
+        sys.path.insert(0, TOOLS_BASE_DIR)
+        from Spam_Phieu_Hau_Kiem_Kho_Kho import run_spam_hau_kiem_kho_kho
+        loop.run_until_complete(run_spam_hau_kiem_kho_kho(date_val, args.dry_run))
     elif args.tool == "dong_mat_sheet":
         loop.run_until_complete(run_tool_dong_mat_full(date_val, args.dry_run))
     elif args.tool == "dong_mat_nhom_dong":
