@@ -36,6 +36,8 @@ if not os.path.exists(SESSION_PATH + '.session'):
 SHORT_NAMES = {
     'ITL - ABA': 'ABA',
     '🛻🚚🚛DC': 'DC',
+    'DC - S': 'DC',
+    'DC - ST': 'DC',
 }
 
 async def update_folder_names_with_counts():
