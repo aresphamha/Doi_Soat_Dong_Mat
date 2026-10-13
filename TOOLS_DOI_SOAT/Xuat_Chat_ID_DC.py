@@ -34,7 +34,7 @@ async def export_dc_chat_ids():
         print('❌ LỖI: Chưa có quyền truy cập Telegram user_session.')
         return
 
-    print("🔍 Đang lấy danh sách các nhóm trong thư mục DC (176)...")
+    print("🔍 Đang lấy danh sách các nhóm trong thư mục DC...")
     res = await client(GetDialogFiltersRequest())
     filters = getattr(res, 'filters', res)
 
@@ -117,9 +117,10 @@ async def export_dc_chat_ids():
     df = pd.DataFrame(rows)
 
     # Ghi ra file Excel với định dạng đẹp mắt
+    sheet_name = f"NHOM_DC_{len(rows)}"
     with pd.ExcelWriter(OUTPUT_FILE, engine='openpyxl') as writer:
-        df.to_excel(writer, index=False, sheet_name="NHOM_DC_176")
-        ws = writer.sheets["NHOM_DC_176"]
+        df.to_excel(writer, index=False, sheet_name=sheet_name)
+        ws = writer.sheets[sheet_name]
 
         # Định dạng màu sắc Header
         header_fill = PatternFill(start_color="1F4E79", end_color="1F4E79", fill_type="solid")
