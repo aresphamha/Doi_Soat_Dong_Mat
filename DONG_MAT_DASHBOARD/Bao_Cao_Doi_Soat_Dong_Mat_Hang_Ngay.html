@@ -13073,18 +13073,12 @@ function copyChatId(chatId, btnEl) {
             if (type === 'all') {
                 const b = document.getElementById('btnFilterChatAll');
                 if (b) { b.style.background = '#0284c7'; b.style.color = '#fff'; b.style.fontWeight = '700'; }
-            } else if (type === 'dc') {
-                const b = document.getElementById('btnFilterChatDC');
-                if (b) { b.style.background = '#fb923c'; b.style.color = '#fff'; b.style.fontWeight = '700'; }
             } else if (type === 'dm') {
                 const b = document.getElementById('btnFilterChatDM');
                 if (b) { b.style.background = '#0284c7'; b.style.color = '#fff'; b.style.fontWeight = '700'; }
-            } else if (type === 'dc') {
-                const b = document.getElementById('btnFilterChatDC');
-                if (b) { b.style.background = '#fb923c'; b.style.color = '#fff'; b.style.fontWeight = '700'; }
             } else if (type === 'rc') {
                 const b = document.getElementById('btnFilterChatRC');
-                if (b) { b.style.background = '#0284c7'; b.style.color = '#fff'; b.style.fontWeight = '700'; }
+                if (b) { b.style.background = '#10b981'; b.style.color = '#fff'; b.style.fontWeight = '700'; }
             } else if (type === 'dc') {
                 const b = document.getElementById('btnFilterChatDC');
                 if (b) { b.style.background = '#fb923c'; b.style.color = '#fff'; b.style.fontWeight = '700'; }
@@ -13100,10 +13094,16 @@ function copyChatId(chatId, btnEl) {
             const tbody = document.getElementById("chatIdTableBody");
             const searchInput = document.getElementById("chatIdSearchInput");
             const countEl = document.getElementById("chatIdDisplayCount");
+            const totalBadge = document.getElementById("modalTotalStoresBadge");
             if (!tbody) return;
 
+            const allStores = window.GLOBAL_STORE_CHAT_IDS || [];
+            if (totalBadge) {
+                totalBadge.innerText = allStores.length + " SIÊU THỊ";
+            }
+
             const q = searchInput ? searchInput.value.trim().toLowerCase() : "";
-            let filtered = GLOBAL_STORE_CHAT_IDS.filter(st => {
+            let filtered = allStores.filter(st => {
                 if (q) {
                     const matchId = (st.id || '').toLowerCase().includes(q);
                     const matchName = (st.name || '').toLowerCase().includes(q);
@@ -13119,7 +13119,7 @@ function copyChatId(chatId, btnEl) {
             });
 
             if (countEl) {
-                countEl.innerText = "Hiển thị: " + filtered.length + " / " + GLOBAL_STORE_CHAT_IDS.length + " Siêu thị";
+                countEl.innerText = "Hiển thị: " + filtered.length + " / " + allStores.length + " Siêu thị";
             }
 
             if (filtered.length === 0) {
@@ -13135,9 +13135,10 @@ function copyChatId(chatId, btnEl) {
             filtered.forEach((st) => {
                 const dmText = st.chat_id_dm || '';
                 const rcText = st.chat_id_rc || '';
+                const dcText = st.chat_id_dc || '';
                 const stId = escapeHtml(st.id || '');
                 const stName = escapeHtml(st.name || '');
-                const activeTgChatId = dmText || rcText;
+                const activeTgChatId = dmText || rcText || dcText;
 
                 const dmBadge = dmText
                     ? `<span class="tag-pill" style="background:rgba(56,189,248,0.15); color:#38bdf8; font-family:monospace; font-weight:700; font-size:0.75rem; cursor:pointer;" onclick="copyToClipboard('${dmText.replace(/'/g,"\\'")}',' Chat ID ĐM ${stId}')" title="Click để copy"><i class="fa-regular fa-copy"></i> ${dmText}</span>`
@@ -13145,6 +13146,10 @@ function copyChatId(chatId, btnEl) {
 
                 const rcBadge = rcText
                     ? `<span class="tag-pill" style="background:rgba(52,211,153,0.15); color:#34d399; font-family:monospace; font-weight:700; font-size:0.75rem; cursor:pointer;" onclick="copyToClipboard('${rcText.replace(/'/g,"\\'")}',' Chat ID RC ${stId}')" title="Click để copy"><i class="fa-regular fa-copy"></i> ${rcText}</span>`
+                    : '<span style="color:#64748b; font-size:0.75rem;">(Chưa có)</span>';
+
+                const dcBadge = dcText
+                    ? `<span class="tag-pill" style="background:rgba(251,146,60,0.15); color:#fb923c; font-family:monospace; font-weight:700; font-size:0.75rem; cursor:pointer;" onclick="copyToClipboard('${dcText.replace(/'/g,"\\'")}',' Chat ID Kho DC ${stId}')" title="Click để copy"><i class="fa-regular fa-copy"></i> ${dcText}</span>`
                     : '<span style="color:#64748b; font-size:0.75rem;">(Chưa có)</span>';
 
                 const tgBtn = activeTgChatId
@@ -13236,7 +13241,8 @@ function copyChatId(chatId, btnEl) {
                         store_id: storeId,
                         store_name: storeName,
                         chat_id_dm: chatDm,
-                        chat_id_rc: chatRc
+                        chat_id_rc: chatRc,
+                        chat_id_dc: chatDc
                     })
                 });
                 if (res.ok) {
