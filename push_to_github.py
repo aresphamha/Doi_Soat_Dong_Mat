@@ -34,7 +34,7 @@ def save_config(config):
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(config, f, indent=4, ensure_ascii=False)
 
-def sync_and_push(custom_message=None):
+def sync_and_push(custom_message=None, specific_files=None):
     print("==============================================================================")
     print("🚀 BẮT ĐẦU QUY TRÌNH TỰ ĐỘNG ĐẨY BÁO CÁO LÊN GITHUB & WEB ONLINE (CI/CD)...")
     print("==============================================================================")
@@ -50,28 +50,30 @@ def sync_and_push(custom_message=None):
     except Exception:
         repo = porcelain.init(ROOT_DIR)
         
-    # Danh sách các file / thư mục cần theo dõi
-    tracked_items = [
-        ".gitignore",
-        ".github",
-        "index.html",
-        "Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay.html",
-        "HUONG_DAN_LOGIC_VA_CACH_THEM_TOOL.html",
-        "daily_records.js",
-        "daily_details",
-        "Cap_Nhat_Bao_Cao_Web.bat",
-        "Mo_Bao_Cao.bat",
-        "LOGIC_HE_THONG_NOI_BO_THAM_KHAO.html",
-        "LOGIC_HE_THONG_NOI_BO_THAM_KHAO.md",
-        "DONG_MAT_DASHBOARD",
-        "LOGIC",
-        "SPAM_PHIEU_CHUYEN",
-        "TOOLS_DOI_SOAT",
-        "Bang_Gia_Nhap_San_Pham_CDC_Hada.xlsx",
-        "Danh_Sach_Chat_ID_Nhom_DC.xlsx"
-    ]
-    
-    valid_paths = [p for p in tracked_items if os.path.exists(os.path.join(ROOT_DIR, p))]
+    if specific_files:
+        valid_paths = [p for p in specific_files if os.path.exists(os.path.join(ROOT_DIR, p))]
+    else:
+        # Danh sách các file / thư mục cần theo dõi
+        tracked_items = [
+            ".gitignore",
+            ".github",
+            "index.html",
+            "Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay.html",
+            "HUONG_DAN_LOGIC_VA_CACH_THEM_TOOL.html",
+            "daily_records.js",
+            "daily_details",
+            "Cap_Nhat_Bao_Cao_Web.bat",
+            "Mo_Bao_Cao.bat",
+            "LOGIC_HE_THONG_NOI_BO_THAM_KHAO.html",
+            "LOGIC_HE_THONG_NOI_BO_THAM_KHAO.md",
+            "DONG_MAT_DASHBOARD",
+            "LOGIC",
+            "SPAM_PHIEU_CHUYEN",
+            "TOOLS_DOI_SOAT",
+            "Bang_Gia_Nhap_San_Pham_CDC_Hada.xlsx",
+            "Danh_Sach_Chat_ID_Nhom_DC.xlsx"
+        ]
+        valid_paths = [p for p in tracked_items if os.path.exists(os.path.join(ROOT_DIR, p))]
     porcelain.add(repo, paths=valid_paths)
     
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
