@@ -153,7 +153,7 @@ async def get_tags_for_group(client, chat_id):
         pass
     return " ".join(tags) if tags else "@SM @TC @GSM"
 
-async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False):
+async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None):
     print("\n=======================================================")
     print("⚖️ BẮT ĐẦU CHẠY TOOL: PHIẾU HẬU KIỂM KHO KHÔ (FGA10101 & FGA10103)")
     print("=======================================================")
@@ -248,9 +248,30 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False):
                 'transfer_date_short': target_eval_date.strftime('%d.%m')
             })
 
+    # Lọc theo danh sách Siêu thị / Phiếu yêu cầu nếu có truyền vào
+    if stores and str(stores).strip() and str(stores).strip().upper() != 'ALL':
+        raw_list = [s.strip() for s in re.split(r'[,;\n\r\t]+', str(stores)) if s.strip()]
+        target_set = set(s.upper() for s in raw_list)
+        filtered_pending = []
+        for p in pending_hk:
+            p_code = (p.get('st_code') or '').upper()
+            p_name = (p.get('st_name') or '').upper()
+            p_hk = (p.get('hk_code') or '').upper()
+            p_pt = (p.get('pt_code') or '').upper()
+            
+            matched = False
+            for t in target_set:
+                if t in [p_code, p_hk, p_pt] or t in p_name:
+                    matched = True
+                    break
+            if matched:
+                filtered_pending.append(p)
+        print(f"🎯 Đã lọc theo danh sách yêu cầu ({stores}): Giữ lại {len(filtered_pending)}/{len(pending_hk)} phiếu.")
+        pending_hk = filtered_pending
+
     print(f"📊 Tìm thấy ĐÚNG {len(pending_hk)} phiếu HẬU KIỂM KHO KHÔ cần xử lý.")
     if len(pending_hk) == 0:
-        print("✅ Tuyệt vời! Không có phiếu Hậu Kiểm Kho Khô nào bị tồn đọng.")
+        print("✅ Tuyệt vời! Không có phiếu Hậu Kiểm Kho Khô nào bị tồn đọng (hoặc không khớp bộ lọc).")
         return
 
     # Gom nhóm theo Siêu thị
@@ -377,5 +398,6 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dry-run', action='store_true', help='Chạy thử không gửi tin')
+    parser.add_argument('--stores', type=str, default=None, help='Danh sách mã ST hoặc tên ST cần spam (cách nhau bởi dấu phẩy)')
     args = parser.parse_args()
-    asyncio.run(run_spam_hau_kiem_kho_kho(dry_run=args.dry_run))
+    asyncio.run(run_spam_hau_kiem_kho_kho(dry_run=args.dry_run, stores=args.stores))

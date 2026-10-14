@@ -4398,6 +4398,23 @@
 
                     </div>
 
+                    <!-- Hàng Lọc Siêu Thị Cụ Thể (Tùy chọn) -->
+                    <div style="margin-top:0.85rem; padding:0.6rem 0.9rem; background:rgba(56,189,248,0.06); border:1px dashed rgba(56,189,248,0.3); border-radius:8px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <label style="font-size:0.8rem; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:6px; white-space:nowrap;">
+                            <i class="fa-solid fa-filter" style="color:#38bdf8;"></i> 🎯 Lọc Siêu Thị / Mã Phiếu Cụ Thể (Tùy chọn):
+                        </label>
+                        <input type="text" id="runnerSpecificStoresInput" placeholder="Ví dụ: GHA, HTC, A232 hoặc mã phiếu HK00179206... (để trống = chạy tất cả)" style="flex:1; min-width:260px; padding:0.45rem 0.8rem; background:var(--bg-card-alt); border:1px solid var(--border-card); border-radius:6px; color:var(--text-primary); font-size:0.82rem; font-weight:600; outline:none;">
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <button type="button" onclick="document.getElementById('runnerSpecificStoresInput').value='GHA, HTC, A232'" style="padding:0.3rem 0.6rem; background:rgba(56,189,248,0.15); border:1px solid #38bdf8; border-radius:5px; color:#38bdf8; font-size:0.72rem; font-weight:700; cursor:pointer;" title="Lọc nhanh 3 ST Hậu kiểm Kho Khô">
+                                3 ST Kho Khô
+                            </button>
+                            <button type="button" onclick="document.getElementById('runnerSpecificStoresInput').value=''" style="padding:0.3rem 0.5rem; background:rgba(255,255,255,0.06); border:1px solid var(--border-card); border-radius:5px; color:#94a3b8; font-size:0.72rem; cursor:pointer;" title="Xóa bộ lọc để chạy tất cả">
+                                Xóa lọc
+                            </button>
+                        </div>
+                    </div>
+
+
                     
                     <!-- ================= SCM CUSTOM SPAM STUDIO COMPONENT ================= -->
                     
@@ -12512,6 +12529,12 @@ function copyChatId(chatId, btnEl) {
                 }
                 customStores = pastedVal;
                 customMessage = usernameInput ? usernameInput.value.trim() : "@doi_soat_SCM_bot";
+            } else {
+                const specificInput = document.getElementById("runnerSpecificStoresInput");
+                const specificVal = specificInput ? specificInput.value.trim() : "";
+                if (specificVal) {
+                    customStores = specificVal;
+                }
             }
 
             if (terminalCard) {
@@ -12679,8 +12702,10 @@ function copyChatId(chatId, btnEl) {
                 date: targetDate,
                 dry_run: isDryRun ? "true" : "false"
             });
-            if (tool === "spam_tu_chon" || tool === "add_thanh_vien") {
+            if (stores && stores !== "ALL" && String(stores).trim()) {
                 params.append("stores", stores);
+            }
+            if (tool === "spam_tu_chon" || tool === "add_thanh_vien") {
                 params.append("message", message);
                 params.append("tag_roles", tagRoles ? "true" : "false");
             }
@@ -12772,8 +12797,10 @@ function copyChatId(chatId, btnEl) {
                 target_date: targetDate,
                 dry_run: isDryRun ? "true" : "false"
             };
-            if (tool === "spam_tu_chon") {
+            if (stores && stores !== "ALL" && String(stores).trim()) {
                 inputs.stores = stores;
+            }
+            if (tool === "spam_tu_chon") {
                 inputs.message = message;
                 inputs.no_tags = !tagRoles;
             }

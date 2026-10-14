@@ -206,9 +206,9 @@ def main():
         
         # Nhóm Kho Khô (FGA10101)
         elif args.tool == "chi_tiet_kho_kho":
-            loop.run_until_complete(run_tool_chi_tiet_kho_kho(date_val, args.dry_run))
+            loop.run_until_complete(run_tool_chi_tiet_kho_kho(date_val, args.dry_run, args.stores))
         elif args.tool == "hau_kiem_kho_kho":
-            loop.run_until_complete(run_tool_hau_kiem_kho_kho(date_val, args.dry_run))
+            loop.run_until_complete(run_tool_hau_kiem_kho_kho(date_val, args.dry_run, args.stores))
         
         # Nhóm Chạy Tổng Hợp Step-by-Step
         elif args.tool == "all":
