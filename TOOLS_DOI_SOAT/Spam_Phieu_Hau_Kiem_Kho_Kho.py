@@ -183,8 +183,11 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         id_to_name = {bid: bname for bid, bname in cur.fetchall() if bname}
 
         # Query phiếu hậu kiểm của kho FGA10101 & FGA10103
-        # Khi có lọc cụ thể siêu thị/mã phiếu (stores), mở rộng quét cả double_checked_status = 3 (Còn hậu kiểm dở dang)
-        dc_status_cond = "t.double_checked_status IN (1, 3)" if (stores and str(stores).strip().upper() != 'ALL') else "t.double_checked_status = 1"
+        # Quét cả phiếu Chưa hậu kiểm (status=1) và phiếu Còn hậu kiểm dở dang (status=3) của CKO (85 Cây Keo) hoặc siêu thị chỉ định
+        if stores and str(stores).strip().upper() != 'ALL':
+            dc_status_cond = "t.double_checked_status IN (1, 3)"
+        else:
+            dc_status_cond = "(t.double_checked_status = 1 OR (t.double_checked_status = 3 AND t.to_branch_id = '62d9039a058d5b000705074e'))"
         sql = f"""
         SELECT 
             t.double_check_code,
@@ -342,12 +345,12 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
             else:
                 ticket_clause = f"còn {total_p} phiếu hậu kiểm kho khô chưa nhận từ ngày {oldest_d} đến {newest_d}."
 
-        tag_text = await get_tags_for_group(client, chat_id)
-        caption = f"**PHIẾU HẬU KIỂM KHO KHÔ**\n{today_str}\n⚠️ Siêu thị {ticket_clause}\nSiêu thị kiểm tra HOÀN THÀNH phiếu HẬU KIỂM KHO KHÔ gấp nhé team\n{tag_text}"
-
         if dry_run:
             print(f"🔍 [DRY-RUN] Sẽ gửi đến {st_name} (Mã: {st_code}, CID: {chat_id}): {total_p} phiếu [{ticket_clause}]")
             continue
+
+        tag_text = await get_tags_for_group(client, chat_id)
+        caption = f"**PHIẾU HẬU KIỂM KHO KHÔ**\n{today_str}\n⚠️ Siêu thị {ticket_clause}\nSiêu thị kiểm tra HOÀN THÀNH phiếu HẬU KIỂM KHO KHÔ gấp nhé team\n{tag_text}"
 
         # Tạo ảnh bảng Gradient Pastel
         rows = []
