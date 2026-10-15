@@ -174,8 +174,16 @@ def main():
     while i < len(raw_argv):
         a = raw_argv[i]
         if a in ["--stores", "--message", "--date", "--tool", "--chat-id-type", "--kho", "--photo"] and i + 1 < len(raw_argv):
-            clean_argv.append(f"{a}={raw_argv[i+1]}")
+            val = raw_argv[i+1]
+            if a == "--tool":
+                val = val.lower().strip()
+            clean_argv.append(f"{a}={val}")
             i += 2
+            continue
+        if a.startswith("--tool="):
+            k, v = a.split("=", 1)
+            clean_argv.append(f"{k}={v.lower().strip()}")
+            i += 1
             continue
         clean_argv.append(a)
         i += 1

@@ -26,6 +26,13 @@ if hasattr(sys.stdout, 'encoding') and sys.stdout.encoding and sys.stdout.encodi
     except Exception:
         pass
 
+# Giới hạn thread pools OpenBLAS/MKL để tránh tràn bộ nhớ khi máy đang chạy các tác vụ nặng
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+os.environ["PYTHONIOENCODING"] = "utf-8"
+
 PORT = 8088
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 SPAM_RUNNER_SCRIPT = os.path.join(ROOT_DIR, "SPAM_PHIEU_CHUYEN", "run_spam_tool.py")
@@ -480,7 +487,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/run":
-            tool = params.get('tool', ['all'])[0]
+            tool = params.get('tool', ['all'])[0].strip().lower()
             target_date = params.get('date', [''])[0]
             dry_run = params.get('dry_run', ['false'])[0].lower() in ['true', '1', 'yes']
             stores = params.get('stores', ['ALL'])[0]
@@ -498,7 +505,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
 
         elif path == "/stream" or path == "/stream_custom":
             # Server-Sent Events (SSE) để stream logs trực tiếp về Web UI
-            tool = params.get('tool', ['all'])[0]
+            tool = params.get('tool', ['all'])[0].strip().lower()
             target_date = params.get('date', [''])[0]
             dry_run = params.get('dry_run', ['false'])[0].lower() in ['true', '1', 'yes']
             stores = params.get('stores', ['ALL'])[0]
@@ -623,7 +630,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/run" or path == "/api/spam_custom":
-            tool = data.get('tool', 'spam_tu_chon' if path == '/api/spam_custom' else 'all')
+            tool = data.get('tool', 'spam_tu_chon' if path == '/api/spam_custom' else 'all').strip().lower()
             target_date = data.get('date', '')
             dry_run = data.get('dry_run', False)
             stores = data.get('stores', 'ALL')
@@ -645,6 +652,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
 
     def _stream_tool_execution(self, tool, target_date, dry_run, stores="ALL", message="", tag_roles=True, chat_id_type="auto"):
         global CURRENT_RUNNING_PROC, IS_CURRENT_PAUSED
+        tool = (tool or "all").strip().lower()
         if tool in ["sync_telegram", "telegram", "sync_tele"]:
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "sync_telegram_groups.py")]
             tool_title = "Đồng Bộ Realtime Telegram SCM (588 Nhóm)"
@@ -687,6 +695,13 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(f"data: {json.dumps(start_payload, ensure_ascii=False)}\n\n".encode('utf-8'))
             self.wfile.flush()
 
+            runner_env = os.environ.copy()
+            runner_env["OPENBLAS_NUM_THREADS"] = "1"
+            runner_env["MKL_NUM_THREADS"] = "1"
+            runner_env["OMP_NUM_THREADS"] = "1"
+            runner_env["NUMEXPR_NUM_THREADS"] = "1"
+            runner_env["PYTHONIOENCODING"] = "utf-8"
+
             proc = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
@@ -694,7 +709,8 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
                 text=True,
                 encoding='utf-8',
                 errors='replace',
-                cwd=ROOT_DIR,
+                cwd=os.path.normpath(ROOT_DIR),
+                env=runner_env,
                 bufsize=1
             )
             CURRENT_RUNNING_PROC = proc
@@ -781,6 +797,13 @@ def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_role
 
         try:
             print(f"👉 [LOCAL RUNNER] Chạy lệnh: {' '.join(cmd)}")
+            runner_env = os.environ.copy()
+            runner_env["OPENBLAS_NUM_THREADS"] = "1"
+            runner_env["MKL_NUM_THREADS"] = "1"
+            runner_env["OMP_NUM_THREADS"] = "1"
+            runner_env["NUMEXPR_NUM_THREADS"] = "1"
+            runner_env["PYTHONIOENCODING"] = "utf-8"
+
             proc = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
@@ -788,7 +811,8 @@ def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_role
                 text=True,
                 encoding='utf-8',
                 errors='replace',
-                cwd=ROOT_DIR
+                cwd=os.path.normpath(ROOT_DIR),
+                env=runner_env
             )
             CURRENT_RUNNING_PROC = proc
             IS_CURRENT_PAUSED = False
