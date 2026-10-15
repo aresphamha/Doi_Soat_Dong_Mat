@@ -249,7 +249,6 @@ def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name
         data = sorted(data, key=lambda x: x.get('id', ''))
         with open(json_path, 'w', encoding='utf-8') as jf:
             json.dump(data, jf, ensure_ascii=False, indent=2)
-            json.dump(data, jf, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"Error updating JSON: {e}")
 
@@ -674,12 +673,12 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
                     self.wfile.write(f"data: {json.dumps(err_event, ensure_ascii=False)}\n\n".encode('utf-8'))
                     self.wfile.flush()
                     return
-                if stores:
-                    cmd.append(f"--stores={stores}")
                 if message:
                     cmd.extend(["--message", message])
                 if not tag_roles:
                     cmd.append("--no-tags")
+            if stores and stores != "ALL" and str(stores).strip():
+                cmd.append(f"--stores={stores}")
             date_label = target_date if target_date else "Mặc định"
             tool_title = f"Spam Tùy Chọn ({stores})" if tool == "spam_tu_chon" else tool
 

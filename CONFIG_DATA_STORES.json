@@ -1040,6 +1040,14 @@
     "chat_id_dc": "-1004469485931"
   },
   {
+    "id": "A266",
+    "name": "KFM_HCM_PNH - Hoa Sứ",
+    "short": "A266",
+    "chat_id_dm": "",
+    "chat_id_rc": "",
+    "chat_id_dc": "-1004376355185"
+  },
+  {
     "id": "ACU",
     "name": "KFM_HCM_TDU - 0.01 Chung cư An Cư An Phú",
     "short": "ACU",
@@ -1062,6 +1070,14 @@
     "chat_id_dm": "-4503460791",
     "chat_id_rc": "-4542912089",
     "chat_id_dc": "-4903740099"
+  },
+  {
+    "id": "B001",
+    "name": "KFM_HNI_YHO - CT3 Yên Hoà Park View",
+    "short": "B001",
+    "chat_id_dm": "-1004305022913",
+    "chat_id_rc": "-1004305022913",
+    "chat_id_dc": "-1004305022913"
   },
   {
     "id": "BCG",
@@ -1395,9 +1411,9 @@
     "id": "LTC",
     "name": "KFM_HCM_Q07 - 97 Lê Thị Chợ",
     "short": "LTC",
-    "chat_id_dm": "-4174079222",
-    "chat_id_rc": "-4187036269",
-    "chat_id_dc": "-4115684818"
+    "chat_id_dm": "-1004451611911",
+    "chat_id_rc": "-1004451611911",
+    "chat_id_dc": "-1004451611911"
   },
   {
     "id": "LVH",
