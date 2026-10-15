@@ -183,6 +183,8 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         id_to_name = {bid: bname for bid, bname in cur.fetchall() if bname}
 
         # Query phiếu hậu kiểm của kho FGA10101 & FGA10103
+        # Khi có lọc cụ thể siêu thị/mã phiếu (stores), mở rộng quét cả double_checked_status = 3 (Còn hậu kiểm dở dang)
+        dc_status_cond = "t.double_checked_status IN (1, 3)" if (stores and str(stores).strip().upper() != 'ALL') else "t.double_checked_status = 1"
         sql = f"""
         SELECT 
             t.double_check_code,
@@ -195,7 +197,7 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         FROM __cdc_kfm_kf_inventories_kf_transfer_items t
         WHERE t.from_branch_id IN {FGA_BRANCH_IDS}
           AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
-          AND t.double_checked_status = 1
+          AND {dc_status_cond}
           AND t.status = 5
         """
         cur.execute(sql)
