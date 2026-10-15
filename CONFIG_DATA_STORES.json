@@ -1064,6 +1064,14 @@
     "chat_id_dc": "-4903740099"
   },
   {
+    "id": "B001",
+    "name": "KFM_HNI_YHO - CT3 Yên Hoà Park View",
+    "short": "B001",
+    "chat_id_dm": "-1004305022913",
+    "chat_id_rc": "-1004305022913",
+    "chat_id_dc": ""
+  },
+  {
     "id": "BCG",
     "name": "KFM_BDU_DAN - SH01 BCons Garden",
     "short": "BCG",
@@ -1395,9 +1403,9 @@
     "id": "LTC",
     "name": "KFM_HCM_Q07 - 97 Lê Thị Chợ",
     "short": "LTC",
-    "chat_id_dm": "-4174079222",
-    "chat_id_rc": "-4187036269",
-    "chat_id_dc": "-4115684818"
+    "chat_id_dm": "-1004451611911",
+    "chat_id_rc": "-1004451611911",
+    "chat_id_dc": "-1004451611911"
   },
   {
     "id": "LVH",
