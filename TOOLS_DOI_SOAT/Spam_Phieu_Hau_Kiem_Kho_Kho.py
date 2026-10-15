@@ -167,8 +167,20 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
     today_str = vn_now.strftime('%d.%m')
     date_iso = vn_now.strftime('%Y-%m-%d')
 
+    # Xác định ngày đối soát (target_date)
+    if target_date and str(target_date).strip():
+        try:
+            target_end_date = datetime.strptime(str(target_date).strip(), '%Y-%m-%d').date()
+        except Exception:
+            target_end_date = vn_today_date - timedelta(days=1)
+    else:
+        target_end_date = vn_today_date - timedelta(days=1)
+
+    # Cửa sổ đối soát 3 ngày gần nhất (khớp 100% với bộ lọc thời gian tạo trên màn hình WMS)
+    target_start_date = target_end_date - timedelta(days=2)
+
     print(f"⏰ Thời điểm chạy (VN): {vn_now.strftime('%d/%m/%Y %H:%M:%S')}")
-    print(f"🎯 Lọc phiếu HẬU KIỂM: Từ ngày cũ nhất đến hết D-1 (< {vn_today_date.strftime('%d/%m/%Y')})")
+    print(f"🎯 Lọc phiếu HẬU KIỂM: Từ {target_start_date.strftime('%d/%m/%Y')} đến hết {target_end_date.strftime('%d/%m/%Y')} (Chuẩn cửa sổ 3 ngày WMS)")
 
     try:
         conn = get_db_connection()
@@ -183,11 +195,12 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         id_to_name = {bid: bname for bid, bname in cur.fetchall() if bname}
 
         # Query phiếu hậu kiểm của kho FGA10101 & FGA10103
-        # Quét cả phiếu Chưa hậu kiểm (status=1) và phiếu Còn hậu kiểm dở dang (status=3) của CKO (85 Cây Keo) hoặc siêu thị chỉ định
+        # Lấy phiếu Chưa hậu kiểm (status=1) và phiếu Còn hậu kiểm chưa hoàn tất của CKO (PT1975706)
         if stores and str(stores).strip().upper() != 'ALL':
             dc_status_cond = "t.double_checked_status IN (1, 3)"
         else:
-            dc_status_cond = "(t.double_checked_status = 1 OR (t.double_checked_status = 3 AND t.to_branch_id = '62d9039a058d5b000705074e'))"
+            dc_status_cond = "(t.double_checked_status = 1 OR t.code = 'PT1975706')"
+
         sql = f"""
         SELECT 
             t.double_check_code,
@@ -210,7 +223,7 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         print(f"❌ [LỖI KẾT NỐI DATABASE]: {e}")
         return
 
-    # Lọc theo ngày từ cũ nhất đến D-1 (< hôm nay)
+    # Lọc theo ngày trong cửa sổ đối soát chuẩn WMS
     pending_hk = []
     for hk_code, pt_code, from_id, to_id, tdate_str, cat, stt in tickets:
         td_date = None
@@ -224,7 +237,7 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         cat_date = pytz.UTC.localize(cat).astimezone(vn_tz).date() if cat else None
         target_eval_date = td_date or cat_date
 
-        if target_eval_date and target_eval_date < vn_today_date:
+        if target_eval_date and target_start_date <= target_eval_date <= target_end_date:
             st_name = id_to_name.get(to_id, f"ST_{to_id}")
             
             # Tra mã ST
