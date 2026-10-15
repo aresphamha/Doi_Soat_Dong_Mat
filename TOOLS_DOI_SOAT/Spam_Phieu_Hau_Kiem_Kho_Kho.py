@@ -194,27 +194,43 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         """)
         id_to_name = {bid: bname for bid, bname in cur.fetchall() if bname}
 
-        # Query phiếu hậu kiểm của kho FGA10101 & FGA10103
-        # Lấy phiếu Chưa hậu kiểm (status=1) và phiếu Còn hậu kiểm chưa hoàn tất của CKO (PT1975706)
-        if stores and str(stores).strip().upper() != 'ALL':
-            dc_status_cond = "t.double_checked_status IN (1, 3)"
-        else:
-            dc_status_cond = "(t.double_checked_status = 1 OR t.code = 'PT1975706')"
+        # Mốc cutoff UTC cho ngày đối soát (đảm bảo không kéo phiếu đã hoàn tất tự động sau thời điểm đối soát)
+        target_end_dt_vn = datetime.combine(target_end_date, datetime.max.time())
+        target_cutoff_utc = vn_tz.localize(target_end_dt_vn).astimezone(pytz.UTC).strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        now_utc_str = vn_now.astimezone(pytz.UTC).strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        active_cutoff_utc = target_cutoff_utc if target_end_date < vn_today_date else now_utc_str
 
+        # QUERY TỔNG QUÁT: Bắt trọn tab "CẦN HẬU KIỂM" trên WMS cho MỌI SIÊU THỊ (Không hardcode bất kỳ mã phiếu/ST nào)
+        # Tab "Cần hậu kiểm" trên WMS bao gồm 2 nhóm:
+        #   1. Chưa hậu kiểm (double_checked_status = 1): ST chưa quét món nào (0%).
+        #   2. Còn hậu kiểm (double_checked_status = 3): ST đã quét 1 phần rồi treo / chưa hoàn tất:
+        #      - Chưa lên kệ (status_processing__shelved_in_supermarket = 0)
+        #      - Chưa quá hạn tự đóng auto_completed_at tại thời điểm đối soát
+        #      - Có chênh lệch số lượng kiểm/nhận hoặc đang trong tiến trình supermarket_inspecting
         sql = f"""
         SELECT 
             t.double_check_code,
             t.code,
             t.from_branch_id,
             t.to_branch_id,
+            t.received_date,
             t.transfer_date,
             t.created_at,
+            t.double_checked_status,
             t.status
         FROM __cdc_kfm_kf_inventories_kf_transfer_items t
         WHERE t.from_branch_id IN {FGA_BRANCH_IDS}
           AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
-          AND {dc_status_cond}
           AND t.status = 5
+          AND (
+              t.double_checked_status = 1
+              OR (
+                  t.double_checked_status = 3
+                  AND t.status_processing__shelved_in_supermarket = 0
+                  AND (t.auto_completed_at IS NULL OR t.auto_completed_at > '{active_cutoff_utc}')
+                  AND (t.total_store_quantity != t.total_received_quantity OR CAST(t.status_processing__focused_status AS VARCHAR) LIKE '%supermarket_inspecting%')
+              )
+          )
         """
         cur.execute(sql)
         tickets = cur.fetchall()
@@ -225,19 +241,25 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
 
     # Lọc theo ngày trong cửa sổ đối soát chuẩn WMS
     pending_hk = []
-    for hk_code, pt_code, from_id, to_id, tdate_str, cat, stt in tickets:
-        td_date = None
-        if tdate_str:
+    for hk_code, pt_code, from_id, to_id, rcv_str, tdate_str, cat, dc_stt, stt in tickets:
+        # Mốc ngày đối soát ưu tiên theo received_date (khớp thời gian tạo phiếu HK trên WMS)
+        eval_date = None
+        if rcv_str:
             try:
-                td_utc = datetime.fromisoformat(tdate_str.replace('Z', '+00:00'))
-                td_date = td_utc.astimezone(vn_tz).date()
+                rcv_utc = datetime.fromisoformat(rcv_str.replace('Z', '+00:00'))
+                eval_date = rcv_utc.astimezone(vn_tz).date()
             except Exception:
                 pass
+        if not eval_date and tdate_str:
+            try:
+                td_utc = datetime.fromisoformat(tdate_str.replace('Z', '+00:00'))
+                eval_date = td_utc.astimezone(vn_tz).date()
+            except Exception:
+                pass
+        if not eval_date and cat:
+            eval_date = pytz.UTC.localize(cat).astimezone(vn_tz).date()
 
-        cat_date = pytz.UTC.localize(cat).astimezone(vn_tz).date() if cat else None
-        target_eval_date = td_date or cat_date
-
-        if target_eval_date and target_start_date <= target_eval_date <= target_end_date:
+        if eval_date and target_start_date <= eval_date <= target_end_date:
             st_name = id_to_name.get(to_id, f"ST_{to_id}")
             
             # Tra mã ST
@@ -261,9 +283,9 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
                 'st_name': st_name,
                 'st_code': st_code,
                 'to_id': to_id,
-                'transfer_date': target_eval_date,
-                'transfer_date_str': target_eval_date.strftime('%d/%m/%Y'),
-                'transfer_date_short': target_eval_date.strftime('%d.%m')
+                'transfer_date': eval_date,
+                'transfer_date_str': eval_date.strftime('%d/%m/%Y'),
+                'transfer_date_short': eval_date.strftime('%d.%m')
             })
 
     # Lọc theo danh sách Siêu thị / Phiếu yêu cầu nếu có truyền vào
@@ -415,7 +437,8 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--target-date', type=str, default=None, help='Ngày đối soát (YYYY-MM-DD)')
     parser.add_argument('--dry-run', action='store_true', help='Chạy thử không gửi tin')
     parser.add_argument('--stores', type=str, default=None, help='Danh sách mã ST hoặc tên ST cần spam (cách nhau bởi dấu phẩy)')
     args = parser.parse_args()
-    asyncio.run(run_spam_hau_kiem_kho_kho(dry_run=args.dry_run, stores=args.stores))
+    asyncio.run(run_spam_hau_kiem_kho_kho(target_date=args.target_date, dry_run=args.dry_run, stores=args.stores))
