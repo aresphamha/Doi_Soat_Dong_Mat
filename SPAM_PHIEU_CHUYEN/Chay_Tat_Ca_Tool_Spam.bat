@@ -13,17 +13,21 @@ echo   [1] 🥩 Spam Phiếu Chuyển THỊT CÁ (Chụp bảng chênh lệch & 
 echo   [2] 🥗 Spam Phiếu Chuyển HÀNG MÁT (Gửi phiếu đang chuyển hàng mát cho ST)
 echo   [3] 🥬 Spam Phiếu HẬU KIỂM RAU CỦ (Nhắc nhở kiểm tra camera & vị trí nhận)
 echo   [4] 🐟 Spam Phiếu HẬU KIỂM THỊT CÁ (Nhắc nhở hoàn thành phiếu hậu kiểm)
-echo   [5] 📦 Chạy kiểm tra kết nối Database Cloud (103.140.248.250:9030)
+echo   [5] ⚖️ Spam Phiếu HẬU KIỂM KHO KHÔ (Nhắc nhở hoàn thành phiếu hậu kiểm khô)
+echo   [6] 📦 Spam Phiếu CHI TIẾT KHO KHÔ (Gửi danh sách phiếu kho khô đang chuyển)
+echo   [7] 🔌 Chạy kiểm tra kết nối Database Cloud (103.140.248.250:9030)
 echo   [0] ❌ Thoát
 echo.
 echo ==============================================================================
-set /p opt="👉 Vui lòng nhập lựa chọn (1-5 hoặc 0): "
+set /p opt="👉 Vui lòng nhập lựa chọn (1-7 hoặc 0): "
 
 if "%opt%"=="1" goto THIT_CA
 if "%opt%"=="2" goto HANG_MAT
 if "%opt%"=="3" goto HAU_KIEM_RAU
 if "%opt%"=="4" goto HAU_KIEM_TC
-if "%opt%"=="5" goto TEST_DB
+if "%opt%"=="5" goto HAU_KIEM_KHO
+if "%opt%"=="6" goto CHI_TIET_KHO
+if "%opt%"=="7" goto TEST_DB
 if "%opt%"=="0" exit
 goto MENU
 
@@ -59,9 +63,26 @@ python "Spam_Phieu_Hau_Kiem_Thit_Ca.py"
 pause
 goto MENU
 
+:HAU_KIEM_KHO
+cls
+echo [ĐANG CHẠY] Spam Phiếu HẬU KIỂM KHO KHÔ...
+cd /d "%~dp0KHO KHÔ"
+python "Spam_Phieu_Hau_Kiem_Kho_Kho.py" --force
+pause
+goto MENU
+
+:CHI_TIET_KHO
+cls
+echo [ĐANG CHẠY] Spam Phiếu CHI TIẾT KHO KHÔ...
+cd /d "%~dp0KHO KHÔ"
+python "Spam_Phieu_Chi_Tiet_Kho_Kho.py"
+pause
+goto MENU
+
 :TEST_DB
 cls
 echo [ĐANG KIỂM TRA] Kết nối MySQL Database Cloud...
 python -c "import pymysql; conn = pymysql.connect(host='103.140.248.250', port=9030, user='kfm_scm_tho_nguyen', password='TnAM0WEsv4kmasw878wt', database='kfm_scm', connect_timeout=5); print('✅ KẾT NỐI DATABASE THÀNH CÔNG!'); conn.close()"
 pause
 goto MENU
+

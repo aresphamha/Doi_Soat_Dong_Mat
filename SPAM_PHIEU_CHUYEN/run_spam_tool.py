@@ -164,8 +164,8 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Chế độ chạy thử không gửi tin nhắn")
     parser.add_argument("--stores", default="ALL", help="Danh sách mã ST cần gửi (ngăn cách bởi dấu phẩy hoặc ALL)")
     parser.add_argument("--message", default=None, help="Nội dung tin nhắn tùy chọn cần spam hoặc username bot")
-    parser.add_argument("--no-tags", action="store_true", help="Không tự động tag Quản lý/Trưởng ca")
     parser.add_argument("--photo", default=None, help="Đường dẫn file ảnh đính kèm (nếu có)")
+    parser.add_argument("--force", "--resend", action="store_true", help="Bỏ qua kiểm tra lịch sử đã gửi hôm nay, gửi lại toàn bộ")
     parser.add_argument("--chat-id-type", "--kho", choices=["dong_mat", "rau_cu", "auto"], default="dong_mat", dest="chat_id_type", help="Chọn File Chat ID Kênh gửi (dong_mat hoặc rau_cu)")
     
     raw_argv = sys.argv[1:]
@@ -216,7 +216,7 @@ def main():
         elif args.tool == "chi_tiet_kho_kho":
             loop.run_until_complete(run_tool_chi_tiet_kho_kho(date_val, args.dry_run, args.stores))
         elif args.tool == "hau_kiem_kho_kho":
-            loop.run_until_complete(run_tool_hau_kiem_kho_kho(date_val, args.dry_run, args.stores))
+            loop.run_until_complete(run_tool_hau_kiem_kho_kho(date_val, args.dry_run, args.stores, force=args.force))
         
         # Nhóm Chạy Tổng Hợp Step-by-Step
         elif args.tool == "all":
@@ -235,7 +235,8 @@ def main():
             loop.run_until_complete(run_tool_hau_kiem_thit_ca(date_val, args.dry_run))
             loop.run_until_complete(run_tool_hau_kiem_dong_mat(date_val, args.dry_run))
             loop.run_until_complete(run_tool_chi_tiet_kho_kho(date_val, args.dry_run))
-            loop.run_until_complete(run_tool_hau_kiem_kho_kho(date_val, args.dry_run))
+            loop.run_until_complete(run_tool_hau_kiem_kho_kho(date_val, args.dry_run, force=args.force))
+
 
         # Nhóm Phân Hệ Báo Cáo Đông Mát & Rau Củ
         elif args.tool == "dong_mat_sheet":

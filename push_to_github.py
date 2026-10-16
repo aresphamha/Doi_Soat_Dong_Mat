@@ -71,9 +71,11 @@ def sync_and_push(custom_message=None, specific_files=None):
             "SPAM_PHIEU_CHUYEN",
             "TOOLS_DOI_SOAT",
             "Bang_Gia_Nhap_San_Pham_CDC_Hada.xlsx",
-            "Danh_Sach_Chat_ID_Nhom_DC.xlsx"
+            "Danh_Sach_Chat_ID_Nhom_DC.xlsx",
+            "CONFIG_DATA_STORES.json"
         ]
         valid_paths = [p for p in tracked_items if os.path.exists(os.path.join(ROOT_DIR, p))]
+
     porcelain.add(repo, paths=valid_paths)
     
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

@@ -10,9 +10,9 @@ import sys
 
 from .common import TOOLS_BASE_DIR
 
-async def run(target_date=None, dry_run=False, stores=None):
+async def run(target_date=None, dry_run=False, stores=None, force=False):
     print("\n=======================================================")
-    print("⚖️ [MODULE HẬU KIỂM KHO KHÔ] BẮT ĐẦU CHẠY TOOL: HẬU KIỂM KHO KHÔ FGA10101...")
+    print("⚖️ [MODULE HẬU KIỂM KHO KHÔ] BẮT ĐẦU CHẠY TOOL: HẬU KIỂM KHO KHÔ FGA...")
     print("=======================================================")
     
     if TOOLS_BASE_DIR not in sys.path:
@@ -20,6 +20,7 @@ async def run(target_date=None, dry_run=False, stores=None):
         
     try:
         from Spam_Phieu_Hau_Kiem_Kho_Kho import run_spam_hau_kiem_kho_kho
-        await run_spam_hau_kiem_kho_kho(target_date=target_date, dry_run=dry_run, stores=stores)
+        await run_spam_hau_kiem_kho_kho(target_date=target_date, dry_run=dry_run, stores=stores, force=force)
     except Exception as e:
         print(f"❌ [LỖI THỰC THI TOOL HẬU KIỂM KHO KHÔ]: {e}")
+

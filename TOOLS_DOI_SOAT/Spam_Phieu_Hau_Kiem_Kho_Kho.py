@@ -43,9 +43,11 @@ if not os.path.exists(SESSION_PATH + '.session'):
 
 FGA_BRANCHES = {
     '6aabb0a2f426e20007f80123': 'FGA10101 _ Bình Thắng _ Lưu Hàng',
-    '6aabb0d73c46470007f935ce': 'FGA10103 _ Bình Thắng _ Khai Trương'
+    '6aabb0d73c46470007f935ce': 'FGA10103 _ Bình Thắng _ Khai Trương',
+    '6aa77de130fded00073d4521': 'Kho Khô FGA Vệ Tinh',
+    '6a34ed56f23028000774139f': 'MeatFish - Miền Đông - SCF - Quá Cảnh'
 }
-FGA_BRANCH_IDS = "('6aabb0a2f426e20007f80123', '6aabb0d73c46470007f935ce')"
+FGA_BRANCH_IDS = "('6aabb0a2f426e20007f80123', '6aabb0d73c46470007f935ce', '6aa77de130fded00073d4521', '6a34ed56f23028000774139f')"
 HIST_FILE = os.path.join(ROOT_DIR, 'CONFIG_DATA', 'sent_history.json')
 
 def get_db_connection():
@@ -91,6 +93,7 @@ def load_store_and_dc_chat_mappings():
     st_to_code = {}
     dc_code_map = {}
     dc_title_map = {}
+    store_fallbacks = {}
 
     # 1. Đọc ánh xạ từ Danh_Sach_Chat_ID_Nhom_DC.xlsx
     excel_dc = os.path.join(ROOT_DIR, 'Danh_Sach_Chat_ID_Nhom_DC.xlsx')
@@ -114,7 +117,12 @@ def load_store_and_dc_chat_mappings():
         except Exception as e:
             print(f"⚠️ Cảnh báo đọc file Excel DC: {e}")
 
-    # 2. Đọc mapping Siêu thị -> Mã ST & Chat ID DC từ CONFIG_DATA_STORES.json
+    # Nhóm DC được phát hiện bổ sung chuẩn từ Telegram
+    dc_code_map['OPS'] = '-4879460816'     # DC-OPS (Opal Skyline)
+    dc_code_map['THD'] = '-1002012247830'  # DC-THD (229A Tân Hòa Đông)
+    dc_code_map['A164'] = '-5114128163'    # DC - A164 (Opal Boulevard)
+
+    # 2. Đọc mapping Siêu thị -> Mã ST & Chat ID DC/ĐM từ CONFIG_DATA_STORES.json
     stores_json = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')
     if os.path.exists(stores_json):
         try:
@@ -124,8 +132,10 @@ def load_store_and_dc_chat_mappings():
                     sid = s.get('id', '').strip().upper()
                     sname = s.get('name', '').strip()
                     cid_dc = str(s.get('chat_id_dc', '')).strip()
+                    cid_dm = str(s.get('chat_id_dm', '')).strip()
 
                     if sid:
+                        store_fallbacks[sid] = {'chat_id_dc': cid_dc, 'chat_id_dm': cid_dm, 'name': sname}
                         if sname:
                             st_to_code[sname] = sid
                             clean_sname = sname.replace(' - MINI', '').replace(' - WIN', '').replace(' - SUPER', '').strip()
@@ -138,7 +148,7 @@ def load_store_and_dc_chat_mappings():
         except Exception:
             pass
 
-    return st_to_code, dc_code_map, dc_title_map
+    return st_to_code, dc_code_map, dc_title_map, store_fallbacks
 
 async def get_tags_for_group(client, chat_id):
     tags = []
@@ -153,12 +163,12 @@ async def get_tags_for_group(client, chat_id):
         pass
     return " ".join(tags) if tags else "@SM @TC @GSM"
 
-async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None):
+async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None, force=False):
     print("\n=======================================================")
-    print("⚖️ BẮT ĐẦU CHẠY TOOL: PHIẾU HẬU KIỂM KHO KHÔ (FGA10101 & FGA10103)")
+    print("⚖️ BẮT ĐẦU CHẠY TOOL: PHIẾU HẬU KIỂM KHO KHÔ (FGA BÌNH THẮNG)")
     print("=======================================================")
 
-    st_to_code, dc_code_map, dc_title_map = load_store_and_dc_chat_mappings()
+    st_to_code, dc_code_map, dc_title_map, store_fallbacks = load_store_and_dc_chat_mappings()
     print(f"📋 Đã tải {len(dc_code_map)} Chat ID DC và {len(st_to_code)} mapping Siêu thị.")
 
     vn_tz = pytz.timezone('Asia/Ho_Chi_Minh')
@@ -168,19 +178,22 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
     date_iso = vn_now.strftime('%Y-%m-%d')
 
     # Xác định ngày đối soát (target_date)
-    if target_date and str(target_date).strip():
+    target_start_date = None
+    if target_date and str(target_date).strip() and str(target_date).strip().upper() != 'ALL':
         try:
             target_end_date = datetime.strptime(str(target_date).strip(), '%Y-%m-%d').date()
+            target_start_date = target_end_date - timedelta(days=2)
+            date_filter_msg = f"Từ {target_start_date.strftime('%d/%m/%Y')} đến hết {target_end_date.strftime('%d/%m/%Y')}"
         except Exception:
-            target_end_date = vn_today_date - timedelta(days=1)
+            target_end_date = vn_today_date
+            date_filter_msg = f"Toàn bộ phiếu Cần Hậu Kiểm đến hết hôm nay ({vn_today_date.strftime('%d/%m/%Y')})"
     else:
-        target_end_date = vn_today_date - timedelta(days=1)
-
-    # Cửa sổ đối soát 3 ngày gần nhất (khớp 100% với bộ lọc thời gian tạo trên màn hình WMS)
-    target_start_date = target_end_date - timedelta(days=2)
+        # Mặc định quét TOÀN BỘ phiếu đang treo trong tab "Cần hậu kiểm" trên WMS đến hiện tại
+        target_end_date = vn_today_date
+        date_filter_msg = f"Toàn bộ phiếu Cần Hậu Kiểm trên WMS đến hiện tại ({vn_today_date.strftime('%d/%m/%Y')})"
 
     print(f"⏰ Thời điểm chạy (VN): {vn_now.strftime('%d/%m/%Y %H:%M:%S')}")
-    print(f"🎯 Lọc phiếu HẬU KIỂM: Từ {target_start_date.strftime('%d/%m/%Y')} đến hết {target_end_date.strftime('%d/%m/%Y')} (Chuẩn cửa sổ 3 ngày WMS)")
+    print(f"🎯 Lọc phiếu HẬU KIỂM: {date_filter_msg}")
 
     try:
         conn = get_db_connection()
@@ -194,19 +207,8 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         """)
         id_to_name = {bid: bname for bid, bname in cur.fetchall() if bname}
 
-        # Mốc cutoff UTC cho ngày đối soát (đảm bảo không kéo phiếu đã hoàn tất tự động sau thời điểm đối soát)
-        target_end_dt_vn = datetime.combine(target_end_date, datetime.max.time())
-        target_cutoff_utc = vn_tz.localize(target_end_dt_vn).astimezone(pytz.UTC).strftime('%Y-%m-%dT%H:%M:%S.000Z')
-        now_utc_str = vn_now.astimezone(pytz.UTC).strftime('%Y-%m-%dT%H:%M:%S.000Z')
-        active_cutoff_utc = target_cutoff_utc if target_end_date < vn_today_date else now_utc_str
-
-        # QUERY TỔNG QUÁT: Bắt trọn tab "CẦN HẬU KIỂM" trên WMS cho MỌI SIÊU THỊ (Không hardcode bất kỳ mã phiếu/ST nào)
-        # Tab "Cần hậu kiểm" trên WMS bao gồm 2 nhóm:
-        #   1. Chưa hậu kiểm (double_checked_status = 1): ST chưa quét món nào (0%).
-        #   2. Còn hậu kiểm (double_checked_status = 3): ST đã quét 1 phần rồi treo / chưa hoàn tất:
-        #      - Chưa lên kệ (status_processing__shelved_in_supermarket = 0)
-        #      - Chưa quá hạn tự đóng auto_completed_at tại thời điểm đối soát
-        #      - Có chênh lệch số lượng kiểm/nhận hoặc đang trong tiến trình supermarket_inspecting
+        # QUERY CHUẨN 100% VỚI TAB "CẦN HẬU KIỂM" TRÊN WMS:
+        # Lọc các phiếu Hậu kiểm kho khô FGA chưa quét xong (double_checked_status = 1) và đang trong trạng thái xử lý (status = 5)
         sql = f"""
         SELECT 
             t.double_check_code,
@@ -222,15 +224,8 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         WHERE t.from_branch_id IN {FGA_BRANCH_IDS}
           AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
           AND t.status = 5
-          AND (
-              t.double_checked_status = 1
-              OR (
-                  t.double_checked_status = 3
-                  AND t.status_processing__shelved_in_supermarket = 0
-                  AND (t.auto_completed_at IS NULL OR t.auto_completed_at > '{active_cutoff_utc}')
-                  AND (t.total_store_quantity != t.total_received_quantity OR CAST(t.status_processing__focused_status AS VARCHAR) LIKE '%supermarket_inspecting%')
-              )
-          )
+          AND t.double_checked_status = 1
+        ORDER BY t.created_at DESC
         """
         cur.execute(sql)
         tickets = cur.fetchall()
@@ -238,6 +233,7 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
     except Exception as e:
         print(f"❌ [LỖI KẾT NỐI DATABASE]: {e}")
         return
+
 
     # Lọc theo ngày trong cửa sổ đối soát chuẩn WMS
     pending_hk = []
@@ -259,7 +255,7 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         if not eval_date and cat:
             eval_date = pytz.UTC.localize(cat).astimezone(vn_tz).date()
 
-        if eval_date and target_start_date <= eval_date <= target_end_date:
+        if eval_date and (target_start_date is None or eval_date >= target_start_date) and eval_date <= target_end_date:
             st_name = id_to_name.get(to_id, f"ST_{to_id}")
             
             # Tra mã ST
@@ -350,6 +346,14 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
                     chat_id_raw = cid
                     break
 
+        # Fallback tới cấu hình ST (nhóm DC hoặc nhóm ABA Đông Mát/Thịt Cá của ST đó)
+        if not chat_id_raw and st_code in store_fallbacks:
+            sinfo = store_fallbacks[st_code]
+            if sinfo.get('chat_id_dc'):
+                chat_id_raw = sinfo['chat_id_dc']
+            elif sinfo.get('chat_id_dm'):
+                chat_id_raw = sinfo['chat_id_dm']
+
         if not chat_id_raw:
             print(f"⚠️ [LOẠI BỎ - KHÔNG CÓ GROUP DC] Siêu thị: {st_name} (Mã: {st_code or 'N/A'}) - Bỏ qua vì không có nhóm DC.")
             fail_count += 1
@@ -361,8 +365,8 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
             fail_count += 1
             continue
 
-        if str(chat_id) in sent_today:
-            print(f"⏩ [ĐÃ GỬI TRƯỚC ĐÓ] Bỏ qua ST: {st_name} ({chat_id})")
+        if not force and str(chat_id) in sent_today:
+            print(f"⏩ [ĐÃ GỬI TRƯỚC ĐÓ] Bỏ qua ST: {st_name} ({chat_id}) - Dùng --force nếu muốn gửi lại.")
             continue
 
         # Sắp xếp phiếu của ST theo ngày chuyển tăng dần (cũ nhất lên đầu)
@@ -440,5 +444,7 @@ if __name__ == '__main__':
     parser.add_argument('--target-date', type=str, default=None, help='Ngày đối soát (YYYY-MM-DD)')
     parser.add_argument('--dry-run', action='store_true', help='Chạy thử không gửi tin')
     parser.add_argument('--stores', type=str, default=None, help='Danh sách mã ST hoặc tên ST cần spam (cách nhau bởi dấu phẩy)')
+    parser.add_argument('--force', '--resend', action='store_true', help='Bỏ qua kiểm tra lịch sử đã gửi hôm nay, gửi lại toàn bộ')
     args = parser.parse_args()
-    asyncio.run(run_spam_hau_kiem_kho_kho(target_date=args.target_date, dry_run=args.dry_run, stores=args.stores))
+    asyncio.run(run_spam_hau_kiem_kho_kho(target_date=args.target_date, dry_run=args.dry_run, stores=args.stores, force=args.force))
+
