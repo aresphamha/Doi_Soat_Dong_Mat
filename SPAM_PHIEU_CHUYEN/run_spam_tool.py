@@ -165,6 +165,7 @@ def main():
     parser.add_argument("--stores", default="ALL", help="Danh sách mã ST cần gửi (ngăn cách bởi dấu phẩy hoặc ALL)")
     parser.add_argument("--message", default=None, help="Nội dung tin nhắn tùy chọn cần spam hoặc username bot")
     parser.add_argument("--photo", default=None, help="Đường dẫn file ảnh đính kèm (nếu có)")
+    parser.add_argument("--no-tags", action="store_true", help="Không tự động tag Quản lý/Trưởng ca")
     parser.add_argument("--force", "--resend", action="store_true", help="Bỏ qua kiểm tra lịch sử đã gửi hôm nay, gửi lại toàn bộ")
     parser.add_argument("--chat-id-type", "--kho", choices=["dong_mat", "rau_cu", "auto"], default="dong_mat", dest="chat_id_type", help="Chọn File Chat ID Kênh gửi (dong_mat hoặc rau_cu)")
     
@@ -190,7 +191,7 @@ def main():
 
     args = parser.parse_args(clean_argv)
     date_val = args.date.strip() if args.date and args.date.strip() else None
-    tag_roles = not args.no_tags
+    tag_roles = not getattr(args, "no_tags", False)
     
     print("==============================================================================")
     print(f"🚀 KHỞI ĐỘNG HỆ THỐNG RUNNER TOOL SCM (Tool: {args.tool}, Date: {date_val or 'Mặc định'}, Dry-run: {args.dry_run})")
