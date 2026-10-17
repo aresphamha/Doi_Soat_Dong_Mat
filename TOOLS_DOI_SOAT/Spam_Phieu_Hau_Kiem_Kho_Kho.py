@@ -404,31 +404,77 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
                 "Cần hậu kiểm"
             ])
 
-        img_path = os.path.join(CURRENT_DIR, f"temp_hk_khokho_{chat_id}.png")
+        img_path = os.path.join(CURRENT_DIR, f"temp_hk_khokho_{abs(chat_id)}.png")
         try:
             render_pastel_gradient_table(headers, rows, img_path)
             
-            with open(img_path, 'rb') as f:
-                resp = requests.post(
-                    URL_SEND_PHOTO,
-                    data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
-                    files={'photo': f},
-                    timeout=20
-                )
+            sent_ok = False
+            # 1. Thử gửi qua Telegram Bot API
+            try:
+                with open(img_path, 'rb') as f:
+                    resp = requests.post(
+                        URL_SEND_PHOTO,
+                        data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
+                        files={'photo': f},
+                        timeout=25
+                    )
+                res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
+                
+                # Xử lý Supergroup migration
+                if resp.status_code == 400 and res_json.get('parameters', {}).get('migrate_to_chat_id'):
+                    new_cid = res_json['parameters']['migrate_to_chat_id']
+                    print(f"🔄 [CHUYỂN SUPERGROUP] ST {st_name} đổi sang Chat ID: {new_cid}. Đang gửi lại ngay...", flush=True)
+                    chat_id = new_cid
+                    with open(img_path, 'rb') as f_mig:
+                        resp = requests.post(
+                            URL_SEND_PHOTO,
+                            data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
+                            files={'photo': f_mig},
+                            timeout=25
+                        )
+                    res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
+                
+                # Xử lý lỗi Markdown parse entities
+                if resp.status_code == 400 and "can't parse entities" in res_json.get('description', '').lower():
+                    print(f"⚠️ [MARKDOWN ERROR] Thử gửi lại dạng Plain Text cho ST {st_name}...", flush=True)
+                    plain_caption = caption.replace('**', '').replace('__', '')
+                    with open(img_path, 'rb') as f_plain:
+                        resp = requests.post(
+                            URL_SEND_PHOTO,
+                            data={'chat_id': chat_id, 'caption': plain_caption},
+                            files={'photo': f_plain},
+                            timeout=25
+                        )
+                    res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
+
+                if resp.status_code == 200 and res_json.get('ok'):
+                    sent_ok = True
+                else:
+                    err_desc = res_json.get('description', f'HTTP {resp.status_code}')
+                    print(f"⚠️ [BOT TELEGRAM BÁO LỖI] ST: {st_name} ({chat_id}): {err_desc}. Đang chuyển sang Telethon User Client...", flush=True)
+            except Exception as ex_bot:
+                print(f"⚠️ [LỖI KẾT NỐI BOT] {st_name}: {ex_bot}. Đang chuyển sang Telethon User Client...", flush=True)
+
+            # 2. Dự phòng: Gửi qua Telethon User Client nếu Bot API thất bại
+            if not sent_ok:
+                try:
+                    await client.send_file(int(chat_id), img_path, caption=caption)
+                    sent_ok = True
+                    print(f"✅ [GỬI THÀNH CÔNG QUA USER CLIENT] ST: {st_name} ({chat_id})", flush=True)
+                except Exception as ex_user:
+                    print(f"❌ [LỖI USER CLIENT] ST: {st_name} ({chat_id}): {ex_user}", flush=True)
+
             if os.path.exists(img_path):
                 os.remove(img_path)
 
-            res_json = resp.json() if resp.status_code == 200 else {}
-            if resp.status_code == 200 and res_json.get('ok'):
+            if sent_ok:
                 record_sent_store('hau_kiem_kho_kho', date_iso, str(chat_id))
                 print(f"🚀 [ĐÃ GỬI THÀNH CÔNG] ST: {st_name} ({chat_id}) - {total_p} phiếu")
                 success_count += 1
             else:
-                err_desc = res_json.get('description', f'HTTP {resp.status_code}')
-                print(f"❌ [LỖI TELEGRAM] ST: {st_name} ({chat_id}): {err_desc}")
                 fail_count += 1
 
-            await asyncio.sleep(1)
+            await asyncio.sleep(1.5)
         except Exception as e:
             print(f"❌ [LỖI XỬ LÝ] ST {st_name}: {e}")
             fail_count += 1
