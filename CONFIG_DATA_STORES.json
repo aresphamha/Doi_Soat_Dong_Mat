@@ -1870,5 +1870,11 @@
     "chat_id_dm": "-1002881624302",
     "chat_id_rc": "-5588180836",
     "chat_id_dc": ""
+  },
+  {
+    "id": "A215",
+    "name": "KFM_HCM_Q12 - 310/10 Khu Phố 1 Thạnh Xuân 14",
+    "short": "A215",
+    "chat_id_dc": "-1004387715043"
   }
 ]

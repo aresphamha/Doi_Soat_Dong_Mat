@@ -121,6 +121,10 @@ def load_store_and_dc_chat_mappings():
     dc_code_map['OPS'] = '-4879460816'     # DC-OPS (Opal Skyline)
     dc_code_map['THD'] = '-1002012247830'  # DC-THD (229A Tân Hòa Đông)
     dc_code_map['A164'] = '-5114128163'    # DC - A164 (Opal Boulevard)
+    dc_code_map['A215'] = '-1004387715043' # DC - A215 (Thạnh Xuân 14)
+    st_to_code['KFM_HCM_Q12 - 310/10 Khu Phố 1 Thạnh Xuân 14'] = 'A215'
+    st_to_code['310/10 Khu Phố 1 Thạnh Xuân 14'] = 'A215'
+    st_to_code['Thạnh Xuân 14'] = 'A215'
 
     # 2. Đọc mapping Siêu thị -> Mã ST & Chat ID DC/ĐM từ CONFIG_DATA_STORES.json
     stores_json = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')
@@ -345,6 +349,13 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
                 if len(addr_clean) > 4 and addr_clean in t:
                     chat_id_raw = cid
                     break
+                # Trích xuất phần địa chỉ trong ngoặc đơn của tên nhóm Telegram
+                m_sub = re.search(r'\((.*?)\)', t)
+                if m_sub:
+                    sub_kw = m_sub.group(1).strip()
+                    if len(sub_kw) > 4 and sub_kw in addr_clean:
+                        chat_id_raw = cid
+                        break
 
         # Fallback tới cấu hình ST (nhóm DC hoặc nhóm ABA Đông Mát/Thịt Cá của ST đó)
         if not chat_id_raw and st_code in store_fallbacks:
