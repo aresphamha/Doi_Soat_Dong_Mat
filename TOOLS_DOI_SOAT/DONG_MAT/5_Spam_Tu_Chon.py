@@ -72,17 +72,37 @@ async def get_tags_for_group(client, chat_id):
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def load_excel():
-    df = pd.read_excel(EXCEL_FILE, dtype=str)
-    df = df[df['CHAT ID'].notna() & (df['CHAT ID'].str.strip() != '') & (df['CHAT ID'] != 'nan')]
-    df['CHAT ID'] = df['CHAT ID'].str.replace('.0', '', regex=False).str.strip()
+def load_excel(kho_choice="1"):
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    root_dir = os.path.abspath(os.path.join(cur_dir, '..', '..'))
+    
+    if kho_choice == "2": # Rau Củ
+        fpath = os.path.join(root_dir, 'SPAM_PHIEU_CHUYEN', 'CONFIG_DATA', 'Danh_Sach_Sieu_Thi_Rau_Cu.xlsx')
+        if not os.path.exists(fpath):
+            fpath = os.path.join(root_dir, 'TOOLS_DOI_SOAT', 'RAU_CU', 'Danh sách Siêu thị.xlsx')
+    elif kho_choice == "3": # Kho Khô (DC)
+        fpath = os.path.join(root_dir, 'Danh_Sach_Chat_ID_Nhom_DC.xlsx')
+    else: # Đông Mát / Thịt Cá
+        fpath = os.path.join(cur_dir, 'Danh sách Siêu thị.xlsx')
+        if not os.path.exists(fpath):
+            fpath = os.path.join(root_dir, 'SPAM_PHIEU_CHUYEN', 'CONFIG_DATA', 'Danh_Sach_Sieu_Thi_Dong_Mat.xlsx')
+            
+    df = pd.read_excel(fpath, dtype=str)
+    id_col = 'MÃ SIÊU THỊ' if 'MÃ SIÊU THỊ' in df.columns else ('ID ST' if 'ID ST' in df.columns else ('ID ST TƯƠNG ỨNG' if 'ID ST TƯƠNG ỨNG' in df.columns else df.columns[0]))
+    chat_col = 'CHAT ID (SỐ CHUẨN)' if 'CHAT ID (SỐ CHUẨN)' in df.columns else ('CHAT ID' if 'CHAT ID' in df.columns else df.columns[1])
+    name_col = 'TÊN NHÓM TELEGRAM' if 'TÊN NHÓM TELEGRAM' in df.columns else ('Tên Siêu thị' if 'Tên Siêu thị' in df.columns else id_col)
+
+    df['ID ST'] = df[id_col].astype(str).str.strip()
+    df['Tên Siêu thị'] = df[name_col].astype(str).str.strip()
+    df['CHAT ID'] = df[chat_col].astype(str).str.replace('.0', '', regex=False).str.strip()
+    df = df[df['CHAT ID'].notna() & (df['CHAT ID'] != '') & (df['CHAT ID'] != 'nan')]
     if 'Tên viết tắt' not in df.columns:
         df['Tên viết tắt'] = df['ID ST']
     df['Tên viết tắt'] = df['Tên viết tắt'].fillna('').str.strip()
     df['Tên viết tắt'] = df.apply(
         lambda r: r['ID ST'] if r['Tên viết tắt'] == '' else r['Tên viết tắt'], axis=1
     )
-    return df.reset_index(drop=True)
+    return df.reset_index(drop=True), fpath
 
 def load_saved():
     if os.path.exists(SAVED_LIST_FILE):
@@ -412,13 +432,22 @@ async def buoc_gui(df, selected_indices, noi_dung):
 async def main():
     clear()
     print("=" * 60)
-    print("   TOOL SPAM TELEGRAM — TÙY CHỌN GROUP")
+    print("   TOOL SPAM TELEGRAM — TÙY CHỌN GROUP (3 KHO)")
     print("=" * 60)
-    print()
+    print("  Chọn Kho muốn gửi tin nhắn:")
+    print("  [1] 🥩 Nhóm ĐÔNG MÁT / THỊT CÁ")
+    print("  [2] 🥦 Nhóm KRC (RAU CỦ)")
+    print("  [3] 📦 Nhóm KHO KHÔ (DC)")
+    print("=" * 60)
+    k_choice = input("  Nhập lựa chọn [1-3] (Mặc định: 1): ").strip() or "1"
+    if k_choice not in ["1", "2", "3"]:
+        k_choice = "1"
 
     try:
-        df = load_excel()
-        print(f"  ✅ Đã tải {len(df)} group từ '{EXCEL_FILE}'")
+        df, active_file = load_excel(k_choice)
+        kho_label = "KHO KHÔ (DC)" if k_choice == "3" else ("RAU CỦ (KRC)" if k_choice == "2" else "ĐÔNG MÁT / THỊT CÁ")
+        print(f"\n  ✅ Đã tải thành công {len(df)} Siêu thị nhóm {kho_label}!")
+        print(f"  📁 File nguồn: {os.path.basename(active_file)}")
     except Exception as e:
         print(f"  ❌ Không đọc được file: {e}")
         input("Bấm Enter để thoát...")

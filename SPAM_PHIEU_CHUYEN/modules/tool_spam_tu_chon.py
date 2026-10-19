@@ -25,27 +25,38 @@ from .common import (
 )
 
 async def run(stores="ALL", message=None, tag_roles=True, dry_run=False, photo_path=None, chat_id_type="dong_mat"):
-    channel_name = "🥦 RAU CỦ (KRC)" if str(chat_id_type).lower() in ["rau_cu", "rc"] else "🥩 ĐÔNG MÁT / THỊT CÁ"
-    print("\n=======================================================")
-    print(f"🎯 BẮT ĐẦU CHẠY TOOL: SPAM TIN NHẮN TÙY CHỌN - KÊNH: {channel_name}...")
-    print("=======================================================")
-    
-    if str(chat_id_type).lower() in ["rau_cu", "rc"]:
+    c_type = str(chat_id_type).lower().strip() if chat_id_type else "dong_mat"
+    if c_type in ["rau_cu", "rc"]:
+        channel_name = "🥦 RAU CỦ (KRC)"
         excel_path = find_mapping_file("Danh_Sach_Sieu_Thi_Rau_Cu.xlsx")
         if not os.path.exists(excel_path):
             excel_path = os.path.join(TOOLS_BASE_DIR, "RAU_CU", "Danh sách Siêu thị.xlsx")
         print(f"📁 Đang đọc File Chat ID KHO RAU CỦ: {excel_path}")
+    elif c_type in ["kho_kho", "dc"]:
+        channel_name = "📦 KHO KHÔ (DC)"
+        excel_path = find_mapping_file("Danh_Sach_Chat_ID_Nhom_DC.xlsx")
+        if not os.path.exists(excel_path):
+            excel_path = os.path.join(os.path.dirname(TOOLS_BASE_DIR), "Danh_Sach_Chat_ID_Nhom_DC.xlsx")
+        print(f"📁 Đang đọc File Chat ID KHO KHÔ (DC): {excel_path}")
     else:
+        channel_name = "🥩 ĐÔNG MÁT / THỊT CÁ"
         excel_path = find_mapping_file("Danh sách Siêu thị.xlsx")
         if not os.path.exists(excel_path):
             excel_path = find_mapping_file("Danh_Sach_Sieu_Thi_Dong_Mat.xlsx")
         print(f"📁 Đang đọc File Chat ID KHO ĐÔNG MÁT / THỊT CÁ: {excel_path}")
         
     df = pd.read_excel(excel_path, dtype=str)
-    id_col = 'ID ST' if 'ID ST' in df.columns else ('ID ST TƯƠNG ỨNG' if 'ID ST TƯƠNG ỨNG' in df.columns else df.columns[0])
+    
+    # Chuẩn hóa tên cột linh hoạt cho cả 3 kho
+    id_col = 'MÃ SIÊU THỊ' if 'MÃ SIÊU THỊ' in df.columns else ('ID ST' if 'ID ST' in df.columns else ('ID ST TƯƠNG ỨNG' if 'ID ST TƯƠNG ỨNG' in df.columns else df.columns[0]))
+    chat_col = 'CHAT ID (SỐ CHUẨN)' if 'CHAT ID (SỐ CHUẨN)' in df.columns else ('CHAT ID' if 'CHAT ID' in df.columns else df.columns[1])
+    name_col = 'TÊN NHÓM TELEGRAM' if 'TÊN NHÓM TELEGRAM' in df.columns else ('Tên Siêu thị' if 'Tên Siêu thị' in df.columns else id_col)
+
     df['ID ST'] = df[id_col].astype(str).str.strip()
-    df = df[df['CHAT ID'].notna() & (df['CHAT ID'].str.strip() != '') & (df['CHAT ID'] != 'nan')]
-    df['CHAT ID'] = df['CHAT ID'].str.replace('.0', '', regex=False).str.strip()
+    df['Tên Siêu thị'] = df[name_col].astype(str).str.strip()
+    df['CHAT ID'] = df[chat_col].astype(str).str.replace('.0', '', regex=False).str.strip()
+    df = df[df['CHAT ID'].notna() & (df['CHAT ID'] != '') & (df['CHAT ID'] != 'nan')]
+
     if 'Tên viết tắt' not in df.columns:
         df['Tên viết tắt'] = df['ID ST']
     df['Tên viết tắt'] = df['Tên viết tắt'].fillna('').str.strip()
