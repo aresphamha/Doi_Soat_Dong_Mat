@@ -37,9 +37,9 @@ API_HASH = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
 BOT_TOKEN = '8810108114:AAHWJjis5O3bFyx98-qjOs1PQKTAKMem_zU'
 URL_SEND_PHOTO = f'https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto'
 
-SESSION_PATH = os.path.join(ROOT_DIR, 'DONG_MAT_DASHBOARD', 'user_session')
+SESSION_PATH = os.path.join(ROOT_DIR, 'user_session')
 if not os.path.exists(SESSION_PATH + '.session'):
-    SESSION_PATH = os.path.join(ROOT_DIR, 'user_session')
+    SESSION_PATH = os.path.join(ROOT_DIR, 'DONG_MAT_DASHBOARD', 'user_session')
 
 FGA_BRANCHES = {
     '6aabb0a2f426e20007f80123': 'FGA10101 _ Bình Thắng _ Lưu Hàng',
