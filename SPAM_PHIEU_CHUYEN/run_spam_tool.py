@@ -106,12 +106,19 @@ async def run_tool_rau_cu_spam(target_date=None, dry_run=False, stores="ALL"):
     if stores and str(stores).strip().upper() != "ALL": extra_args.extend(["--stores", str(stores).strip()])
     execute_external_tool(script_path, extra_args=extra_args)
 
-async def run_tool_xoa_tin_nhan():
+async def run_tool_xoa_tin_nhan(keyword=None, dry_run=False, limit=None):
     print("\n=======================================================")
     print("🗑️ BẮT ĐẦU CHẠY TOOL THU HỒI / XÓA TIN NHẮN ĐÃ SPAM...")
     print("=======================================================")
     script_path = os.path.join(TOOLS_BASE_DIR, "RAU_CU", "Xoa_Tin_Nhan.py")
-    execute_external_tool(script_path)
+    extra_args = []
+    if keyword and str(keyword).strip():
+        extra_args.extend(["--keyword", str(keyword).strip()])
+    if dry_run:
+        extra_args.append("--dry-run")
+    if limit:
+        extra_args.extend(["--limit", str(limit)])
+    execute_external_tool(script_path, extra_args=extra_args)
 
 async def run_tool_tra_cuu_id():
     print("\n=======================================================")
@@ -255,7 +262,7 @@ def main():
         elif args.tool == "spam_tu_chon":
             loop.run_until_complete(run_tool_spam_tu_chon(args.stores, args.message, tag_roles, args.dry_run, args.photo, args.chat_id_type))
         elif args.tool == "xoa_tin_nhan":
-            loop.run_until_complete(run_tool_xoa_tin_nhan())
+            loop.run_until_complete(run_tool_xoa_tin_nhan(keyword=args.message, dry_run=args.dry_run))
         elif args.tool == "lay_chat_id":
             loop.run_until_complete(run_tool_lay_chat_id())
         elif args.tool == "tra_cuu_id":

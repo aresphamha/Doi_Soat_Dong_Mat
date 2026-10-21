@@ -148,7 +148,7 @@ jobs:
           if [ -n "$STORES_ARG" ] && [ "$STORES_ARG" != "ALL" ]; then
             CMD="$CMD --stores \"$STORES_ARG\""
           fi
-          if [ "$TOOL_ARG" = "spam_tu_chon" ]; then
+          if [ "$TOOL_ARG" = "spam_tu_chon" ] || [ "$TOOL_ARG" = "xoa_tin_nhan" ]; then
             if [ -n "$MSG_ARG" ]; then
               CMD="$CMD --message \"$MSG_ARG\""
             fi

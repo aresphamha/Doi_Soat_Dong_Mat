@@ -685,10 +685,18 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
                     cmd.extend(["--message", message])
                 if not tag_roles:
                     cmd.append("--no-tags")
+            elif tool == "xoa_tin_nhan":
+                if message and str(message).strip():
+                    cmd.extend(["--message", str(message).strip()])
             if stores and stores != "ALL" and str(stores).strip():
                 cmd.append(f"--stores={stores}")
             date_label = target_date if target_date else "Mặc định"
-            tool_title = f"Spam Tùy Chọn ({stores})" if tool == "spam_tu_chon" else tool
+            if tool == "xoa_tin_nhan":
+                tool_title = f"Thu Hồi & Xóa Tin Nhắn ({message})" if message else "Thu Hồi & Xóa Tin Nhắn Đã Spam"
+            elif tool == "spam_tu_chon":
+                tool_title = f"Spam Tùy Chọn ({stores})"
+            else:
+                tool_title = tool
 
         try:
             start_payload = {'type': 'start', 'msg': f"🚀 Bắt đầu thực thi: {tool_title}"}
@@ -696,6 +704,8 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.wfile.flush()
 
             runner_env = os.environ.copy()
+            if tool == "xoa_tin_nhan" and message and str(message).strip():
+                runner_env["CLEAN_KEYWORD"] = str(message).strip()
             runner_env["OPENBLAS_NUM_THREADS"] = "1"
             runner_env["MKL_NUM_THREADS"] = "1"
             runner_env["OMP_NUM_THREADS"] = "1"
