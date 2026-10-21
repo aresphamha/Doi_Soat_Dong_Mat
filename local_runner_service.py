@@ -49,7 +49,6 @@ LATEST_EXECUTION = {
 }
 EXECUTION_LOCK = threading.Lock()
 
-<<<<<<< Updated upstream
 CLOUDFLARE_TUNNEL_URL = ""
 CLOUDFLARED_PROC = None
 
@@ -116,8 +115,6 @@ def init_cloudflare_tunnel():
         print(f"⚠️ Lỗi khởi chạy Cloudflare Tunnel: {e}")
 
 
-=======
->>>>>>> Stashed changes
 def get_stores_list():
     try:
         from SPAM_PHIEU_CHUYEN.run_spam_tool import find_mapping_file
@@ -158,11 +155,7 @@ def get_all_chat_ids():
         s['chat_id_rc'] = ''
     return stores
 
-<<<<<<< Updated upstream
 def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name=None, chat_id_dc=None):
-=======
-def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name=None):
->>>>>>> Stashed changes
     if not store_id:
         return False, "Thiếu Mã Siêu Thị (store_id)!"
     
@@ -222,7 +215,6 @@ def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name
                 except Exception as e:
                     print(f"Error updating {f}: {e}")
 
-<<<<<<< Updated upstream
     # 3. Update DC Excel file
     dc_file = os.path.join(ROOT_DIR, 'Danh_Sach_Chat_ID_Nhom_DC.xlsx')
     if chat_id_dc is not None and os.path.exists(dc_file):
@@ -237,9 +229,6 @@ def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name
             print(f"Error updating {dc_file}: {e}")
 
     # 4. Update CONFIG_DATA_STORES.json
-=======
-    # 3. Update CONFIG_DATA_STORES.json
->>>>>>> Stashed changes
     json_path = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')
     try:
         data = []
@@ -251,10 +240,7 @@ def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name
             if item.get('id', '').strip().upper() == store_id:
                 if chat_id_dm is not None: item['chat_id_dm'] = str(chat_id_dm).strip()
                 if chat_id_rc is not None: item['chat_id_rc'] = str(chat_id_rc).strip()
-<<<<<<< Updated upstream
                 if chat_id_dc is not None: item['chat_id_dc'] = str(chat_id_dc).strip()
-=======
->>>>>>> Stashed changes
                 if store_name is not None: item['name'] = str(store_name).strip()
                 found = True
                 break
@@ -264,12 +250,8 @@ def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name
                 'name': store_name or store_id,
                 'short': store_id,
                 'chat_id_dm': str(chat_id_dm or ''),
-<<<<<<< Updated upstream
                 'chat_id_rc': str(chat_id_rc or ''),
                 'chat_id_dc': str(chat_id_dc or '')
-=======
-                'chat_id_rc': str(chat_id_rc or '')
->>>>>>> Stashed changes
             })
         data = sorted(data, key=lambda x: x.get('id', ''))
         with open(json_path, 'w', encoding='utf-8') as jf:
@@ -319,7 +301,6 @@ def terminate_process(proc):
     global CURRENT_RUNNING_PROC, IS_CURRENT_PAUSED
     if proc and proc.poll() is None:
         try:
-<<<<<<< Updated upstream
             # 1. Bắt buộc resume tiến trình nếu đang bị tạm dừng (suspend) để Windows có thể kill dứt điểm
             resume_process(proc)
         except Exception:
@@ -327,15 +308,10 @@ def terminate_process(proc):
         try:
             subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)], capture_output=True)
             proc.kill()
-=======
-            subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)], capture_output=True)
-            proc.terminate()
->>>>>>> Stashed changes
         except Exception as e:
             print(f"Error terminating process: {e}")
     CURRENT_RUNNING_PROC = None
     IS_CURRENT_PAUSED = False
-<<<<<<< Updated upstream
     
     # 2. Quét dọn an toàn bất kỳ tiến trình python worker mồ côi nào còn sót lại
     try:
@@ -350,8 +326,6 @@ def terminate_process(proc):
         subprocess.run(["powershell", "-NoProfile", "-Command", cleanup_cmd], capture_output=True, timeout=5)
     except Exception as e:
         print(f"Error cleaning worker processes: {e}")
-=======
->>>>>>> Stashed changes
 
 class SCMRequestHandler(BaseHTTPRequestHandler):
     def _send_cors_headers(self):
@@ -378,14 +352,9 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             resp = {
                 "status": "online",
                 "service": "SCM Local Runner Service",
-<<<<<<< Updated upstream
                 "version": "2.3",
                 "port": PORT,
                 "tunnel_url": CLOUDFLARE_TUNNEL_URL,
-=======
-                "version": "2.2",
-                "port": PORT,
->>>>>>> Stashed changes
                 "current_status": "paused" if IS_CURRENT_PAUSED else (LATEST_EXECUTION["status"] if CURRENT_RUNNING_PROC else "idle"),
                 "is_running": CURRENT_RUNNING_PROC is not None and CURRENT_RUNNING_PROC.poll() is None,
                 "is_paused": IS_CURRENT_PAUSED,
@@ -395,7 +364,6 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
             return
 
-<<<<<<< Updated upstream
         elif path == "/api/tunnel":
             self.send_response(200)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
@@ -410,8 +378,6 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             return
 
 
-=======
->>>>>>> Stashed changes
         elif path == "/api/stores" or path == "/stores":
             self.send_response(200)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
@@ -493,7 +459,6 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
                 "message": "🛑 Đã hủy và dừng chạy công cụ ngay lập tức!"
             }
             self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
-<<<<<<< Updated upstream
             return
 
         elif path == "/api/sync_telegram" or path == "/sync_telegram":
@@ -519,8 +484,6 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self._send_cors_headers()
             self.end_headers()
             self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
-=======
->>>>>>> Stashed changes
             return
 
         elif path == "/run":
@@ -530,11 +493,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             stores = params.get('stores', ['ALL'])[0]
             message = params.get('message', [''])[0]
             tag_roles = params.get('tag_roles', ['true'])[0].lower() in ['true', '1', 'yes']
-<<<<<<< Updated upstream
             chat_id_type = params.get('chat_id_type', params.get('kho', ['auto']))[0]
-=======
-            chat_id_type = params.get('chat_id_type', ['auto'])[0]
->>>>>>> Stashed changes
             result = run_tool_sync(tool, target_date, dry_run, stores, message, tag_roles, chat_id_type)
             
             self.send_response(200)
@@ -552,11 +511,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             stores = params.get('stores', ['ALL'])[0]
             message = params.get('message', [''])[0]
             tag_roles = params.get('tag_roles', ['true'])[0].lower() in ['true', '1', 'yes']
-<<<<<<< Updated upstream
             chat_id_type = params.get('chat_id_type', params.get('kho', ['auto']))[0]
-=======
-            chat_id_type = params.get('chat_id_type', ['auto'])[0]
->>>>>>> Stashed changes
 
             self.send_response(200)
             self.send_header('Content-Type', 'text/event-stream; charset=utf-8')
@@ -633,16 +588,10 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             store_id = data.get('store_id', data.get('id', '')).strip()
             chat_id_dm = data.get('chat_id_dm', data.get('chat_id', None))
             chat_id_rc = data.get('chat_id_rc', None)
-<<<<<<< Updated upstream
             chat_id_dc = data.get('chat_id_dc', None)
             store_name = data.get('store_name', data.get('name', None))
             
             ok, msg = update_store_chat_ids(store_id, chat_id_dm, chat_id_rc, store_name, chat_id_dc)
-=======
-            store_name = data.get('store_name', data.get('name', None))
-            
-            ok, msg = update_store_chat_ids(store_id, chat_id_dm, chat_id_rc, store_name)
->>>>>>> Stashed changes
             self.send_response(200 if ok else 400)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self._send_cors_headers()
@@ -655,7 +604,6 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
             return
 
-<<<<<<< Updated upstream
         elif path == "/api/sync_telegram" or path == "/sync_telegram":
             push = data.get('push', False)
             result = run_tool_sync("sync_telegram", "", False)
@@ -683,20 +631,12 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
 
         elif path == "/run" or path == "/api/spam_custom":
             tool = data.get('tool', 'spam_tu_chon' if path == '/api/spam_custom' else 'all').strip().lower()
-=======
-        elif path == "/run" or path == "/api/spam_custom":
-            tool = data.get('tool', 'spam_tu_chon' if path == '/api/spam_custom' else 'all')
->>>>>>> Stashed changes
             target_date = data.get('date', '')
             dry_run = data.get('dry_run', False)
             stores = data.get('stores', 'ALL')
             message = data.get('message', '')
             tag_roles = data.get('tag_roles', True)
-<<<<<<< Updated upstream
             chat_id_type = data.get('chat_id_type', data.get('kho', 'auto'))
-=======
-            chat_id_type = data.get('chat_id_type', 'auto')
->>>>>>> Stashed changes
             result = run_tool_sync(tool, target_date, dry_run, stores, message, tag_roles, chat_id_type)
             
             self.send_response(200)
@@ -712,7 +652,6 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
 
     def _stream_tool_execution(self, tool, target_date, dry_run, stores="ALL", message="", tag_roles=True, chat_id_type="auto"):
         global CURRENT_RUNNING_PROC, IS_CURRENT_PAUSED
-<<<<<<< Updated upstream
         tool = (tool or "all").strip().lower()
         if tool in ["sync_telegram", "telegram", "sync_tele"]:
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "sync_telegram_groups.py")]
@@ -761,34 +700,6 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
 
         try:
             start_payload = {'type': 'start', 'msg': f"🚀 Bắt đầu thực thi: {tool_title}"}
-=======
-        cmd = [PYTHON_EXE, SPAM_RUNNER_SCRIPT, "--tool", tool]
-        if target_date:
-            cmd.extend(["--date", target_date])
-        if dry_run:
-            cmd.append("--dry-run")
-        if chat_id_type and chat_id_type != "auto":
-            cmd.extend(["--chat-id-type", chat_id_type])
-        if chat_id_type and chat_id_type != "auto":
-            cmd.extend(["--chat-id-type", chat_id_type])
-        if tool == "spam_tu_chon":
-            if not message or not str(message).strip():
-                err_event = {"type": "error", "msg": "❌ LỖI BẢO VỆ: Bạn chưa nhập nội dung tin nhắn cần gửi! Đã chặn thực thi để không gửi mẫu thông báo nhầm."}
-                self.wfile.write(f"data: {json.dumps(err_event, ensure_ascii=False)}\n\n".encode('utf-8'))
-                self.wfile.flush()
-                return
-            if stores:
-                cmd.extend(["--stores", stores])
-            if message:
-                cmd.extend(["--message", message])
-            if not tag_roles:
-                cmd.append("--no-tags")
-
-        try:
-            date_label = target_date if target_date else "Mặc định"
-            tool_title = f"Spam Tùy Chọn ({stores})" if tool == "spam_tu_chon" else tool
-            start_payload = {'type': 'start', 'msg': f"🚀 Bắt đầu thực thi: {tool_title} (Date: {date_label})"}
->>>>>>> Stashed changes
             self.wfile.write(f"data: {json.dumps(start_payload, ensure_ascii=False)}\n\n".encode('utf-8'))
             self.wfile.flush()
 
@@ -853,7 +764,6 @@ def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_role
         LATEST_EXECUTION["logs"] = []
         LATEST_EXECUTION["returncode"] = None
 
-<<<<<<< Updated upstream
         if tool in ["sync_telegram", "telegram", "sync_tele"]:
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "sync_telegram_groups.py")]
         elif tool in ["sync_cdc", "cdc", "sync_cdc_prices", "dong_bo_cdc"]:
@@ -890,33 +800,6 @@ def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_role
                     }
             if stores:
                 cmd.append(f"--stores={stores}")
-=======
-        cmd = [PYTHON_EXE, SPAM_RUNNER_SCRIPT, "--tool", tool]
-        if target_date:
-            cmd.extend(["--date", target_date])
-        if dry_run:
-            cmd.append("--dry-run")
-        if chat_id_type and chat_id_type != "auto":
-            cmd.extend(["--chat-id-type", chat_id_type])
-        if chat_id_type and chat_id_type != "auto":
-            cmd.extend(["--chat-id-type", chat_id_type])
-        if tool == "spam_tu_chon":
-            if not message or not str(message).strip():
-                LATEST_EXECUTION["status"] = "error"
-                LATEST_EXECUTION["completed_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
-                err_msg = "❌ LỖI BẢO VỆ: Bạn chưa nhập nội dung tin nhắn! Đã chặn thực thi để không gửi mẫu thông báo nhầm."
-                LATEST_EXECUTION["logs"] = [err_msg]
-                LATEST_EXECUTION["returncode"] = -1
-                return {
-                    "success": False,
-                    "tool": tool,
-                    "returncode": -1,
-                    "error": err_msg,
-                    "logs": err_msg
-                }
-            if stores:
-                cmd.extend(["--stores", stores])
->>>>>>> Stashed changes
             if message:
                 cmd.extend(["--message", message])
             if not tag_roles:
@@ -985,13 +868,10 @@ def start_server():
     try:
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Starting SCM Local Runner on port {PORT}...\n")
-<<<<<<< Updated upstream
         
         # Khởi động Cloudflare Remote Tunnel ở background thread
         threading.Thread(target=init_cloudflare_tunnel, daemon=True).start()
 
-=======
->>>>>>> Stashed changes
         server = ThreadingHTTPServer(('0.0.0.0', PORT), SCMRequestHandler)
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Server started successfully.\n")
