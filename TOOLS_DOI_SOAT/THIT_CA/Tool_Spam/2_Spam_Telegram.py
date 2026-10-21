@@ -205,6 +205,7 @@ async def main():
     parser.add_argument("--dry-run", action="store_true", help="Chạy thử không gửi tin nhắn thật")
     parser.add_argument("--date", default=None, help="Ngày lọc (YYYY-MM-DD)")
     parser.add_argument("--stores", default="ALL", help="Danh sách mã ST cần gửi")
+    parser.add_argument("--chat-id-type", choices=["auto", "dong_mat", "rau_cu", "krc"], default="auto", help="Chọn nguồn Chat ID")
     args = parser.parse_args()
 
     disable_quickedit()
@@ -212,9 +213,12 @@ async def main():
     print(f"TOOL SPAM TELEGRAM - NGÀNH HÀNG THỊT CÁ {'[CHẾ ĐỘ CHẠY THỬ / DRY-RUN]' if args.dry_run else ''}")
     print("==================================================")
     
-    master_excel = find_data_file('Danh sách Siêu thị.xlsx')
-    if not os.path.exists(master_excel):
+    cid_type = getattr(args, 'chat_id_type', 'auto')
+    if cid_type in ('rau_cu', 'krc'):
+        master_excel = find_data_file('Danh_Sach_Sieu_Thi_Rau_Cu.xlsx')
+    else:
         master_excel = find_data_file('Danh_Sach_Sieu_Thi_Dong_Mat.xlsx')
+        if not os.path.exists(master_excel): master_excel = find_data_file('Danh sách Siêu thị.xlsx')
     
     print(f"Đang đọc danh sách Chat ID tổng từ: {master_excel}...")
     df_chat = pd.read_excel(master_excel, dtype=str)
