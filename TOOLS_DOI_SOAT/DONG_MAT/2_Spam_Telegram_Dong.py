@@ -93,7 +93,7 @@ def record_sent_store(tool_name, date_str, id_st):
 
 api_id = '28938971'
 api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-bot_token = '8810108114:AAHWJjis5O3bFyx98-qjOs1PQKTAKMem_zU'
+bot_token = '8810108114:AAER-s5oEc3pAoggenGm0R5fjA3xMDdQswM'
 url_send_photo = f'https://api.telegram.org/bot{bot_token}/sendPhoto'
 
 def clean_barcode(val):

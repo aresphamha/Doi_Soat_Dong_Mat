@@ -10,7 +10,7 @@ sys.stdout.reconfigure(encoding='utf-8', errors='ignore')
 
 API_ID = 28938971
 API_HASH = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-BOT_TOKEN = '8810108114:AAHWJjis5O3bFyx98-qjOs1PQKTAKMem_zU'
+BOT_TOKEN = '8810108114:AAER-s5oEc3pAoggenGm0R5fjA3xMDdQswM'
 URL_DELETE = f'https://api.telegram.org/bot{BOT_TOKEN}/deleteMessage'
 
 current_dir = os.path.dirname(os.path.abspath(__file__))

@@ -146,7 +146,7 @@ async def run_tool_thit_ca(target_date=None, dry_run=False):
     import dataframe_image as dfi
     api_id = '28938971'
     api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-    bot_token = '8810108114:AAHWJjis5O3bFyx98-qjOs1PQKTAKMem_zU'
+    bot_token = '8810108114:AAER-s5oEc3pAoggenGm0R5fjA3xMDdQswM'
 
     client = TelegramClient(session_base, api_id, api_hash)
     await client.connect()
@@ -263,7 +263,7 @@ async def run_tool_mat(target_date=None, dry_run=False):
     import dataframe_image as dfi
     api_id = '28938971'
     api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-    bot_token = '8810108114:AAHWJjis5O3bFyx98-qjOs1PQKTAKMem_zU'
+    bot_token = '8810108114:AAER-s5oEc3pAoggenGm0R5fjA3xMDdQswM'
 
     client = TelegramClient(session_base, api_id, api_hash)
     await client.connect()
@@ -381,7 +381,7 @@ async def run_tool_hau_kiem_rau(target_date=None, dry_run=False):
     import dataframe_image as dfi
     api_id = '28938971'
     api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-    bot_token = '8810108114:AAHWJjis5O3bFyx98-qjOs1PQKTAKMem_zU'
+    bot_token = '8810108114:AAER-s5oEc3pAoggenGm0R5fjA3xMDdQswM'
 
     client = TelegramClient(session_base, api_id, api_hash)
     await client.connect()
@@ -499,7 +499,7 @@ async def run_tool_hau_kiem_thit_ca(target_date=None, dry_run=False):
     import dataframe_image as dfi
     api_id = '28938971'
     api_hash = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-    bot_token = '8810108114:AAHWJjis5O3bFyx98-qjOs1PQKTAKMem_zU'
+    bot_token = '8810108114:AAER-s5oEc3pAoggenGm0R5fjA3xMDdQswM'
 
     client = TelegramClient(session_base, api_id, api_hash)
     await client.connect()

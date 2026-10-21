@@ -24,7 +24,7 @@ TOOLS_BASE_DIR = os.path.join(os.path.dirname(ROOT_DIR), "TOOLS_DOI_SOAT")
 
 TELEGRAM_API_ID = '28938971'
 TELEGRAM_API_HASH = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-TELEGRAM_BOT_TOKEN = '8810108114:AAHWJjis5O3bFyx98-qjOs1PQKTAKMem_zU'
+TELEGRAM_BOT_TOKEN = '8810108114:AAER-s5oEc3pAoggenGm0R5fjA3xMDdQswM'
 
 def ensure_telegram_session():
     """Tự động khôi phục session Telegram từ biến môi trường hoặc session_b64.txt nếu chạy trên GitHub Actions."""
