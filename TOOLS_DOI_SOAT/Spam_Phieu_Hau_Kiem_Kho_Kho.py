@@ -34,12 +34,16 @@ from telethon import TelegramClient
 
 API_ID = '28938971'
 API_HASH = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
-BOT_TOKEN = '8810108114:AAER-s5oEc3pAoggenGm0R5fjA3xMDdQswM'
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", '8810108114:AAER-s5oEc3pAoggenGm0R5fjA3xMDdQswM')
 URL_SEND_PHOTO = f'https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto'
 
 SESSION_PATH = os.path.join(ROOT_DIR, 'user_session')
 if not os.path.exists(SESSION_PATH + '.session'):
+    SESSION_PATH = os.path.join(ROOT_DIR, 'SPAM_PHIEU_CHUYEN', 'CONFIG_DATA', 'user_session')
+if not os.path.exists(SESSION_PATH + '.session'):
     SESSION_PATH = os.path.join(ROOT_DIR, 'DONG_MAT_DASHBOARD', 'user_session')
+if not os.path.exists(SESSION_PATH + '.session'):
+    SESSION_PATH = os.path.join(CURRENT_DIR, 'user_session')
 
 FGA_BRANCHES = {
     '6aabb0a2f426e20007f80123': 'FGA10101 _ Bình Thắng _ Lưu Hàng',
@@ -218,7 +222,7 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         id_to_name = {bid: bname for bid, bname in cur.fetchall() if bname}
 
         # QUERY CHUẨN 100% VỚI TAB "CẦN HẬU KIỂM" TRÊN WMS:
-        # Lọc các phiếu Hậu kiểm kho khô FGA chưa quét xong (double_checked_status = 1) và đang trong trạng thái xử lý (status = 5)
+        # Lọc các phiếu Hậu kiểm kho khô FGA chưa quét xong (double_checked_status = 1) và đang trong trạng thái xử lý (status = 3 hoặc 5)
         sql = f"""
         SELECT 
             t.double_check_code,
@@ -233,7 +237,7 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         FROM __cdc_kfm_kf_inventories_kf_transfer_items t
         WHERE t.from_branch_id IN {FGA_BRANCH_IDS}
           AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
-          AND t.status = 5
+          AND t.status IN (3, 5)
           AND t.double_checked_status = 1
         ORDER BY t.created_at DESC
         """
@@ -307,7 +311,7 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
             
             matched = False
             for t in target_set:
-                if t in [p_code, p_hk, p_pt] or t in p_name:
+                if t in [p_code, p_hk, p_pt] or t in p_name or p_name in t:
                     matched = True
                     break
             if matched:
@@ -479,7 +483,13 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
                     sent_ok = True
                     print(f"✅ [GỬI THÀNH CÔNG QUA USER CLIENT] ST: {st_name} ({chat_id})", flush=True)
                 except Exception as ex_user:
-                    print(f"❌ [LỖI USER CLIENT] ST: {st_name} ({chat_id}): {ex_user}", flush=True)
+                    try:
+                        plain_caption = caption.replace('**', '').replace('__', '')
+                        await client.send_file(int(chat_id), img_path, caption=plain_caption)
+                        sent_ok = True
+                        print(f"✅ [GỬI THÀNH CÔNG QUA USER CLIENT (PLAIN TEXT)] ST: {st_name} ({chat_id})", flush=True)
+                    except Exception as ex_user2:
+                        print(f"❌ [LỖI USER CLIENT] ST: {st_name} ({chat_id}): {ex_user2}", flush=True)
 
             if os.path.exists(img_path):
                 os.remove(img_path)
