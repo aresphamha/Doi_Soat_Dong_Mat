@@ -1876,5 +1876,11 @@
     "name": "KFM_HCM_Q12 - 310/10 Khu Phố 1 Thạnh Xuân 14",
     "short": "A215",
     "chat_id_dc": "-1004387715043"
+  },
+  {
+    "id": "A254",
+    "name": "KFM_HCM_Q12 - S.06 Chung Cư Phú Cường Home",
+    "short": "A254",
+    "chat_id_dc": "-1003932058795"
   }
 ]
