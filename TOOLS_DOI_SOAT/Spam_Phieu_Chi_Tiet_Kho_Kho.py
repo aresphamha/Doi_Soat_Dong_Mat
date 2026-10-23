@@ -121,6 +121,7 @@ def load_store_and_dc_chat_mappings():
     dc_code_map['A215'] = '-1004387715043' # DC - A215 (Thạnh Xuân 14)
     dc_code_map['VH4'] = '-4806936749'     # VH4 - DC (S07.02 Vinhomes Grand Park)
     dc_code_map['A161'] = '-5100652138'    # DC - A161 (The Park Residence)
+    dc_code_map['A254'] = '-1003932058795' # DC - A254 (Phú Cường Home)
     st_to_code['KFM_HCM_Q12 - 310/10 Khu Phố 1 Thạnh Xuân 14'] = 'A215'
     st_to_code['310/10 Khu Phố 1 Thạnh Xuân 14'] = 'A215'
     st_to_code['Thạnh Xuân 14'] = 'A215'
@@ -128,6 +129,9 @@ def load_store_and_dc_chat_mappings():
     st_to_code['S07.02 Vinhomes Grand Park'] = 'VH4'
     st_to_code['KFM_HCM_NBE - A2.SH28-30 The Park Residence'] = 'A161'
     st_to_code['A2.SH28-30 The Park Residence'] = 'A161'
+    st_to_code['KFM_HCM_Q12 - S.06 Chung Cư Phú Cường Home'] = 'A254'
+    st_to_code['S.06 Chung Cư Phú Cường Home'] = 'A254'
+    st_to_code['Phú Cường Home'] = 'A254'
 
     # 2. Đọc mapping Siêu thị -> Mã ST & Chat ID DC từ CONFIG_DATA_STORES.json
     stores_json = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')
