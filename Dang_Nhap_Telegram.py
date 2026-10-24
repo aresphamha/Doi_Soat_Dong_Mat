@@ -22,18 +22,63 @@ PHONE_NUMBER = '+84978009295'
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 SESSION_FILE = os.path.join(CURRENT_DIR, 'DONG_MAT_DASHBOARD', 'user_session.session')
 
+
+def release_locked_session():
+    """Tự động phát hiện và ngắt các tiến trình chạy ngầm đang chiếm dụng file session Telegram."""
+    import time
+    import urllib.request
+    import subprocess
+
+    print("🔍 Kiểm tra và giải phóng file session đang bị chiếm dụng...")
+    
+    # 1. Hủy tác vụ Telegram đang chạy trên local runner (nếu có)
+    try:
+        req = urllib.request.Request("http://127.0.0.1:8088/cancel", headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=1.5) as resp:
+            pass
+    except Exception:
+        pass
+
+    # 2. Đóng tiến trình chạy sync_telegram_groups hoặc script spam đang chạy ngầm
+    try:
+        kill_cmd = 'powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like \'*sync_telegram_groups*\' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }"'
+        subprocess.run(kill_cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5)
+    except Exception:
+        pass
+
+    # 3. Dọn dẹp file session và các file lock/journal của SQLite
+    session_base = os.path.join(CURRENT_DIR, 'DONG_MAT_DASHBOARD', 'user_session')
+    candidate_files = [
+        session_base + '.session',
+        session_base + '.session-journal',
+        session_base + '.session-wal',
+        session_base + '.session-shm',
+    ]
+
+    for attempt in range(5):
+        still_locked = False
+        for fpath in candidate_files:
+            if os.path.exists(fpath):
+                try:
+                    os.remove(fpath)
+                except Exception as e:
+                    still_locked = True
+        if not still_locked:
+            print("🗑️ Đã giải phóng và xóa file session cũ thành công.")
+            return True
+        time.sleep(0.8)
+
+    print("⚠️ Chú ý: File session đang bị khóa bởi ứng dụng khác (ví dụ: Google Drive Sync hoặc tiến trình Python khác).")
+    return False
+
+
 async def main():
     print("==============================================================================")
     print(f"🔐 BẮT ĐẦU ĐĂNG NHẬP TELEGRAM CHO SỐ ĐIỆN THOẠI: {PHONE_NUMBER}")
     print("==============================================================================")
     
-    # Xóa file session cũ
-    if os.path.exists(SESSION_FILE):
-        try:
-            os.remove(SESSION_FILE)
-            print("🗑️ Đã xóa file session cũ.")
-        except Exception:
-            pass
+    # Giải phóng và xóa session cũ
+    release_locked_session()
 
     client = TelegramClient(os.path.join(CURRENT_DIR, 'DONG_MAT_DASHBOARD', 'user_session'), API_ID, API_HASH)
     
