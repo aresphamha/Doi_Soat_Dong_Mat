@@ -1892,5 +1892,13 @@
     "chat_id_dm": "-1002881624302",
     "chat_id_rc": "-5588180836",
     "chat_id_dc": ""
+  },
+  {
+    "id": "A265",
+    "name": "KFM_HCM_GVA - 232 Nguyễn Tư Giản",
+    "short": "A265",
+    "chat_id_dm": "",
+    "chat_id_rc": "",
+    "chat_id_dc": "-1004390985524"
   }
 ]
