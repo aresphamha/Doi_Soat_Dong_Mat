@@ -990,6 +990,14 @@
     "chat_id_dc": "-1004268595947"
   },
   {
+    "id": "A243",
+    "name": "KFM_HCM_Q08 - A6-7 Block A Diamond Lotus Riverside",
+    "short": "A243",
+    "chat_id_dm": "",
+    "chat_id_rc": "",
+    "chat_id_dc": "-1003932619661"
+  },
+  {
     "id": "A246",
     "name": "373 Hương Lộ 3",
     "short": "A246",
@@ -1062,12 +1070,28 @@
     "chat_id_dc": "-1004438420846"
   },
   {
+    "id": "A265",
+    "name": "KFM_HCM_GVA - 232 Nguyễn Tư Giản",
+    "short": "A265",
+    "chat_id_dm": "",
+    "chat_id_rc": "",
+    "chat_id_dc": "-1004390985524"
+  },
+  {
     "id": "A266",
     "name": "KFM_HCM_PNH - Hoa Sứ",
     "short": "A266",
     "chat_id_dm": "-1004376355185",
     "chat_id_rc": "-1004376355185",
     "chat_id_dc": "-1004376355185"
+  },
+  {
+    "id": "A269",
+    "name": "KFM_HCM_TDU - TMDV B10-1 Chung Cư Blue Sky Tower",
+    "short": "A269",
+    "chat_id_dm": "",
+    "chat_id_rc": "",
+    "chat_id_dc": "-1004330559619"
   },
   {
     "id": "ACU",
@@ -1307,7 +1331,7 @@
     "short": "HHM",
     "chat_id_dm": "-4913037367",
     "chat_id_rc": "-4221052636",
-    "chat_id_dc": "-4612672037"
+    "chat_id_dc": "-1003822384320"
   },
   {
     "id": "HHT",
@@ -1892,21 +1916,5 @@
     "chat_id_dm": "-1002881624302",
     "chat_id_rc": "-5588180836",
     "chat_id_dc": ""
-  },
-  {
-    "id": "A265",
-    "name": "KFM_HCM_GVA - 232 Nguyễn Tư Giản",
-    "short": "A265",
-    "chat_id_dm": "",
-    "chat_id_rc": "",
-    "chat_id_dc": "-1004390985524"
-  },
-  {
-    "id": "A269",
-    "name": "KFM_HCM_TDU - TMDV B10-1 Chung Cư Blue Sky Tower",
-    "short": "A269",
-    "chat_id_dm": "",
-    "chat_id_rc": "",
-    "chat_id_dc": "-1004330559619"
   }
 ]

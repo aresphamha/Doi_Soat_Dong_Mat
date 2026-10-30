@@ -131,6 +131,8 @@ def load_store_and_dc_chat_mappings():
     dc_code_map['A254'] = '-1003932058795' # DC - A254 (Phú Cường Home)
     dc_code_map['A265'] = '-1004390985524' # DC - A265 (Nguyễn Tư Giản)
     dc_code_map['A269'] = '-1004330559619' # DC - A269 (Blue Sky Tower)
+    dc_code_map['A243'] = '-1003932619661' # DC - A243 (Diamond Lotus Riverside)
+    dc_code_map['HHM'] = '-1003822384320' # HHM - DC (165 Hoàng Hoa Thám)
     st_to_code['KFM_HCM_Q12 - 310/10 Khu Phố 1 Thạnh Xuân 14'] = 'A215'
     st_to_code['310/10 Khu Phố 1 Thạnh Xuân 14'] = 'A215'
     st_to_code['Thạnh Xuân 14'] = 'A215'
@@ -148,6 +150,10 @@ def load_store_and_dc_chat_mappings():
     st_to_code['TMDV B10-1 Chung Cư Blue Sky Tower'] = 'A269'
     st_to_code['Chung Cư Blue Sky Tower'] = 'A269'
     st_to_code['Blue Sky Tower'] = 'A269'
+    st_to_code['KFM_HCM_Q08 - A6-7 Block A Diamond Lotus Riverside'] = 'A243'
+    st_to_code['A6-7 Block A Diamond Lotus Riverside'] = 'A243'
+    st_to_code['Diamond Lotus Riverside'] = 'A243'
+    st_to_code['Diamond Lotus'] = 'A243'
 
     # 2. Đọc mapping Siêu thị -> Mã ST & Chat ID DC/ĐM từ CONFIG_DATA_STORES.json
     stores_json = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')

@@ -10,7 +10,7 @@ import sys
 
 from .common import TOOLS_BASE_DIR
 
-async def run(target_date=None, dry_run=False, stores=None):
+async def run(target_date=None, dry_run=False, stores=None, force=False):
     print("\n=======================================================")
     print("📦 [MODULE KHO KHÔ] BẮT ĐẦU CHẠY TOOL: CHI TIẾT KHO KHÔ FGA10101...")
     print("=======================================================")
@@ -20,6 +20,6 @@ async def run(target_date=None, dry_run=False, stores=None):
         
     try:
         from Spam_Phieu_Chi_Tiet_Kho_Kho import run_spam_chi_tiet_kho_kho
-        await run_spam_chi_tiet_kho_kho(target_date=target_date, dry_run=dry_run, stores=stores)
+        await run_spam_chi_tiet_kho_kho(target_date=target_date, dry_run=dry_run, stores=stores, force=force)
     except Exception as e:
         print(f"❌ [LỖI THỰC THI TOOL CHI TIẾT KHO KHÔ]: {e}")

@@ -222,7 +222,7 @@ def main():
         
         # Nhóm Kho Khô (FGA10101)
         elif args.tool == "chi_tiet_kho_kho":
-            loop.run_until_complete(run_tool_chi_tiet_kho_kho(date_val, args.dry_run, args.stores))
+            loop.run_until_complete(run_tool_chi_tiet_kho_kho(date_val, args.dry_run, args.stores, force=args.force))
         elif args.tool == "hau_kiem_kho_kho":
             loop.run_until_complete(run_tool_hau_kiem_kho_kho(date_val, args.dry_run, args.stores, force=args.force))
         
@@ -242,7 +242,7 @@ def main():
             loop.run_until_complete(run_tool_hau_kiem_rau(date_val, args.dry_run))
             loop.run_until_complete(run_tool_hau_kiem_thit_ca(date_val, args.dry_run))
             loop.run_until_complete(run_tool_hau_kiem_dong_mat(date_val, args.dry_run))
-            loop.run_until_complete(run_tool_chi_tiet_kho_kho(date_val, args.dry_run))
+            loop.run_until_complete(run_tool_chi_tiet_kho_kho(date_val, args.dry_run, force=args.force))
             loop.run_until_complete(run_tool_hau_kiem_kho_kho(date_val, args.dry_run, force=args.force))
 
 

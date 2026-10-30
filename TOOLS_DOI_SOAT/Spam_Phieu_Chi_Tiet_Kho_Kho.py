@@ -124,6 +124,8 @@ def load_store_and_dc_chat_mappings():
     dc_code_map['A254'] = '-1003932058795' # DC - A254 (Phú Cường Home)
     dc_code_map['A265'] = '-1004390985524' # DC - A265 (Nguyễn Tư Giản)
     dc_code_map['A269'] = '-1004330559619' # DC - A269 (Blue Sky Tower)
+    dc_code_map['A243'] = '-1003932619661' # DC - A243 (Diamond Lotus Riverside)
+    dc_code_map['HHM'] = '-1003822384320' # HHM - DC (165 Hoàng Hoa Thám)
     st_to_code['KFM_HCM_Q12 - 310/10 Khu Phố 1 Thạnh Xuân 14'] = 'A215'
     st_to_code['310/10 Khu Phố 1 Thạnh Xuân 14'] = 'A215'
     st_to_code['Thạnh Xuân 14'] = 'A215'
@@ -141,6 +143,12 @@ def load_store_and_dc_chat_mappings():
     st_to_code['TMDV B10-1 Chung Cư Blue Sky Tower'] = 'A269'
     st_to_code['Chung Cư Blue Sky Tower'] = 'A269'
     st_to_code['Blue Sky Tower'] = 'A269'
+    st_to_code['KFM_HCM_Q08 - A6-7 Block A Diamond Lotus Riverside'] = 'A243'
+    st_to_code['A6-7 Block A Diamond Lotus Riverside'] = 'A243'
+    st_to_code['Diamond Lotus Riverside'] = 'A243'
+    st_to_code['Diamond Lotus'] = 'A243'
+    st_to_code['KFM_HCM_TBI - 165 Hoàng Hoa Thám'] = 'HHM'
+    st_to_code['165 Hoàng Hoa Thám'] = 'HHM'
 
     # 2. Đọc mapping Siêu thị -> Mã ST & Chat ID DC từ CONFIG_DATA_STORES.json
     stores_json = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')
@@ -181,7 +189,7 @@ async def get_tags_for_group(client, chat_id):
         pass
     return " ".join(tags) if tags else "@SM @TC @GSM"
 
-async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None):
+async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None, force=False):
     print("\n=======================================================")
     print("📦 BẮT ĐẦU CHẠY TOOL: PHIẾU CHI TIẾT KHO KHÔ (FGA10101 & FGA10103)")
     print("=======================================================")
@@ -345,8 +353,8 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
             fail_count += 1
             continue
 
-        if str(chat_id) in sent_today:
-            print(f"⏩ [ĐÃ GỬI TRƯỚC ĐÓ] Bỏ qua ST: {st_name} ({chat_id})")
+        if not force and str(chat_id) in sent_today:
+            print(f"⏩ [ĐÃ GỬI TRƯỚC ĐÓ] Bỏ qua ST: {st_name} ({chat_id}) - Dùng --force nếu muốn gửi lại.")
             continue
 
         # Sắp xếp phiếu của ST theo ngày chuyển tăng dần (cũ nhất lên đầu)
@@ -383,33 +391,85 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
                 "Đang chuyển"
             ])
 
-        img_path = os.path.join(CURRENT_DIR, f"temp_ct_khokho_{chat_id}.png")
+        img_path = os.path.join(CURRENT_DIR, f"temp_ct_khokho_{abs(chat_id)}.png")
         try:
             render_pastel_gradient_table(headers, rows, img_path)
             
-            with open(img_path, 'rb') as f:
-                resp = requests.post(
-                    URL_SEND_PHOTO,
-                    data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
-                    files={'photo': f},
-                    timeout=20
-                )
+            sent_ok = False
+            # 1. Thử gửi qua Telegram Bot API
+            try:
+                with open(img_path, 'rb') as f:
+                    resp = requests.post(
+                        URL_SEND_PHOTO,
+                        data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
+                        files={'photo': f},
+                        timeout=25
+                    )
+                res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
+                
+                # Xử lý Supergroup migration
+                if resp.status_code == 400 and res_json.get('parameters', {}).get('migrate_to_chat_id'):
+                    new_cid = res_json['parameters']['migrate_to_chat_id']
+                    print(f"🔄 [CHUYỂN SUPERGROUP] ST {st_name} đổi sang Chat ID: {new_cid}. Đang gửi lại ngay...", flush=True)
+                    chat_id = new_cid
+                    with open(img_path, 'rb') as f_mig:
+                        resp = requests.post(
+                            URL_SEND_PHOTO,
+                            data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
+                            files={'photo': f_mig},
+                            timeout=25
+                        )
+                    res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
+                
+                # Xử lý lỗi Markdown parse entities
+                if resp.status_code == 400 and "can't parse entities" in res_json.get('description', '').lower():
+                    print(f"⚠️ [MARKDOWN ERROR] Thử gửi lại dạng Plain Text cho ST {st_name}...", flush=True)
+                    plain_caption = caption.replace('**', '').replace('__', '')
+                    with open(img_path, 'rb') as f_plain:
+                        resp = requests.post(
+                            URL_SEND_PHOTO,
+                            data={'chat_id': chat_id, 'caption': plain_caption},
+                            files={'photo': f_plain},
+                            timeout=25
+                        )
+                    res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
+
+                if resp.status_code == 200 and res_json.get('ok'):
+                    sent_ok = True
+                else:
+                    err_desc = res_json.get('description', f'HTTP {resp.status_code}')
+                    print(f"⚠️ [BOT TELEGRAM BÁO LỖI] ST: {st_name} ({chat_id}): {err_desc}. Đang chuyển sang Telethon User Client...", flush=True)
+            except Exception as ex_bot:
+                print(f"⚠️ [LỖI KẾT NỐI BOT] {st_name}: {ex_bot}. Đang chuyển sang Telethon User Client...", flush=True)
+
+            # 2. Dự phòng: Gửi qua Telethon User Client nếu Bot API thất bại
+            if not sent_ok:
+                try:
+                    await client.send_file(int(chat_id), img_path, caption=caption)
+                    sent_ok = True
+                    print(f"✅ [GỬI THÀNH CÔNG QUA USER CLIENT] ST: {st_name} ({chat_id})", flush=True)
+                except Exception as ex_user:
+                    try:
+                        plain_caption = caption.replace('**', '').replace('__', '')
+                        await client.send_file(int(chat_id), img_path, caption=plain_caption)
+                        sent_ok = True
+                        print(f"✅ [GỬI THÀNH CÔNG QUA USER CLIENT (PLAIN TEXT)] ST: {st_name} ({chat_id})", flush=True)
+                    except Exception as ex_user2:
+                        print(f"❌ [LỖI USER CLIENT] ST: {st_name} ({chat_id}): {ex_user2}", flush=True)
+
+            if sent_ok:
+                record_sent_store('chi_tiet_kho_kho', date_iso, str(chat_id))
+                print(f"🚀 [ĐÃ GỬI THÀNH CÔNG] ST: {st_name} ({chat_id}) - {total_p} phiếu", flush=True)
+                success_count += 1
+            else:
+                fail_count += 1
+
             if os.path.exists(img_path):
                 os.remove(img_path)
 
-            res_json = resp.json() if resp.status_code == 200 else {}
-            if resp.status_code == 200 and res_json.get('ok'):
-                record_sent_store('chi_tiet_kho_kho', date_iso, str(chat_id))
-                print(f"🚀 [ĐÃ GỬI THÀNH CÔNG] ST: {st_name} ({chat_id}) - {total_p} phiếu")
-                success_count += 1
-            else:
-                err_desc = res_json.get('description', f'HTTP {resp.status_code}')
-                print(f"❌ [LỖI TELEGRAM] ST: {st_name} ({chat_id}): {err_desc}")
-                fail_count += 1
-
             await asyncio.sleep(1)
         except Exception as e:
-            print(f"❌ [LỖI XỬ LÝ] ST {st_name}: {e}")
+            print(f"❌ [LỖI XỬ LÝ] ST {st_name}: {e}", flush=True)
             fail_count += 1
             if os.path.exists(img_path): os.remove(img_path)
 
@@ -421,6 +481,7 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dry-run', action='store_true', help='Chạy thử không gửi tin')
+    parser.add_argument('--force', action='store_true', help='Bỏ qua kiểm tra lịch sử đã gửi hôm nay, gửi lại toàn bộ')
     parser.add_argument('--stores', type=str, default=None, help='Danh sách mã ST hoặc tên ST cần spam (cách nhau bởi dấu phẩy)')
     args = parser.parse_args()
-    asyncio.run(run_spam_chi_tiet_kho_kho(dry_run=args.dry_run, stores=args.stores))
+    asyncio.run(run_spam_chi_tiet_kho_kho(dry_run=args.dry_run, stores=args.stores, force=args.force))
