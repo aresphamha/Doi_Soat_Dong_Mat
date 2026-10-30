@@ -168,3 +168,4 @@ Khi Kingfoodmart mở thêm siêu thị mới (ví dụ `A265`, `A269`):
    st_to_code['Blue Sky Tower'] = 'A269'
    ```
 4. **Tự động đẩy code lên GitHub**: Tuân thủ quy tắc `git pull --rebase origin main` -> `git add -u` -> `git commit` -> `git push origin main`.
+

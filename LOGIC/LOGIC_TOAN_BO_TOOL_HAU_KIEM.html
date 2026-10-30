@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Logic Toàn Bộ Công Cụ Hậu Kiểm SCM Kingfoodmart</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-alt: #24344d;
+            --bg-code: #0b1120;
+            --border-card: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(56, 189, 248, 0.3);
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --cyan: #38bdf8;
+            --cyan-hover: #0ea5e9;
+            --emerald: #10b981;
+            --emerald-bg: rgba(16, 185, 129, 0.12);
+            --amber: #f59e0b;
+            --amber-bg: rgba(245, 158, 11, 0.12);
+            --rose: #f43f5e;
+            --rose-bg: rgba(244, 63, 94, 0.12);
+            --indigo: #818cf8;
+            --indigo-bg: rgba(129, 140, 248, 0.12);
+            --violet: #a855f7;
+            --sky: #0284c7;
+
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+            --glow: 0 0 20px rgba(56, 189, 248, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            padding: 32px 28px;
+            margin-bottom: 28px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--cyan), var(--indigo), var(--emerald));
+        }
+
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .header-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(129, 140, 248, 0.2));
+            border: 1px solid var(--border-highlight);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--cyan);
+        }
+
+        .header h1 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 900px;
+            margin-bottom: 16px;
+        }
+
+        .badge-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+
+        .badge-cyan { background: rgba(56, 189, 248, 0.15); color: var(--cyan); border-color: rgba(56, 189, 248, 0.3); }
+        .badge-emerald { background: var(--emerald-bg); color: var(--emerald); border-color: rgba(16, 185, 129, 0.3); }
+        .badge-indigo { background: var(--indigo-bg); color: var(--indigo); border-color: rgba(129, 140, 248, 0.3); }
+        .badge-amber { background: var(--amber-bg); color: var(--amber); border-color: rgba(245, 158, 11, 0.3); }
+
+        /* QUICK STATS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--cyan);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .stat-info h3 {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .stat-info .value {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .stat-info .desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* SECTION CARDS */
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            padding: 26px;
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-card);
+            padding-bottom: 14px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .section-title i {
+            color: var(--cyan);
+        }
+
+        /* TABS */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-card);
+            padding-bottom: 10px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+
+        .tab-btn.active {
+            color: var(--cyan);
+            background: rgba(56, 189, 248, 0.12);
+            border-color: rgba(56, 189, 248, 0.3);
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* TOOL MATRIX TABLE */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-card);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            text-align: left;
+        }
+
+        thead th {
+            background: var(--bg-card-alt);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-card);
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* CODE BOX */
+        .code-box {
+            background: var(--bg-code);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin: 12px 0;
+            position: relative;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #38bdf8;
+            overflow-x: auto;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .copy-btn:hover {
+            background: var(--cyan);
+            color: #0f172a;
+            border-color: var(--cyan);
+        }
+
+        /* STEP CARDS */
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .step-item {
+            background: var(--bg-card-alt);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            padding: 18px 20px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--cyan);
+            color: #0f172a;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex-grow: 1;
+        }
+
+        .step-content h4 {
+            font-size: 1rem;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+        }
+
+        /* ALERT BOX */
+        .alert-box {
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 4px solid var(--cyan);
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px;
+            margin: 16px 0;
+            font-size: 0.88rem;
+            color: var(--text-primary);
+        }
+
+        .alert-box.warning {
+            background: rgba(245, 158, 11, 0.08);
+            border-left-color: var(--amber);
+        }
+
+        .alert-box.success {
+            background: rgba(16, 185, 129, 0.08);
+            border-left-color: var(--emerald);
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            margin-top: 36px;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+
+        .footer a {
+            color: var(--cyan);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-title-box">
+            <div class="header-icon">
+                <i class="fa-solid fa-boxes-packing"></i>
+            </div>
+            <div>
+                <h1>HỆ THỐNG VẬN HÀNH TOÀN BỘ CÔNG CỤ HẬU KIỂM SCM</h1>
+                <p>Tài liệu kỹ thuật, kiến trúc phân hệ & cẩm nang chuyển giao vận hành dành cho Máy Mới / Trợ Lý AI Antigravity mới.</p>
+            </div>
+        </div>
+        <div class="badge-bar">
+            <span class="badge badge-cyan"><i class="fa-solid fa-bolt"></i> 4 Phân Hệ Hậu Kiểm</span>
+            <span class="badge badge-emerald"><i class="fa-solid fa-database"></i> CDC MySQL Port 9030</span>
+            <span class="badge badge-indigo"><i class="fa-brands fa-telegram"></i> Dual Engine (Bot API + Telethon)</span>
+            <span class="badge badge-amber"><i class="fa-solid fa-shield-halved"></i> Chống Spam Trùng Lặp</span>
+        </div>
+    </header>
+
+    <!-- 4 TOOL QUICK STATS -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--amber);">
+                <i class="fa-solid fa-box-archive"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Hậu Kiểm Kho Khô</h3>
+                <div class="value">FGA10101 / FGA10103</div>
+                <div class="desc">Gửi Nhóm DC ST • Bảng Gradient Pastel</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald);">
+                <i class="fa-solid fa-carrot"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Hậu Kiểm Rau Củ</h3>
+                <div class="value">FEA20102 (Bình Thắng)</div>
+                <div class="desc">Gửi Nhóm Rau Củ • Phiếu chênh lệch D-0</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(244, 63, 94, 0.15); color: var(--rose);">
+                <i class="fa-solid fa-drumstick-bite"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Hậu Kiểm Thịt Cá</h3>
+                <div class="value">MFA30102 (Sóng Thần)</div>
+                <div class="desc">Gửi Nhóm Thịt Cá/ĐM • Quá cảnh SCF</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(129, 140, 248, 0.15); color: var(--indigo);">
+                <i class="fa-solid fa-snowflake"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Hậu Kiểm Đông Mát</h3>
+                <div class="value">CLA40102 / FZA50102</div>
+                <div class="desc">Ưu tiên xử lý D-1 trước rồi đến D-0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN INTERACTIVE SECTION -->
+    <section class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <i class="fa-solid fa-diagram-project"></i>
+                Chi Tiết Nghiệp Vụ & Hướng Dẫn Vận Hành
+            </div>
+        </div>
+
+        <!-- TABS NAVIGATION -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('tab-matrix')">
+                <i class="fa-solid fa-table-list"></i> Ma Trận 4 Tool
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-db')">
+                <i class="fa-solid fa-database"></i> Kết Nối CSDL & Schema
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-setup')">
+                <i class="fa-solid fa-laptop-code"></i> Thiết Lập Máy Mới
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-cli')">
+                <i class="fa-solid fa-terminal"></i> Bộ Lệnh CLI Trung Tâm
+            </button>
+            <button class="tab-btn" onclick="switchTab('tab-newstore')">
+                <i class="fa-solid fa-store"></i> Quy Trình Thêm ST Mới
+            </button>
+        </div>
+
+        <!-- TAB 1: MA TRẬN 4 TOOL -->
+        <div id="tab-matrix" class="tab-pane active">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Phân Hệ Tool</th>
+                            <th>Mã Lệnh CLI</th>
+                            <th>Kho Nguồn Xuất Phát</th>
+                            <th>Điều Kiện Lọc Trạng Thái WMS</th>
+                            <th>Kênh Nhận Telegram</th>
+                            <th>Định Dạng Báo Cáo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong style="color: var(--amber);"><i class="fa-solid fa-box-archive"></i> Hậu Kiểm Kho Khô</strong></td>
+                            <td><code>--tool hau_kiem_kho_kho</code></td>
+                            <td><code>FGA10101</code> (Lưu Hàng), <code>FGA10103</code> (Khai Trương), <code>Vệ Tinh</code>, <code>SCF</code></td>
+                            <td><code>double_check_code != ''</code><br><code>double_checked_status = 1</code><br><code>status IN (3, 5)</code></td>
+                            <td><strong>Nhóm DC Siêu thị</strong><br>(cột <code>chat_id_dc</code>)</td>
+                            <td>Ảnh bảng Gradient Pastel (Xanh ngọc sang Cam đào) + Tag Quản lý</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: var(--emerald);"><i class="fa-solid fa-carrot"></i> Hậu Kiểm Rau Củ</strong></td>
+                            <td><code>--tool hau_kiem_rau</code></td>
+                            <td><code>FEA20102</code> (Bình Thắng Quá Cảnh)</td>
+                            <td><code>double_check_code != ''</code><br><code>double_checked_status = 1</code><br><code>status = 5</code></td>
+                            <td><strong>Nhóm Rau Củ</strong><br>(cột <code>chat_id_rc</code>)</td>
+                            <td>Ảnh bảng chi tiết lệch chênh lệch SKU thực xuất / thực nhận</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: var(--rose);"><i class="fa-solid fa-drumstick-bite"></i> Hậu Kiểm Thịt Cá</strong></td>
+                            <td><code>--tool hau_kiem_thit_ca</code></td>
+                            <td><code>MFA30102</code> (Sóng Thần), <code>SCF</code></td>
+                            <td><code>double_check_code != ''</code><br><code>double_checked_status = 1</code><br><code>status = 5</code></td>
+                            <td><strong>Nhóm Thịt Cá / ĐM</strong><br>(cột <code>chat_id_dm</code>)</td>
+                            <td>Ảnh bảng đối soát Thịt Cá chênh lệch</td>
+                        </tr>
+                        <tr>
+                            <td><strong style="color: var(--indigo);"><i class="fa-solid fa-snowflake"></i> Hậu Kiểm Đông Mát</strong></td>
+                            <td><code>--tool hau_kiem_dong_mat</code></td>
+                            <td><code>CLA40102</code>, <code>FZA50102</code>, <code>CL02</code>, <code>FZ02</code></td>
+                            <td><code>double_check_code != ''</code><br><code>double_checked_status = 1</code><br><code>status = 5</code></td>
+                            <td><strong>Nhóm Đông Mát</strong><br>(cột <code>chat_id_dm</code>)</td>
+                            <td>Ảnh bảng đối soát hàng Đông & Mát (Ưu tiên D-1 trước)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert-box success" style="margin-top: 20px;">
+                <strong><i class="fa-solid fa-circle-check"></i> Nguyên tắc trạng thái phiếu trên WMS CDC DB:</strong>
+                <ul style="margin-left: 20px; margin-top: 6px;">
+                    <li><code>double_checked_status = 1</code>: <strong>CẦN HẬU KIỂM</strong> (Phiếu đang bị treo, chưa quét xong -> <strong>CẦN SPAM NHẮC NHỞ</strong>).</li>
+                    <li><code>double_checked_status = 3</code>: <strong>ĐÃ HẬU KIỂM XONG</strong> (Siêu thị đã quét hoàn tất đối soát -> <strong>BỎ QUA KHÔNG SPAM</strong>).</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- TAB 2: KẾT NỐI CSDL & SCHEMA -->
+        <div id="tab-db" class="tab-pane">
+            <h3 style="color: #fff; margin-bottom: 12px;"><i class="fa-solid fa-server"></i> Cấu Hình Database CDC MySQL:</h3>
+            <div class="code-box">
+                <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+HOST     = '103.140.248.250'
+PORT     = 9030
+USER     = 'kfm_scm_tho_nguyen'
+PASSWORD = 'TnAM0WEsv4kmasw878wt'
+DATABASE = 'kfm_scm'
+            </div>
+
+            <h3 style="color: #fff; margin-top: 20px; margin-bottom: 12px;"><i class="fa-solid fa-code"></i> Truy Vấn SQL Chuẩn (Khớp 100% Tab Cần Hậu Kiểm trên WMS):</h3>
+            <div class="code-box">
+                <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+SELECT 
+    t.double_check_code,
+    t.code,
+    t.from_branch_id,
+    t.to_branch_id,
+    t.received_date,
+    t.transfer_date,
+    t.created_at,
+    t.double_checked_status,
+    t.status
+FROM __cdc_kfm_kf_inventories_kf_transfer_items t
+WHERE t.from_branch_id IN ('6aabb0a2f426e20007f80123', '6aabb0d73c46470007f935ce', '6aa77de130fded00073d4521', '6a34ed56f23028000774139f')
+  AND t.double_check_code IS NOT NULL AND t.double_check_code != ''
+  AND t.status IN (3, 5)
+  AND t.double_checked_status = 1
+ORDER BY t.created_at DESC;
+            </div>
+
+            <h3 style="color: #fff; margin-top: 20px; margin-bottom: 12px;"><i class="fa-solid fa-id-badge"></i> Bảng Tra Cứu Tên Siêu Thị & Kho:</h3>
+            <div class="code-box">
+                <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+SELECT branch_id, branch_name 
+FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard 
+WHERE branch_name IS NOT NULL AND branch_name != ''
+GROUP BY branch_id, branch_name;
+            </div>
+        </div>
+
+        <!-- TAB 3: THIẾT LẬP MÁY MỚI -->
+        <div id="tab-setup" class="tab-pane">
+            <div class="steps-container">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Cài Đặt Thư Viện Python</h4>
+                        <p>Cài đặt các gói phụ thuộc cần thiết cho kết nối MySQL, Telegram Telethon và sinh ảnh bảng:</p>
+                        <div class="code-box">
+                            <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+pip install pymysql openpyxl telethon requests pillow pandas dataframe_image pytz
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Chuẩn Bị Session Telegram</h4>
+                        <p>Hệ thống hỗ trợ 2 cơ chế tự động tìm nạp session:</p>
+                        <ul style="color: var(--text-secondary); margin-left: 20px; font-size: 0.88rem;">
+                            <li><strong>Cách 1:</strong> Đặt file <code>user_session.session</code> vào thư mục gốc hoặc <code>SPAM_PHIEU_CHUYEN/CONFIG_DATA/</code>.</li>
+                            <li><strong>Cách 2 (Khuyên dùng):</strong> Hệ thống tự động giải mã từ file <code>session_b64.txt</code> (đã mã hóa an toàn).</li>
+                            <li><strong>Cách 3:</strong> Nếu là tài khoản mới hoàn toàn, chạy <code>python Dang_Nhap_Telegram.py</code> và nhập OTP 1 lần duy nhất.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Cơ Chế Gửi 2 Lớp (Dual-Engine Fail-Safe)</h4>
+                        <p>Khi spam ảnh và thông điệp vào nhóm:</p>
+                        <ul style="color: var(--text-secondary); margin-left: 20px; font-size: 0.88rem;">
+                            <li><strong>Lớp 1:</strong> Ưu tiên gọi API Bot Telegram (<code>URL_SEND_PHOTO</code>) với Bot Token <code>8810108114:AAER-s5oEc3pAoggenGm0R5fjA3xMDdQswM</code>.</li>
+                            <li><strong>Lớp 2:</strong> Nếu Bot báo lỗi (do Bot chưa được add vào nhóm, hoặc nhóm chuyển sang Supergroup), hệ thống lập tức tự động fallback sang User Client (Telethon cá nhân) để gửi tin, đảm bảo 100% tin nhắn đến tay Siêu thị.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: BỘ LỆNH CLI -->
+        <div id="tab-cli" class="tab-pane">
+            <h3 style="color: #fff; margin-bottom: 14px;"><i class="fa-solid fa-play"></i> Các Cú Pháp Chạy Công Cụ (Từ thư mục gốc dự án):</h3>
+
+            <div style="margin-bottom: 18px;">
+                <h4 style="color: var(--amber); margin-bottom: 6px;"><i class="fa-solid fa-cube"></i> 1. Chạy Hậu Kiểm Kho Khô:</h4>
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+python SPAM_PHIEU_CHUYEN/run_spam_tool.py --tool hau_kiem_kho_kho
+                </div>
+            </div>
+
+            <div style="margin-bottom: 18px;">
+                <h4 style="color: var(--cyan); margin-bottom: 6px;"><i class="fa-solid fa-magnifying-glass"></i> 2. Chạy Thử Nghiệm (Dry-Run - Không gửi thật):</h4>
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+python SPAM_PHIEU_CHUYEN/run_spam_tool.py --tool hau_kiem_kho_kho --dry-run
+                </div>
+            </div>
+
+            <div style="margin-bottom: 18px;">
+                <h4 style="color: var(--emerald); margin-bottom: 6px;"><i class="fa-solid fa-filter"></i> 3. Lọc Chỉ Định Danh Sách Siêu Thị Hoặc Mã Phiếu (PT):</h4>
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+# Lọc theo mã ST:
+python SPAM_PHIEU_CHUYEN/run_spam_tool.py --tool hau_kiem_kho_kho --stores "A107,A108,VHT,A269" --force
+
+# Lọc theo danh sách mã Phiếu Chuyển:
+python SPAM_PHIEU_CHUYEN/run_spam_tool.py --tool hau_kiem_kho_kho --stores "PT2066192,PT2066177" --force
+                </div>
+            </div>
+
+            <div style="margin-bottom: 18px;">
+                <h4 style="color: var(--indigo); margin-bottom: 6px;"><i class="fa-solid fa-rocket"></i> 4. Chạy Toàn Bộ 7 Công Cụ Tuần Tự (Step-by-Step):</h4>
+                <div class="code-box">
+                    <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+python SPAM_PHIEU_CHUYEN/run_spam_tool.py --tool all_with_kho_kho
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: QUY TRÌNH THÊM SIÊU THỊ MỚI -->
+        <div id="tab-newstore" class="tab-pane">
+            <h3 style="color: #fff; margin-bottom: 12px;"><i class="fa-solid fa-store"></i> Khi Khai Trương Siêu Thị Mới (Ví dụ: A265, A269):</h3>
+            
+            <div class="steps-container">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Tra Cứu Chat ID DC Trên Telegram</h4>
+                        <p>Dùng Telethon User Client quét danh sách nhóm chat cá nhân theo tên đường hoặc mã ST để lấy ID chuẩn (ví dụ: <code>DC - A269 (Blue Sky Tower)</code> -> <code>-1004330559619</code>).</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Khai Báo Vào <code>CONFIG_DATA_STORES.json</code></h4>
+                        <div class="code-box">
+                            <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+{
+  "id": "A269",
+  "name": "KFM_HCM_TDU - TMDV B10-1 Chung Cư Blue Sky Tower",
+  "short": "A269",
+  "chat_id_dm": "",
+  "chat_id_rc": "",
+  "chat_id_dc": "-1004330559619"
+}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Thêm Mapping Bổ Sung Vào Tool Kho Khô</h4>
+                        <p>Mở file <code>TOOLS_DOI_SOAT/Spam_Phieu_Hau_Kiem_Kho_Kho.py</code> (hàm <code>load_store_and_dc_chat_mappings</code>):</p>
+                        <div class="code-box">
+                            <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+dc_code_map['A269'] = '-1004330559619'
+st_to_code['KFM_HCM_TDU - TMDV B10-1 Chung Cư Blue Sky Tower'] = 'A269'
+st_to_code['Blue Sky Tower'] = 'A269'
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Đẩy Code Lên GitHub Main (Bắt Buộc)</h4>
+                        <div class="code-box">
+                            <button class="copy-btn" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+git pull --rebase origin main
+git add -u
+git commit -m "Cap nhat mapping sieu thi moi A269 Blue Sky Tower"
+git push origin main
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>Hệ thống Đối Soát SCM Kingfoodmart • Tài liệu chuẩn hóa vận hành tự động hóa • <a href="https://github.com/aresphamha/Doi_Soat_Dong_Mat" target="_blank"><i class="fa-brands fa-github"></i> aresphamha/Doi_Soat_Dong_Mat</a></p>
+    </footer>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+        
+        event.currentTarget.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    function copyCode(btn) {
+        const codeBox = btn.parentElement;
+        const textToCopy = codeBox.innerText.replace('Copy', '').trim();
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Đã chép!';
+            btn.style.background = '#10b981';
+            btn.style.color = '#fff';
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.style.background = '';
+                btn.style.color = '';
+            }, 1800);
+        });
+    }
+</script>
+
+</body>
+</html>
