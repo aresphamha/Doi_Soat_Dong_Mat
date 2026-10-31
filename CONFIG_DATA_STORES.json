@@ -93,7 +93,7 @@
     "short": "A112",
     "chat_id_dm": "-4659539358",
     "chat_id_rc": "-4880441469",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4818864785"
   },
   {
     "id": "A113",
@@ -109,7 +109,7 @@
     "short": "A114",
     "chat_id_dm": "-4850342862",
     "chat_id_rc": "-4861820166",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4936208036"
   },
   {
     "id": "A115",
@@ -141,7 +141,7 @@
     "short": "A118",
     "chat_id_dm": "-5094638485",
     "chat_id_rc": "-5023949319",
-    "chat_id_dc": ""
+    "chat_id_dc": "-5053620620"
   },
   {
     "id": "A119",
@@ -1110,6 +1110,14 @@
     "chat_id_dc": "-1004330559619"
   },
   {
+    "id": "A271",
+    "name": "KFM_HCM_TDU - 145 Linh Đông",
+    "short": "A271",
+    "chat_id_dm": "",
+    "chat_id_rc": "",
+    "chat_id_dc": "-1004316755312"
+  },
+  {
     "id": "ACU",
     "name": "KFM_HCM_TDU - 0.01 Chung cư An Cư An Phú",
     "short": "ACU",
@@ -1171,7 +1179,7 @@
     "short": "BVB",
     "chat_id_dm": "-1002439645926",
     "chat_id_rc": "-4518838531",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4880956911"
   },
   {
     "id": "CHR",
@@ -1251,7 +1259,7 @@
     "short": "DQH",
     "chat_id_dm": "-852406010",
     "chat_id_rc": "-869090413",
-    "chat_id_dc": ""
+    "chat_id_dc": "-844028449"
   },
   {
     "id": "DS3",
@@ -1299,7 +1307,7 @@
     "short": "EHS",
     "chat_id_dm": "-4071286738",
     "chat_id_rc": "-4081351807",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4091749115"
   },
   {
     "id": "EMR",
@@ -1339,7 +1347,7 @@
     "short": "HHG",
     "chat_id_dm": "-4623899543",
     "chat_id_rc": "-4794317543",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4984352420"
   },
   {
     "id": "HHM",
@@ -1603,7 +1611,7 @@
     "short": "NTT",
     "chat_id_dm": "-640887076",
     "chat_id_rc": "-1001759786537",
-    "chat_id_dc": ""
+    "chat_id_dc": "-1001703850834"
   },
   {
     "id": "NTU",
@@ -1691,7 +1699,7 @@
     "short": "PKD",
     "chat_id_dm": "-4901512510",
     "chat_id_rc": "-4696215604",
-    "chat_id_dc": ""
+    "chat_id_dc": "-1003771722275"
   },
   {
     "id": "PPZ",
