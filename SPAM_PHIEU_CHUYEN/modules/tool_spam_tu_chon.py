@@ -12,11 +12,41 @@ Cơ chế gửi 2 tầng: Telegram Bot API + Telethon User Client fallback.
 import os
 import sys
 import json
+import re
+import html
 import asyncio
 from datetime import datetime
 import pytz
 import pandas as pd
 import requests
+
+def convert_markdown_to_telegram_html(text: str) -> str:
+    """
+    Chuyển đổi cú pháp định dạng người dùng gõ (**bold**, *bold*, _italic_, ~~strike~~, `code`)
+    sang chuẩn HTML Telegram an toàn tuyệt đối, tránh lỗi "can't parse entities".
+    """
+    if not text:
+        return ""
+    
+    # 1. Thoát các ký tự HTML đặc biệt để tránh vỡ thẻ (&, <, >)
+    res = html.escape(text)
+    
+    # 2. In đậm: **text** hoặc *text*
+    res = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', res, flags=re.DOTALL)
+    # Nếu người dùng gõ *text* đơn
+    res = re.sub(r'(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)', r'<b>\1</b>', res)
+    
+    # 3. In nghiêng: __text__ hoặc _text_
+    res = re.sub(r'__(.+?)__', r'<i>\1</i>', res, flags=re.DOTALL)
+    res = re.sub(r'(?<!_)_(?!_)(.+?)(?<!_)_(?!_)', r'<i>\1</i>', res)
+    
+    # 4. Gạch ngang: ~~text~~
+    res = re.sub(r'~~(.+?)~~', r'<s>\1</s>', res, flags=re.DOTALL)
+    
+    # 5. Inline code: `text`
+    res = re.sub(r'`(.+?)`', r'<code>\1</code>', res)
+    
+    return res
 
 from telethon import TelegramClient
 
@@ -222,20 +252,23 @@ async def run(stores="ALL", message=None, tag_roles=True, dry_run=False, photo_p
             success_count += 1
         else:
             sent_ok = False
-            # 1. Thử gửi qua Telegram Bot API trước
+            # Chuẩn hóa văn bản sang định dạng HTML Telegram an toàn tuyệt đối
+            html_msg = convert_markdown_to_telegram_html(msg)
+
+            # 1. Thử gửi qua Telegram Bot API trước (với parse_mode='HTML')
             try:
                 if photo_path and os.path.exists(photo_path):
                     with open(photo_path, 'rb') as f:
                         resp = requests.post(
                             f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto",
-                            data={'chat_id': chat_id, 'caption': msg, 'parse_mode': 'Markdown'},
+                            data={'chat_id': chat_id, 'caption': html_msg, 'parse_mode': 'HTML'},
                             files={'photo': f},
                             timeout=20
                         )
                 else:
                     resp = requests.post(
                         f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
-                        data={'chat_id': chat_id, 'text': msg, 'parse_mode': 'Markdown'},
+                        data={'chat_id': chat_id, 'text': html_msg, 'parse_mode': 'HTML'},
                         timeout=20
                     )
                 res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
@@ -249,33 +282,33 @@ async def run(stores="ALL", message=None, tag_roles=True, dry_run=False, photo_p
                         with open(photo_path, 'rb') as f:
                             resp = requests.post(
                                 f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto",
-                                data={'chat_id': chat_id, 'caption': msg, 'parse_mode': 'Markdown'},
+                                data={'chat_id': chat_id, 'caption': html_msg, 'parse_mode': 'HTML'},
                                 files={'photo': f},
                                 timeout=20
                             )
                     else:
                         resp = requests.post(
                             f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
-                            data={'chat_id': chat_id, 'text': msg, 'parse_mode': 'Markdown'},
+                            data={'chat_id': chat_id, 'text': html_msg, 'parse_mode': 'HTML'},
                             timeout=20
                         )
                     res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
 
-                # Xử lý lỗi Markdown parse
+                # Xử lý fallback nếu gặp lỗi parse entities
                 if resp.status_code == 400 and "can't parse entities" in res_json.get('description', '').lower():
-                    plain_msg = msg.replace('**', '').replace('__', '').replace('`', '')
+                    clean_plain = re.sub(r'<[^>]+>', '', html_msg)
                     if photo_path and os.path.exists(photo_path):
                         with open(photo_path, 'rb') as f:
                             resp = requests.post(
                                 f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto",
-                                data={'chat_id': chat_id, 'caption': plain_msg},
+                                data={'chat_id': chat_id, 'caption': clean_plain},
                                 files={'photo': f},
                                 timeout=20
                             )
                     else:
                         resp = requests.post(
                             f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
-                            data={'chat_id': chat_id, 'text': plain_msg},
+                            data={'chat_id': chat_id, 'text': clean_plain},
                             timeout=20
                         )
                     res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
@@ -294,9 +327,9 @@ async def run(stores="ALL", message=None, tag_roles=True, dry_run=False, photo_p
             if not sent_ok and is_auth:
                 try:
                     if photo_path and os.path.exists(photo_path):
-                        await client.send_file(int(chat_id), photo_path, caption=msg)
+                        await client.send_file(int(chat_id), photo_path, caption=html_msg, parse_mode='html')
                     else:
-                        await client.send_message(int(chat_id), msg)
+                        await client.send_message(int(chat_id), html_msg, parse_mode='html')
                     sent_ok = True
                 except Exception as ex_user:
                     print(f"❌ [LỖI USER CLIENT] {ten_st} ({chat_id}): {ex_user}")

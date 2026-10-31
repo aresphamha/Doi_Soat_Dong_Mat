@@ -4713,8 +4713,30 @@
                                         </div>
                                     </div>
 
+                                                                        <!-- Formatting Toolbar: In đậm, In nghiêng, v.v. -->
+                                    <div style="display:flex; justify-content:space-between; align-items:center; background:#0b1120; border:1px solid rgba(56,189,248,0.3); border-bottom:1px dashed rgba(255,255,255,0.1); border-top-left-radius:8px; border-top-right-radius:8px; padding:6px 10px; gap:8px;">
+                                        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                                            <span style="font-size:0.72rem; color:#94a3b8; font-weight:700; margin-right:4px;">Định dạng:</span>
+                                            <button type="button" onclick="formatCustomSpamSelection('bold')" id="btnFormatBold" title="In đậm (Bôi đen rồi bấm, hoặc phím tắt Ctrl + B)" style="padding:4px 10px; background:rgba(56,189,248,0.2); border:1px solid rgba(56,189,248,0.4); border-radius:5px; color:#38bdf8; font-weight:900; font-size:0.78rem; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                                                <i class="fa-solid fa-bold"></i> <strong>In đậm</strong>
+                                            </button>
+                                            <button type="button" onclick="formatCustomSpamSelection('italic')" id="btnFormatItalic" title="In nghiêng (Ctrl + I)" style="padding:4px 10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:5px; color:#e2e8f0; font-style:italic; font-size:0.78rem; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                                                <i class="fa-solid fa-italic"></i> In nghiêng
+                                            </button>
+                                            <button type="button" onclick="formatCustomSpamSelection('strike')" id="btnFormatStrike" title="Gạch ngang chữ" style="padding:4px 8px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:5px; color:#94a3b8; font-size:0.78rem; text-decoration:line-through; cursor:pointer;">
+                                                <i class="fa-solid fa-strikethrough"></i> S
+                                            </button>
+                                            <button type="button" onclick="formatCustomSpamSelection('code')" id="btnFormatCode" title="Mã đơn dòng" style="padding:4px 8px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:5px; color:#a78bfa; font-family:monospace; font-size:0.78rem; cursor:pointer;">
+                                                &lt;/&gt;
+                                            </button>
+                                        </div>
+                                        <div style="font-size:0.7rem; color:#64748b; white-space:nowrap;">
+                                            <i class="fa-regular fa-keyboard"></i> Phím tắt: <kbd style="background:rgba(255,255,255,0.1); padding:1px 5px; border-radius:3px; color:#38bdf8;">Ctrl + B</kbd> để in đậm
+                                        </div>
+                                    </div>
+
                                     <!-- Textarea -->
-                                    <textarea id="customSpamMessageText" oninput="onCustomSpamTextChange()" rows="6" placeholder="Nhập nội dung tin nhắn cần gửi đến Siêu thị tại đây..." style="width:100%; box-sizing:border-box; padding:0.75rem; background:#0b1120; border:1px solid rgba(56,189,248,0.3); border-radius:8px; color:#fff; font-family:Consolas, 'Courier New', monospace; font-size:0.83rem; line-height:1.5; resize:vertical; outline:none;"></textarea>
+                                    <textarea id="customSpamMessageText" oninput="onCustomSpamTextChange()" onkeydown="handleCustomSpamKeydown(event)" rows="6" placeholder="Nhập nội dung tin nhắn cần gửi đến Siêu thị tại đây... (Bôi đen chữ rồi nhấn Ctrl+B hoặc nút [In đậm] ở trên)" style="width:100%; box-sizing:border-box; padding:0.75rem; background:#070d17; border:1px solid rgba(56,189,248,0.3); border-top:none; border-bottom-left-radius:8px; border-bottom-right-radius:8px; border-top-left-radius:0; border-top-right-radius:0; color:#fff; font-family:Consolas, 'Courier New', monospace; font-size:0.83rem; line-height:1.5; resize:vertical; outline:none;"></textarea>
                                 </div>
 
                                 <!-- Live Telegram Mockup Preview Card -->
@@ -12300,6 +12322,70 @@ function copyChatId(chatId, btnEl) {
             onCustomSpamTextChange();
         }
 
+                function formatCustomSpamSelection(type) {
+            const textarea = document.getElementById("customSpamMessageText");
+            if (!textarea) return;
+
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            const selectedText = text.substring(start, end);
+
+            let prefix = "**";
+            let suffix = "**";
+            let placeholder = "Nội dung in đậm";
+
+            if (type === 'italic') {
+                prefix = "*";
+                suffix = "*";
+                placeholder = "Nội dung in nghiêng";
+            } else if (type === 'strike') {
+                prefix = "~~";
+                suffix = "~~";
+                placeholder = "Nội dung gạch ngang";
+            } else if (type === 'code') {
+                prefix = "`";
+                suffix = "`";
+                placeholder = "mã_code";
+            }
+
+            if (selectedText.length > 0) {
+                // Kiểm tra xem đoạn bôi đen đã có prefix/suffix chưa (để toggle gỡ bỏ nếu bấm lần 2)
+                if (selectedText.startsWith(prefix) && selectedText.endsWith(suffix) && selectedText.length >= (prefix.length + suffix.length)) {
+                    const unformatted = selectedText.substring(prefix.length, selectedText.length - suffix.length);
+                    textarea.value = text.substring(0, start) + unformatted + text.substring(end);
+                    textarea.selectionStart = start;
+                    textarea.selectionEnd = start + unformatted.length;
+                } else {
+                    const formatted = prefix + selectedText + suffix;
+                    textarea.value = text.substring(0, start) + formatted + text.substring(end);
+                    textarea.selectionStart = start;
+                    textarea.selectionEnd = start + formatted.length;
+                }
+            } else {
+                // Chưa bôi đen -> chèn đoạn mẫu và bôi đen nội dung mẫu để người dùng gõ đè ngay
+                const formatted = prefix + placeholder + suffix;
+                textarea.value = text.substring(0, start) + formatted + text.substring(end);
+                textarea.selectionStart = start + prefix.length;
+                textarea.selectionEnd = start + prefix.length + placeholder.length;
+            }
+
+            textarea.focus();
+            onCustomSpamTextChange();
+        }
+
+        function handleCustomSpamKeydown(e) {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'b' || e.key === 'B') {
+                    e.preventDefault();
+                    formatCustomSpamSelection('bold');
+                } else if (e.key === 'i' || e.key === 'I') {
+                    e.preventDefault();
+                    formatCustomSpamSelection('italic');
+                }
+            }
+        }
+
         function onCustomSpamTextChange() {
             const textarea = document.getElementById("customSpamMessageText");
             const charCount = document.getElementById("customSpamCharCount");
@@ -12347,9 +12433,20 @@ function copyChatId(chatId, btnEl) {
                 rendered = rendered + "\n" + tagText;
             }
 
-            let formatted = escapeHtml(rendered)
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>');
+                        let formatted = escapeHtml(rendered);
+            // 1. In đậm: **text** hoặc *text*
+            formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong style="color:#ffffff; font-weight:700;">$1</strong>');
+            formatted = formatted.replace(/(^|[^\*])\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '$1<strong style="color:#ffffff; font-weight:700;">$2</strong>');
+            
+            // 2. In nghiêng: __text__ hoặc _text_
+            formatted = formatted.replace(/__(.+?)__/g, '<em>$1</em>');
+            formatted = formatted.replace(/(^|[^_])_(?!_)(.+?)(?<!_)_(?!_)/g, '$1<em>$2</em>');
+            
+            // 3. Gạch ngang: ~~text~~
+            formatted = formatted.replace(/~~(.+?)~~/g, '<del style="opacity:0.75;">$1</del>');
+            
+            // 4. Code: `text`
+            formatted = formatted.replace(/`(.+?)`/g, '<code style="background:rgba(255,255,255,0.12); color:#38bdf8; padding:1px 5px; border-radius:3px; font-family:Consolas, monospace; font-size:0.9em;">$1</code>');
 
             preview.innerHTML = formatted || '<em style="color:#64748b;">(Chưa có nội dung tin nhắn)</em>';
 
