@@ -101,7 +101,7 @@
     "short": "A113",
     "chat_id_dm": "-4810768163",
     "chat_id_rc": "-4908410647",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4931444555"
   },
   {
     "id": "A114",
@@ -173,7 +173,7 @@
     "short": "A123",
     "chat_id_dm": "-5037293861",
     "chat_id_rc": "-5027193412",
-    "chat_id_dc": ""
+    "chat_id_dc": "-5014321949"
   },
   {
     "id": "A124",
@@ -229,7 +229,7 @@
     "short": "A130",
     "chat_id_dm": "-5056493930",
     "chat_id_rc": "-5203306882",
-    "chat_id_dc": ""
+    "chat_id_dc": "-1003612552110"
   },
   {
     "id": "A131",
@@ -285,7 +285,7 @@
     "short": "A137",
     "chat_id_dm": "-5000807561",
     "chat_id_rc": "-5042135416",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4992411662"
   },
   {
     "id": "A138",
@@ -293,7 +293,7 @@
     "short": "A138",
     "chat_id_dm": "-5090615271",
     "chat_id_rc": "-5031173752",
-    "chat_id_dc": ""
+    "chat_id_dc": "-5012797348"
   },
   {
     "id": "A139",
@@ -301,7 +301,7 @@
     "short": "A139",
     "chat_id_dm": "-5094000749",
     "chat_id_rc": "-5080367710",
-    "chat_id_dc": ""
+    "chat_id_dc": "-5060730041"
   },
   {
     "id": "A140",
@@ -341,7 +341,7 @@
     "short": "A145",
     "chat_id_dm": "-5233572071",
     "chat_id_rc": "-5156768332",
-    "chat_id_dc": ""
+    "chat_id_dc": "-5023213446"
   },
   {
     "id": "A146",
@@ -349,7 +349,7 @@
     "short": "A146",
     "chat_id_dm": "-5269362420",
     "chat_id_rc": "-5191889783",
-    "chat_id_dc": ""
+    "chat_id_dc": "-5151971860"
   },
   {
     "id": "A147",
@@ -373,7 +373,7 @@
     "short": "A149",
     "chat_id_dm": "-5052944571",
     "chat_id_rc": "-5254927873",
-    "chat_id_dc": ""
+    "chat_id_dc": "-5218263928"
   },
   {
     "id": "A150",
@@ -389,7 +389,7 @@
     "short": "A151",
     "chat_id_dm": "-5226952638",
     "chat_id_rc": "-5185542421",
-    "chat_id_dc": ""
+    "chat_id_dc": "-5205859090"
   },
   {
     "id": "A154",
@@ -1038,6 +1038,14 @@
     "chat_id_dc": "-1004424055410"
   },
   {
+    "id": "A252",
+    "name": "DC - A252 (DS9 An Khánh)",
+    "short": "A252",
+    "chat_id_dm": "",
+    "chat_id_rc": "",
+    "chat_id_dc": "-1004488038357"
+  },
+  {
     "id": "A254",
     "name": "KFM_HCM_Q12 - S.06 Chung Cư Phú Cường Home",
     "short": "A254",
@@ -1107,7 +1115,7 @@
     "short": "ACU",
     "chat_id_dm": "-4513412580",
     "chat_id_rc": "-4529392399",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4578848570"
   },
   {
     "id": "AKR",
@@ -1115,7 +1123,7 @@
     "short": "AKR",
     "chat_id_dm": "-4189502700",
     "chat_id_rc": "-4172822430",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4114032701"
   },
   {
     "id": "AV4",
@@ -1147,7 +1155,7 @@
     "short": "BQI",
     "chat_id_dm": "-967297157",
     "chat_id_rc": "-908978390",
-    "chat_id_dc": ""
+    "chat_id_dc": "-1001838756395"
   },
   {
     "id": "BTH",
@@ -1155,7 +1163,7 @@
     "short": "BTH",
     "chat_id_dm": "-4840150141",
     "chat_id_rc": "-4546894766",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4854369578"
   },
   {
     "id": "BVB",
@@ -1187,7 +1195,7 @@
     "short": "CLD",
     "chat_id_dm": "-4579770752",
     "chat_id_rc": "-4569640428",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4567680972"
   },
   {
     "id": "CLG",
@@ -1203,7 +1211,7 @@
     "short": "CLN",
     "chat_id_dm": "-4202085650",
     "chat_id_rc": "-4259263792",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4870092396"
   },
   {
     "id": "CN1",
@@ -1251,7 +1259,7 @@
     "short": "DS3",
     "chat_id_dm": "-955688061",
     "chat_id_rc": "-835477767",
-    "chat_id_dc": ""
+    "chat_id_dc": "-1001984727983"
   },
   {
     "id": "DS7",
@@ -1259,7 +1267,7 @@
     "short": "DS7",
     "chat_id_dm": "-4041044290",
     "chat_id_rc": "-4016518746",
-    "chat_id_dc": ""
+    "chat_id_dc": "-1002166724266"
   },
   {
     "id": "DXH",
@@ -1275,7 +1283,7 @@
     "short": "ECG",
     "chat_id_dm": "-1002479606021",
     "chat_id_rc": "-4804060590",
-    "chat_id_dc": ""
+    "chat_id_dc": "-918508542"
   },
   {
     "id": "EH3",
@@ -1283,7 +1291,7 @@
     "short": "EH3",
     "chat_id_dm": "-4844074755",
     "chat_id_rc": "-4869461791",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4712243485"
   },
   {
     "id": "EHS",
@@ -1299,7 +1307,7 @@
     "short": "EMR",
     "chat_id_dm": "-1002574399398",
     "chat_id_rc": "-4582456571",
-    "chat_id_dc": ""
+    "chat_id_dc": "-1002686145863"
   },
   {
     "id": "ERT",
@@ -1323,7 +1331,7 @@
     "short": "GHA",
     "chat_id_dm": "-4823902549",
     "chat_id_rc": "-4159767480",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4125880558"
   },
   {
     "id": "HHG",
@@ -1395,7 +1403,7 @@
     "short": "HTC",
     "chat_id_dm": "-4548375618",
     "chat_id_rc": "-4517101413",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4832751364"
   },
   {
     "id": "HTN",
@@ -1419,7 +1427,7 @@
     "short": "HV2",
     "chat_id_dm": "-4124726502",
     "chat_id_rc": "-4211335281",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4836039448"
   },
   {
     "id": "IAP",
@@ -1435,7 +1443,7 @@
     "short": "JKD",
     "chat_id_dm": "-4218466578",
     "chat_id_rc": "-4208791479",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4207174927"
   },
   {
     "id": "KDG",
@@ -1443,7 +1451,7 @@
     "short": "KDG",
     "chat_id_dm": "-4685936814",
     "chat_id_rc": "-4943941041",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4951125300"
   },
   {
     "id": "KHI",
@@ -1451,7 +1459,7 @@
     "short": "KHI",
     "chat_id_dm": "-880112715",
     "chat_id_rc": "-1001792915445",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4039116350"
   },
   {
     "id": "LPM",
@@ -1499,7 +1507,7 @@
     "short": "LVT",
     "chat_id_dm": "-875321112",
     "chat_id_rc": "-4589898683",
-    "chat_id_dc": ""
+    "chat_id_dc": "-716998041"
   },
   {
     "id": "LVY",
@@ -1555,7 +1563,7 @@
     "short": "NHG",
     "chat_id_dm": "-719226115",
     "chat_id_rc": "-1001635852752",
-    "chat_id_dc": ""
+    "chat_id_dc": "-787138197"
   },
   {
     "id": "NKM",
@@ -1579,7 +1587,7 @@
     "short": "NTN",
     "chat_id_dm": "-1004389700726",
     "chat_id_rc": "-1004389700726",
-    "chat_id_dc": ""
+    "chat_id_dc": "-1004389700726"
   },
   {
     "id": "NTO",
@@ -1587,7 +1595,7 @@
     "short": "NTO",
     "chat_id_dm": "-4254286776",
     "chat_id_rc": "-4271997870",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4870440616"
   },
   {
     "id": "NTT",
@@ -1603,7 +1611,7 @@
     "short": "NTU",
     "chat_id_dm": "-619954677",
     "chat_id_rc": "-889835094",
-    "chat_id_dc": ""
+    "chat_id_dc": "-1001929557412"
   },
   {
     "id": "NVD",
@@ -1611,7 +1619,7 @@
     "short": "NVD",
     "chat_id_dm": "-4136471345",
     "chat_id_rc": "-4219495425",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4246704011"
   },
   {
     "id": "NVK",
@@ -1619,7 +1627,7 @@
     "short": "NVK",
     "chat_id_dm": "-4922765575",
     "chat_id_rc": "-4595494496",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4827088164"
   },
   {
     "id": "NVQ",
@@ -1651,7 +1659,7 @@
     "short": "PGS",
     "chat_id_dm": "-4015228645",
     "chat_id_rc": "-1001523449323",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4021539603"
   },
   {
     "id": "PHG",
@@ -1659,7 +1667,7 @@
     "short": "PHG",
     "chat_id_dm": "-887863930",
     "chat_id_rc": "-1001554939736",
-    "chat_id_dc": ""
+    "chat_id_dc": "-789904409"
   },
   {
     "id": "PHI",
@@ -1667,7 +1675,7 @@
     "short": "PHI",
     "chat_id_dm": "-824620090",
     "chat_id_rc": "-602094001",
-    "chat_id_dc": ""
+    "chat_id_dc": "-1001878454662"
   },
   {
     "id": "PHL",
@@ -1675,7 +1683,7 @@
     "short": "PHL",
     "chat_id_dm": "-734854443",
     "chat_id_rc": "-5004018482",
-    "chat_id_dc": ""
+    "chat_id_dc": "-800905437"
   },
   {
     "id": "PKD",
@@ -1691,7 +1699,7 @@
     "short": "PPZ",
     "chat_id_dm": "-4983741648",
     "chat_id_rc": "-4640196068",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4972623393"
   },
   {
     "id": "PTN",
@@ -1707,7 +1715,7 @@
     "short": "PVB",
     "chat_id_dm": "-4850759942",
     "chat_id_rc": "-4728905681",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4724011528"
   },
   {
     "id": "Q50",
@@ -1715,7 +1723,7 @@
     "short": "Q50",
     "chat_id_dm": "-1004301337474",
     "chat_id_rc": "-1004301337474",
-    "chat_id_dc": ""
+    "chat_id_dc": "-1004301337474"
   },
   {
     "id": "Q7R",
@@ -1731,7 +1739,7 @@
     "short": "QHG",
     "chat_id_dm": "-4275316099",
     "chat_id_rc": "-4276040181",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4249658669"
   },
   {
     "id": "RS4",
@@ -1739,7 +1747,7 @@
     "short": "RS4",
     "chat_id_dm": "-4876357427",
     "chat_id_rc": "-1002992073784",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4097859557"
   },
   {
     "id": "RVS",
@@ -1755,7 +1763,7 @@
     "short": "SCV",
     "chat_id_dm": "-4966463527",
     "chat_id_rc": "-4979811379",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4922136877"
   },
   {
     "id": "SFR",
@@ -1763,7 +1771,7 @@
     "short": "SFR",
     "chat_id_dm": "-4188647393",
     "chat_id_rc": "-4129904176",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4197902636"
   },
   {
     "id": "SSR",
@@ -1787,7 +1795,7 @@
     "short": "THN",
     "chat_id_dm": "-4879917758",
     "chat_id_rc": "-4834646921",
-    "chat_id_dc": ""
+    "chat_id_dc": "-4982081891"
   },
   {
     "id": "TMY",
