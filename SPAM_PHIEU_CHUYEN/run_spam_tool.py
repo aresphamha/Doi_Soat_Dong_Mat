@@ -174,7 +174,7 @@ def main():
     parser.add_argument("--photo", default=None, help="Đường dẫn file ảnh đính kèm (nếu có)")
     parser.add_argument("--no-tags", action="store_true", help="Không tự động tag Quản lý/Trưởng ca")
     parser.add_argument("--force", "--resend", action="store_true", help="Bỏ qua kiểm tra lịch sử đã gửi hôm nay, gửi lại toàn bộ")
-    parser.add_argument("--chat-id-type", "--kho", choices=["dong_mat", "rau_cu", "auto"], default="dong_mat", dest="chat_id_type", help="Chọn File Chat ID Kênh gửi (dong_mat hoặc rau_cu)")
+    parser.add_argument("--chat-id-type", "--kho", choices=["dong_mat", "rau_cu", "kho_kho", "dc", "auto"], default="dong_mat", dest="chat_id_type", help="Chọn File Chat ID Kênh gửi (dong_mat, rau_cu, kho_kho hoặc dc)")
     
     raw_argv = sys.argv[1:]
     clean_argv = []

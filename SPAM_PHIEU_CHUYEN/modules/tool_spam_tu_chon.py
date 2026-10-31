@@ -2,10 +2,16 @@
 """
 MODULE: SPAM TIN NHẮN TÙY CHỌN (CUSTOM SPAM STUDIO)
 Cho phép người dùng tùy biến nội dung, gắn thẻ quản lý hoặc gửi ảnh đến từng siêu thị hoặc tất cả siêu thị.
+Hỗ trợ đầy đủ 3 nhóm kho:
+  1. KHO KHÔ (DC) - Ưu tiên đọc mục chat_id_dc từ CONFIG_DATA_STORES.json & Danh_Sach_Chat_ID_Nhom_DC.xlsx
+  2. RAU CỦ (KRC) - Ưu tiên đọc mục chat_id_rc từ CONFIG_DATA_STORES.json & Danh_Sach_Sieu_Thi_Rau_Cu.xlsx
+  3. ĐÔNG MÁT / THỊT CÁ - Ưu tiên đọc mục chat_id_dm từ CONFIG_DATA_STORES.json & Danh sách Siêu thị.xlsx
+Cơ chế gửi 2 tầng: Telegram Bot API + Telethon User Client fallback.
 """
 
 import os
 import sys
+import json
 import asyncio
 from datetime import datetime
 import pytz
@@ -15,6 +21,7 @@ import requests
 from telethon import TelegramClient
 
 from .common import (
+    ROOT_DIR,
     TOOLS_BASE_DIR,
     TELEGRAM_API_ID,
     TELEGRAM_API_HASH,
@@ -24,48 +31,114 @@ from .common import (
     get_tags_for_group
 )
 
-async def run(stores="ALL", message=None, tag_roles=True, dry_run=False, photo_path=None, chat_id_type="dong_mat"):
-    c_type = str(chat_id_type).lower().strip() if chat_id_type else "dong_mat"
-    if c_type in ["rau_cu", "rc"]:
+def load_channel_stores(c_type):
+    """
+    Đọc và hợp nhất danh sách Siêu thị & Chat ID từ File Excel kho tương ứng 
+    kết hợp với CONFIG_DATA_STORES.json (lấy các Chat ID lưu tại mục Kho Khô/Rau/Đông Mát).
+    """
+    workspace_root = os.path.dirname(ROOT_DIR)
+    json_path = os.path.join(workspace_root, "CONFIG_DATA_STORES.json")
+    if not os.path.exists(json_path):
+        json_path = os.path.join(ROOT_DIR, "CONFIG_DATA_STORES.json")
+    
+    stores_map = {} # store_id.upper() -> dict
+    
+    if c_type in ["kho_kho", "dc", "kho"]:
+        channel_name = "📦 KHO KHÔ (DC)"
+        excel_path = find_mapping_file("Danh_Sach_Chat_ID_Nhom_DC.xlsx")
+        if not os.path.exists(excel_path):
+            excel_path = os.path.join(workspace_root, "Danh_Sach_Chat_ID_Nhom_DC.xlsx")
+        json_key = "chat_id_dc"
+    elif c_type in ["rau_cu", "rc"]:
         channel_name = "🥦 RAU CỦ (KRC)"
         excel_path = find_mapping_file("Danh_Sach_Sieu_Thi_Rau_Cu.xlsx")
         if not os.path.exists(excel_path):
             excel_path = os.path.join(TOOLS_BASE_DIR, "RAU_CU", "Danh sách Siêu thị.xlsx")
-        print(f"📁 Đang đọc File Chat ID KHO RAU CỦ: {excel_path}")
-    elif c_type in ["kho_kho", "dc"]:
-        channel_name = "📦 KHO KHÔ (DC)"
-        excel_path = find_mapping_file("Danh_Sach_Chat_ID_Nhom_DC.xlsx")
-        if not os.path.exists(excel_path):
-            excel_path = os.path.join(os.path.dirname(TOOLS_BASE_DIR), "Danh_Sach_Chat_ID_Nhom_DC.xlsx")
-        print(f"📁 Đang đọc File Chat ID KHO KHÔ (DC): {excel_path}")
+        json_key = "chat_id_rc"
     else:
         channel_name = "🥩 ĐÔNG MÁT / THỊT CÁ"
         excel_path = find_mapping_file("Danh sách Siêu thị.xlsx")
         if not os.path.exists(excel_path):
             excel_path = find_mapping_file("Danh_Sach_Sieu_Thi_Dong_Mat.xlsx")
-        print(f"📁 Đang đọc File Chat ID KHO ĐÔNG MÁT / THỊT CÁ: {excel_path}")
-        
-    df = pd.read_excel(excel_path, dtype=str)
+        json_key = "chat_id_dm"
+
+    print(f"📁 Kênh gửi: {channel_name}")
     
-    # Chuẩn hóa tên cột linh hoạt cho cả 3 kho
-    id_col = 'MÃ SIÊU THỊ' if 'MÃ SIÊU THỊ' in df.columns else ('ID ST' if 'ID ST' in df.columns else ('ID ST TƯƠNG ỨNG' if 'ID ST TƯƠNG ỨNG' in df.columns else df.columns[0]))
-    chat_col = 'CHAT ID (SỐ CHUẨN)' if 'CHAT ID (SỐ CHUẨN)' in df.columns else ('CHAT ID' if 'CHAT ID' in df.columns else df.columns[1])
-    name_col = 'TÊN NHÓM TELEGRAM' if 'TÊN NHÓM TELEGRAM' in df.columns else ('Tên Siêu thị' if 'Tên Siêu thị' in df.columns else id_col)
+    # 1. Đọc từ File Excel (nếu có)
+    if os.path.exists(excel_path):
+        try:
+            print(f"   + Đọc File Excel: {excel_path}")
+            df_excel = pd.read_excel(excel_path, dtype=str)
+            id_col = 'MÃ SIÊU THỊ' if 'MÃ SIÊU THỊ' in df_excel.columns else ('ID ST' if 'ID ST' in df_excel.columns else ('ID ST TƯƠNG ỨNG' if 'ID ST TƯƠNG ỨNG' in df_excel.columns else df_excel.columns[0]))
+            chat_col = 'CHAT ID (SỐ CHUẨN)' if 'CHAT ID (SỐ CHUẨN)' in df_excel.columns else ('CHAT ID' if 'CHAT ID' in df_excel.columns else df_excel.columns[1])
+            name_col = 'TÊN NHÓM TELEGRAM' if 'TÊN NHÓM TELEGRAM' in df_excel.columns else ('Tên Siêu thị' if 'Tên Siêu thị' in df_excel.columns else id_col)
+            
+            for _, r in df_excel.iterrows():
+                sid = str(r.get(id_col, '')).strip().upper() if pd.notna(r.get(id_col)) else ''
+                cid = str(r.get(chat_col, '')).replace('.0', '').strip() if pd.notna(r.get(chat_col)) else ''
+                sname = str(r.get(name_col, '')).strip() if pd.notna(r.get(name_col)) else sid
+                short = str(r.get('Tên viết tắt', sid)).strip() if 'Tên viết tắt' in df_excel.columns and pd.notna(r.get('Tên viết tắt')) else sid
+                if sid and sid != '---' and cid and cid != 'nan':
+                    stores_map[sid] = {
+                        'ID ST': sid,
+                        'Tên Siêu thị': sname,
+                        'Tên viết tắt': short or sid,
+                        'CHAT ID': cid
+                    }
+        except Exception as e:
+            print(f"⚠️ Cảnh báo đọc file Excel {excel_path}: {e}")
 
-    df['ID ST'] = df[id_col].astype(str).str.strip()
-    df['Tên Siêu thị'] = df[name_col].astype(str).str.strip()
-    df['CHAT ID'] = df[chat_col].astype(str).str.replace('.0', '', regex=False).str.strip()
-    df = df[df['CHAT ID'].notna() & (df['CHAT ID'] != '') & (df['CHAT ID'] != 'nan')]
+    # 2. Đọc và hợp nhất từ CONFIG_DATA_STORES.json (Ưu tiên Chat ID mới nhất lưu tại mục Kho Khô / Rau Củ / Đông Mát)
+    if os.path.exists(json_path):
+        try:
+            print(f"   + Đọc cấu hình JSON: {json_path} (Trường: '{json_key}')")
+            with open(json_path, 'r', encoding='utf-8') as f:
+                json_data = json.load(f)
+            json_added = 0
+            json_updated = 0
+            for item in json_data:
+                sid = str(item.get('id', '')).strip().upper()
+                sname = str(item.get('name', '')).strip() or sid
+                short = str(item.get('short', sid)).strip() or sid
+                cid = str(item.get(json_key, '')).strip()
+                if sid and cid and cid != 'nan':
+                    if sid in stores_map:
+                        if stores_map[sid]['CHAT ID'] != cid:
+                            stores_map[sid]['CHAT ID'] = cid
+                            json_updated += 1
+                    else:
+                        stores_map[sid] = {
+                            'ID ST': sid,
+                            'Tên Siêu thị': sname,
+                            'Tên viết tắt': short,
+                            'CHAT ID': cid
+                        }
+                        json_added += 1
+            if json_added > 0 or json_updated > 0:
+                print(f"   + Đồng bộ từ JSON: Thêm mới {json_added} ST, cập nhật {json_updated} Chat ID.")
+        except Exception as e:
+            print(f"⚠️ Cảnh báo đọc file JSON {json_path}: {e}")
 
-    if 'Tên viết tắt' not in df.columns:
-        df['Tên viết tắt'] = df['ID ST']
-    df['Tên viết tắt'] = df['Tên viết tắt'].fillna('').str.strip()
+    rows = list(stores_map.values())
+    if not rows:
+        return pd.DataFrame(columns=['ID ST', 'Tên Siêu thị', 'Tên viết tắt', 'CHAT ID'])
+    
+    df_res = pd.DataFrame(rows)
+    return df_res
+
+async def run(stores="ALL", message=None, tag_roles=True, dry_run=False, photo_path=None, chat_id_type="dong_mat"):
+    c_type = str(chat_id_type).lower().strip() if chat_id_type else "dong_mat"
+    df = load_channel_stores(c_type)
+
+    if df.empty:
+        print("❌ Không có dữ liệu Siêu thị hoặc Chat ID nào được tìm thấy cho kênh này!")
+        return
 
     # Xử lý danh sách cửa hàng
     selected_indices = []
     if not stores or str(stores).strip().upper() == "ALL":
         selected_indices = list(range(len(df)))
-        print(f"📋 Đã chọn: TẤT CẢ {len(selected_indices)} Siêu thị")
+        print(f"📋 Đã chọn: TẤT CẢ {len(selected_indices)} Siêu thị có Chat ID")
     else:
         id_map = {}
         for idx, row in df.iterrows():
@@ -148,26 +221,92 @@ async def run(stores="ALL", message=None, tag_roles=True, dry_run=False, photo_p
             print(f"🔍 [DRY-RUN] [{i}/{total_count}] Sẽ gửi đến {ten_st} ({chat_id}):\n{msg}\n---")
             success_count += 1
         else:
+            sent_ok = False
+            # 1. Thử gửi qua Telegram Bot API trước
             try:
                 if photo_path and os.path.exists(photo_path):
                     with open(photo_path, 'rb') as f:
-                        requests.post(
+                        resp = requests.post(
                             f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto",
                             data={'chat_id': chat_id, 'caption': msg, 'parse_mode': 'Markdown'},
                             files={'photo': f},
-                            timeout=15
+                            timeout=20
                         )
                 else:
-                    requests.post(
+                    resp = requests.post(
                         f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
                         data={'chat_id': chat_id, 'text': msg, 'parse_mode': 'Markdown'},
-                        timeout=15
+                        timeout=20
                     )
+                res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
+
+                # Xử lý Supergroup migration
+                if resp.status_code == 400 and res_json.get('parameters', {}).get('migrate_to_chat_id'):
+                    new_cid = res_json['parameters']['migrate_to_chat_id']
+                    print(f"🔄 [CHUYỂN SUPERGROUP] ST {ten_st} đổi sang Chat ID: {new_cid}. Đang gửi lại ngay...", flush=True)
+                    chat_id = new_cid
+                    if photo_path and os.path.exists(photo_path):
+                        with open(photo_path, 'rb') as f:
+                            resp = requests.post(
+                                f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto",
+                                data={'chat_id': chat_id, 'caption': msg, 'parse_mode': 'Markdown'},
+                                files={'photo': f},
+                                timeout=20
+                            )
+                    else:
+                        resp = requests.post(
+                            f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+                            data={'chat_id': chat_id, 'text': msg, 'parse_mode': 'Markdown'},
+                            timeout=20
+                        )
+                    res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
+
+                # Xử lý lỗi Markdown parse
+                if resp.status_code == 400 and "can't parse entities" in res_json.get('description', '').lower():
+                    plain_msg = msg.replace('**', '').replace('__', '').replace('`', '')
+                    if photo_path and os.path.exists(photo_path):
+                        with open(photo_path, 'rb') as f:
+                            resp = requests.post(
+                                f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendPhoto",
+                                data={'chat_id': chat_id, 'caption': plain_msg},
+                                files={'photo': f},
+                                timeout=20
+                            )
+                    else:
+                        resp = requests.post(
+                            f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+                            data={'chat_id': chat_id, 'text': plain_msg},
+                            timeout=20
+                        )
+                    res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
+
+                if resp.status_code == 200 and res_json.get('ok'):
+                    sent_ok = True
+                else:
+                    err_desc = res_json.get('description', f'HTTP {resp.status_code}')
+                    if is_auth:
+                        print(f"⚠️ [BOT BÁO LỖI] {ten_st} ({chat_id}): {err_desc} -> Chuyển sang Telethon User Client...")
+            except Exception as ex_bot:
+                if is_auth:
+                    print(f"⚠️ [LỖI KẾT NỐI BOT] {ten_st}: {ex_bot} -> Chuyển sang Telethon User Client...")
+
+            # 2. Dự phòng: Gửi qua Telethon User Client nếu Bot API thất bại
+            if not sent_ok and is_auth:
+                try:
+                    if photo_path and os.path.exists(photo_path):
+                        await client.send_file(int(chat_id), photo_path, caption=msg)
+                    else:
+                        await client.send_message(int(chat_id), msg)
+                    sent_ok = True
+                except Exception as ex_user:
+                    print(f"❌ [LỖI USER CLIENT] {ten_st} ({chat_id}): {ex_user}")
+
+            if sent_ok:
                 print(f"🚀 [{i}/{total_count}] [ĐÃ GỬI] Thành công tới: {ten_st} ({chat_id})")
                 success_count += 1
                 await asyncio.sleep(1.2)
-            except Exception as e:
-                print(f"❌ [{i}/{total_count}] [LỖI GỬI] {ten_st}: {e}")
+            else:
+                print(f"❌ [{i}/{total_count}] [GỬI THẤT BẠI] {ten_st} ({chat_id})")
 
     await client.disconnect()
     print(f"\n🎉 HOÀN TẤT SPAM TÙY CHỌN! Đã gửi thành công {success_count}/{total_count} Siêu thị.")

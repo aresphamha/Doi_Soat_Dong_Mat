@@ -59,13 +59,14 @@ on:
         default: false
         type: boolean
       kho:
-        description: 'Chọn Nhóm Kho / File Chat ID (dong_mat hoặc rau_cu)'
+        description: 'Chọn Nhóm Kho / File Chat ID (dong_mat, rau_cu hoặc kho_kho)'
         required: false
         default: 'dong_mat'
         type: choice
         options:
           - dong_mat
           - rau_cu
+          - kho_kho
 
 permissions:
   contents: write
