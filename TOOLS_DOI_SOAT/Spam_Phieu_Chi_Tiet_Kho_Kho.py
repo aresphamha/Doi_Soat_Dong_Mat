@@ -381,7 +381,14 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
                 ticket_clause = f"còn {total_p} phiếu chi tiết kho khô chưa nhận từ ngày {oldest_d} đến {newest_d}."
 
         tag_text = await get_tags_for_group(client, chat_id)
-        caption = f"**PHIẾU CHI TIẾT KHO KHÔ**\n{today_str}\n⚠️ Siêu thị {ticket_clause}\nSiêu thị kiểm tra HOÀN THÀNH phiếu CHI TIẾT KHO KHÔ gấp nhé team\n{tag_text}"
+        caption = (
+            f"**PHIẾU CHI TIẾT KHO KHÔ**\n"
+            f"{today_str}\n"
+            f"⚠️ Siêu thị {ticket_clause}\n"
+            f"Hôm nay kho thực hiện cân tồn.\n"
+            f"Nhờ team kiểm tra và HOÀN THÀNH phiếu CHI TIẾT KHO KHÔ ngay sau khi nhận hàng.\n"
+            f"{tag_text}"
+        )
 
         if dry_run:
             print(f"🔍 [DRY-RUN] Sẽ gửi đến {st_name} (Mã: {st_code}, CID: {chat_id}): {total_p} phiếu [{ticket_clause}]")

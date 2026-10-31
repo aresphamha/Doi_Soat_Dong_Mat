@@ -441,7 +441,14 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
             continue
 
         tag_text = await get_tags_for_group(client, chat_id)
-        caption = f"**PHIẾU HẬU KIỂM KHO KHÔ**\n{today_str}\n⚠️ Siêu thị {ticket_clause}\nSiêu thị kiểm tra HOÀN THÀNH phiếu HẬU KIỂM KHO KHÔ gấp nhé team\n{tag_text}"
+        caption = (
+            f"**PHIẾU HẬU KIỂM KHO KHÔ**\n"
+            f"{today_str}\n"
+            f"⚠️ Siêu thị {ticket_clause}\n"
+            f"Hôm nay kho thực hiện cân tồn.\n"
+            f"Siêu thị kiểm tra HOÀN THÀNH phiếu HẬU KIỂM KHO KHÔ gấp ngay sau khi nhận hàng nhé team!\n"
+            f"{tag_text}"
+        )
 
         # Tạo ảnh bảng Gradient Pastel
         rows = []
