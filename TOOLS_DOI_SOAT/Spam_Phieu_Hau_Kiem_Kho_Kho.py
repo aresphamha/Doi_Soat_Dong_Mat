@@ -154,6 +154,14 @@ def load_store_and_dc_chat_mappings():
     st_to_code['A6-7 Block A Diamond Lotus Riverside'] = 'A243'
     st_to_code['Diamond Lotus Riverside'] = 'A243'
     st_to_code['Diamond Lotus'] = 'A243'
+    dc_code_map['A216'] = '-1004361944433' # DC - A216 (KDC Phong Phú 4)
+    dc_code_map['A258'] = '-1004327654400' # DC - A258 (DS5 Bình Hưng Hòa)
+    st_to_code['KFM_HCM_BCH - CA.01 Đường 19 KDC Phong Phú 4'] = 'A216'
+    st_to_code['CA.01 Đường 19 KDC Phong Phú 4'] = 'A216'
+    st_to_code['KDC Phong Phú 4'] = 'A216'
+    st_to_code['KFM_HCM_BTA - 200 Đường Số 5 Bình Hưng Hòa'] = 'A258'
+    st_to_code['200 Đường Số 5 Bình Hưng Hòa'] = 'A258'
+    st_to_code['Đường Số 5 Bình Hưng Hòa'] = 'A258'
 
     # 2. Đọc mapping Siêu thị -> Mã ST & Chat ID DC/ĐM từ CONFIG_DATA_STORES.json
     stores_json = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')
