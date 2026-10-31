@@ -158,6 +158,7 @@ def load_store_and_dc_chat_mappings():
     st_to_code['200 Đường Số 5 Bình Hưng Hòa'] = 'A258'
     st_to_code['Đường Số 5 Bình Hưng Hòa'] = 'A258'
 
+    store_fallbacks = {}
     # 2. Đọc mapping Siêu thị -> Mã ST & Chat ID DC từ CONFIG_DATA_STORES.json
     stores_json = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')
     if os.path.exists(stores_json):
@@ -168,8 +169,10 @@ def load_store_and_dc_chat_mappings():
                     sid = s.get('id', '').strip().upper()
                     sname = s.get('name', '').strip()
                     cid_dc = str(s.get('chat_id_dc', '')).strip()
+                    cid_dm = str(s.get('chat_id_dm', '')).strip()
 
                     if sid:
+                        store_fallbacks[sid] = {'chat_id_dc': cid_dc, 'chat_id_dm': cid_dm, 'name': sname}
                         if sname:
                             st_to_code[sname] = sid
                             clean_sname = sname.replace(' - MINI', '').replace(' - WIN', '').replace(' - SUPER', '').strip()
@@ -182,7 +185,7 @@ def load_store_and_dc_chat_mappings():
         except Exception:
             pass
 
-    return st_to_code, dc_code_map, dc_title_map
+    return st_to_code, dc_code_map, dc_title_map, store_fallbacks
 
 async def get_tags_for_group(client, chat_id):
     tags = []
@@ -202,7 +205,7 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
     print("📦 BẮT ĐẦU CHẠY TOOL: PHIẾU CHI TIẾT KHO KHÔ (FGA10101 & FGA10103)")
     print("=======================================================")
 
-    st_to_code, dc_code_map, dc_title_map = load_store_and_dc_chat_mappings()
+    st_to_code, dc_code_map, dc_title_map, store_fallbacks = load_store_and_dc_chat_mappings()
     print(f"📋 Đã tải {len(dc_code_map)} Chat ID DC và {len(st_to_code)} mapping Siêu thị.")
 
     vn_tz = pytz.timezone('Asia/Ho_Chi_Minh')
@@ -261,7 +264,7 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
         cat_date = pytz.UTC.localize(cat).astimezone(vn_tz).date() if cat else None
         target_eval_date = td_date or cat_date
 
-        if target_eval_date and target_eval_date < vn_today_date:
+        if target_eval_date and target_eval_date <= vn_today_date:
             st_name = id_to_name.get(to_id, f"ST_{to_id}")
             
             # Trích xuất mã ST
@@ -298,10 +301,14 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
             p_code = (p.get('st_code') or '').upper()
             p_name = (p.get('st_name') or '').upper()
             p_code_pt = (p.get('code') or '').upper()
+            p_addr = p_name.split('-')[-1].strip() if '-' in p_name else p_name
             
             matched = False
             for t in target_set:
-                if t in [p_code, p_code_pt] or t in p_name:
+                t_addr = t.split('-')[-1].strip() if '-' in t else t
+                if (t in [p_code, p_code_pt] or 
+                    t in p_name or p_name in t or 
+                    (len(t_addr) > 4 and (t_addr in p_name or t_addr in p_addr or p_addr in t_addr))):
                     matched = True
                     break
             if matched:
@@ -349,6 +356,14 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
                 if len(addr_clean) > 4 and addr_clean in t:
                     chat_id_raw = cid
                     break
+
+        # Fallback tới cấu hình ST (nhóm DC hoặc nhóm ABA Đông Mát/Thịt Cá của ST đó)
+        if not chat_id_raw and st_code in store_fallbacks:
+            sinfo = store_fallbacks[st_code]
+            if sinfo.get('chat_id_dc'):
+                chat_id_raw = sinfo['chat_id_dc']
+            elif sinfo.get('chat_id_dm'):
+                chat_id_raw = sinfo['chat_id_dm']
 
         if not chat_id_raw:
             print(f"⚠️ [LOẠI BỎ - KHÔNG CÓ GROUP DC] Siêu thị: {st_name} (Mã: {st_code or 'N/A'}) - Bỏ qua vì không có nhóm DC.")
