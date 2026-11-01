@@ -445,7 +445,6 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
             f"**PHIẾU HẬU KIỂM KHO KHÔ**\n"
             f"{today_str}\n"
             f"⚠️ Siêu thị {ticket_clause}\n"
-            f"Hôm nay kho thực hiện cân tồn.\n"
             f"Siêu thị kiểm tra HOÀN THÀNH phiếu HẬU KIỂM KHO KHÔ gấp ngay sau khi nhận hàng nhé team!\n"
             f"{tag_text}"
         )

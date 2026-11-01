@@ -400,7 +400,6 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
             f"**PHIẾU CHI TIẾT KHO KHÔ**\n"
             f"{today_str}\n"
             f"⚠️ Siêu thị {ticket_clause}\n"
-            f"Hôm nay kho thực hiện cân tồn.\n"
             f"Nhờ team kiểm tra và HOÀN THÀNH phiếu CHI TIẾT KHO KHÔ ngay sau khi nhận hàng.\n"
             f"{tag_text}"
         )
