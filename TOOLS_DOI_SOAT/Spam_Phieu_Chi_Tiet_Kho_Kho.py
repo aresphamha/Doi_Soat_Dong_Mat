@@ -126,6 +126,11 @@ def load_store_and_dc_chat_mappings():
     dc_code_map['A269'] = '-1004330559619' # DC - A269 (Blue Sky Tower)
     dc_code_map['A243'] = '-1003932619661' # DC - A243 (Diamond Lotus Riverside)
     dc_code_map['HHM'] = '-1003822384320' # HHM - DC (165 Hoàng Hoa Thám)
+    dc_code_map['VGP'] = '-937608678'     # VGP - DC (S06.06 Vinhomes Grand Park)
+    st_to_code['KFM_HCM_TDU - S06.06 Vinhomes Grand Park - MINI'] = 'VGP'
+    st_to_code['KFM_HCM_TDU - S06.06 Vinhomes Grand Park'] = 'VGP'
+    st_to_code['S06.06 Vinhomes Grand Park'] = 'VGP'
+    st_to_code['S06.06 Vinhomes Grand Park - MINI'] = 'VGP'
     st_to_code['KFM_HCM_Q12 - 310/10 Khu Phố 1 Thạnh Xuân 14'] = 'A215'
     st_to_code['310/10 Khu Phố 1 Thạnh Xuân 14'] = 'A215'
     st_to_code['Thạnh Xuân 14'] = 'A215'
