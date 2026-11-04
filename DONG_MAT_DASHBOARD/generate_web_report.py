@@ -642,6 +642,16 @@ def build_and_export_web_report():
             pass
     print("✅ Đã xuất dữ liệu BUNDLES (~300 KB) & Store Priority riêng biệt sang daily_details/")
 
+    # 7.3. Tự động đồng bộ Danh Sách Phiếu Treo (Tab 7) sang daily_details/pending_tickets.js
+    try:
+        try:
+            from sync_pending_tickets import fetch_and_build_pending_tickets
+        except ImportError:
+            from DONG_MAT_DASHBOARD.sync_pending_tickets import fetch_and_build_pending_tickets
+        fetch_and_build_pending_tickets()
+    except Exception as e_pending:
+        print(f"⚠️ [Pending Tickets Auto-Sync Warning]: {e_pending}")
+
     # 7.5. KIỂM TRA BẢO TOÀN KIẾN TRÚC & TÍNH TOÀN VẸN (TEMPLATE INTEGRITY GUARD)
     required_engine_functions = [
         "renderAll", "renderCharts", "renderMasterTable", "renderStorePriorityTable",
