@@ -5749,6 +5749,9 @@
             <!-- ========================================================================= -->
             <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
             <!-- ========================================================================= -->
+            <!-- ========================================================================= -->
+            <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
+            <!-- ========================================================================= -->
             <div class="big-tab-panel" id="big-panel-7">
                 <!-- HERO HEADER -->
                 <div class="tele-hero-card" style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.14) 0%, rgba(22, 27, 34, 0.95) 100%); border-color: rgba(244, 63, 94, 0.35);">
@@ -5990,6 +5993,7 @@
                     </div>
                 </div>
             </div>
+
 
 
 <div class="modal-overlay" id="detailModal">
@@ -14503,6 +14507,8 @@ function copyChatId(chatId, btnEl) {
 // =========================================================================
 
 // =========================================================================
+
+// =========================================================================
 // ENGINE XỬ LÝ DỮ LIỆU & GIAO DIỆN TAB 7: THEO DÕI PHIẾU TREO REALTIME
 // Hỗ trợ 3 phân hệ theo đúng chuẩn nghiệp vụ:
 // 1. DS Phiếu Chuyển (Đang chuyển):
@@ -15602,6 +15608,7 @@ function syncPendingTicketsRealtime() {
 }
 
 function refreshPendingTicketsClientOnly(btn, icon) {
+    window.PENDING_TICKETS_DATA = null;
     const s = document.createElement('script');
     s.src = `daily_details/pending_tickets.js?nocache=${Date.now()}`;
     s.onload = () => {
@@ -15614,8 +15621,8 @@ function refreshPendingTicketsClientOnly(btn, icon) {
             }
             if (btn) btn.disabled = false;
             if (icon) icon.className = 'fa-solid fa-bolt';
-            alert("✅ Đã làm mới hiển thị dữ liệu phiếu treo!");
-        }, 300);
+            alert("✅ Đã làm mới hiển thị dữ liệu phiếu treo mới nhất từ máy chủ!");
+        }, 100);
     };
     s.onerror = () => {
         if (btn) btn.disabled = false;
