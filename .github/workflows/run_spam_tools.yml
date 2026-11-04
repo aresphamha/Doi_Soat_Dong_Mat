@@ -33,6 +33,7 @@ on:
           - export_thit_ca
           - sync_report
           - sync_telegram
+          - sync_pending_tickets
       target_date:
         description: 'Ngày Đối Soát (YYYY-MM-DD) - Để trống để tự động lấy ngày phù hợp'
         required: false
@@ -164,9 +165,11 @@ jobs:
           eval $CMD
 
       - name: 📊 6. Tự Động Cập Nhật Báo Cáo Web & Đồng Bộ (Nếu Chạy Sync Report, Sync Telegram hoặc All)
-        if: ${{ github.event.inputs.tool == 'sync_report' || github.event.inputs.tool == 'all' || github.event.inputs.tool == 'sync_telegram' }}
+        if: ${{ github.event.inputs.tool == 'sync_report' || github.event.inputs.tool == 'all' || github.event.inputs.tool == 'sync_telegram' || github.event.inputs.tool == 'sync_pending_tickets' }}
         run: |
-          if [ "${{ github.event.inputs.tool }}" = "sync_report" ] || [ "${{ github.event.inputs.tool }}" = "all" ]; then
+          if [ "${{ github.event.inputs.tool }}" = "sync_pending_tickets" ]; then
+            python DONG_MAT_DASHBOARD/sync_pending_tickets.py
+          elif [ "${{ github.event.inputs.tool }}" = "sync_report" ] || [ "${{ github.event.inputs.tool }}" = "all" ]; then
             python DONG_MAT_DASHBOARD/generate_web_report.py
           fi
           git config --global user.name "GitHub Actions Bot"

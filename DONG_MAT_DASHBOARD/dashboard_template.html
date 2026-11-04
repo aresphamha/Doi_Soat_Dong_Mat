@@ -15033,14 +15033,89 @@ function exportPendingTicketsExcel() {
     XLSX.writeFile(wb, `Danh_Sach_Phieu_Treo_SCM_${dateStr}.xlsx`);
 }
 
-function syncPendingTicketsRealtime() {
+async function syncPendingTicketsRealtime() {
     const btn = document.getElementById('btnSyncPendingCDC');
     const icon = document.getElementById('iconSyncPendingCDC');
+    const badge = document.getElementById('pendingSyncBadge');
+
+    const choice = confirm(
+        "⚡ CẬP NHẬT REALTIME PHIẾU TREO TỪ CDC DATABASE (24/7)\n\n" +
+        "• Bấm [OK]: Kích hoạt GitHub Actions Cloud Runner (Serverless 24/7 - không cần mở máy tính cá nhân) để kết nối trực tiếp CDC StarRocks kéo số liệu mới nhất.\n" +
+        "• Bấm [Cancel]: Chỉ tải lại (Reload) dữ liệu đã lưu gần nhất từ Web."
+    );
+
     if (btn) btn.disabled = true;
-    if (icon) {
-        icon.className = 'fa-solid fa-spinner fa-spin';
+    if (icon) icon.className = 'fa-solid fa-spinner fa-spin';
+
+    if (choice) {
+        // Option 1: Trigger GitHub Actions Cloud Runner Dispatch
+        try {
+            if (badge) badge.innerHTML = '<span style="color:#fbbf24;"><i class="fa-solid fa-spinner fa-spin"></i> Đang gửi lệnh tới Cloud Runner 24/7...</span>';
+            const token = (typeof DEFAULT_GH_PAT !== 'undefined' && DEFAULT_GH_PAT) ? DEFAULT_GH_PAT : (localStorage.getItem("SCM_GH_PAT") || "");
+            
+            if (token) {
+                const url = `https://api.github.com/repos/aresphamha/Doi_Soat_Dong_Mat/actions/workflows/run_spam_tools.yml/dispatches`;
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/vnd.github.v3+json",
+                        "Authorization": `token ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        ref: "main",
+                        inputs: {
+                            tool: "sync_pending_tickets"
+                        }
+                    })
+                });
+
+                if (res.status === 204 || res.ok) {
+                    if (badge) badge.innerHTML = '<span style="color:#38bdf8;"><i class="fa-solid fa-cloud-arrow-down fa-spin"></i> Cloud Runner đang truy vấn CDC StarRocks (khoảng 30s)...</span>';
+                    alert("☁️ ĐÃ KÍCH HOẠT THÀNH CÔNG CLOUD RUNNER (24/7)!\n\nMáy chủ Cloud đang kết nối StarRocks CDC để lấy dữ liệu mới nhất. Trang web sẽ tự động dò và cập nhật trong khoảng 30 - 45 giây tới.");
+                    
+                    // Poll for new data every 8s up to 10 times
+                    let pollCount = 0;
+                    const oldUpdated = window.PENDING_TICKETS_DATA ? window.PENDING_TICKETS_DATA.updated_at : "";
+                    const pollTimer = setInterval(async () => {
+                        pollCount++;
+                        try {
+                            const t = new Date().getTime();
+                            const r = await fetch(`daily_details/pending_tickets.js?t=${t}`);
+                            if (r.ok) {
+                                const jsText = await r.text();
+                                const s = document.createElement('script');
+                                s.text = jsText;
+                                document.body.appendChild(s);
+                                document.body.removeChild(s);
+
+                                if (window.PENDING_TICKETS_DATA && window.PENDING_TICKETS_DATA.updated_at !== oldUpdated) {
+                                    clearInterval(pollTimer);
+                                    updatePendingSummaryKPIs(window.PENDING_TICKETS_DATA);
+                                    populatePendingStoreOptions(window.PENDING_TICKETS_DATA);
+                                    renderPendingTicketsTable();
+                                    if (btn) btn.disabled = false;
+                                    if (icon) icon.className = 'fa-solid fa-bolt';
+                                    alert("🎉 DỮ LIỆU ĐÃ ĐƯỢC CẬP NHẬT REALTIME MỚI NHẤT TỪ CDC!");
+                                    return;
+                                }
+                            }
+                        } catch(e) {}
+                        if (pollCount >= 10) {
+                            clearInterval(pollTimer);
+                            if (btn) btn.disabled = false;
+                            if (icon) icon.className = 'fa-solid fa-bolt';
+                        }
+                    }, 8000);
+                    return;
+                }
+            }
+        } catch(e) {
+            console.warn("Cloud dispatch error:", e);
+        }
     }
 
+    // Option 2: Fallback direct fetch current file
     const timestamp = new Date().getTime();
     fetch(`daily_details/pending_tickets.js?t=${timestamp}`)
         .then(res => res.text())
@@ -15058,18 +15133,15 @@ function syncPendingTicketsRealtime() {
                 }
                 if (btn) btn.disabled = false;
                 if (icon) icon.className = 'fa-solid fa-bolt';
-                alert("✅ Đã cập nhật thành công số liệu Phiếu Treo mới nhất từ CDC Database!");
+                alert("✅ Đã làm mới hiển thị dữ liệu phiếu treo!");
             }, 300);
         })
         .catch(err => {
-            console.error("Lỗi đồng bộ realtime:", err);
             if (btn) btn.disabled = false;
             if (icon) icon.className = 'fa-solid fa-bolt';
-            alert("⚠️ Không thể tải dữ liệu mới. Đang hiển thị bản ghi đã lưu.");
         });
 }
 
-// Window export
 window.loadPendingTicketsData = loadPendingTicketsData;
 window.initPendingTicketsModule = initPendingTicketsModule;
 window.setPendingSubMode = setPendingSubMode;

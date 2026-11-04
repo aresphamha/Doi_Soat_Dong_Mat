@@ -134,7 +134,7 @@ def fetch_and_build_pending_tickets():
         status,
         double_check_code
     FROM __cdc_kfm_kf_inventories_kf_transfer_items
-    WHERE status = 3
+    WHERE status = 3 AND (created_at >= '2026-10-01' OR transfer_date >= '2026-10-01')
     ORDER BY created_at DESC
     """)
     pt_list = []
