@@ -5740,107 +5740,7 @@
                 </div>
             </div>
 
-        </main>
-    </div>
-<div class="modal-overlay" id="detailModal">
-        <div class="modal-box" id="modalBox">
-            <div class="modal-head">
-                <div>
-                    <h3 id="modalTitle" style="font-size:1.15rem; font-weight:700; color:#fff;">Chi Tiết Chênh Lệch Ngày</h3>
-                    <p id="modalSubTitle" style="font-size:0.82rem; color:#94a3b8;">Danh sách mặt hàng đối soát chi tiết</p>
-                </div>
-                <div class="modal-head-actions">
-                    <button class="modal-btn-act" onclick="exportModalExcel()">
-                        <i class="fa-solid fa-file-excel" style="color:#4ade80;"></i> Xuất Excel Ngày Này
-                    </button>
-                    <button class="modal-btn-act" id="btnFullscreen" onclick="toggleModalFullscreen()">
-                        <i class="fa-solid fa-expand"></i> Phóng To Toàn Màn Hình
-                    </button>
-                    <button class="btn-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-            </div>
-            
-            <div class="modal-toolbar">
-                <div style="display:flex; gap:0.65rem; align-items:center; flex-wrap:wrap;">
-                    <input type="text" id="modalSearch" placeholder="🔍 Tìm mã ST, tên siêu thị, mã hàng, tên sản phẩm..." oninput="filterModalRecords()" style="padding:0.45rem 0.85rem; border-radius:8px; font-size:0.83rem; width:340px;">
-                    <select id="modalFilterThreshold" onchange="filterModalRecords()" style="padding:0.45rem 0.75rem; border-radius:8px; font-size:0.82rem; font-weight:600;">
-                        <option value="all">Tất cả siêu thị</option>
-                        <option value="over">Chỉ xem ST ≥ 100k</option>
-                        <option value="under">Chỉ xem ST < 100k</option>
-                    </select>
-                    <select id="modalFilterStatus" onchange="filterModalRecords()" style="padding:0.45rem 0.75rem; border-radius:8px; font-size:0.82rem; font-weight:600;">
-                        <option value="all">Tất cả trạng thái</option>
-                        <option value="Đã xử lý">🟢 Đã xử lý</option>
-                        <option value="Đang xử lý">🟡 Đang xử lý (ST ≥ 100k)</option>
-                        <option value="Không xử lý">⚪ Không xử lý (ST < 100k)</option>
-                    </select>
-                </div>
-                <div id="modalSummaryBadges" style="font-size:0.82rem; font-weight:600; color:var(--text-secondary);"></div>
-            </div>
-
-            <div class="modal-body" style="padding:0; overflow-y:auto;">
-                <div class="table-responsive" style="border:none; border-radius:0;">
-                    <table class="sc-table" id="detailTable">
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="width:40px;">STT</th>
-                                <th class="text-left" style="width:24%;">Siêu Thị & Mức Lệch ST</th>
-                                <th class="text-left" style="width:28%;">Mã & Tên Mặt Hàng</th>
-                                <th style="width:7%;">SL Chuyển</th>
-                                <th style="width:7%;">SL Nhận</th>
-                                <th style="width:8%; color:#fca5a5;">SL Lệch</th>
-                                <th style="width:8%;">Đơn Giá</th>
-                                <th style="width:10%; color:#38bdf8;">Tiền Lệch</th>
-                                <th class="text-left" style="width:12%;">Lỗi & Điểm Nhận</th>
-                                <th class="text-center" style="width:9%;">Trạng Thái</th>
-                            </tr>
-                        </thead>
-                        <tbody id="detailTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Phóng To & Nhận Xét Biểu Đồ -->
-    <div class="modal-overlay" id="chartZoomModal">
-        <div class="modal-box chart-zoom-box">
-            <div class="modal-head">
-                <div style="display:flex; align-items:center; gap:0.75rem;">
-                    <div id="zoomModalIcon" style="width:38px; height:38px; border-radius:10px; background:rgba(56,189,248,0.15); display:flex; align-items:center; justify-content:center; color:#38bdf8; font-size:1.15rem;">
-                        <i class="fa-solid fa-chart-line"></i>
-                    </div>
-                    <div>
-                        <h3 id="zoomModalTitle" style="font-size:1.15rem; font-weight:700; color:#fff;">Phóng To Biểu Đồ & Nhận Xét Chuyên Sâu</h3>
-                        <p id="zoomModalSubTitle" style="font-size:0.82rem; color:#94a3b8;">Phân tích đa chiều dữ liệu và đề xuất hành động nghiệp vụ</p>
-                    </div>
-                </div>
-                <div class="modal-head-actions">
-                    <button class="btn-close" onclick="closeChartZoom()"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-            </div>
-            
-            <div class="zoom-modal-body">
-                <div class="zoom-chart-area">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-                        <span id="zoomChartBadge" class="tag-pill" style="background:rgba(56,189,248,0.15); color:#38bdf8; font-weight:700; font-size:0.82rem;">📊 Dữ liệu trực quan phóng to</span>
-                        <span style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-solid fa-check-circle" style="color:#34d399;"></i> Đã hiển thị đầy đủ Data Labels</span>
-                    </div>
-                    <div class="zoom-chart-container">
-                        <canvas id="chartZoomCanvas"></canvas>
-                    </div>
-                </div>
-                <div class="zoom-insights-area" id="zoomInsightsContent">
-                    <!-- Nội dung nhận xét, phân tích và bảng số liệu tóm tắt được render động -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    
-    
-    
-            <!-- ========================================================================= -->
+        <!-- ========================================================================= -->
             <!-- BIG TAB 7: DANH SÁCH PHIẾU TREO (WMS CDC REALTIME)                      -->
             <!-- ========================================================================= -->
             <div class="big-tab-panel" id="big-panel-7">
@@ -6036,6 +5936,108 @@
                     </div>
                 </div>
             </div>
+
+        </main>
+    </div>
+<div class="modal-overlay" id="detailModal">
+        <div class="modal-box" id="modalBox">
+            <div class="modal-head">
+                <div>
+                    <h3 id="modalTitle" style="font-size:1.15rem; font-weight:700; color:#fff;">Chi Tiết Chênh Lệch Ngày</h3>
+                    <p id="modalSubTitle" style="font-size:0.82rem; color:#94a3b8;">Danh sách mặt hàng đối soát chi tiết</p>
+                </div>
+                <div class="modal-head-actions">
+                    <button class="modal-btn-act" onclick="exportModalExcel()">
+                        <i class="fa-solid fa-file-excel" style="color:#4ade80;"></i> Xuất Excel Ngày Này
+                    </button>
+                    <button class="modal-btn-act" id="btnFullscreen" onclick="toggleModalFullscreen()">
+                        <i class="fa-solid fa-expand"></i> Phóng To Toàn Màn Hình
+                    </button>
+                    <button class="btn-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            
+            <div class="modal-toolbar">
+                <div style="display:flex; gap:0.65rem; align-items:center; flex-wrap:wrap;">
+                    <input type="text" id="modalSearch" placeholder="🔍 Tìm mã ST, tên siêu thị, mã hàng, tên sản phẩm..." oninput="filterModalRecords()" style="padding:0.45rem 0.85rem; border-radius:8px; font-size:0.83rem; width:340px;">
+                    <select id="modalFilterThreshold" onchange="filterModalRecords()" style="padding:0.45rem 0.75rem; border-radius:8px; font-size:0.82rem; font-weight:600;">
+                        <option value="all">Tất cả siêu thị</option>
+                        <option value="over">Chỉ xem ST ≥ 100k</option>
+                        <option value="under">Chỉ xem ST < 100k</option>
+                    </select>
+                    <select id="modalFilterStatus" onchange="filterModalRecords()" style="padding:0.45rem 0.75rem; border-radius:8px; font-size:0.82rem; font-weight:600;">
+                        <option value="all">Tất cả trạng thái</option>
+                        <option value="Đã xử lý">🟢 Đã xử lý</option>
+                        <option value="Đang xử lý">🟡 Đang xử lý (ST ≥ 100k)</option>
+                        <option value="Không xử lý">⚪ Không xử lý (ST < 100k)</option>
+                    </select>
+                </div>
+                <div id="modalSummaryBadges" style="font-size:0.82rem; font-weight:600; color:var(--text-secondary);"></div>
+            </div>
+
+            <div class="modal-body" style="padding:0; overflow-y:auto;">
+                <div class="table-responsive" style="border:none; border-radius:0;">
+                    <table class="sc-table" id="detailTable">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width:40px;">STT</th>
+                                <th class="text-left" style="width:24%;">Siêu Thị & Mức Lệch ST</th>
+                                <th class="text-left" style="width:28%;">Mã & Tên Mặt Hàng</th>
+                                <th style="width:7%;">SL Chuyển</th>
+                                <th style="width:7%;">SL Nhận</th>
+                                <th style="width:8%; color:#fca5a5;">SL Lệch</th>
+                                <th style="width:8%;">Đơn Giá</th>
+                                <th style="width:10%; color:#38bdf8;">Tiền Lệch</th>
+                                <th class="text-left" style="width:12%;">Lỗi & Điểm Nhận</th>
+                                <th class="text-center" style="width:9%;">Trạng Thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Phóng To & Nhận Xét Biểu Đồ -->
+    <div class="modal-overlay" id="chartZoomModal">
+        <div class="modal-box chart-zoom-box">
+            <div class="modal-head">
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                    <div id="zoomModalIcon" style="width:38px; height:38px; border-radius:10px; background:rgba(56,189,248,0.15); display:flex; align-items:center; justify-content:center; color:#38bdf8; font-size:1.15rem;">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <h3 id="zoomModalTitle" style="font-size:1.15rem; font-weight:700; color:#fff;">Phóng To Biểu Đồ & Nhận Xét Chuyên Sâu</h3>
+                        <p id="zoomModalSubTitle" style="font-size:0.82rem; color:#94a3b8;">Phân tích đa chiều dữ liệu và đề xuất hành động nghiệp vụ</p>
+                    </div>
+                </div>
+                <div class="modal-head-actions">
+                    <button class="btn-close" onclick="closeChartZoom()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            
+            <div class="zoom-modal-body">
+                <div class="zoom-chart-area">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                        <span id="zoomChartBadge" class="tag-pill" style="background:rgba(56,189,248,0.15); color:#38bdf8; font-weight:700; font-size:0.82rem;">📊 Dữ liệu trực quan phóng to</span>
+                        <span style="font-size:0.75rem; color:var(--text-muted);"><i class="fa-solid fa-check-circle" style="color:#34d399;"></i> Đã hiển thị đầy đủ Data Labels</span>
+                    </div>
+                    <div class="zoom-chart-container">
+                        <canvas id="chartZoomCanvas"></canvas>
+                    </div>
+                </div>
+                <div class="zoom-insights-area" id="zoomInsightsContent">
+                    <!-- Nội dung nhận xét, phân tích và bảng số liệu tóm tắt được render động -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    
+    
+            
 
 
     <!-- MODAL TÙY CHỌN ĐỒNG BỘ REALTIME HADA & CDC -->
