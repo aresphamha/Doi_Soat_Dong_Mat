@@ -165,7 +165,7 @@ def main():
         "chi_tiet_kho_kho", "hau_kiem_kho_kho",
         "dong_mat_sheet", "dong_mat_nhom_dong", "dong_mat_spam", "dong_spam", "dong", "thit_ca_spam", "rau_cu_spam",
         "spam_tu_chon", "xoa_tin_nhan", "lay_chat_id", "tra_cuu_id", "add_thanh_vien",
-        "xuat_doi_soat_chuan", "export_thit_ca", "sync_report", "sync_telegram"
+        "xuat_doi_soat_chuan", "export_thit_ca", "sync_report", "sync_telegram", "sync_pending_tickets"
     ], default="all", help="Chọn tool cần chạy")
     parser.add_argument("--date", default=None, help="Ngày đối soát (YYYY-MM-DD)")
     parser.add_argument("--dry-run", action="store_true", help="Chế độ chạy thử không gửi tin nhắn")
@@ -277,6 +277,11 @@ def main():
             print("📱 Đang quét và đồng bộ dữ liệu Realtime từ các nhóm Telegram...")
             import subprocess
             sync_script = os.path.join(os.path.dirname(ROOT_DIR), "DONG_MAT_DASHBOARD", "sync_telegram_groups.py")
+            subprocess.run([sys.executable, sync_script], check=True)
+        elif args.tool == "sync_pending_tickets":
+            print("⏳ Đang đồng bộ danh sách Phiếu Treo (PT, TO, HK) từ CDC StarRocks...")
+            import subprocess
+            sync_script = os.path.join(os.path.dirname(ROOT_DIR), "DONG_MAT_DASHBOARD", "sync_pending_tickets.py")
             subprocess.run([sys.executable, sync_script], check=True)
         elif args.tool == "sync_report":
             print("📊 Đang khởi tạo tái xuất bản Báo Cáo Web Đối Soát...")

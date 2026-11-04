@@ -49,6 +49,7 @@ jobs:
 
       - name: 📊 4. Tải Số Liệu 3 Google Sheets & Xuất Bản Báo Cáo
         run: |
+          python DONG_MAT_DASHBOARD/sync_pending_tickets.py || echo "Bo qua neu khong co ket noi CDC"
           python DONG_MAT_DASHBOARD/generate_web_report.py
 
       - name: 💾 5. Tự Động Lưu File Báo Cáo Mới Vào GitHub

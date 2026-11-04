@@ -5704,6 +5704,9 @@
             <!-- ========================================================================= -->
             <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
             <!-- ========================================================================= -->
+            <!-- ========================================================================= -->
+            <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
+            <!-- ========================================================================= -->
             <div class="big-tab-panel" id="big-panel-7">
                 <!-- HERO HEADER -->
                 <div class="tele-hero-card" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem 1.5rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
@@ -5945,6 +5948,7 @@
                     </div>
                 </div>
             </div>
+
 
 
 
@@ -14467,6 +14471,8 @@ function copyChatId(chatId, btnEl) {
 // =========================================================================
 
 // =========================================================================
+
+// =========================================================================
 // ENGINE XỬ LÝ DỮ LIỆU & GIAO DIỆN TAB 7: THEO DÕI PHIẾU TREO REALTIME
 // PHONG CÁCH: TỐI GIẢN, THANH LỊCH, DỊU MẮT (MINIMALIST CLEAN CORPORATE)
 // Tiết chế toàn bộ màu sắc sặc sỡ, tập trung vào số liệu rõ ràng chuẩn nghiệp vụ
@@ -15479,89 +15485,163 @@ function exportPendingTicketsExcel() {
     exportPendingTicketsWorkbook(false);
 }
 
-function syncPendingTicketsRealtime() {
+// =========================================================================
+// HÀM ĐỒNG BỘ REALTIME TỪ CDC DATABASE (HỖ TRỢ CẢ LOCAL RUNNER & CLOUD RUNNER)
+// =========================================================================
+async function syncPendingTicketsRealtime() {
     const btn = document.getElementById('btnSyncPendingCDC');
     const icon = document.getElementById('iconSyncPendingCDC');
-    if (btn) btn.disabled = true;
-    if (icon) icon.className = 'fa-solid fa-spinner fa-spin';
+    const oldTimestamp = window.PENDING_TICKETS_DATA?.updated_at || '';
 
-    const githubToken = localStorage.getItem('GH_ACTION_PAT') || '';
-    if (githubToken) {
-        fetch('https://api.github.com/repos/aresphamha/Doi_Soat_Dong_Mat/actions/workflows/run_spam_tools.yml/dispatches', {
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" id="iconSyncPendingCDC"></i> Đang đồng bộ CDC...';
+    }
+
+    const resetBtn = () => {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-bolt" id="iconSyncPendingCDC"></i> CẬP NHẬT REALTIME (CDC)';
+        }
+    };
+
+    // 1. ƯU TIÊN 1: Thử gọi Local Runner Service (Cổng 8088 chạy trực tiếp qua VPN WireGuard)
+    const runnerUrl = typeof LOCAL_RUNNER_API !== 'undefined' ? LOCAL_RUNNER_API : "http://127.0.0.1:8088";
+    try {
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), 4000);
+        const res = await fetch(`${runnerUrl}/api/sync_pending_tickets?push=true`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${githubToken}`,
-                'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                ref: 'main',
-                inputs: {
-                    tool_name: 'sync_pending_tickets'
-                }
-            })
-        }).then(res => {
-            if (res.ok) {
-                alert("Đã kích hoạt đồng bộ Realtime từ CDC WMS. Dữ liệu sẽ sẵn sàng sau 1-2 phút.");
-                let pollCount = 0;
-                const pollTimer = setInterval(() => {
-                    pollCount++;
-                    const s = document.createElement('script');
-                    s.src = `daily_details/pending_tickets.js?t=${Date.now()}`;
-                    s.onload = () => {
-                        try {
-                            if (window.PENDING_TICKETS_DATA && window.PENDING_TICKETS_DATA.updated_at) {
-                                updatePendingSummaryKPIs(window.PENDING_TICKETS_DATA);
-                                populatePendingStoreOptions(window.PENDING_TICKETS_DATA);
-                                renderPendingMatrixTable();
-                                renderPendingTicketsTable();
-                                if (btn) btn.disabled = false;
-                                if (icon) icon.className = 'fa-solid fa-rotate';
-                                clearInterval(pollTimer);
-                            }
-                        } catch(e) {}
-                    };
-                    document.head.appendChild(s);
-                    if (pollCount >= 12) {
-                        clearInterval(pollTimer);
-                        if (btn) btn.disabled = false;
-                        if (icon) icon.className = 'fa-solid fa-rotate';
-                    }
-                }, 10000);
-            } else {
-                throw new Error("GitHub dispatch error: " + res.status);
-            }
-        }).catch(err => {
-            refreshPendingTicketsClientOnly(btn, icon);
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ push: true }),
+            signal: ctrl.signal
         });
+        clearTimeout(tid);
+        if (res.ok) {
+            const data = await res.json();
+            if (data.success) {
+                // Tải lại file pending_tickets.js mới nhất
+                await forceReloadPendingTickets();
+                resetBtn();
+                const newTime = window.PENDING_TICKETS_DATA?.updated_at || 'Vừa xong';
+                alert(`🎉 ĐỒNG BỘ THÀNH CÔNG TỪ CDC WMS!\n\n• Giờ đồng bộ mới: ${newTime}\n• Dữ liệu phiếu treo đã được tự động đẩy lên GitHub & cập nhật trên Web.`);
+                return;
+            }
+        }
+    } catch (e) {
+        console.log("Local Runner không kết nối được hoặc duyệt từ xa qua HTTPS, chuyển sang Cloud Runner...", e);
+    }
+
+    // 2. ƯU TIÊN 2: Kích hoạt Cloud Runner qua GitHub Actions (Chạy 24/7 từ mọi nơi)
+    let pat = localStorage.getItem('SCM_GH_PAT') || localStorage.getItem('GH_ACTION_PAT') || '';
+    if (!pat && typeof DEFAULT_GH_PAT !== 'undefined' && DEFAULT_GH_PAT) {
+        pat = DEFAULT_GH_PAT;
+    }
+
+    if (pat) {
+        try {
+            const ghRes = await fetch('https://api.github.com/repos/aresphamha/Doi_Soat_Dong_Mat/actions/workflows/run_spam_tools.yml/dispatches', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${pat}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ref: 'main',
+                    inputs: {
+                        tool: 'sync_pending_tickets'
+                    }
+                })
+            });
+
+            if (ghRes.ok || ghRes.status === 204) {
+                alert(`🚀 ĐÃ KÍCH HOẠT LỆNH ĐỒNG BỘ TRÊN GITHUB ACTIONS CLOUD RUNNER!\n\nMáy chủ Cloud đang kết nối CDC Database để kéo danh sách phiếu treo mới nhất.\nQuá trình mất khoảng 40 - 60 giây. Trang web sẽ tự động kiểm tra và làm mới số liệu ngay khi có kết quả.`);
+
+                let attempts = 0;
+                const pollInterval = setInterval(async () => {
+                    attempts++;
+                    const hasNew = await pollCheckNewPendingTickets(oldTimestamp);
+                    if (hasNew || attempts >= 18) {
+                        clearInterval(pollInterval);
+                        resetBtn();
+                        if (hasNew) {
+                            alert(`🎉 CLOUD RUNNER ĐỒNG BỘ THÀNH CÔNG!\n\n• Giờ đồng bộ mới: ${window.PENDING_TICKETS_DATA?.updated_at}`);
+                        } else {
+                            alert(`ℹ️ Quá trình đồng bộ trên Cloud vẫn đang chạy ngầm hoặc cần thêm chút thời gian. Bạn có thể nhấn lại nút 'CẬP NHẬT REALTIME' sau 1 phút.`);
+                        }
+                    }
+                }, 6000);
+                return;
+            } else {
+                console.warn("GitHub Actions dispatch status:", ghRes.status);
+            }
+        } catch (err) {
+            console.error("Lỗi gọi GitHub Actions:", err);
+        }
+    }
+
+    // 3. Fallback: Nếu không có Local Runner và không gọi được Cloud
+    resetBtn();
+    const tokenInput = prompt(
+        "⚠️ Chưa thể kích hoạt Cloud Runner do thiếu quyền truy cập GitHub Actions.\n\n" +
+        "• Nếu bạn có GitHub Personal Access Token (PAT), hãy dán vào đây để lưu và kích hoạt tự động:\n" +
+        "(Hoặc bấm Cancel để mở trực tiếp trang GitHub Actions và nhấn 'Run workflow'):",
+        ""
+    );
+    if (tokenInput && tokenInput.trim()) {
+        localStorage.setItem('SCM_GH_PAT', tokenInput.trim());
+        alert("✅ Đã lưu GitHub Token vào trình duyệt! Đang thử đồng bộ lại...");
+        syncPendingTicketsRealtime();
     } else {
-        refreshPendingTicketsClientOnly(btn, icon);
+        const openGh = confirm("Bạn có muốn mở trang GitHub Actions để nhấn 'Run workflow' thủ công không?");
+        if (openGh) {
+            window.open('https://github.com/aresphamha/Doi_Soat_Dong_Mat/actions/workflows/run_spam_tools.yml', '_blank');
+        }
     }
 }
 
-function refreshPendingTicketsClientOnly(btn, icon) {
-    window.PENDING_TICKETS_DATA = null;
-    const s = document.createElement('script');
-    s.src = `daily_details/pending_tickets.js?nocache=${Date.now()}`;
-    s.onload = () => {
-        setTimeout(() => {
+function forceReloadPendingTickets() {
+    return new Promise((resolve) => {
+        window.PENDING_TICKETS_DATA = null;
+        const s = document.createElement('script');
+        s.src = `daily_details/pending_tickets.js?nocache=${Date.now()}`;
+        s.onload = () => {
             if (window.PENDING_TICKETS_DATA) {
                 updatePendingSummaryKPIs(window.PENDING_TICKETS_DATA);
                 populatePendingStoreOptions(window.PENDING_TICKETS_DATA);
                 renderPendingMatrixTable();
                 renderPendingTicketsTable();
             }
-            if (btn) btn.disabled = false;
-            if (icon) icon.className = 'fa-solid fa-rotate';
-            alert("Đã làm mới dữ liệu phiếu treo từ máy chủ.");
-        }, 100);
-    };
-    s.onerror = () => {
-        if (btn) btn.disabled = false;
-        if (icon) icon.className = 'fa-solid fa-rotate';
-        alert("Không thể tải file dữ liệu realtime.");
-    };
-    document.head.appendChild(s);
+            resolve(true);
+        };
+        s.onerror = () => resolve(false);
+        document.head.appendChild(s);
+    });
+}
+
+function pollCheckNewPendingTickets(oldTimestamp) {
+    return new Promise((resolve) => {
+        const s = document.createElement('script');
+        s.src = `daily_details/pending_tickets.js?poll=${Date.now()}`;
+        s.onload = () => {
+            try {
+                if (window.PENDING_TICKETS_DATA && window.PENDING_TICKETS_DATA.updated_at) {
+                    if (window.PENDING_TICKETS_DATA.updated_at !== oldTimestamp) {
+                        updatePendingSummaryKPIs(window.PENDING_TICKETS_DATA);
+                        populatePendingStoreOptions(window.PENDING_TICKETS_DATA);
+                        renderPendingMatrixTable();
+                        renderPendingTicketsTable();
+                        resolve(true);
+                        return;
+                    }
+                }
+            } catch(e) {}
+            resolve(false);
+        };
+        s.onerror = () => resolve(false);
+        document.head.appendChild(s);
+    });
 }
 
 window.setPendingSubMode = setPendingSubMode;

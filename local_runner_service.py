@@ -485,6 +485,21 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
             return
+        elif path == "/api/sync_pending_tickets" or path == "/sync_pending_tickets":
+            push = params.get('push', ['true'])[0].lower() in ['true', '1', 'yes']
+            result = run_tool_sync("sync_pending_tickets", "", False)
+            if result.get('success') and push:
+                try:
+                    from push_to_github import sync_and_push
+                    sync_and_push("Update: Realtime Pending Tickets CDC")
+                except Exception as pe:
+                    print(f"Push error: {pe}")
+            self.send_response(200 if result.get('success') else 500)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+            return
 
         elif path == "/run":
             tool = params.get('tool', ['all'])[0].strip().lower()
@@ -628,6 +643,21 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
             return
+        elif path == "/api/sync_pending_tickets" or path == "/sync_pending_tickets":
+            push = data.get('push', True)
+            result = run_tool_sync("sync_pending_tickets", "", False)
+            if result.get('success') and push:
+                try:
+                    from push_to_github import sync_and_push
+                    sync_and_push("Update: Realtime Pending Tickets CDC")
+                except Exception as pe:
+                    print(f"Push error: {pe}")
+            self.send_response(200 if result.get('success') else 500)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+            return
 
         elif path == "/run" or path == "/api/spam_custom":
             tool = data.get('tool', 'spam_tu_chon' if path == '/api/spam_custom' else 'all').strip().lower()
@@ -658,6 +688,8 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             tool_title = "Đồng Bộ Realtime Telegram SCM (588 Nhóm)"
         elif tool in ["sync_cdc", "cdc", "sync_cdc_prices", "dong_bo_cdc"]:
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "Cap_Nhat_Gia_Nhap_Tu_CDC.py")]
+        elif tool in ["sync_pending_tickets", "pending_tickets", "phieu_treo"]:
+            cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "sync_pending_tickets.py")]
             tool_title = "Đồng Bộ Giá Nhập & Master Data từ CDC StarRocks"
         elif tool in ["add_thanh_vien", "4_Add_Thanh_Vien", "4_add_thanh_vien"]:
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "DONG_MAT", "4_Add_Thanh_Vien.py")]
