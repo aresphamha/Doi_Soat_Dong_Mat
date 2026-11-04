@@ -116,8 +116,8 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.08);
+            height: 2px;
+            background: #1e3a5f;
         }
 
         .header-title h1 {
@@ -663,14 +663,25 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
-        .group-btn.active-thit-ca,
-        .group-btn.active-mat,
-        .group-btn.active-dong,
         .group-btn.active-all {
-            background: #334155;
+            background: #0284c7;
             color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: none;
+            border: 1px solid #0369a1;
+        }
+        .group-btn.active-thit-ca {
+            background: #e11d48;
+            color: #ffffff;
+            border: 1px solid #be123c;
+        }
+        .group-btn.active-mat {
+            background: #059669;
+            color: #ffffff;
+            border: 1px solid #047857;
+        }
+        .group-btn.active-dong {
+            background: #4f46e5;
+            color: #ffffff;
+            border: 1px solid #4338ca;
         }
 
         /* Month Switcher Selector */
@@ -678,11 +689,10 @@
             display: flex;
             align-items: center;
             gap: 0.45rem;
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.05);
             padding: 0.35rem 0.75rem;
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: none;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .month-select {
@@ -725,9 +735,9 @@
         }
 
         .action-btn {
-            background: #0f766e;
+            background: #059669;
             color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid #047857;
             padding: 0.55rem 1rem;
             border-radius: 8px;
             font-size: 0.84rem;
@@ -738,11 +748,9 @@
             gap: 0.45rem;
             font-family: inherit;
             transition: all 0.2s ease;
-            box-shadow: none;
         }
         .action-btn:hover {
-            background: #115e59;
-            box-shadow: none;
+            background: #047857;
         }
 
         /* ========================================================================= */
@@ -2965,7 +2973,7 @@
                 <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Chuyển đổi giao diện Phông Đen / Sáng">
                     <i class="fa-solid fa-moon"></i> <span>Phông Tối</span>
                 </button>
-                <button class="action-btn" onclick="openRealtimeSyncModal()" style="background:#0284c7; color:#fff; border:1px solid #0369a1; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:none;" title="Cập nhật Realtime Hada & CDC">
+                <button class="action-btn" onclick="openRealtimeSyncModal()" style="background:#0284c7; color:#fff; border:1px solid #0369a1; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Cập nhật Realtime Hada & CDC">
                     <i class="fa-solid fa-bolt-lightning"></i> Cập Nhật Realtime (Hada & CDC)
                 </button>
                 <button class="action-btn" onclick="exportExcel()">
@@ -5693,18 +5701,21 @@
             <!-- ========================================================================= -->
             <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
             <!-- ========================================================================= -->
+            <!-- ========================================================================= -->
+            <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
+            <!-- ========================================================================= -->
             <div class="big-tab-panel" id="big-panel-7">
-                <!-- HERO HEADER (TIẾT CHẾ MÀU SẮC, DỊU MẮT) -->
+                <!-- HERO HEADER -->
                 <div class="tele-hero-card" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem 1.5rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
                     <div style="display:flex; align-items:center; gap:0.9rem;">
-                        <div style="width:44px; height:44px; border-radius:10px; background:#1e293b; color:#94a3b8; display:flex; align-items:center; justify-content:center; font-size:1.35rem; border:1px solid rgba(255,255,255,0.08);">
+                        <div style="width:44px; height:44px; border-radius:10px; background:rgba(56,189,248,0.12); color:#38bdf8; display:flex; align-items:center; justify-content:center; font-size:1.35rem; border:1px solid rgba(56,189,248,0.25);">
                             <i class="fa-solid fa-clock-rotate-left"></i>
                         </div>
                         <div>
                             <h2 style="margin:0; font-size:1.25rem; font-weight:700; color:#f8fafc; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                 TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO
-                                <span style="font-size:0.72rem; font-weight:600; background:rgba(255,255,255,0.08); color:#cbd5e1; padding:2px 8px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); display:inline-flex; align-items:center; gap:4px;">
-                                    <span style="width:6px; height:6px; border-radius:50%; background:#38bdf8; display:inline-block;"></span> WMS CDC REALTIME
+                                <span style="font-size:0.72rem; font-weight:700; background:#0284c7; color:#fff; padding:2px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;">
+                                    <span style="width:6px; height:6px; border-radius:50%; background:#fff; display:inline-block;"></span> WMS CDC REALTIME
                                 </span>
                             </h2>
                             <div style="color:var(--text-secondary); font-size:0.82rem; margin-top:3px;">
@@ -5730,18 +5741,18 @@
                     </div>
                 </div>
 
-                <!-- 3 SUMMARY KPI CARDS (BẤM ĐỂ CHUYỂN NHANH MỤC, PHONG CÁCH TỐI GIẢN) -->
+                <!-- 3 SUMMARY KPI CARDS (CÓ MÀU SẮC ĐẶC TRƯNG TỪNG PHÂN HỆ, DỄ NHẬN BIẾT) -->
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; margin-bottom:1.25rem;">
                     <!-- CARD 1: DS PHIẾU CHUYỂN -->
-                    <div class="tele-stat-card" onclick="setPendingSubMode('pt')" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem 1.25rem; cursor:pointer; transition:border-color 0.15s;" title="Bấm để lọc DS Phiếu Chuyển đang chuyển">
+                    <div class="tele-stat-card" onclick="setPendingSubMode('pt')" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-left:3px solid #38bdf8; border-radius:10px; padding:1rem 1.25rem; cursor:pointer; transition:transform 0.15s, border-color 0.15s;" title="Bấm để lọc DS Phiếu Chuyển đang chuyển">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                             <div>
                                 <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700; margin-bottom:4px;">
-                                    <i class="fa-solid fa-truck-fast" style="color:#94a3b8;"></i> 1. DS Phiếu Chuyển
+                                    <i class="fa-solid fa-truck-fast" style="color:#38bdf8;"></i> 1. DS Phiếu Chuyển
                                 </div>
-                                <div id="kpiPTDangChuyenCount" style="font-size:1.65rem; font-weight:700; color:#f8fafc;">-</div>
+                                <div id="kpiPTDangChuyenCount" style="font-size:1.65rem; font-weight:700; color:#38bdf8;">-</div>
                             </div>
-                            <span class="tag-pill" style="background:rgba(255,255,255,0.06); color:#cbd5e1; font-weight:600; font-size:0.72rem; border:1px solid rgba(255,255,255,0.1);">ĐANG CHUYỂN</span>
+                            <span class="tag-pill" style="background:rgba(56,189,248,0.15); color:#38bdf8; font-weight:700; font-size:0.72rem; border:1px solid rgba(56,189,248,0.3);">ĐANG CHUYỂN</span>
                         </div>
                         <div style="font-size:0.73rem; color:var(--text-muted); margin-top:4px;">
                             Phiếu xuất kho đang trên đường vận chuyển tới ST
@@ -5749,15 +5760,15 @@
                     </div>
 
                     <!-- CARD 2: DS YC XỬ LÝ PHIẾU CHUYỂN -->
-                    <div class="tele-stat-card" onclick="setPendingSubMode('to')" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem 1.25rem; cursor:pointer; transition:border-color 0.15s;" title="Bấm để lọc DS YC Xử Lý Phiếu Chuyển">
+                    <div class="tele-stat-card" onclick="setPendingSubMode('to')" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-left:3px solid #f59e0b; border-radius:10px; padding:1rem 1.25rem; cursor:pointer; transition:transform 0.15s, border-color 0.15s;" title="Bấm để lọc DS YC Xử Lý Phiếu Chuyển">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                             <div>
                                 <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700; margin-bottom:4px;">
-                                    <i class="fa-solid fa-file-circle-question" style="color:#94a3b8;"></i> 2. DS YC Xử Lý Phiếu Chuyển
+                                    <i class="fa-solid fa-file-circle-question" style="color:#f59e0b;"></i> 2. DS YC Xử Lý Phiếu Chuyển
                                 </div>
-                                <div id="kpiTOYeuCauCount" style="font-size:1.65rem; font-weight:700; color:#f8fafc;">-</div>
+                                <div id="kpiTOYeuCauCount" style="font-size:1.65rem; font-weight:700; color:#fbbf24;">-</div>
                             </div>
-                            <span class="tag-pill" style="background:rgba(255,255,255,0.06); color:#cbd5e1; font-weight:600; font-size:0.72rem; border:1px solid rgba(255,255,255,0.1);">MỚI & ĐANG XỬ LÝ</span>
+                            <span class="tag-pill" style="background:rgba(245,158,11,0.15); color:#fbbf24; font-weight:700; font-size:0.72rem; border:1px solid rgba(245,158,11,0.3);">MỚI & ĐANG XỬ LÝ</span>
                         </div>
                         <div id="kpiTOSubCount" style="font-size:0.73rem; color:var(--text-muted); margin-top:4px;">
                             Mới: - • Đang xử lý: - (Yêu cầu chuyển hoàn / claim)
@@ -5765,15 +5776,15 @@
                     </div>
 
                     <!-- CARD 3: DS PHIẾU HẬU KIỂM -->
-                    <div class="tele-stat-card" onclick="setPendingSubMode('hk')" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem 1.25rem; cursor:pointer; transition:border-color 0.15s;" title="Bấm để lọc DS Phiếu Hậu Kiểm cần hậu kiểm">
+                    <div class="tele-stat-card" onclick="setPendingSubMode('hk')" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-left:3px solid #f43f5e; border-radius:10px; padding:1rem 1.25rem; cursor:pointer; transition:transform 0.15s, border-color 0.15s;" title="Bấm để lọc DS Phiếu Hậu Kiểm cần hậu kiểm">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                             <div>
                                 <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700; margin-bottom:4px;">
-                                    <i class="fa-solid fa-clipboard-check" style="color:#94a3b8;"></i> 3. DS Phiếu Hậu Kiểm
+                                    <i class="fa-solid fa-clipboard-check" style="color:#f43f5e;"></i> 3. DS Phiếu Hậu Kiểm
                                 </div>
-                                <div id="kpiHKCanHauKiemCount" style="font-size:1.65rem; font-weight:700; color:#f8fafc;">-</div>
+                                <div id="kpiHKCanHauKiemCount" style="font-size:1.65rem; font-weight:700; color:#fb7185;">-</div>
                             </div>
-                            <span class="tag-pill" style="background:rgba(255,255,255,0.06); color:#cbd5e1; font-weight:600; font-size:0.72rem; border:1px solid rgba(255,255,255,0.1);">CẦN HẬU KIỂM</span>
+                            <span class="tag-pill" style="background:rgba(244,63,94,0.15); color:#fb7185; font-weight:700; font-size:0.72rem; border:1px solid rgba(244,63,94,0.3);">CẦN HẬU KIỂM</span>
                         </div>
                         <div style="font-size:0.73rem; color:var(--text-muted); margin-top:4px;">
                             Siêu thị chưa quét xác nhận đối soát (double_checked_status = 1)
@@ -5788,12 +5799,12 @@
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px dashed var(--border-card);">
                         <div>
                             <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#f8fafc; display:flex; align-items:center; gap:8px;" id="matrixTableTitleText">
-                                <i class="fa-solid fa-table-cells" style="color:#94a3b8;"></i> BẢNG TỔNG HỢP THEO KHO DC & NGÀY
+                                <i class="fa-solid fa-table-cells" style="color:#38bdf8;"></i> BẢNG TỔNG HỢP THEO KHO DC & NGÀY
                             </h3>
                             <div style="font-size:0.76rem; color:var(--text-secondary); margin-top:3px;" id="matrixTableSubTitle">
                                 Thống kê Distinct Count số lượng mã phiếu theo Kho DC và Ngày phát sinh (Bấm vào từng ô để lọc danh sách chi tiết bên dưới)
                             </div>
-                            <div id="matrixActiveFilterBadge" style="display:none; margin-top:6px; font-size:0.75rem; font-weight:600; background:rgba(255,255,255,0.08); color:#cbd5e1; padding:3px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); align-items:center; gap:6px;">
+                            <div id="matrixActiveFilterBadge" style="display:none; margin-top:6px; font-size:0.75rem; font-weight:600; background:rgba(56,189,248,0.15); color:#38bdf8; padding:3px 10px; border-radius:8px; border:1px solid rgba(56,189,248,0.3); align-items:center; gap:6px;">
                                 <span id="matrixActiveFilterText">Đang lọc</span>
                                 <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:0.85rem;" onclick="clearMatrixFilter()" title="Bỏ lọc ma trận"></i>
                             </div>
@@ -5898,8 +5909,8 @@
                 <div class="table-card" style="border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0; overflow:hidden;">
                     <div style="padding:0.85rem 1.25rem; display:flex; justify-content:space-between; align-items:center; background:#161b22; border-bottom:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; gap:0.5rem;">
                         <div style="font-weight:700; font-size:0.92rem; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
-                            <span id="pendingTableTitle"><i class="fa-solid fa-list-check" style="color:#94a3b8;"></i> DANH SÁCH CHI TIẾT PHIẾU TREO</span>
-                            <span id="pendingFilteredCountBadge" class="tag-pill" style="background:rgba(255,255,255,0.08); color:#cbd5e1; font-weight:600; font-size:0.72rem; border:1px solid rgba(255,255,255,0.1);">0 phiếu</span>
+                            <span id="pendingTableTitle"><i class="fa-solid fa-list-check" style="color:#38bdf8;"></i> DANH SÁCH CHI TIẾT PHIẾU TREO</span>
+                            <span id="pendingFilteredCountBadge" class="tag-pill" style="background:rgba(56,189,248,0.15); color:#38bdf8; font-weight:700; font-size:0.72rem; border:1px solid rgba(56,189,248,0.3);">0 phiếu</span>
                         </div>
                         <div style="font-size:0.75rem; color:var(--text-muted);" id="pendingPaginationInfoTop">
                             Hiển thị 0 - 0 trong tổng số 0 phiếu
@@ -5934,6 +5945,7 @@
                     </div>
                 </div>
             </div>
+
 
 
 
@@ -14453,6 +14465,8 @@ function copyChatId(chatId, btnEl) {
 // =========================================================================
 
 // =========================================================================
+
+// =========================================================================
 // ENGINE XỬ LÝ DỮ LIỆU & GIAO DIỆN TAB 7: THEO DÕI PHIẾU TREO REALTIME
 // PHONG CÁCH: TỐI GIẢN, THANH LỊCH, DỊU MẮT (MINIMALIST CLEAN CORPORATE)
 // Tiết chế toàn bộ màu sắc sặc sỡ, tập trung vào số liệu rõ ràng chuẩn nghiệp vụ
@@ -14826,8 +14840,8 @@ function renderPendingMatrixTable() {
                 tbodyHtml += `
                     <td style="text-align:center; padding:5px 4px; border-right:1px solid rgba(255,255,255,0.03);">
                         <span onclick="filterDetailByMatrixCell('${rKey.replace(/'/g, "\\'")}', '${d}')" 
-                              style="cursor:pointer; display:inline-block; font-weight:600; font-size:0.82rem; padding:2px 7px; border-radius:4px; transition:background 0.15s;
-                                     ${isCellSelected ? 'background:#334155; color:#fff; font-weight:700;' : 'color:#f1f5f9; background:rgba(255,255,255,0.05);'}">
+                              style="cursor:pointer; display:inline-block; font-weight:600; font-size:0.82rem; padding:3px 8px; border-radius:6px; transition:all 0.15s;
+                                     ${isCellSelected ? 'background:#0284c7; color:#fff; font-weight:700;' : 'color:#f8fafc; background:rgba(255,255,255,0.07);'}">
                             ${cnt.toLocaleString()}
                         </span>
                     </td>`;
@@ -14838,10 +14852,10 @@ function renderPendingMatrixTable() {
 
         const isRowTotalSelected = isRowSelected && matrixSelectedFilter.date === 'all';
         tbodyHtml += `
-            <td style="text-align:right; padding:7px 12px; font-weight:700; color:#f8fafc; background:rgba(255,255,255,0.02); border-left:1px solid rgba(255,255,255,0.04); font-size:0.84rem;">
+            <td style="text-align:right; padding:7px 12px; font-weight:700; color:#38bdf8; background:rgba(56,189,248,0.04); border-left:1px solid rgba(255,255,255,0.06); font-size:0.84rem;">
                 <span onclick="filterDetailByMatrixCell('${rKey.replace(/'/g, "\\'")}', 'all')" 
-                      style="cursor:pointer; padding:2px 6px; border-radius:4px;
-                             ${isRowTotalSelected ? 'background:#334155; color:#fff;' : 'color:#f8fafc;'}">
+                      style="cursor:pointer; padding:2px 8px; border-radius:4px;
+                             ${isRowTotalSelected ? 'background:#0284c7; color:#fff;' : 'color:#38bdf8;'}">
                     ${rowUniqueCodes.size.toLocaleString()}
                 </span>
             </td>
@@ -14851,9 +14865,9 @@ function renderPendingMatrixTable() {
 
     // TFOOT: Tối giản, trang nhã
     if (tfoot) {
-        let tfootHtml = `<tr style="border-top:1px solid rgba(255,255,255,0.12); background:#1e293b;">
-            <td style="padding:8px 12px; font-weight:700; color:#f8fafc; text-transform:uppercase; font-size:0.8rem; border-right:1px solid rgba(255,255,255,0.06);">
-                Grand Total
+        let tfootHtml = `<tr style="border-top:2px solid rgba(255,255,255,0.15); background:#1e293b;">
+            <td style="padding:9px 12px; font-weight:800; color:#f8fafc; text-transform:uppercase; font-size:0.82rem; border-right:1px solid rgba(255,255,255,0.06);">
+                <i class="fa-solid fa-sigma" style="color:#fbbf24; margin-right:4px;"></i> Grand Total
             </td>`;
         sortedDates.forEach(d => {
             const sumD = dateTotals[d] || 0;
@@ -14861,18 +14875,18 @@ function renderPendingMatrixTable() {
             tfootHtml += `
                 <td style="text-align:center; padding:7px 4px; border-right:1px solid rgba(255,255,255,0.04);">
                     <span onclick="filterDetailByMatrixCell('all', '${d}')" 
-                          style="cursor:pointer; font-weight:700; font-size:0.82rem; padding:2px 6px; border-radius:4px;
-                                 ${isColSelected ? 'background:#334155; color:#fff;' : 'color:#f8fafc;'}">
+                          style="cursor:pointer; font-weight:800; font-size:0.84rem; padding:3px 8px; border-radius:4px;
+                                 ${isColSelected ? 'background:#0284c7; color:#fff;' : 'color:#fbbf24; background:rgba(251,191,36,0.1);'}">
                         ${sumD.toLocaleString()}
                     </span>
                 </td>`;
         });
         const isGrandSelected = matrixSelectedFilter && matrixSelectedFilter.rowKey === 'all' && matrixSelectedFilter.date === 'all';
         tfootHtml += `
-            <td style="text-align:right; padding:8px 12px; font-size:0.88rem; font-weight:700; color:#f8fafc; background:rgba(255,255,255,0.05); border-left:1px solid rgba(255,255,255,0.06);">
+            <td style="text-align:right; padding:9px 12px; font-size:0.92rem; font-weight:800; color:#fbbf24; background:rgba(251,191,36,0.12); border-left:1px solid rgba(255,255,255,0.08);">
                 <span onclick="filterDetailByMatrixCell('all', 'all')" 
-                      style="cursor:pointer; padding:2px 8px; border-radius:4px;
-                             ${isGrandSelected ? 'background:#334155; color:#fff;' : 'color:#f8fafc;'}">
+                      style="cursor:pointer; padding:3px 10px; border-radius:4px;
+                             ${isGrandSelected ? 'background:#0284c7; color:#fff;' : 'color:#fbbf24;'}">
                     ${grandTotalUniqueCodes.size.toLocaleString()}
                 </span>
             </td>
@@ -14932,6 +14946,38 @@ function clearMatrixFilter(shouldRender = true) {
 // =========================================================================
 // BẢNG TRA CỨU CHI TIẾT PHIẾU TREO (MINIMALIST STYLE)
 // =========================================================================
+
+function renderStatusPill(statusText) {
+    if (!statusText) return '<span style="color:#94a3b8;">---</span>';
+    const s = String(statusText).trim();
+    if (s === 'Đang chuyển') {
+        return '<span class="tag-pill" style="background:rgba(56,189,248,0.15); color:#38bdf8; font-weight:600; font-size:0.73rem; padding:2px 8px; border-radius:12px; border:1px solid rgba(56,189,248,0.3); display:inline-flex; align-items:center; gap:4px;"><i class="fa-solid fa-truck-fast"></i> Đang chuyển</span>';
+    }
+    if (s === 'Mới') {
+        return '<span class="tag-pill" style="background:rgba(52,211,153,0.15); color:#34d399; font-weight:600; font-size:0.73rem; padding:2px 8px; border-radius:12px; border:1px solid rgba(52,211,153,0.3); display:inline-flex; align-items:center; gap:4px;"><i class="fa-solid fa-circle-dot"></i> Mới</span>';
+    }
+    if (s === 'Đang xử lý') {
+        return '<span class="tag-pill" style="background:rgba(251,191,36,0.15); color:#fbbf24; font-weight:600; font-size:0.73rem; padding:2px 8px; border-radius:12px; border:1px solid rgba(251,191,36,0.3); display:inline-flex; align-items:center; gap:4px;"><i class="fa-solid fa-hourglass-half"></i> Đang xử lý</span>';
+    }
+    if (s === 'Cần hậu kiểm') {
+        return '<span class="tag-pill" style="background:rgba(244,63,94,0.15); color:#fb7185; font-weight:600; font-size:0.73rem; padding:2px 8px; border-radius:12px; border:1px solid rgba(244,63,94,0.3); display:inline-flex; align-items:center; gap:4px;"><i class="fa-solid fa-triangle-exclamation"></i> Cần hậu kiểm</span>';
+    }
+    return `<span class="tag-pill" style="background:rgba(255,255,255,0.06); color:#cbd5e1; font-size:0.73rem; padding:2px 8px; border-radius:12px;">${s}</span>`;
+}
+
+function renderSysTypeBadge(sysType) {
+    if (sysType === 'pt') {
+        return '<span style="font-size:0.73rem; font-weight:600; color:#38bdf8; background:rgba(56,189,248,0.1); padding:2px 7px; border-radius:4px; border:1px solid rgba(56,189,248,0.25);"><i class="fa-solid fa-truck-fast"></i> Phiếu PT</span>';
+    }
+    if (sysType === 'to') {
+        return '<span style="font-size:0.73rem; font-weight:600; color:#fbbf24; background:rgba(251,191,36,0.1); padding:2px 7px; border-radius:4px; border:1px solid rgba(251,191,36,0.25);"><i class="fa-solid fa-file-lines"></i> YC TO</span>';
+    }
+    if (sysType === 'hk') {
+        return '<span style="font-size:0.73rem; font-weight:600; color:#fb7185; background:rgba(244,63,94,0.1); padding:2px 7px; border-radius:4px; border:1px solid rgba(244,63,94,0.25);"><i class="fa-solid fa-clipboard-check"></i> Phiếu HK</span>';
+    }
+    return `<span style="color:#94a3b8; font-size:0.73rem;">${sysType}</span>`;
+}
+
 function renderPendingTicketsTable() {
     if (!window.PENDING_TICKETS_DATA) return;
     const data = window.PENDING_TICKETS_DATA;
@@ -15169,14 +15215,14 @@ function renderPendingTicketsTableRows() {
         const stt = startIdx + idx + 1;
 
         if (curPendingSubMode === 'pt') {
-            const fPill = it.from_type === 'Kho' ? '<span style="color:#94a3b8; font-size:0.75rem;">Kho</span>' : '<span style="color:#64748b; font-size:0.75rem;">ST</span>';
-            const tPill = it.to_type === 'Kho' ? '<span style="color:#94a3b8; font-size:0.75rem;">Kho</span>' : '<span style="color:#64748b; font-size:0.75rem;">ST</span>';
+            const fPill = it.from_type === 'Kho' ? '<span style="color:#38bdf8; background:rgba(56,189,248,0.1); padding:1px 6px; border-radius:4px; font-size:0.72rem; font-weight:600;">Kho</span>' : '<span style="color:#34d399; background:rgba(52,211,153,0.1); padding:1px 6px; border-radius:4px; font-size:0.72rem; font-weight:600;">ST</span>';
+            const tPill = it.to_type === 'Kho' ? '<span style="color:#38bdf8; background:rgba(56,189,248,0.1); padding:1px 6px; border-radius:4px; font-size:0.72rem; font-weight:600;">Kho</span>' : '<span style="color:#34d399; background:rgba(52,211,153,0.1); padding:1px 6px; border-radius:4px; font-size:0.72rem; font-weight:600;">ST</span>';
 
             html += `
                 <tr>
                     <td class="text-center" style="color:#64748b;">${stt}</td>
                     <td>
-                        <strong style="color:#f1f5f9; cursor:pointer;" onclick="copyTicketCode('${it.code}')" title="Sao chép">
+                        <strong style="color:#38bdf8; cursor:pointer;" onclick="copyTicketCode('${it.code}')" title="Sao chép">
                             ${it.code}
                         </strong>
                     </td>
@@ -15186,7 +15232,7 @@ function renderPendingTicketsTableRows() {
                     <td style="color:#cbd5e1;">${it.to_name}</td>
                     <td style="color:#94a3b8; font-size:0.78rem;">${it.category}</td>
                     <td class="text-center">
-                        <span style="color:#cbd5e1; font-size:0.78rem;">${it.status_text}</span>
+                        ${renderStatusPill(it.status_text)}
                     </td>
                     <td class="text-right font-mono" style="color:#94a3b8;">${it.sku || 0}</td>
                     <td class="text-right font-mono" style="font-weight:600; color:#f8fafc;">${(it.quantity || 0).toLocaleString()}</td>
@@ -15199,12 +15245,12 @@ function renderPendingTicketsTableRows() {
                 <tr>
                     <td class="text-center" style="color:#64748b;">${stt}</td>
                     <td>
-                        <strong style="color:#f1f5f9; cursor:pointer;" onclick="copyTicketCode('${it.code}')" title="Sao chép">
+                        <strong style="color:#38bdf8; cursor:pointer;" onclick="copyTicketCode('${it.code}')" title="Sao chép">
                             ${it.code}
                         </strong>
                     </td>
                     <td class="text-center">
-                        <span style="color:#cbd5e1; font-size:0.78rem;">${it.status_text}</span>
+                        ${renderStatusPill(it.status_text)}
                     </td>
                     <td class="text-right font-mono" style="color:#94a3b8;">${it.sku || 0}</td>
                     <td class="text-right font-mono" style="font-weight:600; color:#f8fafc;">
@@ -15227,7 +15273,7 @@ function renderPendingTicketsTableRows() {
                 <tr>
                     <td class="text-center" style="color:#64748b;">${stt}</td>
                     <td>
-                        <strong style="color:#f1f5f9; cursor:pointer;" onclick="copyTicketCode('${it.double_check_code}')" title="Sao chép">
+                        <strong style="color:#38bdf8; cursor:pointer;" onclick="copyTicketCode('${it.double_check_code}')" title="Sao chép">
                             ${it.double_check_code}
                         </strong>
                     </td>
@@ -15238,7 +15284,7 @@ function renderPendingTicketsTableRows() {
                     <td style="color:#cbd5e1;">${it.to_name}</td>
                     <td style="color:#94a3b8; font-size:0.78rem;">${it.category}</td>
                     <td class="text-center">
-                        <span style="color:#cbd5e1; font-size:0.78rem;">Cần hậu kiểm</span>
+                        ${renderStatusPill("Cần hậu kiểm")}
                     </td>
                     <td class="text-right font-mono" style="color:#94a3b8;">${it.sku || 0}</td>
                     <td class="text-right font-mono" style="font-weight:600; color:#f8fafc;">
@@ -15251,9 +15297,9 @@ function renderPendingTicketsTableRows() {
             html += `
                 <tr>
                     <td class="text-center" style="color:#64748b;">${stt}</td>
-                    <td style="color:#94a3b8; font-size:0.78rem;">${it.sys_type_label}</td>
+                    <td>${renderSysTypeBadge(it.sys_type)}</td>
                     <td>
-                        <strong style="color:#f1f5f9; cursor:pointer;" onclick="copyTicketCode('${it.code}')" title="Sao chép">
+                        <strong style="color:#38bdf8; cursor:pointer;" onclick="copyTicketCode('${it.code}')" title="Sao chép">
                             ${it.code}
                         </strong>
                     </td>
@@ -15261,7 +15307,7 @@ function renderPendingTicketsTableRows() {
                     <td style="color:#cbd5e1;">${it.to_name}</td>
                     <td style="color:#94a3b8; font-size:0.78rem;">${it.category}</td>
                     <td class="text-center">
-                        <span style="color:#cbd5e1; font-size:0.78rem;">${it.status_text}</span>
+                        ${renderStatusPill(it.status_text)}
                     </td>
                     <td class="text-right font-mono" style="color:#94a3b8;">${it.sku || 0}</td>
                     <td class="text-right font-mono" style="font-weight:600; color:#f8fafc;">${(it.quantity || 0).toLocaleString()}</td>
