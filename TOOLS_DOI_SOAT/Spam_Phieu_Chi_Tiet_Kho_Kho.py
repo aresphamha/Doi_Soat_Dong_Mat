@@ -127,6 +127,10 @@ def load_store_and_dc_chat_mappings():
     dc_code_map['A243'] = '-1003932619661' # DC - A243 (Diamond Lotus Riverside)
     dc_code_map['HHM'] = '-1003822384320' # HHM - DC (165 Hoàng Hoa Thám)
     dc_code_map['VGP'] = '-937608678'     # VGP - DC (S06.06 Vinhomes Grand Park)
+    dc_code_map['A260'] = '-1003986929642' # DC - A260 (Lê Thị Kỉnh)
+    st_to_code['KFM_HCM_NBE - 30 Lê Thị Kỉnh'] = 'A260'
+    st_to_code['30 Lê Thị Kỉnh'] = 'A260'
+    st_to_code['Lê Thị Kỉnh'] = 'A260'
     st_to_code['KFM_HCM_TDU - S06.06 Vinhomes Grand Park - MINI'] = 'VGP'
     st_to_code['KFM_HCM_TDU - S06.06 Vinhomes Grand Park'] = 'VGP'
     st_to_code['S06.06 Vinhomes Grand Park'] = 'VGP'
