@@ -197,6 +197,8 @@ def fetch_and_build_pending_tickets():
         created_at
     FROM __cdc_kfm_kf_transfer_tickets_kf_transfer_tickets
     WHERE status IN (1, 3)
+      AND created_at >= '2026-10-01'
+      AND NOT (status = 3 AND total_sku_created >= total_sku AND total_sku > 0)
     ORDER BY created_at DESC
     """)
     to_list = []
