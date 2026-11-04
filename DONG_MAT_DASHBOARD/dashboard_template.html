@@ -5746,6 +5746,9 @@
             <!-- ========================================================================= -->
             <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
             <!-- ========================================================================= -->
+            <!-- ========================================================================= -->
+            <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
+            <!-- ========================================================================= -->
             <div class="big-tab-panel" id="big-panel-7">
                 <!-- HERO HEADER -->
                 <div class="tele-hero-card" style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.14) 0%, rgba(22, 27, 34, 0.95) 100%); border-color: rgba(244, 63, 94, 0.35);">
@@ -5772,7 +5775,7 @@
                             <i class="fa-solid fa-bolt" id="iconSyncPendingCDC"></i> CẬP NHẬT REALTIME (CDC)
                         </button>
                         <button onclick="exportPendingTicketsExcel()" style="display:inline-flex; align-items:center; gap:6px; padding:0.55rem 1rem; background:#10b981; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.82rem; cursor:pointer; box-shadow:0 2px 8px rgba(16,185,129,0.35); transition:all 0.2s;">
-                            <i class="fa-solid fa-file-excel"></i> Xuất Excel Danh Sách
+                            <i class="fa-solid fa-file-excel"></i> Xuất Excel Đầy Đủ (PV + Transfer)
                         </button>
                         <a href="https://next.kingfood.co/operation/transfer-item/transfer-item-list" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; padding:0.55rem 0.95rem; background:#24292f; color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:8px; font-weight:600; font-size:0.82rem; text-decoration:none; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
                             <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Kingfood Next
@@ -5835,16 +5838,16 @@
                 </div>
 
                 <!-- ========================================================================= -->
-                <!-- BẢNG TỔNG HỢP MA TRẬN PHIẾU TREO THEO KHO & NGÀY (PIVOT TABLE)            -->
+                <!-- BẢNG TỔNG HỢP MA TRẬN PIVOT THEO KHO DC & NGÀY (GIỐNG SHEET PV PHIẾU)      -->
                 <!-- ========================================================================= -->
                 <div class="data-card" style="margin-bottom:1.25rem; background:var(--bg-card); border:1px solid rgba(244, 63, 94, 0.3); border-radius:12px; padding:1.25rem; box-shadow:0 6px 20px rgba(0,0,0,0.35);">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px dashed var(--border-card);">
                         <div>
                             <h3 style="margin:0; font-size:1.05rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;" id="matrixTableTitleText">
-                                <i class="fa-solid fa-table-cells" style="color:#f43f5e;"></i> BẢNG TỔNG HỢP: TOÀN BỘ PHIẾU TREO THEO KHO & NGÀY
+                                <i class="fa-solid fa-table-cells" style="color:#38bdf8;"></i> BẢNG TỔNG HỢP THEO KHO DC & NGÀY
                             </h3>
-                            <div style="font-size:0.76rem; color:var(--text-secondary); margin-top:2px;">
-                                Bảng tổng hợp số lượng phiếu đang treo từ các điểm nơi chuyển về nơi nhận và ngược lại theo từng ngày (Bấm vào từng ô để lọc chi tiết bên dưới)
+                            <div style="font-size:0.76rem; color:var(--text-secondary); margin-top:3px;" id="matrixTableSubTitle">
+                                Thống kê Distinct Count số lượng mã phiếu theo Kho DC và Ngày phát sinh (Bấm vào từng ô để lọc danh sách chi tiết bên dưới)
                             </div>
                             <div id="matrixActiveFilterBadge" style="display:none; margin-top:6px; font-size:0.75rem; font-weight:700; background:rgba(244,63,94,0.22); color:#f43f5e; padding:3px 10px; border-radius:12px; border:1px solid rgba(244,63,94,0.45); align-items:center; gap:6px;">
                                 <span id="matrixActiveFilterText">Đang lọc</span>
@@ -5853,22 +5856,15 @@
                         </div>
 
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                            <!-- Chiều Luân Chuyển: Điểm Chuyển / Điểm Nhận / Tuyến -->
-                            <div class="seg-pill">
-                                <button class="seg-btn active" id="btn-matrix-dir-from" onclick="setMatrixDirection('from')">📤 Nơi Chuyển ➔ Nơi Nhận</button>
-                                <button class="seg-btn" id="btn-matrix-dir-to" onclick="setMatrixDirection('to')">📥 Nơi Nhận ➔ Nơi Chuyển</button>
-                                <button class="seg-btn" id="btn-matrix-dir-route" onclick="setMatrixDirection('route')">🛣️ Tuyến Chi Tiết</button>
-                            </div>
-
-                            <!-- Cấp Độ Nhóm Kho: Rút gọn (FGA, CLA...) vs Chi Tiết -->
-                            <div class="seg-pill">
-                                <button class="seg-btn active" id="btn-matrix-level-short" onclick="setMatrixLevel('short')">🏢 Nhóm Kho Rút Gọn</button>
-                                <button class="seg-btn" id="btn-matrix-level-detail" onclick="setMatrixLevel('detail')">📍 Chi Tiết Điểm</button>
+                            <!-- Nút chuyển đổi Bảng 1A vs Bảng 1B (Dành riêng cho DS Phiếu Chuyển) -->
+                            <div class="seg-pill" id="ptMatrixToggleGroup">
+                                <button class="seg-btn active" id="btn-pt-matrix-1a" onclick="setPTViewMode('from_dc')">📤 Bảng 1A: Kho DC Xuất Đi (Nơi chuyển: Kho)</button>
+                                <button class="seg-btn" id="btn-pt-matrix-1b" onclick="setPTViewMode('to_dc')">📥 Bảng 1B: Về Kho DC (Nơi nhận: Kho)</button>
                             </div>
 
                             <!-- Export Matrix Excel -->
                             <button onclick="exportMatrixExcel()" style="padding:0.4rem 0.85rem; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 8px rgba(16,185,129,0.35);">
-                                <i class="fa-solid fa-file-excel"></i> Xuất Ma Trận Excel
+                                <i class="fa-solid fa-file-excel"></i> Xuất Sheet PV Phiếu
                             </button>
                         </div>
                     </div>
@@ -5897,10 +5893,10 @@
                             <i class="fa-solid fa-layer-group"></i> Chọn Phân Hệ:
                         </span>
                         <div class="seg-pill">
-                            <button class="seg-btn active" id="btn-pending-mode-all" onclick="setPendingSubMode('all')">🌟 Tất Cả 3 Mục (<span id="badgeCountAll">0</span>)</button>
-                            <button class="seg-btn" id="btn-pending-mode-pt" onclick="setPendingSubMode('pt')">🚚 1. DS Phiếu Chuyển (<span id="badgeCountPT">0</span>)</button>
+                            <button class="seg-btn active" id="btn-pending-mode-pt" onclick="setPendingSubMode('pt')">🚚 1. DS Phiếu Chuyển (<span id="badgeCountPT">0</span>)</button>
                             <button class="seg-btn" id="btn-pending-mode-to" onclick="setPendingSubMode('to')">📋 2. DS YC Xử Lý (<span id="badgeCountTO">0</span>)</button>
                             <button class="seg-btn" id="btn-pending-mode-hk" onclick="setPendingSubMode('hk')">⚖️ 3. DS Phiếu Hậu Kiểm (<span id="badgeCountHK">0</span>)</button>
+                            <button class="seg-btn" id="btn-pending-mode-all" onclick="setPendingSubMode('all')">🌟 Tất Cả 3 Mục (<span id="badgeCountAll">0</span>)</button>
                         </div>
                     </div>
 
@@ -5909,7 +5905,7 @@
                         <!-- Instant Search Input -->
                         <div style="position:relative; flex:2; min-width:280px;">
                             <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted);"></i>
-                            <input type="text" id="pendingSearchInput" oninput="onPendingSearchChange()" placeholder="🔍 Tìm theo Mã phiếu (PT..., TO..., HK...), Mã kho, Tên siêu thị..." style="width:100%; padding:0.55rem 0.9rem 0.55rem 2.2rem; background:var(--input-bg); border:1px solid var(--input-border); border-radius:8px; color:#fff; font-size:0.83rem; outline:none;" />
+                            <input type="text" id="pendingSearchInput" oninput="onPendingSearchChange()" placeholder="🔍 Tìm theo Mã phiếu (PT..., TO..., HK...), Chi nhánh chuyển/nhận, Sản phẩm..." style="width:100%; padding:0.55rem 0.9rem 0.55rem 2.2rem; background:var(--input-bg); border:1px solid var(--input-border); border-radius:8px; color:#fff; font-size:0.83rem; outline:none;" />
                         </div>
 
                         <!-- Filter by Warehouse Category -->
@@ -5972,7 +5968,7 @@
                                 <!-- Dynamic headers based on sub-mode -->
                             </thead>
                             <tbody id="pendingTableTbody">
-                                <tr><td colspan="10" class="text-center" style="padding:2.5rem; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu phiếu treo...</td></tr>
+                                <tr><td colspan="12" class="text-center" style="padding:2.5rem; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu phiếu treo...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -5994,6 +5990,7 @@
                     </div>
                 </div>
             </div>
+
 
 <div class="modal-overlay" id="detailModal">
         <div class="modal-box" id="modalBox">
@@ -14504,90 +14501,95 @@ function copyChatId(chatId, btnEl) {
 // =========================================================================
 
 // =========================================================================
+
+// =========================================================================
 // ENGINE XỬ LÝ DỮ LIỆU & GIAO DIỆN TAB 7: THEO DÕI PHIẾU TREO REALTIME
-// Hỗ trợ 3 phân hệ: 
-// 1. DS Phiếu Chuyển (Đang chuyển)
-// 2. DS YC Xử Lý (Mới & Đang xử lý)
-// 3. DS Phiếu Hậu Kiểm (Cần hậu kiểm)
-// Kèm Bảng Tổng Hợp Báo Cáo Ma Trận theo Kho & Ngày (Pivot Table)
+// Hỗ trợ 3 phân hệ theo đúng chuẩn nghiệp vụ:
+// 1. DS Phiếu Chuyển (Đang chuyển):
+//    - Bảng 1A: Kho DC Chuyển Đi (Nơi chuyển: Kho)
+//    - Bảng 1B: Kho DC Nhận Về (Nơi nhận: Kho)
+// 2. DS YC Xử Lý (Mới & Đang xử lý):
+//    - Bảng Tổng Hợp theo Kho DC Tiếp Nhận Xử Lý Yêu Cầu
+// 3. DS Phiếu Hậu Kiểm (Cần hậu kiểm):
+//    - Bảng Tổng Hợp theo Kho Nguồn Phát Hàng (Kho DC xuất đi)
+// Kèm xuất file Excel gồm Sheet "PV phiếu" và Sheet "transfer" (có 2 cột A, B)
 // =========================================================================
 
-let curPendingSubMode = 'all'; // 'all', 'pt', 'to', 'hk'
-let curMatrixDirection = 'from'; // 'from' (Nơi chuyển), 'to' (Nơi nhận), 'route' (Tuyến)
-let curMatrixLevel = 'short'; // 'short' (FGA, CLA, CLB...), 'detail' (Tên đầy đủ)
-let matrixSelectedFilter = null; // { rowKey, date, direction, level }
+let curPendingSubMode = 'pt'; // Mặc định mở ngay phân hệ 1: 'pt', 'to', 'hk', 'all'
+let curPTViewMode = 'from_dc'; // 'from_dc' (Bảng 1A: Nơi chuyển Kho) hoặc 'to_dc' (Bảng 1B: Nơi nhận Kho)
+let matrixSelectedFilter = null; // { rowKey, date, subMode, viewMode }
 let curPendingPage = 1;
 let pendingPageSize = 100;
 let pendingFilteredItems = [];
 
-// Helper trích xuất nhóm kho rút gọn chuẩn SCM (FGA, FGB, CLA, CLB, MFA, FEA, SCF, SEEDLOG, SIÊU THỊ...)
-function getShortWarehouseCode(name) {
-    if (!name) return 'KHÁC';
-    const u = name.toUpperCase();
-    if (u.includes('FGA')) return 'FGA';
-    if (u.includes('FGB')) return 'FGB';
-    if (u.includes('CLA')) return 'CLA';
-    if (u.includes('CLB')) return 'CLB';
-    if (u.includes('FZA')) return 'FZA';
-    if (u.includes('MFA')) return 'MFA';
-    if (u.includes('FEA')) return 'FEA';
-    if (u.includes('SCF') || u.includes('CHILL') || u.includes('FROZEN')) return 'SCF';
-    if (u.includes('SEEDLOG') || u.includes('KSL')) return 'SEEDLOG';
-    if (u.includes('KFM_') || u.includes('SIÊU THỊ') || u.includes('CH_') || u.includes('CỬA HÀNG') || u.includes('ST_')) {
-        return 'SIÊU THỊ';
-    }
-    return name.length > 25 ? name.substring(0, 22) + '...' : name;
+// Mapping ID hex sang tên Kho DC chuẩn
+const DC_HEX_NAMES = {
+    '6aa6a22bdf3d880007872063': 'CLA40104 _ Sóng Thần _ Chờ Đối Soát',
+    '6aabb14ef426e20007f805da': 'FGA10104 _ Bình Thắng _ Chờ Đối Soát',
+    '6aabb403055d2e0007eb9ded': 'FEA20104 _ Bình Thắng _ Chờ Đối Soát',
+    '6aabb4e6e493030007272a95': 'MFA30104 _ Sóng Thần _ Chờ Đối Soát',
+    '6aa77e599d7b1b00070121f5': 'CLB40104 _ Long Biên _ Chờ Đối Soát',
+    '6aa77de130fded00073d4521': 'CLB40102 _ Long Biên _ Quá Cảnh',
+    '6a34ed8d6607ba000703e235': 'MeatFish - Miền Đông - SCF - Quá Cảnh',
+    '6aa6a1eedf3d880007871f3f': 'CLA40102 _ Sóng Thần _ Quá Cảnh',
+    '6aabb0a2f426e20007f80123': 'FGA10101 _ Bình Thắng _ Lưu Hàng',
+    '6a4f0127f163350007c29221': 'KFM_HCM_TDU - BS08 Vinhomes Grand Park'
+};
+
+// Chuẩn hóa tên đơn vị
+function resolveBranchName(name) {
+    if (!name) return 'Chưa rõ';
+    const s = String(name).trim();
+    return DC_HEX_NAMES[s] || s;
 }
 
-// Helper lấy tên kho/địa điểm theo chế độ lọc
-function getWhKeyByMode(item, direction = curMatrixDirection, level = curMatrixLevel) {
-    let f = item.from_name || item.pt_from_name || 'Chưa rõ';
-    let t = item.to_name || 'Chưa rõ';
+// Phân loại đơn vị thành 'Kho', 'ST', hoặc 'Kho khác' (chuẩn như Cột A, B của user)
+function classifyLocationType(name) {
+    if (!name) return 'Kho khác';
+    const resolved = resolveBranchName(name);
+    const u = resolved.toUpperCase();
 
-    if (direction === 'route') {
-        if (level === 'short') {
-            return `${getShortWarehouseCode(f)} ➔ ${getShortWarehouseCode(t)}`;
-        } else {
-            const fShort = f.length > 22 ? f.substring(0, 20) + '...' : f;
-            const tShort = t.length > 22 ? t.substring(0, 20) + '...' : t;
-            return `${fShort} ➔ ${tShort}`;
-        }
+    // Các kho DC chính của Kingfoodmart
+    if (u.includes('FGA') || u.includes('CLA') || u.includes('FEA') || u.includes('MFA') || 
+        u.includes('FZA') || u.includes('FGB') || u.includes('CLB') || u.includes('SEEDLOG') || 
+        u.includes('CHILL') || u.includes('FROZEN') || u.includes('SCF') || u.includes('KHO TRUNG TÂM')) {
+        return 'Kho';
     }
-
-    const targetName = (direction === 'to') ? t : f;
-    if (level === 'short') {
-        return getShortWarehouseCode(targetName);
+    // Siêu thị bán lẻ Kingfoodmart
+    if (u.includes('KFM_') || u.includes('SIÊU THỊ') || u.includes('ST_') || u.includes('CỬA HÀNG') || u.includes('CH_')) {
+        return 'ST';
     }
-    return targetName;
+    return 'Kho khác';
 }
 
-// Helper format ngày dd/mm
-function extractDayMonth(dStr) {
-    if (!dStr) return 'Khác';
-    if (dStr.includes('/')) {
-        const parts = dStr.split(' ')[0].split('/');
-        if (parts.length >= 2) {
-            const d = parts[0].padStart(2, '0');
-            const m = parts[1].padStart(2, '0');
-            return `${d}/${m}`;
-        }
-    } else if (dStr.includes('-')) {
-        const parts = dStr.split(' ')[0].split('-');
+// Trích xuất ngày định dạng DD/MM/YYYY
+function extractDayMonthYear(dStr) {
+    if (!dStr || dStr === '---') return 'Chưa rõ';
+    const dOnly = dStr.split(' ')[0];
+    if (dOnly.includes('/')) {
+        const parts = dOnly.split('/');
         if (parts.length >= 3) {
-            const d = parts[2].padStart(2, '0');
-            const m = parts[1].padStart(2, '0');
-            return `${d}/${m}`;
+            return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+        }
+        if (parts.length === 2) {
+            return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/2026`;
+        }
+    } else if (dOnly.includes('-')) {
+        const parts = dOnly.split('-');
+        if (parts.length >= 3) {
+            return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
         }
     }
-    return dStr.substring(0, 5);
+    return dOnly;
 }
 
-function parseSortableDate(dmStr) {
-    if (!dmStr || !dmStr.includes('/')) return 999999;
-    const parts = dmStr.split('/');
+function parseSortableDate(dStr) {
+    if (!dStr || !dStr.includes('/')) return 99999999;
+    const parts = dStr.split('/');
     const d = parseInt(parts[0], 10) || 0;
     const m = parseInt(parts[1], 10) || 0;
-    return m * 100 + d;
+    const y = parseInt(parts[2], 10) || 2026;
+    return y * 10000 + m * 100 + d;
 }
 
 function loadPendingTicketsData(callback) {
@@ -14662,7 +14664,7 @@ function populatePendingStoreOptions(data) {
 
     ['pt_dang_chuyen', 'to_yeu_cau', 'hk_can_hau_kiem'].forEach(key => {
         (data[key] || []).forEach(it => {
-            const t = it.to_name || '';
+            const t = resolveBranchName(it.to_name);
             if (t && !t.includes('---')) storesSet.add(t);
         });
     });
@@ -14675,6 +14677,7 @@ function populatePendingStoreOptions(data) {
     sel.innerHTML = opts;
 }
 
+// Chuyển phân hệ chính (PT, TO, HK, ALL)
 function setPendingSubMode(mode) {
     curPendingSubMode = mode;
 
@@ -14686,51 +14689,36 @@ function setPendingSubMode(mode) {
         }
     });
 
-    // Cập nhật tiêu đề bảng tổng hợp tương ứng
-    const titleEl = document.getElementById('matrixTableTitleText');
-    if (titleEl) {
-        if (mode === 'pt') {
-            titleEl.innerHTML = '<i class="fa-solid fa-truck-fast" style="color:#38bdf8;"></i> BẢNG TỔNG HỢP: DS PHIẾU CHUYỂN (ĐANG CHUYỂN) THEO KHO & NGÀY';
-        } else if (mode === 'to') {
-            titleEl.innerHTML = '<i class="fa-solid fa-file-circle-question" style="color:#f59e0b;"></i> BẢNG TỔNG HỢP: DS YC XỬ LÝ (MỚI & ĐANG XỬ LÝ) THEO KHO & NGÀY';
-        } else if (mode === 'hk') {
-            titleEl.innerHTML = '<i class="fa-solid fa-clipboard-check" style="color:#f43f5e;"></i> BẢNG TỔNG HỢP: DS PHIẾU HẬU KIỂM (CẦN HẬU KIỂM) THEO KHO & NGÀY';
-        } else {
-            titleEl.innerHTML = '<i class="fa-solid fa-table-cells" style="color:#f43f5e;"></i> BẢNG TỔNG HỢP: TOÀN BỘ PHIẾU TREO THEO KHO & NGÀY';
-        }
+    // Ẩn/Hiện cụm nút Bảng 1A vs Bảng 1B (chỉ hiển thị ở mục DS Phiếu Chuyển)
+    const ptToggleGroup = document.getElementById('ptMatrixToggleGroup');
+    if (ptToggleGroup) {
+        ptToggleGroup.style.display = (mode === 'pt' || mode === 'all') ? 'inline-flex' : 'none';
     }
 
+    clearMatrixFilter(false);
+    renderPendingMatrixTable();
     curPendingPage = 1;
-    clearMatrixFilter(false);
-    renderPendingMatrixTable();
     renderPendingTicketsTable();
 }
 
-function setMatrixDirection(dir) {
-    curMatrixDirection = dir;
-    ['from', 'to', 'route'].forEach(d => {
-        const btn = document.getElementById('btn-matrix-dir-' + d);
-        if (btn) {
-            if (d === dir) btn.classList.add('active');
-            else btn.classList.remove('active');
-        }
-    });
-    clearMatrixFilter(false);
-    renderPendingMatrixTable();
-    renderPendingTicketsTable();
-}
+// Chuyển đổi Bảng 1A (Kho DC Chuyển Đi) vs Bảng 1B (Kho DC Nhận Về) ở mục DS Phiếu Chuyển
+function setPTViewMode(vMode) {
+    curPTViewMode = vMode;
+    const btn1A = document.getElementById('btn-pt-matrix-1a');
+    const btn1B = document.getElementById('btn-pt-matrix-1b');
 
-function setMatrixLevel(lvl) {
-    curMatrixLevel = lvl;
-    ['short', 'detail'].forEach(l => {
-        const btn = document.getElementById('btn-matrix-level-' + l);
-        if (btn) {
-            if (l === lvl) btn.classList.add('active');
-            else btn.classList.remove('active');
-        }
-    });
+    if (btn1A) {
+        if (vMode === 'from_dc') btn1A.classList.add('active');
+        else btn1A.classList.remove('active');
+    }
+    if (btn1B) {
+        if (vMode === 'to_dc') btn1B.classList.add('active');
+        else btn1B.classList.remove('active');
+    }
+
     clearMatrixFilter(false);
     renderPendingMatrixTable();
+    curPendingPage = 1;
     renderPendingTicketsTable();
 }
 
@@ -14754,75 +14742,121 @@ function onPendingPageSizeChange() {
     renderPendingTicketsTable();
 }
 
-function getMatrixSourceItems() {
-    if (!window.PENDING_TICKETS_DATA) return [];
-    const data = window.PENDING_TICKETS_DATA;
-    let items = [];
-    if (curPendingSubMode === 'pt' || curPendingSubMode === 'all') items = items.concat(data.pt_dang_chuyen || []);
-    if (curPendingSubMode === 'to' || curPendingSubMode === 'all') items = items.concat(data.to_yeu_cau || []);
-    if (curPendingSubMode === 'hk' || curPendingSubMode === 'all') items = items.concat(data.hk_can_hau_kiem || []);
-
-    const catFilter = document.getElementById('pendingCategorySelect')?.value || 'all';
-    if (catFilter !== 'all') {
-        items = items.filter(it => (it.category || '').includes(catFilter));
-    }
-    return items;
-}
-
 // =========================================================================
-// RENDER BẢNG TỔNG HỢP MA TRẬN PIVOT THEO KHO & NGÀY
+// RENDER BẢNG TỔNG HỢP MA TRẬN PIVOT THEO KHO DC & NGÀY
 // =========================================================================
 function renderPendingMatrixTable() {
     const thead = document.getElementById('pendingMatrixThead');
     const tbody = document.getElementById('pendingMatrixTbody');
     const tfoot = document.getElementById('pendingMatrixTfoot');
+    const titleEl = document.getElementById('matrixTableTitleText');
+    const subTitleEl = document.getElementById('matrixTableSubTitle');
     if (!thead || !tbody) return;
 
-    const items = getMatrixSourceItems();
+    if (!window.PENDING_TICKETS_DATA) return;
+    const data = window.PENDING_TICKETS_DATA;
+
+    let items = [];
+    let colHeaderLabel = 'Kho DC';
+    let filterConditionDesc = '';
+
+    if (curPendingSubMode === 'pt') {
+        const rawList = data.pt_dang_chuyen || [];
+        if (curPTViewMode === 'from_dc') {
+            // Bảng 1A: Nơi chuyển = Kho
+            items = rawList.filter(x => classifyLocationType(x.from_name) === 'Kho');
+            colHeaderLabel = 'Kho DC Chuyển Đi (Chi nhánh chuyển)';
+            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-truck-fast" style="color:#38bdf8;"></i> BẢNG 1A: KHO DC CHUYỂN ĐI CHO SIÊU THỊ (Nơi chuyển: Kho)';
+            filterConditionDesc = 'Thống kê Distinct Count số lượng mã PT xuất phát từ Kho DC gửi đi đang treo theo từng ngày chuyển hàng';
+        } else {
+            // Bảng 1B: Nơi nhận = Kho
+            items = rawList.filter(x => classifyLocationType(x.to_name) === 'Kho');
+            colHeaderLabel = 'Kho DC Nhận Về (Chi nhánh nhận)';
+            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-boxes-packing" style="color:#fbbf24;"></i> BẢNG 1B: HÀNG HOÀN / KHAY RỔ VỀ KHO DC (Nơi nhận: Kho)';
+            filterConditionDesc = 'Thống kê Distinct Count số lượng mã PT chuyển hoàn/khay rổ/CCDC từ Siêu thị gửi về Kho DC đang treo theo ngày';
+        }
+    } else if (curPendingSubMode === 'to') {
+        // Phân hệ 2: DS YC Xử Lý -> Theo Kho DC tiếp nhận xử lý yêu cầu
+        items = data.to_yeu_cau || [];
+        colHeaderLabel = 'Kho DC Tiếp Nhận Xử Lý Yêu Cầu';
+        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-file-circle-question" style="color:#f59e0b;"></i> BẢNG TỔNG HỢP: DS YC XỬ LÝ (MỚI & ĐANG XỬ LÝ) THEO KHO DC';
+        filterConditionDesc = 'Thống kê Distinct Count số lượng mã TO yêu cầu xử lý chuyển hoàn gửi về Kho DC theo từng ngày';
+    } else if (curPendingSubMode === 'hk') {
+        // Phân hệ 3: DS Phiếu Hậu Kiểm -> Theo Kho Nguồn xuất hàng đi
+        items = data.hk_can_hau_kiem || [];
+        colHeaderLabel = 'Kho Nguồn Phát Hàng (Kho DC xuất đi)';
+        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-clipboard-check" style="color:#f43f5e;"></i> BẢNG TỔNG HỢP: DS PHIẾU HẬU KIỂM CẦN HẬU KIỂM THEO KHO NGUỒN';
+        filterConditionDesc = 'Thống kê Distinct Count số lượng phiếu hậu kiểm các Siêu thị chưa quét xác nhận đối soát theo Kho nguồn';
+    } else {
+        // Mode 'all': Mặc định hiển thị Bảng 1A của Phiếu Chuyển
+        const rawList = data.pt_dang_chuyen || [];
+        items = rawList.filter(x => classifyLocationType(x.from_name) === 'Kho');
+        colHeaderLabel = 'Kho DC Chuyển Đi (Nơi chuyển: Kho)';
+        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-table-cells" style="color:#38bdf8;"></i> BẢNG TỔNG HỢP: KHO DC CHUYỂN ĐI (Mục 1. DS Phiếu Chuyển)';
+        filterConditionDesc = 'Thống kê Distinct Count số lượng mã phiếu chuyển xuất phát từ Kho DC đang treo';
+    }
+
+    if (subTitleEl) subTitleEl.innerText = filterConditionDesc;
+
+    // Lọc theo ngành hàng nếu dropdown chọn
+    const catFilter = document.getElementById('pendingCategorySelect')?.value || 'all';
+    if (catFilter !== 'all') {
+        items = items.filter(it => (it.category || '').includes(catFilter));
+    }
+
     if (items.length === 0) {
         thead.innerHTML = '';
-        tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding:2rem; color:var(--text-muted);">Không có dữ liệu phiếu treo phù hợp.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding:2.5rem; color:var(--text-muted);">Không có dữ liệu phiếu treo phù hợp với tiêu chí chọn.</td></tr>';
         if (tfoot) tfoot.innerHTML = '';
         return;
     }
 
+    // Tập hợp Ngày và RowsMap (Row = Kho DC, Col = Ngày)
+    // Lưu ý: Đếm DISTINCT COUNT theo mã phiếu!
     const datesSet = new Set();
-    const rowsMap = {};
+    const rowsMap = {}; // { whName: { dateStr: Set(ticket_codes) } }
 
     items.forEach(it => {
-        const dStr = it.transfer_date || it.pt_transfer_date || it.received_date || it.created_at;
-        const dm = extractDayMonth(dStr);
+        let code = it.code || it.double_check_code || it.pt_code;
+        let dStr = it.transfer_date || it.pt_transfer_date || it.received_date || it.created_at;
+        let dm = extractDayMonthYear(dStr);
         datesSet.add(dm);
 
-        const rKey = getWhKeyByMode(it, curMatrixDirection, curMatrixLevel);
-        if (!rowsMap[rKey]) rowsMap[rKey] = {};
-        rowsMap[rKey][dm] = (rowsMap[rKey][dm] || 0) + 1;
+        let wh = 'Chưa rõ';
+        if (curPendingSubMode === 'pt') {
+            wh = resolveBranchName(curPTViewMode === 'from_dc' ? it.from_name : it.to_name);
+        } else if (curPendingSubMode === 'to') {
+            wh = resolveBranchName(it.to_name || it.pt_from_name);
+        } else if (curPendingSubMode === 'hk') {
+            wh = resolveBranchName(it.from_name);
+        } else {
+            wh = resolveBranchName(it.from_name);
+        }
+
+        if (!rowsMap[wh]) rowsMap[wh] = {};
+        if (!rowsMap[wh][dm]) rowsMap[wh][dm] = new Set();
+        rowsMap[wh][dm].add(code);
     });
 
     const sortedDates = Array.from(datesSet).sort((a, b) => parseSortableDate(a) - parseSortableDate(b));
 
-    // Tiêu đề cột dọc đầu tiên
-    let colHeaderLabel = 'Kho (Nơi Chuyển)';
-    if (curMatrixDirection === 'to') colHeaderLabel = 'Điểm Đích (Nơi Nhận)';
-    else if (curMatrixDirection === 'route') colHeaderLabel = 'Tuyến Chuyển (Nơi Chuyển ➔ Nơi Nhận)';
-
-    // 2-row THEAD: Dòng 1 gom nhóm "Ngày", Dòng 2 chi tiết các ngày
+    // Render THEAD (2 tầng chuẩn Excel Pivot)
     let theadHtml = `
     <tr>
-        <th rowspan="2" style="min-width:180px; text-align:left; padding:10px 12px; vertical-align:middle; background:rgba(0,0,0,0.35); border-right:1px solid var(--border-card);">
+        <th rowspan="2" style="min-width:240px; text-align:left; padding:10px 14px; vertical-align:middle; background:rgba(0,0,0,0.35); border-right:1px solid var(--border-card);">
             ${colHeaderLabel}
         </th>
-        <th colspan="${sortedDates.length}" style="text-align:center; padding:6px 8px; font-weight:800; color:#38bdf8; background:rgba(56,189,248,0.12); border-bottom:1px solid var(--border-card); letter-spacing:1px; text-transform:uppercase;">
-            <i class="fa-solid fa-calendar-days"></i> Ngày Phát Sinh Phiếu Treo
+        <th colspan="${sortedDates.length}" style="text-align:center; padding:7px 10px; font-weight:800; color:#38bdf8; background:rgba(56,189,248,0.12); border-bottom:1px solid var(--border-card); letter-spacing:1px; text-transform:uppercase;">
+            <i class="fa-solid fa-calendar-days"></i> Ngày Chuyển Hàng / Phát Sinh
         </th>
-        <th rowspan="2" style="width:105px; text-align:right; padding:10px 12px; vertical-align:middle; font-weight:900; color:#fbbf24; background:rgba(251,191,36,0.12); border-left:1px solid var(--border-card);">
-            TỔNG CỘNG
+        <th rowspan="2" style="width:115px; text-align:right; padding:10px 14px; vertical-align:middle; font-weight:900; color:#fbbf24; background:rgba(251,191,36,0.12); border-left:1px solid var(--border-card);">
+            Grand Total
         </th>
     </tr>
     <tr>`;
     
     sortedDates.forEach(d => {
-        theadHtml += `<th style="min-width:65px; width:72px; text-align:center; padding:7px 4px; font-weight:700; color:#e2e8f0; font-size:0.8rem; background:rgba(0,0,0,0.25); border-right:1px solid rgba(255,255,255,0.06);">${d}</th>`;
+        theadHtml += `<th style="min-width:85px; text-align:center; padding:7px 6px; font-weight:700; color:#e2e8f0; font-size:0.8rem; background:rgba(0,0,0,0.25); border-right:1px solid rgba(255,255,255,0.06);">${d}</th>`;
     });
     theadHtml += `</tr>`;
     thead.innerHTML = theadHtml;
@@ -14831,90 +14865,87 @@ function renderPendingMatrixTable() {
     let tbodyHtml = '';
     const dateTotals = {};
     sortedDates.forEach(d => { dateTotals[d] = 0; });
-    let grandTotal = 0;
+    let grandTotalUniqueCodes = new Set();
 
-    // Sắp xếp các hàng theo tổng số phiếu giảm dần (hoặc thứ tự ưu tiên FGA, FGB, CLA, CLB, MFA, FEA...)
-    const orderPriority = ['FGA', 'FGB', 'CLA', 'CLB', 'FZA', 'MFA', 'FEA', 'SCF', 'SEEDLOG', 'SIÊU THỊ'];
+    // Sắp xếp các hàng Kho DC theo thứ tự chữ cái hoặc tổng số phiếu
     const sortedRowKeys = Object.keys(rowsMap).sort((a, b) => {
-        const idxA = orderPriority.indexOf(a);
-        const idxB = orderPriority.indexOf(b);
-        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-        if (idxA !== -1) return -1;
-        if (idxB !== -1) return 1;
-
-        const sumA = Object.values(rowsMap[a]).reduce((s, v) => s + v, 0);
-        const sumB = Object.values(rowsMap[b]).reduce((s, v) => s + v, 0);
-        return sumB - sumA;
+        let setA = new Set();
+        Object.values(rowsMap[a]).forEach(s => s.forEach(c => setA.add(c)));
+        let setB = new Set();
+        Object.values(rowsMap[b]).forEach(s => s.forEach(c => setB.add(c)));
+        return setB.size - setA.size || a.localeCompare(b, 'vi');
     });
 
     sortedRowKeys.forEach(rKey => {
         const dDict = rowsMap[rKey];
-        let rowSum = 0;
+        let rowUniqueCodes = new Set();
         let isRowSelected = matrixSelectedFilter && matrixSelectedFilter.rowKey === rKey;
 
-        // Màu icon cho từng kho chính
-        let rowBadgeColor = '#94a3b8';
-        if (rKey.includes('FGA')) rowBadgeColor = '#f59e0b';
-        else if (rKey.includes('CLA') || rKey.includes('FZA')) rowBadgeColor = '#38bdf8';
-        else if (rKey.includes('MFA')) rowBadgeColor = '#ef4444';
-        else if (rKey.includes('FEA')) rowBadgeColor = '#10b981';
-        else if (rKey.includes('SCF')) rowBadgeColor = '#ec4899';
-        else if (rKey.includes('SEEDLOG')) rowBadgeColor = '#8b5cf6';
-        else if (rKey.includes('SIÊU THỊ')) rowBadgeColor = '#06b6d4';
+        // Chấm màu nhận diện ngành kho
+        let badgeColor = '#94a3b8';
+        if (rKey.includes('FGA')) badgeColor = '#f59e0b';
+        else if (rKey.includes('CLA') || rKey.includes('FZA')) badgeColor = '#38bdf8';
+        else if (rKey.includes('MFA')) badgeColor = '#ef4444';
+        else if (rKey.includes('FEA')) badgeColor = '#10b981';
+        else if (rKey.includes('SCF') || rKey.includes('CHILL')) badgeColor = '#ec4899';
+        else if (rKey.includes('SEEDLOG')) badgeColor = '#8b5cf6';
 
         tbodyHtml += `<tr style="${isRowSelected ? 'background:rgba(244,63,94,0.15);' : ''}">
-            <td style="font-weight:700; color:var(--text-primary); padding:7px 12px; border-right:1px solid var(--border-card); white-space:nowrap;">
-                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${rowBadgeColor}; margin-right:6px;"></span>
+            <td style="font-weight:700; color:var(--text-primary); padding:8px 14px; border-right:1px solid var(--border-card); white-space:nowrap;">
+                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${badgeColor}; margin-right:8px;"></span>
                 <span style="cursor:pointer;" onclick="filterDetailByMatrixCell('${rKey.replace(/'/g, "\\'")}', 'all')" title="Bấm để lọc toàn bộ phiếu của ${rKey}">${rKey}</span>
             </td>`;
 
         sortedDates.forEach(d => {
-            const cnt = dDict[d] || 0;
-            rowSum += cnt;
+            const codeSet = dDict[d] || new Set();
+            const cnt = codeSet.size;
+            codeSet.forEach(c => {
+                rowUniqueCodes.add(c);
+                grandTotalUniqueCodes.add(c);
+            });
             dateTotals[d] = (dateTotals[d] || 0) + cnt;
             const isCellSelected = isRowSelected && matrixSelectedFilter.date === d;
 
             if (cnt > 0) {
                 tbodyHtml += `
-                    <td style="text-align:center; padding:5px 4px; border-right:1px solid rgba(255,255,255,0.04);">
+                    <td style="text-align:center; padding:6px 4px; border-right:1px solid rgba(255,255,255,0.04);">
                         <span class="tag-pill" onclick="filterDetailByMatrixCell('${rKey.replace(/'/g, "\\'")}', '${d}')" 
-                              style="cursor:pointer; font-weight:800; font-size:0.8rem; padding:3px 8px; border-radius:5px; transition:all 0.15s;
-                                     ${isCellSelected ? 'background:#f43f5e; color:#fff; box-shadow:0 0 10px rgba(244,63,94,0.7); font-weight:900;' : 'background:rgba(244,63,94,0.16); color:#f43f5e;'}">
+                              style="cursor:pointer; font-weight:800; font-size:0.82rem; padding:3px 9px; border-radius:5px; transition:all 0.15s;
+                                     ${isCellSelected ? 'background:#f43f5e; color:#fff; box-shadow:0 0 10px rgba(244,63,94,0.7); font-weight:900;' : 'background:rgba(56,189,248,0.16); color:#38bdf8;'}">
                             ${cnt.toLocaleString()}
                         </span>
                     </td>`;
             } else {
-                tbodyHtml += `<td style="text-align:center; color:rgba(255,255,255,0.15); padding:5px 4px; border-right:1px solid rgba(255,255,255,0.04);">-</td>`;
+                tbodyHtml += `<td style="text-align:center; color:rgba(255,255,255,0.15); padding:6px 4px; border-right:1px solid rgba(255,255,255,0.04);">-</td>`;
             }
         });
 
-        grandTotal += rowSum;
         const isRowTotalSelected = isRowSelected && matrixSelectedFilter.date === 'all';
         tbodyHtml += `
-            <td style="text-align:right; padding:7px 12px; font-weight:900; background:rgba(251,191,36,0.06); border-left:1px solid var(--border-card);">
+            <td style="text-align:right; padding:8px 14px; font-weight:900; background:rgba(251,191,36,0.06); border-left:1px solid var(--border-card);">
                 <span class="tag-pill" onclick="filterDetailByMatrixCell('${rKey.replace(/'/g, "\\'")}', 'all')" 
-                      style="cursor:pointer; font-weight:900; font-size:0.82rem; padding:3px 9px; border-radius:5px;
+                      style="cursor:pointer; font-weight:900; font-size:0.84rem; padding:4px 10px; border-radius:5px;
                              ${isRowTotalSelected ? 'background:#fbbf24; color:#000;' : 'background:rgba(251,191,36,0.2); color:#fbbf24;'}">
-                    ${rowSum.toLocaleString()}
+                    ${rowUniqueCodes.size.toLocaleString()}
                 </span>
             </td>
         </tr>`;
     });
     tbody.innerHTML = tbodyHtml;
 
-    // Render TFOOT (TỔNG THEO NGÀY)
+    // Render TFOOT (Grand Total Footer)
     if (tfoot) {
         let tfootHtml = `<tr style="border-top:2px solid var(--border-card); background:rgba(0,0,0,0.45);">
-            <td style="padding:10px 12px; font-weight:900; color:#fff; text-transform:uppercase; border-right:1px solid var(--border-card);">
-                <i class="fa-solid fa-calculator" style="color:#38bdf8;"></i> TỔNG THEO NGÀY
+            <td style="padding:10px 14px; font-weight:900; color:#fff; text-transform:uppercase; border-right:1px solid var(--border-card);">
+                <i class="fa-solid fa-calculator" style="color:#38bdf8;"></i> Grand Total
             </td>`;
         sortedDates.forEach(d => {
             const sumD = dateTotals[d] || 0;
             const isColSelected = matrixSelectedFilter && matrixSelectedFilter.rowKey === 'all' && matrixSelectedFilter.date === d;
             tfootHtml += `
-                <td style="text-align:center; padding:7px 4px; border-right:1px solid rgba(255,255,255,0.04);">
+                <td style="text-align:center; padding:8px 4px; border-right:1px solid rgba(255,255,255,0.04);">
                     <span class="tag-pill" onclick="filterDetailByMatrixCell('all', '${d}')" 
-                          style="cursor:pointer; font-weight:800; font-size:0.82rem; padding:4px 8px; border-radius:5px;
+                          style="cursor:pointer; font-weight:800; font-size:0.84rem; padding:4px 9px; border-radius:5px;
                                  ${isColSelected ? 'background:#38bdf8; color:#000; font-weight:900;' : 'background:rgba(56,189,248,0.2); color:#38bdf8;'}">
                         ${sumD.toLocaleString()}
                     </span>
@@ -14922,11 +14953,11 @@ function renderPendingMatrixTable() {
         });
         const isGrandSelected = matrixSelectedFilter && matrixSelectedFilter.rowKey === 'all' && matrixSelectedFilter.date === 'all';
         tfootHtml += `
-            <td style="text-align:right; padding:10px 12px; font-size:0.92rem; font-weight:900; background:rgba(251,191,36,0.18); border-left:1px solid var(--border-card);">
+            <td style="text-align:right; padding:10px 14px; font-size:0.95rem; font-weight:900; background:rgba(251,191,36,0.18); border-left:1px solid var(--border-card);">
                 <span class="tag-pill" onclick="filterDetailByMatrixCell('all', 'all')" 
-                      style="cursor:pointer; font-weight:900; font-size:0.86rem; padding:4px 10px; border-radius:6px;
+                      style="cursor:pointer; font-weight:900; font-size:0.88rem; padding:4px 12px; border-radius:6px;
                              ${isGrandSelected ? 'background:#fbbf24; color:#000;' : 'background:#fbbf24; color:#0f172a;'}">
-                    ${grandTotal.toLocaleString()}
+                    ${grandTotalUniqueCodes.size.toLocaleString()}
                 </span>
             </td>
         </tr>`;
@@ -14943,20 +14974,17 @@ function filterDetailByMatrixCell(rowKey, date) {
     matrixSelectedFilter = { 
         rowKey, 
         date, 
-        direction: curMatrixDirection, 
-        level: curMatrixLevel 
+        subMode: curPendingSubMode, 
+        viewMode: curPTViewMode 
     };
 
     const badge = document.getElementById('matrixActiveFilterBadge');
     const badgeText = document.getElementById('matrixActiveFilterText');
 
     let label = '';
-    if (rowKey !== 'all') {
-        const dirLabel = curMatrixDirection === 'to' ? 'Nơi nhận' : (curMatrixDirection === 'route' ? 'Tuyến' : 'Kho xuất');
-        label += `${dirLabel}: ${rowKey}`;
-    }
+    if (rowKey !== 'all') label += `Kho DC: ${rowKey}`;
     if (date !== 'all') label += (label ? ' • ' : '') + `Ngày: ${date}`;
-    if (!label) label = 'Toàn bộ ma trận';
+    if (!label) label = 'Toàn bộ bảng';
 
     if (badge && badgeText) {
         badgeText.innerText = label;
@@ -14985,78 +15013,6 @@ function clearMatrixFilter(shouldRender = true) {
     }
 }
 
-function exportMatrixExcel() {
-    if (!window.PENDING_TICKETS_DATA || typeof XLSX === 'undefined') {
-        alert("Chưa có dữ liệu hoặc đang tải thư viện Excel.");
-        return;
-    }
-
-    const items = getMatrixSourceItems();
-    const datesSet = new Set();
-    const rowsMap = {};
-
-    items.forEach(it => {
-        const dStr = it.transfer_date || it.pt_transfer_date || it.received_date || it.created_at;
-        const dm = extractDayMonth(dStr);
-        datesSet.add(dm);
-        const rKey = getWhKeyByMode(it, curMatrixDirection, curMatrixLevel);
-        if (!rowsMap[rKey]) rowsMap[rKey] = {};
-        rowsMap[rKey][dm] = (rowsMap[rKey][dm] || 0) + 1;
-    });
-
-    const sortedDates = Array.from(datesSet).sort((a, b) => parseSortableDate(a) - parseSortableDate(b));
-    let colHeaderLabel = 'Kho (Nơi Chuyển)';
-    if (curMatrixDirection === 'to') colHeaderLabel = 'Điểm Đích (Nơi Nhận)';
-    else if (curMatrixDirection === 'route') colHeaderLabel = 'Tuyến Chuyển (Nơi Chuyển ➔ Nơi Nhận)';
-
-    const excelRows = [];
-    const dateTotals = {};
-    sortedDates.forEach(d => { dateTotals[d] = 0; });
-    let grandTotal = 0;
-
-    const orderPriority = ['FGA', 'FGB', 'CLA', 'CLB', 'FZA', 'MFA', 'FEA', 'SCF', 'SEEDLOG', 'SIÊU THỊ'];
-    const sortedRowKeys = Object.keys(rowsMap).sort((a, b) => {
-        const idxA = orderPriority.indexOf(a);
-        const idxB = orderPriority.indexOf(b);
-        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-        if (idxA !== -1) return -1;
-        if (idxB !== -1) return 1;
-
-        const sumA = Object.values(rowsMap[a]).reduce((s, v) => s + v, 0);
-        const sumB = Object.values(rowsMap[b]).reduce((s, v) => s + v, 0);
-        return sumB - sumA;
-    });
-
-    sortedRowKeys.forEach(rKey => {
-        const rowObj = {};
-        rowObj[colHeaderLabel] = rKey;
-        let rSum = 0;
-        sortedDates.forEach(d => {
-            const c = rowsMap[rKey][d] || 0;
-            rowObj[d] = c;
-            rSum += c;
-            dateTotals[d] = (dateTotals[d] || 0) + c;
-        });
-        rowObj["TỔNG CỘNG"] = rSum;
-        grandTotal += rSum;
-        excelRows.push(rowObj);
-    });
-
-    // Dòng tổng theo ngày
-    const totalRowObj = {};
-    totalRowObj[colHeaderLabel] = "TỔNG THEO NGÀY";
-    sortedDates.forEach(d => { totalRowObj[d] = dateTotals[d] || 0; });
-    totalRowObj["TỔNG CỘNG"] = grandTotal;
-    excelRows.push(totalRowObj);
-
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(excelRows);
-    XLSX.utils.book_append_sheet(wb, ws, "Tong_Hop_Ma_Tran_Phieu_Treo");
-
-    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
-    XLSX.writeFile(wb, `Tong_Hop_Ma_Tran_Phieu_Treo_SCM_${dateStr}.xlsx`);
-}
-
 // =========================================================================
 // BẢNG TRA CỨU CHI TIẾT PHIẾU TREO
 // =========================================================================
@@ -15073,12 +15029,16 @@ function renderPendingTicketsTable() {
 
     if (curPendingSubMode === 'pt' || curPendingSubMode === 'all') {
         (data.pt_dang_chuyen || []).forEach(x => {
+            const fName = resolveBranchName(x.from_name);
+            const tName = resolveBranchName(x.to_name);
             list.push({
                 sys_type: 'pt',
                 sys_type_label: '1. Phiếu Chuyển',
                 code: x.code,
-                from_name: x.from_name,
-                to_name: x.to_name,
+                from_name: fName,
+                to_name: tName,
+                from_type: classifyLocationType(fName),
+                to_type: classifyLocationType(tName),
                 category: x.category || 'Khác',
                 status_code: x.status_code,
                 status_text: x.status_text || 'Đang chuyển',
@@ -15093,12 +15053,16 @@ function renderPendingTicketsTable() {
 
     if (curPendingSubMode === 'to' || curPendingSubMode === 'all') {
         (data.to_yeu_cau || []).forEach(x => {
+            const fName = resolveBranchName(x.from_name);
+            const tName = resolveBranchName(x.to_name || x.pt_from_name);
             list.push({
                 sys_type: 'to',
                 sys_type_label: '2. YC Xử Lý',
                 code: x.code,
-                from_name: x.from_name,
-                to_name: x.to_name,
+                from_name: fName,
+                to_name: tName,
+                from_type: classifyLocationType(fName),
+                to_type: classifyLocationType(tName),
                 category: x.category || 'Khác',
                 status_code: x.status_code,
                 status_text: x.status_text || (x.status_code === 1 ? 'Mới' : 'Đang xử lý'),
@@ -15108,7 +15072,7 @@ function renderPendingTicketsTable() {
                 date_str: x.pt_transfer_date || x.created_at,
                 from_pt_code: x.from_pt_code || '',
                 handled_pt_code: x.handled_pt_code || '',
-                pt_from_name: x.pt_from_name || '',
+                pt_from_name: resolveBranchName(x.pt_from_name),
                 raw: x
             });
         });
@@ -15116,14 +15080,18 @@ function renderPendingTicketsTable() {
 
     if (curPendingSubMode === 'hk' || curPendingSubMode === 'all') {
         (data.hk_can_hau_kiem || []).forEach(x => {
+            const fName = resolveBranchName(x.from_name);
+            const tName = resolveBranchName(x.to_name);
             list.push({
                 sys_type: 'hk',
                 sys_type_label: '3. Phiếu Hậu Kiểm',
                 code: x.double_check_code || x.pt_code,
                 double_check_code: x.double_check_code,
                 pt_code: x.pt_code,
-                from_name: x.from_name,
-                to_name: x.to_name,
+                from_name: fName,
+                to_name: tName,
+                from_type: classifyLocationType(fName),
+                to_type: classifyLocationType(tName),
                 category: x.category || 'Khác',
                 status_code: x.status_code,
                 status_text: 'Cần hậu kiểm',
@@ -15147,14 +15115,21 @@ function renderPendingTicketsTable() {
         if (statusFilter !== 'all' && item.status_text !== statusFilter) return false;
         if (storeFilter !== 'all' && item.to_name !== storeFilter) return false;
 
-        // Áp dụng bộ lọc ma trận (nếu đang chọn một ô hoặc một dòng)
+        // Áp dụng bộ lọc ma trận (nếu đang chọn 1 ô hoặc 1 dòng trong Pivot)
         if (matrixSelectedFilter) {
-            if (matrixSelectedFilter.rowKey !== 'all') {
-                const itemRowKey = getWhKeyByMode(item, matrixSelectedFilter.direction, matrixSelectedFilter.level);
-                if (itemRowKey !== matrixSelectedFilter.rowKey) return false;
+            let itemWh = item.from_name;
+            if (curPendingSubMode === 'pt') {
+                itemWh = curPTViewMode === 'from_dc' ? item.from_name : item.to_name;
+            } else if (curPendingSubMode === 'to') {
+                itemWh = item.to_name || item.pt_from_name;
             }
+
+            if (matrixSelectedFilter.rowKey !== 'all' && itemWh !== matrixSelectedFilter.rowKey) {
+                return false;
+            }
+
             if (matrixSelectedFilter.date !== 'all') {
-                const itemDm = extractDayMonth(item.date_str);
+                const itemDm = extractDayMonthYear(item.date_str);
                 if (itemDm !== matrixSelectedFilter.date) return false;
             }
         }
@@ -15175,14 +15150,16 @@ function renderPendingTableHeader() {
             <tr>
                 <th style="width:45px; text-align:center;">STT</th>
                 <th style="min-width:130px;">Mã Phiếu Chuyển</th>
-                <th style="min-width:200px;">Nơi Chuyển (Kho Xuất)</th>
-                <th style="min-width:220px;">Nơi Nhận (Siêu Thị)</th>
-                <th style="min-width:120px;">Ngành Hàng</th>
+                <th style="min-width:110px;">Nơi Chuyển</th>
+                <th style="min-width:200px;">Chi Nhánh Chuyển</th>
+                <th style="min-width:110px;">Nơi Nhận</th>
+                <th style="min-width:220px;">Chi Nhánh Nhận</th>
+                <th style="min-width:110px;">Ngành Hàng</th>
                 <th style="min-width:120px; text-align:center;">Trạng Thái</th>
-                <th style="width:70px; text-align:right;">SKU</th>
-                <th style="width:100px; text-align:right;">SL Chuyển</th>
-                <th style="min-width:140px;">Ngày Chuyển</th>
-                <th style="min-width:130px;">Mã Phiếu HK</th>
+                <th style="width:65px; text-align:right;">SKU</th>
+                <th style="width:95px; text-align:right;">SL Chuyển</th>
+                <th style="min-width:140px;">Ngày Chuyển Hàng</th>
+                <th style="min-width:120px;">Mã Phiếu HK</th>
             </tr>
         `;
     } else if (curPendingSubMode === 'to') {
@@ -15194,38 +15171,37 @@ function renderPendingTableHeader() {
                 <th style="width:65px; text-align:right;">SKU</th>
                 <th style="width:110px; text-align:right;">SL Tạo / Conf</th>
                 <th style="min-width:130px;">PT Chuyển Đi</th>
-                <th style="min-width:140px;">Ngày Chuyển Đi</th>
-                <th style="min-width:180px;">Nơi Chuyển Đi</th>
+                <th style="min-width:130px;">Ngày Chuyển Đi</th>
+                <th style="min-width:180px;">Kho Nguồn Xuất Đi</th>
                 <th style="min-width:130px;">PT Chuyển Hoàn</th>
-                <th style="min-width:180px;">Nơi Chuyển Hoàn</th>
-                <th style="min-width:180px;">Nơi Nhận Hoàn</th>
+                <th style="min-width:180px;">ST Chuyển Hoàn</th>
+                <th style="min-width:180px;">Kho Nhận Chuyển Hoàn</th>
             </tr>
         `;
     } else if (curPendingSubMode === 'hk') {
         thead.innerHTML = `
             <tr>
                 <th style="width:45px; text-align:center;">STT</th>
-                <th style="min-width:140px;">Mã Hậu Kiểm</th>
+                <th style="min-width:130px;">Mã Hậu Kiểm</th>
                 <th style="min-width:130px;">Gốc: Phiếu Chuyển</th>
-                <th style="min-width:200px;">Nơi Chuyển (Kho Gửi)</th>
-                <th style="min-width:220px;">Nơi Nhận (Siêu Thị)</th>
-                <th style="min-width:120px;">Ngành Hàng</th>
+                <th style="min-width:200px;">Kho Nguồn Xuất Đi</th>
+                <th style="min-width:220px;">Siêu Thị Nhận Hàng</th>
+                <th style="min-width:110px;">Ngành Hàng</th>
                 <th style="min-width:120px; text-align:center;">Trạng Thái HK</th>
-                <th style="width:70px; text-align:right;">SKU</th>
+                <th style="width:65px; text-align:right;">SKU</th>
                 <th style="width:105px; text-align:right;">SL Xuất / Nhận</th>
                 <th style="min-width:140px;">Thời Gian Nhận Hàng</th>
             </tr>
         `;
     } else {
-        // Mode 'all': Tổng hợp cả 3 phân hệ
         thead.innerHTML = `
             <tr>
                 <th style="width:45px; text-align:center;">STT</th>
                 <th style="min-width:110px;">Phân Hệ</th>
-                <th style="min-width:140px;">Mã Phiếu / Yêu Cầu</th>
+                <th style="min-width:130px;">Mã Phiếu / YC</th>
                 <th style="min-width:200px;">Nơi Chuyển / Gửi</th>
                 <th style="min-width:220px;">Nơi Nhận / Đích</th>
-                <th style="min-width:120px;">Ngành Hàng</th>
+                <th style="min-width:110px;">Ngành Hàng</th>
                 <th style="min-width:120px; text-align:center;">Trạng Thái</th>
                 <th style="width:65px; text-align:right;">SKU</th>
                 <th style="width:95px; text-align:right;">Số Lượng</th>
@@ -15250,7 +15226,7 @@ function renderPendingTicketsTableRows() {
     if (badgeCount) badgeCount.innerText = total.toLocaleString() + ' phiếu';
 
     if (total === 0) {
-        tbody.innerHTML = '<tr><td colspan="11" class="text-center" style="padding:2.5rem; color:var(--text-muted);">Không tìm thấy phiếu nào phù hợp với bộ lọc hiện tại.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="12" class="text-center" style="padding:2.5rem; color:var(--text-muted);">Không tìm thấy phiếu nào phù hợp với bộ lọc hiện tại.</td></tr>';
         if (pageInfoTop) pageInfoTop.innerText = 'Hiển thị 0 - 0 trong tổng số 0 phiếu';
         if (pageInfoBottom) pageInfoBottom.innerText = 'Hiển thị 0 - 0 trong tổng số 0 phiếu';
         if (pageText) pageText.innerText = 'Trang 1 / 1';
@@ -15279,6 +15255,9 @@ function renderPendingTicketsTableRows() {
         const stt = startIdx + idx + 1;
 
         if (curPendingSubMode === 'pt') {
+            const fPill = it.from_type === 'Kho' ? '<span class="tag-pill" style="background:rgba(56,189,248,0.18); color:#38bdf8; font-weight:700;">Kho</span>' : '<span class="tag-pill" style="background:rgba(16,185,129,0.18); color:#10b981; font-weight:700;">ST</span>';
+            const tPill = it.to_type === 'Kho' ? '<span class="tag-pill" style="background:rgba(56,189,248,0.18); color:#38bdf8; font-weight:700;">Kho</span>' : '<span class="tag-pill" style="background:rgba(16,185,129,0.18); color:#10b981; font-weight:700;">ST</span>';
+
             html += `
                 <tr>
                     <td class="text-center" style="color:var(--text-muted);">${stt}</td>
@@ -15287,7 +15266,9 @@ function renderPendingTicketsTableRows() {
                             ${it.code}
                         </strong>
                     </td>
+                    <td class="text-center">${fPill}</td>
                     <td>${it.from_name}</td>
+                    <td class="text-center">${tPill}</td>
                     <td>${it.to_name}</td>
                     <td><span class="tag-pill" style="font-size:0.75rem;">${it.category}</span></td>
                     <td class="text-center">
@@ -15411,36 +15392,151 @@ function copyTicketCode(code) {
     });
 }
 
-function exportPendingTicketsExcel() {
-    if (!pendingFilteredItems || pendingFilteredItems.length === 0) {
-        alert("Không có phiếu nào để xuất Excel.");
-        return;
-    }
-    if (typeof XLSX === 'undefined') {
-        alert("Thư viện Excel đang tải, vui lòng thử lại sau 2 giây.");
+// =========================================================================
+// XUẤT EXCEL CHUẨN: GỒM SHEET "PV phiếu" VÀ SHEET "transfer" (CỘT A & B)
+// =========================================================================
+function exportPendingTicketsWorkbook(isMatrixOnly = false) {
+    if (!window.PENDING_TICKETS_DATA || typeof XLSX === 'undefined') {
+        alert("Chưa có dữ liệu hoặc đang tải thư viện Excel, vui lòng thử lại sau 2 giây.");
         return;
     }
 
-    const exportRows = pendingFilteredItems.map((it, idx) => ({
-        "STT": idx + 1,
-        "Phân Hệ": it.sys_type_label || it.sys_type,
-        "Mã Phiếu / Yêu Cầu": it.code,
-        "Nơi Chuyển (Gửi)": it.from_name,
-        "Nơi Nhận (Đích)": it.to_name,
-        "Ngành Hàng": it.category,
-        "Trạng Thái": it.status_text,
-        "SKU": it.sku || 0,
-        "Số Lượng": it.quantity || 0,
-        "Thời Gian": it.date_str,
-        "Mã Gốc / Liên Quan": it.from_pt_code || it.pt_code || it.hk_code || ''
-    }));
-
+    const data = window.PENDING_TICKETS_DATA;
     const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(exportRows);
-    XLSX.utils.book_append_sheet(wb, ws, "DS_Phieu_Treo_Chi_Tiet");
+
+    // 1. TẠO SHEET "PV phiếu" (CHỨA CÁC BẢNG PIVOT TỔNG HỢP THEO KHO DC)
+    const pvRows = [];
+
+    // Bảng 1A: Nơi chuyển = Kho
+    pvRows.push(["Nơi chuyển", "Kho"]);
+    pvRows.push([]);
+    pvRows.push(["Distinct Count of Mã chuyển hàng", "Column Labels"]);
+
+    // Tổng hợp Bảng 1A
+    const ptList = data.pt_dang_chuyen || [];
+    const list1A = ptList.filter(x => classifyLocationType(x.from_name) === 'Kho');
+    const dates1ASet = new Set();
+    const map1A = {};
+
+    list1A.forEach(it => {
+        const wh = resolveBranchName(it.from_name);
+        const d = extractDayMonthYear(it.transfer_date || it.created_at);
+        dates1ASet.add(d);
+        if (!map1A[wh]) map1A[wh] = {};
+        if (!map1A[wh][d]) map1A[wh][d] = new Set();
+        map1A[wh][d].add(it.code);
+    });
+
+    const sortedDates1A = Array.from(dates1ASet).sort((a, b) => parseSortableDate(a) - parseSortableDate(b));
+    pvRows.push(["Row Labels", ...sortedDates1A, "Grand Total"]);
+
+    const dateTotals1A = {};
+    sortedDates1A.forEach(d => { dateTotals1A[d] = 0; });
+    const grand1ASet = new Set();
+
+    Object.keys(map1A).sort().forEach(wh => {
+        const row = [wh];
+        const rowSet = new Set();
+        sortedDates1A.forEach(d => {
+            const cSet = map1A[wh][d] || new Set();
+            const cnt = cSet.size;
+            cSet.forEach(c => { rowSet.add(c); grand1ASet.add(c); });
+            dateTotals1A[d] = (dateTotals1A[d] || 0) + cnt;
+            row.push(cnt > 0 ? cnt : "");
+        });
+        row.push(rowSet.size);
+        pvRows.push(row);
+    });
+
+    const totalRow1A = ["Grand Total"];
+    sortedDates1A.forEach(d => totalRow1A.push(dateTotals1A[d] || ""));
+    totalRow1A.push(grand1ASet.size);
+    pvRows.push(totalRow1A);
+
+    // Bảng 1B: Nơi nhận = Kho
+    pvRows.push([]);
+    pvRows.push([]);
+    pvRows.push(["Nơi nhận", "Kho"]);
+    pvRows.push([]);
+    pvRows.push(["Distinct Count of Mã chuyển hàng", "Column Labels"]);
+
+    const list1B = ptList.filter(x => classifyLocationType(x.to_name) === 'Kho');
+    const dates1BSet = new Set();
+    const map1B = {};
+
+    list1B.forEach(it => {
+        const wh = resolveBranchName(it.to_name);
+        const d = extractDayMonthYear(it.transfer_date || it.created_at);
+        dates1BSet.add(d);
+        if (!map1B[wh]) map1B[wh] = {};
+        if (!map1B[wh][d]) map1B[wh][d] = new Set();
+        map1B[wh][d].add(it.code);
+    });
+
+    const sortedDates1B = Array.from(dates1BSet).sort((a, b) => parseSortableDate(a) - parseSortableDate(b));
+    pvRows.push(["Row Labels", ...sortedDates1B, "Grand Total"]);
+
+    const dateTotals1B = {};
+    sortedDates1B.forEach(d => { dateTotals1B[d] = 0; });
+    const grand1BSet = new Set();
+
+    Object.keys(map1B).sort().forEach(wh => {
+        const row = [wh];
+        const rowSet = new Set();
+        sortedDates1B.forEach(d => {
+            const cSet = map1B[wh][d] || new Set();
+            const cnt = cSet.size;
+            cSet.forEach(c => { rowSet.add(c); grand1BSet.add(c); });
+            dateTotals1B[d] = (dateTotals1B[d] || 0) + cnt;
+            row.push(cnt > 0 ? cnt : "");
+        });
+        row.push(rowSet.size);
+        pvRows.push(row);
+    });
+
+    const totalRow1B = ["Grand Total"];
+    sortedDates1B.forEach(d => totalRow1B.push(dateTotals1B[d] || ""));
+    totalRow1B.push(grand1BSet.size);
+    pvRows.push(totalRow1B);
+
+    const wsPV = XLSX.utils.aoa_to_sheet(pvRows);
+    XLSX.utils.book_append_sheet(wb, wsPV, "PV phiếu");
+
+    // 2. TẠO SHEET "transfer" (DANH SÁCH CHI TIẾT CÓ CỘT A: Nơi chuyển, CỘT B: Nơi nhận)
+    if (!isMatrixOnly) {
+        const sourceList = pendingFilteredItems.length > 0 ? pendingFilteredItems : (data.pt_dang_chuyen || []);
+        const transRows = sourceList.map((it, idx) => {
+            const fName = resolveBranchName(it.from_name);
+            const tName = resolveBranchName(it.to_name);
+            return {
+                "Nơi chuyển": classifyLocationType(fName),
+                "Nơi nhận": classifyLocationType(tName),
+                "Mã chuyển hàng": it.code || it.double_check_code || it.pt_code,
+                "Chi nhánh chuyển": fName,
+                "Chi nhánh nhận": tName,
+                "Ngày chuyển hàng": it.date_str,
+                "Ngành hàng": it.category || 'Khác',
+                "Trạng thái": it.status_text,
+                "Số lượng SKU": it.sku || 0,
+                "Số lượng chuyển": it.quantity || 0,
+                "Mã phiếu liên quan / HK": it.from_pt_code || it.pt_code || it.hk_code || ''
+            };
+        });
+
+        const wsTrans = XLSX.utils.json_to_sheet(transRows);
+        XLSX.utils.book_append_sheet(wb, wsTrans, "transfer");
+    }
 
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
-    XLSX.writeFile(wb, `DS_Phieu_Treo_SCM_CDC_${dateStr}.xlsx`);
+    XLSX.writeFile(wb, `Bao_Cao_Tong_Hop_Phieu_Treo_SCM_${dateStr}.xlsx`);
+}
+
+function exportMatrixExcel() {
+    exportPendingTicketsWorkbook(true);
+}
+
+function exportPendingTicketsExcel() {
+    exportPendingTicketsWorkbook(false);
 }
 
 function syncPendingTicketsRealtime() {
@@ -15529,21 +15625,21 @@ function refreshPendingTicketsClientOnly(btn, icon) {
     document.head.appendChild(s);
 }
 
-// Export ra window để gọi từ HTML
+// Export ra window
 window.setPendingSubMode = setPendingSubMode;
-window.setMatrixDirection = setMatrixDirection;
-window.setMatrixLevel = setMatrixLevel;
+window.setPTViewMode = setPTViewMode;
 window.filterDetailByMatrixCell = filterDetailByMatrixCell;
 window.clearMatrixFilter = clearMatrixFilter;
 window.exportMatrixExcel = exportMatrixExcel;
+window.exportPendingTicketsExcel = exportPendingTicketsExcel;
 window.onPendingSearchChange = onPendingSearchChange;
 window.onPendingFilterChange = onPendingFilterChange;
 window.onPendingPageSizeChange = onPendingPageSizeChange;
 window.changePendingPage = changePendingPage;
 window.copyTicketCode = copyTicketCode;
-window.exportPendingTicketsExcel = exportPendingTicketsExcel;
 window.syncPendingTicketsRealtime = syncPendingTicketsRealtime;
 window.initPendingTicketsTab = initPendingTicketsTab;
+window.initPendingTicketsModule = initPendingTicketsTab;
 </script>
 
     <!-- ========================================================================= -->

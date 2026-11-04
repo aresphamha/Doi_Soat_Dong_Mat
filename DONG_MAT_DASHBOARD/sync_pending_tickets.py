@@ -13,6 +13,8 @@ import sys
 import json
 import time
 from datetime import datetime, timezone, timedelta
+
+sys.stdout.reconfigure(encoding='utf-8')
 import pymysql
 
 vn_tz = timezone(timedelta(hours=7))
@@ -97,6 +99,21 @@ def fetch_and_build_pending_tickets():
                         branch_names[sid] = sname
         except Exception:
             pass
+
+    HEX_DC_MAPPING = {
+        '6aa6a22bdf3d880007872063': 'CLA40104 _ Sóng Thần _ Chờ Đối Soát',
+        '6aabb14ef426e20007f805da': 'FGA10104 _ Bình Thắng _ Chờ Đối Soát',
+        '6aabb403055d2e0007eb9ded': 'FEA20104 _ Bình Thắng _ Chờ Đối Soát',
+        '6aabb4e6e493030007272a95': 'MFA30104 _ Sóng Thần _ Chờ Đối Soát',
+        '6aa77e599d7b1b00070121f5': 'CLB40104 _ Long Biên _ Chờ Đối Soát',
+        '6aa77de130fded00073d4521': 'CLB40102 _ Long Biên _ Quá Cảnh',
+        '6a34ed8d6607ba000703e235': 'MeatFish - Miền Đông - SCF - Quá Cảnh',
+        '6aa6a1eedf3d880007871f3f': 'CLA40102 _ Sóng Thần _ Quá Cảnh',
+        '6aabb0a2f426e20007f80123': 'FGA10101 _ Bình Thắng _ Lưu Hàng',
+        '6a4f0127f163350007c29221': 'KFM_HCM_TDU - BS08 Vinhomes Grand Park'
+    }
+    for hid, hname in HEX_DC_MAPPING.items():
+        branch_names[hid] = hname
 
     def get_name(bid):
         if not bid: return '---'
