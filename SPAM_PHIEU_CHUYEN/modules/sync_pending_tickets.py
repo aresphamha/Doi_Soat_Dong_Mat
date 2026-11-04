@@ -248,7 +248,10 @@ def fetch_and_build_pending_tickets():
         status,
         double_checked_status
     FROM __cdc_kfm_kf_inventories_kf_transfer_items
-    WHERE double_checked_status = 1 AND double_check_code IS NOT NULL AND double_check_code != ''
+    WHERE double_checked_status = 1 
+      AND double_check_code IS NOT NULL 
+      AND double_check_code != ''
+      AND (created_at >= '2026-10-01' OR received_date >= '2026-10-01' OR transfer_date >= '2026-10-01')
     ORDER BY created_at DESC
     """)
     hk_list = []
