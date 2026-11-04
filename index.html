@@ -5831,6 +5831,55 @@
                     </div>
                 </div>
 
+                <!-- ========================================================================= -->
+                <!-- BẢNG TỔNG HỢP MA TRẬN PHIẾU TREO THEO KHO & NGÀY (HÌNH 2)                 -->
+                <!-- ========================================================================= -->
+                <div class="data-card" style="margin-bottom:1.25rem; background:var(--bg-card); border:1px solid rgba(244, 63, 94, 0.3); border-radius:12px; padding:1.25rem; box-shadow:0 6px 20px rgba(0,0,0,0.35);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px dashed var(--border-card);">
+                        <div>
+                            <h3 style="margin:0; font-size:1.05rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-table-cells" style="color:#f43f5e;"></i> BẢNG TỔNG HỢP SỐ LƯỢNG PHIẾU TREO THEO KHO & NGÀY
+                                <span id="matrixActiveFilterBadge" style="display:none; font-size:0.72rem; font-weight:700; background:rgba(244,63,94,0.25); color:#f43f5e; padding:2px 8px; border-radius:12px; border:1px solid rgba(244,63,94,0.4); align-items:center; gap:5px;">
+                                    <span id="matrixActiveFilterText">Đang lọc</span>
+                                    <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="clearMatrixFilter()" title="Bỏ lọc ma trận"></i>
+                                </span>
+                            </h3>
+                            <div style="font-size:0.76rem; color:var(--text-secondary); margin-top:2px;">
+                                Phân bổ số lượng phiếu treo từ nơi chuyển về nơi nhận và ngược lại (Bấm vào từng ô số liệu để xem chi tiết bên dưới)
+                            </div>
+                        </div>
+
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <!-- Group By Selector -->
+                            <div class="seg-pill">
+                                <button class="seg-btn active" id="btn-matrix-group-wh" onclick="setMatrixGroupBy('wh')">🏢 Theo Kho Xuất</button>
+                                <button class="seg-btn" id="btn-matrix-group-dir" onclick="setMatrixGroupBy('direction')">🔄 Chiều Luân Chuyển (Kho ➔ ST & ST ➔ Kho)</button>
+                                <button class="seg-btn" id="btn-matrix-group-route" onclick="setMatrixGroupBy('route')">🛣️ Tuyến Chi Tiết</button>
+                            </div>
+
+                            <!-- Export Matrix Excel -->
+                            <button onclick="exportMatrixExcel()" style="padding:0.4rem 0.85rem; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 8px rgba(16,185,129,0.35);">
+                                <i class="fa-solid fa-file-excel"></i> Xuất Ma Trận Excel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Matrix Table Wrapper -->
+                    <div style="overflow-x:auto; width:100%; max-height:480px; position:relative;" id="matrixTableScrollWrapper">
+                        <table class="styled-table" id="pendingMatrixTable" style="margin:0; width:100%; border-collapse:collapse; font-size:0.83rem;">
+                            <thead id="pendingMatrixThead" style="position:sticky; top:0; z-index:10; background:var(--table-head-bg);">
+                                <!-- Dynamic Headers -->
+                            </thead>
+                            <tbody id="pendingMatrixTbody">
+                                <tr><td colspan="10" class="text-center" style="padding:2rem; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Đang tổng hợp ma trận phiếu treo...</td></tr>
+                            </tbody>
+                            <tfoot id="pendingMatrixTfoot" style="position:sticky; bottom:0; z-index:9; background:var(--table-tfoot-bg); font-weight:bold;">
+                                <!-- Total row -->
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- FILTER BAR & CONTROLS -->
                 <div style="background:var(--bg-card); border:1px solid var(--border-card); border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.25rem;">
                     <!-- Row 1: Sub-mode selection pills -->
@@ -14446,13 +14495,69 @@ function copyChatId(chatId, btnEl) {
     
 
 // =========================================================================
-// TAB 7: DANH SÁCH PHIẾU TREO (WMS CDC REALTIME) - ENGINE
+// TAB 7: DANH SÁCH PHIẾU TREO (WMS CDC REALTIME) - COMPLETE ENGINE
 // =========================================================================
 
 let curPendingSubMode = 'all'; // 'all', 'pt', 'to', 'hk'
 let curPendingPage = 1;
 let pendingPageSize = 100;
 let filteredPendingItems = [];
+
+// Matrix State
+let curMatrixGroupBy = 'wh'; // 'wh', 'direction', 'route'
+let matrixSelectedFilter = null; // { rowKey: string, date: string }
+
+function extractDayMonth(dStr) {
+    if (!dStr || dStr === '---') return 'Chưa rõ';
+    const parts = dStr.split(' ')[0].split('/');
+    if (parts.length >= 2) {
+        return `${parseInt(parts[0], 10)}.${parseInt(parts[1], 10)}`;
+    }
+    return dStr.substring(0, 5);
+}
+
+function parseSortableDate(dmStr) {
+    if (dmStr === 'Chưa rõ') return 0;
+    const parts = dmStr.split('.');
+    if (parts.length === 2) {
+        return parseInt(parts[1], 10) * 100 + parseInt(parts[0], 10);
+    }
+    return 9999;
+}
+
+function getWhOrRoute(item, groupBy = 'wh') {
+    const f = item.from_name || item.pt_from_name || 'Chưa rõ';
+    const t = item.to_name || 'Chưa rõ';
+    
+    if (groupBy === 'route') {
+        const fShort = f.length > 25 ? f.substring(0, 22) + '...' : f;
+        const tShort = t.length > 25 ? t.substring(0, 22) + '...' : t;
+        return `${fShort} ➔ ${tShort}`;
+    }
+    if (groupBy === 'direction') {
+        const isFromWh = /KHO|FGA|FGB|CLA|FZA|MFA|FEA|SCF|SEEDLOG|CHILL|FROZEN/i.test(f);
+        const isToWh = /KHO|FGA|FGB|CLA|FZA|MFA|FEA|SCF|SEEDLOG|CHILL|FROZEN/i.test(t);
+        if (isFromWh && !isToWh) return '🚚 Kho ➔ Siêu Thị (Xuất hàng đi)';
+        if (!isFromWh && isToWh) return '↩️ Siêu Thị ➔ Kho (Hàng hoàn / Về kho)';
+        if (isFromWh && isToWh) return '🔄 Kho ➔ Kho (Điều chuyển)';
+        return '🏪 Siêu Thị ➔ Siêu Thị (Nội bộ)';
+    }
+    // Default group by Warehouse / Unit
+    let n = f.toUpperCase();
+    if (n.includes('FGA10101')) return 'Kho Khô FGA (Bình Thắng)';
+    if (n.includes('FGA10103')) return 'Kho Khô FGA10103 (Khai Trương)';
+    if (n.includes('FGA')) return 'Kho Khô FGA';
+    if (n.includes('FGB')) return 'Kho Khô FGB (Long Biên)';
+    if (n.includes('CLA40102') || n.includes('CLA')) return 'Kho Đông Mát CLA (Sóng Thần)';
+    if (n.includes('FZA50102') || n.includes('FZA')) return 'Kho Đông Lạnh FZA (Sóng Thần)';
+    if (n.includes('MFA30102') || n.includes('MFA')) return 'Kho Thịt Cá MFA (Sóng Thần)';
+    if (n.includes('FEA20102') || n.includes('FEA')) return 'Kho Rau Củ FEA (Bình Thắng)';
+    if (n.includes('SEEDLOG') || n.includes('KSL')) return 'Kho Seedlog';
+    if (n.includes('CHILL')) return 'Kho Chill SCF';
+    if (n.includes('FROZEN')) return 'Kho Frozen SCF';
+    if (n.includes('KFM_') || n.includes('ST')) return 'Các Siêu Thị (Chuyển đi/hoàn)';
+    return f.length > 28 ? f.substring(0, 25) + '...' : f;
+}
 
 function loadPendingTicketsData(callback) {
     if (window.PENDING_TICKETS_DATA && typeof window.PENDING_TICKETS_DATA === 'object') {
@@ -14483,6 +14588,7 @@ function initPendingTicketsModule() {
         if (!data) return;
         updatePendingSummaryKPIs(data);
         populatePendingStoreOptions(data);
+        renderPendingMatrixTable();
         renderPendingTicketsTable();
     });
 }
@@ -14560,14 +14666,13 @@ function setPendingSubMode(mode) {
 
     const statusSel = document.getElementById('pendingStatusSelect');
     if (statusSel) {
-        if (mode === 'pt') {
-            statusSel.value = 'all';
-        } else if (mode === 'hk') {
-            statusSel.value = 'all';
-        }
+        if (mode === 'pt') statusSel.value = 'all';
+        else if (mode === 'hk') statusSel.value = 'all';
     }
 
     curPendingPage = 1;
+    clearMatrixFilter(false);
+    renderPendingMatrixTable();
     renderPendingTicketsTable();
 }
 
@@ -14578,6 +14683,7 @@ function onPendingSearchChange() {
 
 function onPendingFilterChange() {
     curPendingPage = 1;
+    renderPendingMatrixTable();
     renderPendingTicketsTable();
 }
 
@@ -14610,6 +14716,278 @@ function copyTicketCode(code, el) {
     }).catch(() => {});
 }
 
+// =========================================================================
+// MATRIX TABLE LOGIC (PIVOT KHO × NGÀY - HÌNH 2)
+// =========================================================================
+
+function setMatrixGroupBy(groupBy) {
+    curMatrixGroupBy = groupBy;
+    ['wh', 'dir', 'route'].forEach(g => {
+        const btn = document.getElementById(`btn-matrix-group-${g}`);
+        if (btn) {
+            if (g === groupBy || (groupBy === 'direction' && g === 'dir')) btn.classList.add('active');
+            else btn.classList.remove('active');
+        }
+    });
+    renderPendingMatrixTable();
+}
+
+function getMatrixSourceItems() {
+    if (!window.PENDING_TICKETS_DATA) return [];
+    const data = window.PENDING_TICKETS_DATA;
+    let items = [];
+    if (curPendingSubMode === 'pt' || curPendingSubMode === 'all') items = items.concat(data.pt_dang_chuyen || []);
+    if (curPendingSubMode === 'to' || curPendingSubMode === 'all') items = items.concat(data.to_yeu_cau || []);
+    if (curPendingSubMode === 'hk' || curPendingSubMode === 'all') items = items.concat(data.hk_can_hau_kiem || []);
+
+    const catFilter = document.getElementById('pendingCategorySelect')?.value || 'all';
+    if (catFilter !== 'all') {
+        items = items.filter(it => (it.category || '').includes(catFilter));
+    }
+    return items;
+}
+
+function renderPendingMatrixTable() {
+    const thead = document.getElementById('pendingMatrixThead');
+    const tbody = document.getElementById('pendingMatrixTbody');
+    const tfoot = document.getElementById('pendingMatrixTfoot');
+    if (!thead || !tbody) return;
+
+    const items = getMatrixSourceItems();
+    if (items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding:2rem; color:var(--text-muted);">Không có dữ liệu ma trận.</td></tr>';
+        if (tfoot) tfoot.innerHTML = '';
+        return;
+    }
+
+    const datesSet = new Set();
+    const rowsMap = {};
+
+    items.forEach(it => {
+        const dStr = it.transfer_date || it.pt_transfer_date || it.received_date || it.created_at;
+        const dm = extractDayMonth(dStr);
+        datesSet.add(dm);
+
+        const rKey = getWhOrRoute(it, curMatrixGroupBy);
+        if (!rowsMap[rKey]) rowsMap[rKey] = {};
+        rowsMap[rKey][dm] = (rowsMap[rKey][dm] || 0) + 1;
+    });
+
+    const sortedDates = Array.from(datesSet).sort((a, b) => parseSortableDate(a) - parseSortableDate(b));
+
+    // Render THEAD
+    let colHeaderLabel = 'Kho / Đơn Vị Xuất';
+    if (curMatrixGroupBy === 'direction') colHeaderLabel = 'Chiều Luân Chuyển';
+    else if (curMatrixGroupBy === 'route') colHeaderLabel = 'Tuyến Chuyển (Nơi gửi ➔ Nơi nhận)';
+
+    let theadHtml = `<tr>
+        <th style="min-width:220px; text-align:left; padding:8px 12px;">${colHeaderLabel}</th>`;
+    sortedDates.forEach(d => {
+        theadHtml += `<th style="width:75px; text-align:center; padding:8px 4px; font-weight:700; color:#38bdf8;">${d}</th>`;
+    });
+    theadHtml += `<th style="width:90px; text-align:right; padding:8px 12px; font-weight:800; color:#fbbf24; background:rgba(251,191,36,0.1);">TỔNG CỘNG</th></tr>`;
+    thead.innerHTML = theadHtml;
+
+    // Render TBODY
+    let tbodyHtml = '';
+    const dateTotals = {};
+    sortedDates.forEach(d => { dateTotals[d] = 0; });
+    let grandTotal = 0;
+
+    const sortedRowKeys = Object.keys(rowsMap).sort((a, b) => {
+        const sumA = Object.values(rowsMap[a]).reduce((s, v) => s + v, 0);
+        const sumB = Object.values(rowsMap[b]).reduce((s, v) => s + v, 0);
+        return sumB - sumA;
+    });
+
+    sortedRowKeys.forEach(rKey => {
+        const dDict = rowsMap[rKey];
+        let rowSum = 0;
+        let isRowSelected = matrixSelectedFilter && matrixSelectedFilter.rowKey === rKey;
+
+        tbodyHtml += `<tr style="${isRowSelected ? 'background:rgba(244,63,94,0.12);' : ''}">
+            <td style="font-weight:600; color:var(--text-primary); padding:7px 12px; max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${rKey}">
+                ${rKey}
+            </td>`;
+
+        sortedDates.forEach(d => {
+            const cnt = dDict[d] || 0;
+            rowSum += cnt;
+            dateTotals[d] = (dateTotals[d] || 0) + cnt;
+            const isCellSelected = isRowSelected && matrixSelectedFilter.date === d;
+
+            if (cnt > 0) {
+                tbodyHtml += `
+                    <td style="text-align:center; padding:5px 4px;">
+                        <span class="tag-pill" onclick="filterDetailByMatrixCell('${rKey.replace(/'/g, "\\'")}', '${d}')" 
+                              style="cursor:pointer; font-weight:700; font-size:0.78rem; padding:3px 8px; border-radius:5px; transition:all 0.15s;
+                                     ${isCellSelected ? 'background:#f43f5e; color:#fff; box-shadow:0 0 8px rgba(244,63,94,0.6);' : 'background:rgba(244,63,94,0.14); color:#f43f5e;'}">
+                            ${cnt.toLocaleString()}
+                        </span>
+                    </td>`;
+            } else {
+                tbodyHtml += `<td style="text-align:center; color:rgba(255,255,255,0.15); padding:5px 4px;">-</td>`;
+            }
+        });
+
+        grandTotal += rowSum;
+        const isRowTotalSelected = isRowSelected && matrixSelectedFilter.date === 'all';
+        tbodyHtml += `
+            <td style="text-align:right; padding:7px 12px; font-weight:800; background:rgba(251,191,36,0.06);">
+                <span class="tag-pill" onclick="filterDetailByMatrixCell('${rKey.replace(/'/g, "\\'")}', 'all')" 
+                      style="cursor:pointer; font-weight:800; font-size:0.8rem; padding:3px 8px; border-radius:5px;
+                             ${isRowTotalSelected ? 'background:#fbbf24; color:#000;' : 'background:rgba(251,191,36,0.18); color:#fbbf24;'}">
+                    ${rowSum.toLocaleString()}
+                </span>
+            </td>
+        </tr>`;
+    });
+    tbody.innerHTML = tbodyHtml;
+
+    // Render TFOOT
+    if (tfoot) {
+        let tfootHtml = `<tr style="border-top:2px solid var(--border-card);">
+            <td style="padding:9px 12px; font-weight:800; color:#fff; text-transform:uppercase;">
+                <i class="fa-solid fa-calculator"></i> TỔNG THEO NGÀY
+            </td>`;
+        sortedDates.forEach(d => {
+            const sumD = dateTotals[d] || 0;
+            const isColSelected = matrixSelectedFilter && matrixSelectedFilter.rowKey === 'all' && matrixSelectedFilter.date === d;
+            tfootHtml += `
+                <td style="text-align:center; padding:7px 4px;">
+                    <span class="tag-pill" onclick="filterDetailByMatrixCell('all', '${d}')" 
+                          style="cursor:pointer; font-weight:800; font-size:0.8rem; padding:3px 8px; border-radius:5px;
+                                 ${isColSelected ? 'background:#38bdf8; color:#000;' : 'background:rgba(56,189,248,0.2); color:#38bdf8;'}">
+                        ${sumD.toLocaleString()}
+                    </span>
+                </td>`;
+        });
+        const isGrandSelected = matrixSelectedFilter && matrixSelectedFilter.rowKey === 'all' && matrixSelectedFilter.date === 'all';
+        tfootHtml += `
+            <td style="text-align:right; padding:9px 12px; font-size:0.92rem; font-weight:900; background:rgba(251,191,36,0.15);">
+                <span class="tag-pill" onclick="filterDetailByMatrixCell('all', 'all')" 
+                      style="cursor:pointer; font-weight:900; font-size:0.85rem; padding:3px 10px; border-radius:6px;
+                             ${isGrandSelected ? 'background:#fbbf24; color:#000;' : 'background:#fbbf24; color:#0f172a;'}">
+                    ${grandTotal.toLocaleString()}
+                </span>
+            </td>
+        </tr>`;
+        tfoot.innerHTML = tfootHtml;
+    }
+}
+
+function filterDetailByMatrixCell(rowKey, date) {
+    if (matrixSelectedFilter && matrixSelectedFilter.rowKey === rowKey && matrixSelectedFilter.date === date) {
+        clearMatrixFilter();
+        return;
+    }
+
+    matrixSelectedFilter = { rowKey, date };
+    const badge = document.getElementById('matrixActiveFilterBadge');
+    const badgeText = document.getElementById('matrixActiveFilterText');
+
+    let label = '';
+    if (rowKey !== 'all') label += `Đơn vị: ${rowKey}`;
+    if (date !== 'all') label += (label ? ' • ' : '') + `Ngày: ${date}`;
+    if (!label) label = 'Tất cả ma trận';
+
+    if (badge && badgeText) {
+        badgeText.innerText = label;
+        badge.style.display = 'inline-flex';
+    }
+
+    renderPendingMatrixTable();
+    curPendingPage = 1;
+    renderPendingTicketsTable();
+
+    // Smooth scroll to table
+    const targetTable = document.getElementById('pendingTicketsTable');
+    if (targetTable) {
+        targetTable.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function clearMatrixFilter(shouldRender = true) {
+    matrixSelectedFilter = null;
+    const badge = document.getElementById('matrixActiveFilterBadge');
+    if (badge) badge.style.display = 'none';
+
+    if (shouldRender) {
+        renderPendingMatrixTable();
+        curPendingPage = 1;
+        renderPendingTicketsTable();
+    }
+}
+
+function exportMatrixExcel() {
+    if (!window.PENDING_TICKETS_DATA || typeof XLSX === 'undefined') {
+        alert("Chưa có dữ liệu hoặc đang tải thư viện Excel.");
+        return;
+    }
+
+    const items = getMatrixSourceItems();
+    const datesSet = new Set();
+    const rowsMap = {};
+
+    items.forEach(it => {
+        const dStr = it.transfer_date || it.pt_transfer_date || it.received_date || it.created_at;
+        const dm = extractDayMonth(dStr);
+        datesSet.add(dm);
+        const rKey = getWhOrRoute(it, curMatrixGroupBy);
+        if (!rowsMap[rKey]) rowsMap[rKey] = {};
+        rowsMap[rKey][dm] = (rowsMap[rKey][dm] || 0) + 1;
+    });
+
+    const sortedDates = Array.from(datesSet).sort((a, b) => parseSortableDate(a) - parseSortableDate(b));
+    let colHeaderLabel = 'Kho / Đơn Vị Xuất';
+    if (curMatrixGroupBy === 'direction') colHeaderLabel = 'Chiều Luân Chuyển';
+    else if (curMatrixGroupBy === 'route') colHeaderLabel = 'Tuyến Chuyển (Nơi gửi ➔ Nơi nhận)';
+
+    const excelRows = [];
+    const dateTotals = {};
+    sortedDates.forEach(d => { dateTotals[d] = 0; });
+    let grandTotal = 0;
+
+    const sortedRowKeys = Object.keys(rowsMap).sort((a, b) => {
+        const sumA = Object.values(rowsMap[a]).reduce((s, v) => s + v, 0);
+        const sumB = Object.values(rowsMap[b]).reduce((s, v) => s + v, 0);
+        return sumB - sumA;
+    });
+
+    sortedRowKeys.forEach(rKey => {
+        const rowObj = {};
+        rowObj[colHeaderLabel] = rKey;
+        let rSum = 0;
+        sortedDates.forEach(d => {
+            const c = rowsMap[rKey][d] || 0;
+            rowObj[d] = c;
+            rSum += c;
+            dateTotals[d] = (dateTotals[d] || 0) + c;
+        });
+        rowObj["TỔNG CỘNG"] = rSum;
+        grandTotal += rSum;
+        excelRows.push(rowObj);
+    });
+
+    // Total row
+    const totalRowObj = {};
+    totalRowObj[colHeaderLabel] = "TỔNG THEO NGÀY";
+    sortedDates.forEach(d => { totalRowObj[d] = dateTotals[d] || 0; });
+    totalRowObj["TỔNG CỘNG"] = grandTotal;
+    excelRows.push(totalRowObj);
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(excelRows);
+    XLSX.utils.book_append_sheet(wb, ws, "Tong_Hop_Ma_Tran_Phieu_Treo");
+
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
+    XLSX.writeFile(wb, `Tong_Hop_Ma_Tran_Phieu_Treo_SCM_${dateStr}.xlsx`);
+}
+
+// =========================================================================
+// DETAILED TABLE RENDERING (BẢNG TRA CỨU CHI TIẾT)
+// =========================================================================
+
 function renderPendingTicketsTable() {
     if (!window.PENDING_TICKETS_DATA) return;
     const data = window.PENDING_TICKETS_DATA;
@@ -14621,7 +14999,6 @@ function renderPendingTicketsTable() {
 
     let list = [];
 
-    // Helper item transformer
     if (curPendingSubMode === 'pt' || curPendingSubMode === 'all') {
         (data.pt_dang_chuyen || []).forEach(x => {
             list.push({
@@ -14724,6 +15101,18 @@ function renderPendingTicketsTable() {
         // Store filter
         if (storeFilter !== 'all') {
             if (item.to_name !== storeFilter && item.from_name !== storeFilter) return false;
+        }
+
+        // Matrix Selected Filter
+        if (matrixSelectedFilter) {
+            if (matrixSelectedFilter.rowKey !== 'all') {
+                const itemRowKey = getWhOrRoute(item, curMatrixGroupBy);
+                if (itemRowKey !== matrixSelectedFilter.rowKey) return false;
+            }
+            if (matrixSelectedFilter.date !== 'all') {
+                const itemDm = extractDayMonth(item.date_str);
+                if (itemDm !== matrixSelectedFilter.date) return false;
+            }
         }
 
         return true;
@@ -14845,7 +15234,6 @@ function renderPendingTicketsTableRows() {
     pageItems.forEach((item, idx) => {
         const rowNum = startIndex + idx + 1;
 
-        // Badge Status Styling
         let statusBadge = '';
         if (item.status_text === 'Đang chuyển') {
             statusBadge = `<span class="tag-pill" style="background:rgba(56,189,248,0.18); color:#38bdf8; font-weight:700;"><i class="fa-solid fa-truck-fast"></i> Đang chuyển</span>`;
@@ -14859,7 +15247,6 @@ function renderPendingTicketsTableRows() {
             statusBadge = `<span class="tag-pill" style="background:rgba(255,255,255,0.08); color:var(--text-secondary); font-weight:600;">${item.status_text}</span>`;
         }
 
-        // Category pill
         let catColor = '#94a3b8';
         if (item.category.includes('Khô')) catColor = '#f59e0b';
         else if (item.category.includes('Đông')) catColor = '#818cf8';
@@ -14933,7 +15320,6 @@ function renderPendingTicketsTableRows() {
                 </tr>
             `;
         } else {
-            // ALL 3 CATEGORIES
             let typeBadge = '';
             if (item.sys_type === 'pt') typeBadge = '<span class="tag-pill" style="background:rgba(56,189,248,0.15); color:#38bdf8; font-weight:700;">🚚 PT Chuyển</span>';
             else if (item.sys_type === 'to') typeBadge = '<span class="tag-pill" style="background:rgba(245,158,11,0.15); color:#fbbf24; font-weight:700;">📋 YC Xử Lý</span>';
@@ -14977,7 +15363,6 @@ function exportPendingTicketsExcel() {
     const data = window.PENDING_TICKETS_DATA;
     const wb = XLSX.utils.book_new();
 
-    // Sheet 1: PT Đang chuyển
     const ptRows = (data.pt_dang_chuyen || []).map((x, i) => ({
         "STT": i + 1,
         "Mã Phiếu Chuyển": x.code,
@@ -14993,7 +15378,6 @@ function exportPendingTicketsExcel() {
     const wsPT = XLSX.utils.json_to_sheet(ptRows);
     XLSX.utils.book_append_sheet(wb, wsPT, "1_DS_Phieu_Chuyen");
 
-    // Sheet 2: YC Xử Lý TO
     const toRows = (data.to_yeu_cau || []).map((x, i) => ({
         "STT": i + 1,
         "Mã Yêu Cầu (TO)": x.code,
@@ -15011,7 +15395,6 @@ function exportPendingTicketsExcel() {
     const wsTO = XLSX.utils.json_to_sheet(toRows);
     XLSX.utils.book_append_sheet(wb, wsTO, "2_DS_YC_Xu_Ly");
 
-    // Sheet 3: Phiếu Hậu Kiểm
     const hkRows = (data.hk_can_hau_kiem || []).map((x, i) => ({
         "STT": i + 1,
         "Mã Phiếu Hậu Kiểm": x.double_check_code,
@@ -15039,8 +15422,8 @@ async function syncPendingTicketsRealtime() {
     const badge = document.getElementById('pendingSyncBadge');
 
     const choice = confirm(
-        "⚡ CẬP NHẬT REALTIME PHIẾU TREO TỪ CDC DATABASE (24/7)\n\n" +
-        "• Bấm [OK]: Kích hoạt GitHub Actions Cloud Runner (Serverless 24/7 - không cần mở máy tính cá nhân) để kết nối trực tiếp CDC StarRocks kéo số liệu mới nhất.\n" +
+        "⚡ CẬP NHẬT REALTIME PHIẾU TREO TỪ CDC DATABASE (24/7)\\n\\n" +
+        "• Bấm [OK]: Kích hoạt GitHub Actions Cloud Runner (Serverless 24/7 - không cần mở máy tính cá nhân) để kết nối trực tiếp CDC StarRocks kéo số liệu mới nhất.\\n" +
         "• Bấm [Cancel]: Chỉ tải lại (Reload) dữ liệu đã lưu gần nhất từ Web."
     );
 
@@ -15048,7 +15431,6 @@ async function syncPendingTicketsRealtime() {
     if (icon) icon.className = 'fa-solid fa-spinner fa-spin';
 
     if (choice) {
-        // Option 1: Trigger GitHub Actions Cloud Runner Dispatch
         try {
             if (badge) badge.innerHTML = '<span style="color:#fbbf24;"><i class="fa-solid fa-spinner fa-spin"></i> Đang gửi lệnh tới Cloud Runner 24/7...</span>';
             const token = (typeof DEFAULT_GH_PAT !== 'undefined' && DEFAULT_GH_PAT) ? DEFAULT_GH_PAT : (localStorage.getItem("SCM_GH_PAT") || "");
@@ -15072,9 +15454,8 @@ async function syncPendingTicketsRealtime() {
 
                 if (res.status === 204 || res.ok) {
                     if (badge) badge.innerHTML = '<span style="color:#38bdf8;"><i class="fa-solid fa-cloud-arrow-down fa-spin"></i> Cloud Runner đang truy vấn CDC StarRocks (khoảng 30s)...</span>';
-                    alert("☁️ ĐÃ KÍCH HOẠT THÀNH CÔNG CLOUD RUNNER (24/7)!\n\nMáy chủ Cloud đang kết nối StarRocks CDC để lấy dữ liệu mới nhất. Trang web sẽ tự động dò và cập nhật trong khoảng 30 - 45 giây tới.");
+                    alert("☁️ ĐÃ KÍCH HOẠT THÀNH CÔNG CLOUD RUNNER (24/7)!\\n\\nMáy chủ Cloud đang kết nối StarRocks CDC để lấy dữ liệu mới nhất. Trang web sẽ tự động dò và cập nhật trong khoảng 30 - 45 giây tới.");
                     
-                    // Poll for new data every 8s up to 10 times
                     let pollCount = 0;
                     const oldUpdated = window.PENDING_TICKETS_DATA ? window.PENDING_TICKETS_DATA.updated_at : "";
                     const pollTimer = setInterval(async () => {
@@ -15093,6 +15474,7 @@ async function syncPendingTicketsRealtime() {
                                     clearInterval(pollTimer);
                                     updatePendingSummaryKPIs(window.PENDING_TICKETS_DATA);
                                     populatePendingStoreOptions(window.PENDING_TICKETS_DATA);
+                                    renderPendingMatrixTable();
                                     renderPendingTicketsTable();
                                     if (btn) btn.disabled = false;
                                     if (icon) icon.className = 'fa-solid fa-bolt';
@@ -15115,7 +15497,6 @@ async function syncPendingTicketsRealtime() {
         }
     }
 
-    // Option 2: Fallback direct fetch current file
     const timestamp = new Date().getTime();
     fetch(`daily_details/pending_tickets.js?t=${timestamp}`)
         .then(res => res.text())
@@ -15129,6 +15510,7 @@ async function syncPendingTicketsRealtime() {
                 if (window.PENDING_TICKETS_DATA) {
                     updatePendingSummaryKPIs(window.PENDING_TICKETS_DATA);
                     populatePendingStoreOptions(window.PENDING_TICKETS_DATA);
+                    renderPendingMatrixTable();
                     renderPendingTicketsTable();
                 }
                 if (btn) btn.disabled = false;
@@ -15142,6 +15524,7 @@ async function syncPendingTicketsRealtime() {
         });
 }
 
+// Window export
 window.loadPendingTicketsData = loadPendingTicketsData;
 window.initPendingTicketsModule = initPendingTicketsModule;
 window.setPendingSubMode = setPendingSubMode;
@@ -15150,10 +15533,14 @@ window.onPendingFilterChange = onPendingFilterChange;
 window.onPendingPageSizeChange = onPendingPageSizeChange;
 window.changePendingPage = changePendingPage;
 window.copyTicketCode = copyTicketCode;
+window.setMatrixGroupBy = setMatrixGroupBy;
+window.renderPendingMatrixTable = renderPendingMatrixTable;
+window.filterDetailByMatrixCell = filterDetailByMatrixCell;
+window.clearMatrixFilter = clearMatrixFilter;
+window.exportMatrixExcel = exportMatrixExcel;
 window.renderPendingTicketsTable = renderPendingTicketsTable;
 window.exportPendingTicketsExcel = exportPendingTicketsExcel;
 window.syncPendingTicketsRealtime = syncPendingTicketsRealtime;
-
 </script>
 
     <!-- ========================================================================= -->
