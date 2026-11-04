@@ -116,19 +116,16 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 2.5px;
-            background: linear-gradient(90deg, #38bdf8 0%, #818cf8 35%, #ec4899 70%, #f59e0b 100%);
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .header-title h1 {
-            font-size: 1.4rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 45%, #ec4899 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: #f8fafc;
             display: inline-block;
-            text-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
         }
 
         .section-panel-title {
@@ -266,69 +263,25 @@
             line-height: 1.2;
         }
 
-        .sidebar-tab-btn.active-tab1 {
-            background: var(--bg-card-alt) !important;
-            border: 1px solid #1f6feb !important;
-            color: var(--text-primary) !important;
-        }
-        .sidebar-tab-btn.active-tab1 .tab-icon-wrap {
-            background: #1f6feb;
-            color: #ffffff;
-        }
-
-        .sidebar-tab-btn.active-tab2 {
-            background: var(--bg-card-alt) !important;
-            border: 1px solid #238636 !important;
-            color: var(--text-primary) !important;
-        }
-        .sidebar-tab-btn.active-tab2 .tab-icon-wrap {
-            background: #238636;
-            color: #ffffff;
-        }
-
-        
-        .sidebar-tab-btn.active-tab4 {
-            background: var(--bg-card-alt) !important;
-            border: 1px solid #229ED9 !important;
-            color: var(--text-primary) !important;
-        }
-        .sidebar-tab-btn.active-tab4 .tab-icon-wrap {
-            background: #229ED9;
-            color: #ffffff;
-        }
-
-        
-        .sidebar-tab-btn.active-tab6 {
-            background: var(--bg-card-alt) !important;
-            border: 1px solid #10b981 !important;
-            color: var(--text-primary) !important;
-        }
-        .sidebar-tab-btn.active-tab6 .tab-icon-wrap {
-            background: #10b981;
-            color: #ffffff;
-        }
-
+        .sidebar-tab-btn.active-tab1,
+        .sidebar-tab-btn.active-tab2,
+        .sidebar-tab-btn.active-tab4,
+        .sidebar-tab-btn.active-tab5,
+        .sidebar-tab-btn.active-tab6,
         .sidebar-tab-btn.active-tab7 {
-            background: var(--bg-card-alt) !important;
-            border: 1px solid #f43f5e !important;
-            color: var(--text-primary) !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: #ffffff !important;
         }
+        .sidebar-tab-btn.active-tab1 .tab-icon-wrap,
+        .sidebar-tab-btn.active-tab2 .tab-icon-wrap,
+        .sidebar-tab-btn.active-tab4 .tab-icon-wrap,
+        .sidebar-tab-btn.active-tab5 .tab-icon-wrap,
+        .sidebar-tab-btn.active-tab6 .tab-icon-wrap,
         .sidebar-tab-btn.active-tab7 .tab-icon-wrap {
-            background: #f43f5e;
-            color: #ffffff;
+            background: #334155 !important;
+            color: #f8fafc !important;
         }
-
-
-        .sidebar-tab-btn.active-tab5 {
-            background: var(--bg-card-alt) !important;
-            border: 1px solid #f97316 !important;
-            color: var(--text-primary) !important;
-        }
-        .sidebar-tab-btn.active-tab5 .tab-icon-wrap {
-            background: #f97316;
-            color: #ffffff;
-        }
-
 
         /* Telegram Tab Styling */
         .tele-hero-card {
@@ -710,28 +663,14 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
-        .group-btn.active-thit-ca {
-            background: #f43f5e;
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
-        }
-
-        .group-btn.active-mat {
-            background: #10b981;
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-        }
-
-        .group-btn.active-dong {
-            background: #6366f1;
-            color: #ffffff;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-        }
-
+        .group-btn.active-thit-ca,
+        .group-btn.active-mat,
+        .group-btn.active-dong,
         .group-btn.active-all {
-            background: #0284c7;
+            background: #334155;
             color: #ffffff;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: none;
         }
 
         /* Month Switcher Selector */
@@ -739,11 +678,11 @@
             display: flex;
             align-items: center;
             gap: 0.45rem;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
             padding: 0.35rem 0.75rem;
-            border-radius: 10px;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: none;
         }
 
         .month-select {
@@ -786,9 +725,9 @@
         }
 
         .action-btn {
-            background: #10b981;
+            background: #0f766e;
             color: #ffffff;
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 0.55rem 1rem;
             border-radius: 8px;
             font-size: 0.84rem;
@@ -799,12 +738,11 @@
             gap: 0.45rem;
             font-family: inherit;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+            box-shadow: none;
         }
-
         .action-btn:hover {
-            background: #059669;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.45);
+            background: #115e59;
+            box-shadow: none;
         }
 
         /* ========================================================================= */
@@ -3027,7 +2965,7 @@
                 <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Chuyển đổi giao diện Phông Đen / Sáng">
                     <i class="fa-solid fa-moon"></i> <span>Phông Tối</span>
                 </button>
-                <button class="action-btn" onclick="openRealtimeSyncModal()" style="background:linear-gradient(135deg, #ec4899, #8b5cf6, #3b82f6); color:#fff; border:none; font-weight:700; box-shadow:0 0 14px rgba(236,72,153,0.5); cursor:pointer; display:inline-flex; align-items:center; gap:6px;" title="Cập nhật Realtime Hada & CDC">
+                <button class="action-btn" onclick="openRealtimeSyncModal()" style="background:#0284c7; color:#fff; border:1px solid #0369a1; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:none;" title="Cập nhật Realtime Hada & CDC">
                     <i class="fa-solid fa-bolt-lightning"></i> Cập Nhật Realtime (Hada & CDC)
                 </button>
                 <button class="action-btn" onclick="exportExcel()">
@@ -5752,55 +5690,58 @@
             <!-- ========================================================================= -->
             <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
             <!-- ========================================================================= -->
+            <!-- ========================================================================= -->
+            <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
+            <!-- ========================================================================= -->
             <div class="big-tab-panel" id="big-panel-7">
-                <!-- HERO HEADER -->
-                <div class="tele-hero-card" style="background: linear-gradient(135deg, rgba(244, 63, 94, 0.14) 0%, rgba(22, 27, 34, 0.95) 100%); border-color: rgba(244, 63, 94, 0.35);">
+                <!-- HERO HEADER (TIẾT CHẾ MÀU SẮC, DỊU MẮT) -->
+                <div class="tele-hero-card" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem 1.5rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
                     <div style="display:flex; align-items:center; gap:0.9rem;">
-                        <div style="width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg, #f43f5e, #e11d48); color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.6rem; box-shadow:0 4px 12px rgba(244,63,94,0.35);">
+                        <div style="width:44px; height:44px; border-radius:10px; background:#1e293b; color:#94a3b8; display:flex; align-items:center; justify-content:center; font-size:1.35rem; border:1px solid rgba(255,255,255,0.08);">
                             <i class="fa-solid fa-clock-rotate-left"></i>
                         </div>
                         <div>
-                            <h2 style="margin:0; font-size:1.35rem; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <h2 style="margin:0; font-size:1.25rem; font-weight:700; color:#f8fafc; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                                 TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO
-                                <span style="font-size:0.75rem; font-weight:600; background:#f43f5e; color:#fff; padding:2px 8px; border-radius:12px; display:inline-flex; align-items:center; gap:4px;">
-                                    <span style="width:6px; height:6px; border-radius:50%; background:#fff; display:inline-block;"></span> WMS CDC REALTIME
+                                <span style="font-size:0.72rem; font-weight:600; background:rgba(255,255,255,0.08); color:#cbd5e1; padding:2px 8px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); display:inline-flex; align-items:center; gap:4px;">
+                                    <span style="width:6px; height:6px; border-radius:50%; background:#38bdf8; display:inline-block;"></span> WMS CDC REALTIME
                                 </span>
                             </h2>
-                            <div style="color:var(--text-secondary); font-size:0.83rem; margin-top:3px;">
+                            <div style="color:var(--text-secondary); font-size:0.82rem; margin-top:3px;">
                                 Giám sát 3 phân hệ: <strong>1. DS Phiếu Chuyển (Đang chuyển)</strong> • <strong>2. DS YC Xử Lý (Mới & Đang xử lý)</strong> • <strong>3. DS Phiếu Hậu Kiểm (Cần hậu kiểm)</strong>
                             </div>
                         </div>
                     </div>
 
                     <!-- ACTION BUTTONS -->
-                    <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
-                        <button onclick="syncPendingTicketsRealtime()" id="btnSyncPendingCDC" style="display:inline-flex; align-items:center; gap:8px; padding:0.6rem 1.25rem; background:linear-gradient(135deg, #f43f5e, #ec4899); color:#fff; border:none; border-radius:8px; font-weight:800; font-size:0.84rem; cursor:pointer; box-shadow:0 0 16px rgba(244,63,94,0.45); transition:all 0.2s;">
+                    <div style="display:flex; align-items:center; gap:0.65rem; flex-wrap:wrap;">
+                        <button onclick="syncPendingTicketsRealtime()" id="btnSyncPendingCDC" style="display:inline-flex; align-items:center; gap:8px; padding:0.55rem 1.15rem; background:#0284c7; color:#fff; border:1px solid #0369a1; border-radius:8px; font-weight:600; font-size:0.83rem; cursor:pointer; transition:all 0.2s;">
                             <i class="fa-solid fa-bolt" id="iconSyncPendingCDC"></i> CẬP NHẬT REALTIME (CDC)
                         </button>
-                        <button onclick="exportPendingTicketsExcel()" style="display:inline-flex; align-items:center; gap:6px; padding:0.55rem 1rem; background:#10b981; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.82rem; cursor:pointer; box-shadow:0 2px 8px rgba(16,185,129,0.35); transition:all 0.2s;">
+                        <button onclick="exportPendingTicketsExcel()" style="display:inline-flex; align-items:center; gap:6px; padding:0.55rem 1rem; background:#059669; color:#fff; border:1px solid #047857; border-radius:8px; font-weight:600; font-size:0.83rem; cursor:pointer; transition:all 0.2s;">
                             <i class="fa-solid fa-file-excel"></i> Xuất Excel Đầy Đủ (PV + Transfer)
                         </button>
-                        <a href="https://next.kingfood.co/operation/transfer-item/transfer-item-list" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; padding:0.55rem 0.95rem; background:#24292f; color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:8px; font-weight:600; font-size:0.82rem; text-decoration:none; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                        <a href="https://next.kingfood.co/operation/transfer-item/transfer-item-list" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; padding:0.55rem 0.95rem; background:#1e293b; color:#cbd5e1; border:1px solid rgba(255,255,255,0.12); border-radius:8px; font-weight:600; font-size:0.82rem; text-decoration:none;">
                             <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Kingfood Next
                         </a>
-                        <div id="pendingSyncBadge" style="font-size:0.75rem; color:#94a3b8; background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
+                        <div id="pendingSyncBadge" style="font-size:0.75rem; color:#94a3b8; background:rgba(255,255,255,0.04); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
                             Đồng bộ lúc: Đang tải...
                         </div>
                     </div>
                 </div>
 
-                <!-- 3 SUMMARY KPI CARDS (BẤM ĐỂ CHUYỂN NHANH MỤC) -->
+                <!-- 3 SUMMARY KPI CARDS (BẤM ĐỂ CHUYỂN NHANH MỤC, PHONG CÁCH TỐI GIẢN) -->
                 <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; margin-bottom:1.25rem;">
                     <!-- CARD 1: DS PHIẾU CHUYỂN -->
-                    <div class="tele-stat-card" onclick="setPendingSubMode('pt')" style="border-left:4px solid #38bdf8; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s;" title="Bấm để lọc DS Phiếu Chuyển đang chuyển">
+                    <div class="tele-stat-card" onclick="setPendingSubMode('pt')" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem 1.25rem; cursor:pointer; transition:border-color 0.15s;" title="Bấm để lọc DS Phiếu Chuyển đang chuyển">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                             <div>
                                 <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700; margin-bottom:4px;">
-                                    <i class="fa-solid fa-truck-fast" style="color:#38bdf8;"></i> 1. DS Phiếu Chuyển
+                                    <i class="fa-solid fa-truck-fast" style="color:#94a3b8;"></i> 1. DS Phiếu Chuyển
                                 </div>
-                                <div id="kpiPTDangChuyenCount" style="font-size:1.65rem; font-weight:800; color:#38bdf8;">-</div>
+                                <div id="kpiPTDangChuyenCount" style="font-size:1.65rem; font-weight:700; color:#f8fafc;">-</div>
                             </div>
-                            <span class="tag-pill" style="background:rgba(56,189,248,0.18); color:#38bdf8; font-weight:700; font-size:0.72rem;">ĐANG CHUYỂN</span>
+                            <span class="tag-pill" style="background:rgba(255,255,255,0.06); color:#cbd5e1; font-weight:600; font-size:0.72rem; border:1px solid rgba(255,255,255,0.1);">ĐANG CHUYỂN</span>
                         </div>
                         <div style="font-size:0.73rem; color:var(--text-muted); margin-top:4px;">
                             Phiếu xuất kho đang trên đường vận chuyển tới ST
@@ -5808,15 +5749,15 @@
                     </div>
 
                     <!-- CARD 2: DS YC XỬ LÝ PHIẾU CHUYỂN -->
-                    <div class="tele-stat-card" onclick="setPendingSubMode('to')" style="border-left:4px solid #f59e0b; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s;" title="Bấm để lọc DS YC Xử Lý Phiếu Chuyển">
+                    <div class="tele-stat-card" onclick="setPendingSubMode('to')" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem 1.25rem; cursor:pointer; transition:border-color 0.15s;" title="Bấm để lọc DS YC Xử Lý Phiếu Chuyển">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                             <div>
                                 <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700; margin-bottom:4px;">
-                                    <i class="fa-solid fa-file-circle-question" style="color:#f59e0b;"></i> 2. DS YC Xử Lý Phiếu Chuyển
+                                    <i class="fa-solid fa-file-circle-question" style="color:#94a3b8;"></i> 2. DS YC Xử Lý Phiếu Chuyển
                                 </div>
-                                <div id="kpiTOYeuCauCount" style="font-size:1.65rem; font-weight:800; color:#f59e0b;">-</div>
+                                <div id="kpiTOYeuCauCount" style="font-size:1.65rem; font-weight:700; color:#f8fafc;">-</div>
                             </div>
-                            <span class="tag-pill" style="background:rgba(245,158,11,0.18); color:#fbbf24; font-weight:700; font-size:0.72rem;">MỚI & ĐANG XỬ LÝ</span>
+                            <span class="tag-pill" style="background:rgba(255,255,255,0.06); color:#cbd5e1; font-weight:600; font-size:0.72rem; border:1px solid rgba(255,255,255,0.1);">MỚI & ĐANG XỬ LÝ</span>
                         </div>
                         <div id="kpiTOSubCount" style="font-size:0.73rem; color:var(--text-muted); margin-top:4px;">
                             Mới: - • Đang xử lý: - (Yêu cầu chuyển hoàn / claim)
@@ -5824,15 +5765,15 @@
                     </div>
 
                     <!-- CARD 3: DS PHIẾU HẬU KIỂM -->
-                    <div class="tele-stat-card" onclick="setPendingSubMode('hk')" style="border-left:4px solid #f43f5e; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s;" title="Bấm để lọc DS Phiếu Hậu Kiểm cần hậu kiểm">
+                    <div class="tele-stat-card" onclick="setPendingSubMode('hk')" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1rem 1.25rem; cursor:pointer; transition:border-color 0.15s;" title="Bấm để lọc DS Phiếu Hậu Kiểm cần hậu kiểm">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                             <div>
                                 <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700; margin-bottom:4px;">
-                                    <i class="fa-solid fa-clipboard-check" style="color:#f43f5e;"></i> 3. DS Phiếu Hậu Kiểm
+                                    <i class="fa-solid fa-clipboard-check" style="color:#94a3b8;"></i> 3. DS Phiếu Hậu Kiểm
                                 </div>
-                                <div id="kpiHKCanHauKiemCount" style="font-size:1.65rem; font-weight:800; color:#f43f5e;">-</div>
+                                <div id="kpiHKCanHauKiemCount" style="font-size:1.65rem; font-weight:700; color:#f8fafc;">-</div>
                             </div>
-                            <span class="tag-pill" style="background:rgba(244,63,94,0.18); color:#f43f5e; font-weight:700; font-size:0.72rem;">CẦN HẬU KIỂM</span>
+                            <span class="tag-pill" style="background:rgba(255,255,255,0.06); color:#cbd5e1; font-weight:600; font-size:0.72rem; border:1px solid rgba(255,255,255,0.1);">CẦN HẬU KIỂM</span>
                         </div>
                         <div style="font-size:0.73rem; color:var(--text-muted); margin-top:4px;">
                             Siêu thị chưa quét xác nhận đối soát (double_checked_status = 1)
@@ -5843,16 +5784,16 @@
                 <!-- ========================================================================= -->
                 <!-- BẢNG TỔNG HỢP MA TRẬN PIVOT THEO KHO DC & NGÀY (GIỐNG SHEET PV PHIẾU)      -->
                 <!-- ========================================================================= -->
-                <div class="data-card" style="margin-bottom:1.25rem; background:var(--bg-card); border:1px solid rgba(244, 63, 94, 0.3); border-radius:12px; padding:1.25rem; box-shadow:0 6px 20px rgba(0,0,0,0.35);">
+                <div class="data-card" style="margin-bottom:1.25rem; background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem;">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px dashed var(--border-card);">
                         <div>
-                            <h3 style="margin:0; font-size:1.05rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;" id="matrixTableTitleText">
-                                <i class="fa-solid fa-table-cells" style="color:#38bdf8;"></i> BẢNG TỔNG HỢP THEO KHO DC & NGÀY
+                            <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#f8fafc; display:flex; align-items:center; gap:8px;" id="matrixTableTitleText">
+                                <i class="fa-solid fa-table-cells" style="color:#94a3b8;"></i> BẢNG TỔNG HỢP THEO KHO DC & NGÀY
                             </h3>
                             <div style="font-size:0.76rem; color:var(--text-secondary); margin-top:3px;" id="matrixTableSubTitle">
                                 Thống kê Distinct Count số lượng mã phiếu theo Kho DC và Ngày phát sinh (Bấm vào từng ô để lọc danh sách chi tiết bên dưới)
                             </div>
-                            <div id="matrixActiveFilterBadge" style="display:none; margin-top:6px; font-size:0.75rem; font-weight:700; background:rgba(244,63,94,0.22); color:#f43f5e; padding:3px 10px; border-radius:12px; border:1px solid rgba(244,63,94,0.45); align-items:center; gap:6px;">
+                            <div id="matrixActiveFilterBadge" style="display:none; margin-top:6px; font-size:0.75rem; font-weight:600; background:rgba(255,255,255,0.08); color:#cbd5e1; padding:3px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.15); align-items:center; gap:6px;">
                                 <span id="matrixActiveFilterText">Đang lọc</span>
                                 <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:0.85rem;" onclick="clearMatrixFilter()" title="Bỏ lọc ma trận"></i>
                             </div>
@@ -5866,7 +5807,7 @@
                             </div>
 
                             <!-- Export Matrix Excel -->
-                            <button onclick="exportMatrixExcel()" style="padding:0.4rem 0.85rem; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; border-radius:6px; font-weight:700; font-size:0.78rem; cursor:pointer; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 8px rgba(16,185,129,0.35);">
+                            <button onclick="exportMatrixExcel()" style="padding:0.42rem 0.85rem; background:#0f766e; color:#fff; border:1px solid #115e59; border-radius:6px; font-weight:600; font-size:0.78rem; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
                                 <i class="fa-solid fa-file-excel"></i> Xuất Sheet PV Phiếu
                             </button>
                         </div>
@@ -5875,13 +5816,13 @@
                     <!-- Matrix Table Wrapper -->
                     <div style="overflow-x:auto; width:100%; max-height:480px; position:relative;" id="matrixTableScrollWrapper">
                         <table class="styled-table" id="pendingMatrixTable" style="margin:0; width:100%; border-collapse:collapse; font-size:0.83rem;">
-                            <thead id="pendingMatrixThead" style="position:sticky; top:0; z-index:10; background:var(--table-head-bg);">
+                            <thead id="pendingMatrixThead" style="position:sticky; top:0; z-index:10; background:#1e293b;">
                                 <!-- Dynamic 2-tier Headers -->
                             </thead>
                             <tbody id="pendingMatrixTbody">
                                 <tr><td colspan="10" class="text-center" style="padding:2rem; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Đang tổng hợp ma trận phiếu treo...</td></tr>
                             </tbody>
-                            <tfoot id="pendingMatrixTfoot" style="position:sticky; bottom:0; z-index:9; background:var(--table-tfoot-bg); font-weight:bold;">
+                            <tfoot id="pendingMatrixTfoot" style="position:sticky; bottom:0; z-index:9; background:#1e293b; font-weight:bold;">
                                 <!-- Total row -->
                             </tfoot>
                         </table>
@@ -5889,7 +5830,7 @@
                 </div>
 
                 <!-- FILTER BAR & CONTROLS -->
-                <div style="background:var(--bg-card); border:1px solid var(--border-card); border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.25rem;">
+                <div style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.25rem;">
                     <!-- Row 1: Sub-mode selection pills -->
                     <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin-bottom:0.9rem; padding-bottom:0.75rem; border-bottom:1px dashed var(--border-card);">
                         <span style="font-size:0.78rem; font-weight:700; color:var(--text-secondary); margin-right:4px;">
@@ -5954,11 +5895,11 @@
                 </div>
 
                 <!-- TABLE CARD -->
-                <div class="table-card" style="border-top:3px solid #f43f5e; padding:0; overflow:hidden;">
-                    <div style="padding:0.85rem 1.25rem; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); border-bottom:1px solid var(--border-card); flex-wrap:wrap; gap:0.5rem;">
+                <div class="table-card" style="border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0; overflow:hidden;">
+                    <div style="padding:0.85rem 1.25rem; display:flex; justify-content:space-between; align-items:center; background:#161b22; border-bottom:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; gap:0.5rem;">
                         <div style="font-weight:700; font-size:0.92rem; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
-                            <span id="pendingTableTitle"><i class="fa-solid fa-list-check" style="color:#f43f5e;"></i> DANH SÁCH CHI TIẾT PHIẾU TREO</span>
-                            <span id="pendingFilteredCountBadge" class="tag-pill" style="background:rgba(244,63,94,0.18); color:#f43f5e; font-weight:700; font-size:0.72rem;">0 phiếu</span>
+                            <span id="pendingTableTitle"><i class="fa-solid fa-list-check" style="color:#94a3b8;"></i> DANH SÁCH CHI TIẾT PHIẾU TREO</span>
+                            <span id="pendingFilteredCountBadge" class="tag-pill" style="background:rgba(255,255,255,0.08); color:#cbd5e1; font-weight:600; font-size:0.72rem; border:1px solid rgba(255,255,255,0.1);">0 phiếu</span>
                         </div>
                         <div style="font-size:0.75rem; color:var(--text-muted);" id="pendingPaginationInfoTop">
                             Hiển thị 0 - 0 trong tổng số 0 phiếu
@@ -5967,7 +5908,7 @@
 
                     <div style="overflow-x:auto; width:100%; max-height:680px; position:relative;" id="pendingTableScrollWrapper">
                         <table class="styled-table" id="pendingTicketsTable" style="margin:0; width:100%; border-collapse:collapse;">
-                            <thead id="pendingTableThead" style="position:sticky; top:0; z-index:10; background:var(--table-head-bg);">
+                            <thead id="pendingTableThead" style="position:sticky; top:0; z-index:10; background:#1e293b;">
                                 <!-- Dynamic headers based on sub-mode -->
                             </thead>
                             <tbody id="pendingTableTbody">
@@ -5977,7 +5918,7 @@
                     </div>
 
                     <!-- PAGINATION FOOTER -->
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:0.75rem 1.25rem; background:rgba(255,255,255,0.02); border-top:1px solid var(--border-card); flex-wrap:wrap; gap:0.75rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:0.75rem 1.25rem; background:#161b22; border-top:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; gap:0.75rem;">
                         <div style="font-size:0.78rem; color:var(--text-secondary);" id="pendingPaginationInfoBottom">
                             Hiển thị 0 - 0 trong tổng số 0 phiếu
                         </div>
@@ -5993,6 +5934,7 @@
                     </div>
                 </div>
             </div>
+
 
 
 
@@ -14509,19 +14451,14 @@ function copyChatId(chatId, btnEl) {
 // =========================================================================
 
 // =========================================================================
+
+// =========================================================================
 // ENGINE XỬ LÝ DỮ LIỆU & GIAO DIỆN TAB 7: THEO DÕI PHIẾU TREO REALTIME
-// Hỗ trợ 3 phân hệ theo đúng chuẩn nghiệp vụ:
-// 1. DS Phiếu Chuyển (Đang chuyển):
-//    - Bảng 1A: Kho DC Chuyển Đi (Nơi chuyển: Kho)
-//    - Bảng 1B: Kho DC Nhận Về (Nơi nhận: Kho)
-// 2. DS YC Xử Lý (Mới & Đang xử lý):
-//    - Bảng Tổng Hợp theo Kho DC Tiếp Nhận Xử Lý Yêu Cầu
-// 3. DS Phiếu Hậu Kiểm (Cần hậu kiểm):
-//    - Bảng Tổng Hợp theo Kho Nguồn Phát Hàng (Kho DC xuất đi)
-// Kèm xuất file Excel gồm Sheet "PV phiếu" và Sheet "transfer" (có 2 cột A, B)
+// PHONG CÁCH: TỐI GIẢN, THANH LỊCH, DỊU MẮT (MINIMALIST CLEAN CORPORATE)
+// Tiết chế toàn bộ màu sắc sặc sỡ, tập trung vào số liệu rõ ràng chuẩn nghiệp vụ
 // =========================================================================
 
-let curPendingSubMode = 'pt'; // Mặc định mở ngay phân hệ 1: 'pt', 'to', 'hk', 'all'
+let curPendingSubMode = 'pt'; // 'pt', 'to', 'hk', 'all'
 let curPTViewMode = 'from_dc'; // 'from_dc' (Bảng 1A: Nơi chuyển Kho) hoặc 'to_dc' (Bảng 1B: Nơi nhận Kho)
 let matrixSelectedFilter = null; // { rowKey, date, subMode, viewMode }
 let curPendingPage = 1;
@@ -14542,33 +14479,28 @@ const DC_HEX_NAMES = {
     '6a4f0127f163350007c29221': 'KFM_HCM_TDU - BS08 Vinhomes Grand Park'
 };
 
-// Chuẩn hóa tên đơn vị
 function resolveBranchName(name) {
     if (!name) return 'Chưa rõ';
     const s = String(name).trim();
     return DC_HEX_NAMES[s] || s;
 }
 
-// Phân loại đơn vị thành 'Kho', 'ST', hoặc 'Kho khác' (chuẩn như Cột A, B của user)
 function classifyLocationType(name) {
     if (!name) return 'Kho khác';
     const resolved = resolveBranchName(name);
     const u = resolved.toUpperCase();
 
-    // Các kho DC chính của Kingfoodmart
     if (u.includes('FGA') || u.includes('CLA') || u.includes('FEA') || u.includes('MFA') || 
         u.includes('FZA') || u.includes('FGB') || u.includes('CLB') || u.includes('SEEDLOG') || 
         u.includes('CHILL') || u.includes('FROZEN') || u.includes('SCF') || u.includes('KHO TRUNG TÂM')) {
         return 'Kho';
     }
-    // Siêu thị bán lẻ Kingfoodmart
     if (u.includes('KFM_') || u.includes('SIÊU THỊ') || u.includes('ST_') || u.includes('CỬA HÀNG') || u.includes('CH_')) {
         return 'ST';
     }
     return 'Kho khác';
 }
 
-// Trích xuất ngày định dạng DD/MM/YYYY
 function extractDayMonthYear(dStr) {
     if (!dStr || dStr === '---') return 'Chưa rõ';
     const dOnly = dStr.split(' ')[0];
@@ -14614,7 +14546,7 @@ function loadPendingTicketsData(callback) {
         console.error("Không tải được daily_details/pending_tickets.js");
         const tbody = document.getElementById('pendingTicketsTableTbody');
         if (tbody) {
-            tbody.innerHTML = '<tr><td colspan="10" class="text-center text-danger" style="padding:2rem;">Lỗi tải dữ liệu phiếu treo từ máy chủ.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding:2rem; color:#94a3b8;">Lỗi tải dữ liệu phiếu treo từ máy chủ.</td></tr>';
         }
     };
     document.head.appendChild(scr);
@@ -14633,25 +14565,22 @@ function updatePendingSummaryKPIs(data) {
     const summary = data.summary || {};
     const badge = document.getElementById('pendingSyncBadge');
     if (badge && data.updated_at) {
-        badge.innerHTML = `<i class="fa-solid fa-clock"></i> Đồng bộ lúc: <strong>${data.updated_at}</strong>`;
+        badge.innerHTML = `<i class="fa-regular fa-clock"></i> Đồng bộ: <strong>${data.updated_at}</strong>`;
     }
 
     const elPT = document.getElementById('kpiPTDangChuyenCount');
-    if (elPT) elPT.innerText = (summary.pt_dang_chuyen_count || 0).toLocaleString() + ' Phiếu';
+    if (elPT) elPT.innerText = (summary.pt_dang_chuyen_count || 0).toLocaleString();
 
     const elTO = document.getElementById('kpiTOYeuCauCount');
-    if (elTO) elTO.innerText = (summary.to_yeu_cau_count || 0).toLocaleString() + ' Yêu cầu';
+    if (elTO) elTO.innerText = (summary.to_yeu_cau_count || 0).toLocaleString();
 
     const elTOSub = document.getElementById('kpiTOSubCount');
     if (elTOSub) {
-        elTOSub.innerHTML = `Mới: <strong>${(summary.to_moi_count || 0).toLocaleString()}</strong> • Đang xử lý: <strong>${(summary.to_dang_xu_ly_count || 0).toLocaleString()}</strong>`;
+        elTOSub.innerHTML = `Mới: ${(summary.to_moi_count || 0).toLocaleString()} • Đang xử lý: ${(summary.to_dang_xu_ly_count || 0).toLocaleString()}`;
     }
 
     const elHK = document.getElementById('kpiHKCanHauKiemCount');
-    if (elHK) elHK.innerText = (summary.hk_can_hau_kiem_count || 0).toLocaleString() + ' Phiếu';
-
-    const bAll = document.getElementById('badgeCountAll');
-    if (bAll) bAll.innerText = ((summary.pt_dang_chuyen_count || 0) + (summary.to_yeu_cau_count || 0) + (summary.hk_can_hau_kiem_count || 0)).toLocaleString();
+    if (elHK) elHK.innerText = (summary.hk_can_hau_kiem_count || 0).toLocaleString();
 
     const bPT = document.getElementById('badgeCountPT');
     if (bPT) bPT.innerText = (summary.pt_dang_chuyen_count || 0).toLocaleString();
@@ -14661,6 +14590,9 @@ function updatePendingSummaryKPIs(data) {
 
     const bHK = document.getElementById('badgeCountHK');
     if (bHK) bHK.innerText = (summary.hk_can_hau_kiem_count || 0).toLocaleString();
+
+    const bAll = document.getElementById('badgeCountAll');
+    if (bAll) bAll.innerText = ((summary.pt_dang_chuyen_count || 0) + (summary.to_yeu_cau_count || 0) + (summary.hk_can_hau_kiem_count || 0)).toLocaleString();
 }
 
 function populatePendingStoreOptions(data) {
@@ -14676,14 +14608,13 @@ function populatePendingStoreOptions(data) {
     });
 
     const sortedStores = Array.from(storesSet).sort((a, b) => a.localeCompare(b, 'vi'));
-    let opts = '<option value="all">🏪 Tất cả điểm nhận</option>';
+    let opts = '<option value="all">Tất cả điểm nhận</option>';
     sortedStores.forEach(s => {
         opts += `<option value="${s.replace(/"/g, '&quot;')}">${s}</option>`;
     });
     sel.innerHTML = opts;
 }
 
-// Chuyển phân hệ chính (PT, TO, HK, ALL)
 function setPendingSubMode(mode) {
     curPendingSubMode = mode;
 
@@ -14695,7 +14626,6 @@ function setPendingSubMode(mode) {
         }
     });
 
-    // Ẩn/Hiện cụm nút Bảng 1A vs Bảng 1B (chỉ hiển thị ở mục DS Phiếu Chuyển)
     const ptToggleGroup = document.getElementById('ptMatrixToggleGroup');
     if (ptToggleGroup) {
         ptToggleGroup.style.display = (mode === 'pt' || mode === 'all') ? 'inline-flex' : 'none';
@@ -14707,7 +14637,6 @@ function setPendingSubMode(mode) {
     renderPendingTicketsTable();
 }
 
-// Chuyển đổi Bảng 1A (Kho DC Chuyển Đi) vs Bảng 1B (Kho DC Nhận Về) ở mục DS Phiếu Chuyển
 function setPTViewMode(vMode) {
     curPTViewMode = vMode;
     const btn1A = document.getElementById('btn-pt-matrix-1a');
@@ -14749,7 +14678,7 @@ function onPendingPageSizeChange() {
 }
 
 // =========================================================================
-// RENDER BẢNG TỔNG HỢP MA TRẬN PIVOT THEO KHO DC & NGÀY
+// RENDER BẢNG TỔNG HỢP MA TRẬN PIVOT THEO KHO DC & NGÀY (MINIMALIST STYLE)
 // =========================================================================
 function renderPendingMatrixTable() {
     const thead = document.getElementById('pendingMatrixThead');
@@ -14769,42 +14698,36 @@ function renderPendingMatrixTable() {
     if (curPendingSubMode === 'pt') {
         const rawList = data.pt_dang_chuyen || [];
         if (curPTViewMode === 'from_dc') {
-            // Bảng 1A: Nơi chuyển = Kho
             items = rawList.filter(x => classifyLocationType(x.from_name) === 'Kho');
-            colHeaderLabel = 'Kho DC Chuyển Đi (Chi nhánh chuyển)';
-            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-truck-fast" style="color:#38bdf8;"></i> BẢNG 1A: KHO DC CHUYỂN ĐI CHO SIÊU THỊ (Nơi chuyển: Kho)';
-            filterConditionDesc = 'Thống kê Distinct Count số lượng mã PT xuất phát từ Kho DC gửi đi đang treo theo từng ngày chuyển hàng';
+            colHeaderLabel = 'Kho DC Chuyển Đi';
+            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-table-cells" style="color:#94a3b8;"></i> BẢNG 1A: KHO DC CHUYỂN ĐI CHO SIÊU THỊ (Nơi chuyển: Kho)';
+            filterConditionDesc = 'Thống kê Distinct Count số lượng mã PT xuất phát từ Kho DC gửi đi đang treo theo ngày chuyển';
         } else {
-            // Bảng 1B: Nơi nhận = Kho
             items = rawList.filter(x => classifyLocationType(x.to_name) === 'Kho');
-            colHeaderLabel = 'Kho DC Nhận Về (Chi nhánh nhận)';
-            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-boxes-packing" style="color:#fbbf24;"></i> BẢNG 1B: HÀNG HOÀN / KHAY RỔ VỀ KHO DC (Nơi nhận: Kho)';
-            filterConditionDesc = 'Thống kê Distinct Count số lượng mã PT chuyển hoàn/khay rổ/CCDC từ Siêu thị gửi về Kho DC đang treo theo ngày';
+            colHeaderLabel = 'Kho DC Nhận Về';
+            if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-table-cells" style="color:#94a3b8;"></i> BẢNG 1B: HÀNG HOÀN / KHAY RỔ VỀ KHO DC (Nơi nhận: Kho)';
+            filterConditionDesc = 'Thống kê Distinct Count số lượng mã PT chuyển hoàn từ Siêu thị về Kho DC đang treo theo ngày';
         }
     } else if (curPendingSubMode === 'to') {
-        // Phân hệ 2: DS YC Xử Lý -> Theo Kho DC tiếp nhận xử lý yêu cầu
         items = data.to_yeu_cau || [];
         colHeaderLabel = 'Kho DC Tiếp Nhận Xử Lý Yêu Cầu';
-        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-file-circle-question" style="color:#f59e0b;"></i> BẢNG TỔNG HỢP: DS YC XỬ LÝ (MỚI & ĐANG XỬ LÝ) THEO KHO DC';
-        filterConditionDesc = 'Thống kê Distinct Count số lượng mã TO yêu cầu xử lý chuyển hoàn gửi về Kho DC theo từng ngày';
+        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-table-cells" style="color:#94a3b8;"></i> BẢNG TỔNG HỢP: DS YC XỬ LÝ (MỚI & ĐANG XỬ LÝ) THEO KHO DC';
+        filterConditionDesc = 'Thống kê Distinct Count số lượng mã TO yêu cầu xử lý chuyển hoàn gửi về Kho DC theo ngày';
     } else if (curPendingSubMode === 'hk') {
-        // Phân hệ 3: DS Phiếu Hậu Kiểm -> Theo Kho Nguồn xuất hàng đi
         items = data.hk_can_hau_kiem || [];
         colHeaderLabel = 'Kho Nguồn Phát Hàng (Kho DC xuất đi)';
-        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-clipboard-check" style="color:#f43f5e;"></i> BẢNG TỔNG HỢP: DS PHIẾU HẬU KIỂM CẦN HẬU KIỂM THEO KHO NGUỒN';
-        filterConditionDesc = 'Thống kê Distinct Count số lượng phiếu hậu kiểm các Siêu thị chưa quét xác nhận đối soát theo Kho nguồn';
+        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-table-cells" style="color:#94a3b8;"></i> BẢNG TỔNG HỢP: DS PHIẾU HẬU KIỂM CẦN HẬU KIỂM THEO KHO NGUỒN';
+        filterConditionDesc = 'Thống kê Distinct Count số lượng phiếu hậu kiểm chưa quét xác nhận đối soát theo Kho nguồn';
     } else {
-        // Mode 'all': Mặc định hiển thị Bảng 1A của Phiếu Chuyển
         const rawList = data.pt_dang_chuyen || [];
         items = rawList.filter(x => classifyLocationType(x.from_name) === 'Kho');
-        colHeaderLabel = 'Kho DC Chuyển Đi (Nơi chuyển: Kho)';
-        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-table-cells" style="color:#38bdf8;"></i> BẢNG TỔNG HỢP: KHO DC CHUYỂN ĐI (Mục 1. DS Phiếu Chuyển)';
+        colHeaderLabel = 'Kho DC Chuyển Đi';
+        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-table-cells" style="color:#94a3b8;"></i> BẢNG TỔNG HỢP: KHO DC CHUYỂN ĐI (Phiếu Chuyển)';
         filterConditionDesc = 'Thống kê Distinct Count số lượng mã phiếu chuyển xuất phát từ Kho DC đang treo';
     }
 
     if (subTitleEl) subTitleEl.innerText = filterConditionDesc;
 
-    // Lọc theo ngành hàng nếu dropdown chọn
     const catFilter = document.getElementById('pendingCategorySelect')?.value || 'all';
     if (catFilter !== 'all') {
         items = items.filter(it => (it.category || '').includes(catFilter));
@@ -14812,15 +14735,13 @@ function renderPendingMatrixTable() {
 
     if (items.length === 0) {
         thead.innerHTML = '';
-        tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding:2.5rem; color:var(--text-muted);">Không có dữ liệu phiếu treo phù hợp với tiêu chí chọn.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding:2.5rem; color:#64748b;">Không có dữ liệu phiếu treo phù hợp.</td></tr>';
         if (tfoot) tfoot.innerHTML = '';
         return;
     }
 
-    // Tập hợp Ngày và RowsMap (Row = Kho DC, Col = Ngày)
-    // Lưu ý: Đếm DISTINCT COUNT theo mã phiếu!
     const datesSet = new Set();
-    const rowsMap = {}; // { whName: { dateStr: Set(ticket_codes) } }
+    const rowsMap = {};
 
     items.forEach(it => {
         let code = it.code || it.double_check_code || it.pt_code;
@@ -14846,34 +14767,33 @@ function renderPendingMatrixTable() {
 
     const sortedDates = Array.from(datesSet).sort((a, b) => parseSortableDate(a) - parseSortableDate(b));
 
-    // Render THEAD (2 tầng chuẩn Excel Pivot)
+    // THEAD 2 tầng nhã nhặn, tối giản
     let theadHtml = `
     <tr>
-        <th rowspan="2" style="min-width:240px; text-align:left; padding:10px 14px; vertical-align:middle; background:rgba(0,0,0,0.35); border-right:1px solid var(--border-card);">
+        <th rowspan="2" style="min-width:240px; text-align:left; padding:9px 12px; vertical-align:middle; background:#1e293b; color:#94a3b8; font-weight:600; font-size:0.8rem; border-right:1px solid rgba(255,255,255,0.06);">
             ${colHeaderLabel}
         </th>
-        <th colspan="${sortedDates.length}" style="text-align:center; padding:7px 10px; font-weight:800; color:#38bdf8; background:rgba(56,189,248,0.12); border-bottom:1px solid var(--border-card); letter-spacing:1px; text-transform:uppercase;">
-            <i class="fa-solid fa-calendar-days"></i> Ngày Chuyển Hàng / Phát Sinh
+        <th colspan="${sortedDates.length}" style="text-align:center; padding:7px 10px; font-weight:600; color:#cbd5e1; background:#0f172a; border-bottom:1px solid rgba(255,255,255,0.06); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.5px;">
+            Ngày Phát Sinh / Chuyển Hàng
         </th>
-        <th rowspan="2" style="width:115px; text-align:right; padding:10px 14px; vertical-align:middle; font-weight:900; color:#fbbf24; background:rgba(251,191,36,0.12); border-left:1px solid var(--border-card);">
+        <th rowspan="2" style="width:105px; text-align:right; padding:9px 12px; vertical-align:middle; font-weight:700; color:#f8fafc; background:#1e293b; border-left:1px solid rgba(255,255,255,0.06); font-size:0.8rem;">
             Grand Total
         </th>
     </tr>
     <tr>`;
     
     sortedDates.forEach(d => {
-        theadHtml += `<th style="min-width:85px; text-align:center; padding:7px 6px; font-weight:700; color:#e2e8f0; font-size:0.8rem; background:rgba(0,0,0,0.25); border-right:1px solid rgba(255,255,255,0.06);">${d}</th>`;
+        theadHtml += `<th style="min-width:85px; text-align:center; padding:6px 4px; font-weight:600; color:#94a3b8; font-size:0.78rem; background:#1e293b; border-right:1px solid rgba(255,255,255,0.04);">${d}</th>`;
     });
     theadHtml += `</tr>`;
     thead.innerHTML = theadHtml;
 
-    // Render TBODY
+    // TBODY: Dịu mắt, không màu mè, font chữ rõ nét
     let tbodyHtml = '';
     const dateTotals = {};
     sortedDates.forEach(d => { dateTotals[d] = 0; });
     let grandTotalUniqueCodes = new Set();
 
-    // Sắp xếp các hàng Kho DC theo thứ tự chữ cái hoặc tổng số phiếu
     const sortedRowKeys = Object.keys(rowsMap).sort((a, b) => {
         let setA = new Set();
         Object.values(rowsMap[a]).forEach(s => s.forEach(c => setA.add(c)));
@@ -14887,18 +14807,8 @@ function renderPendingMatrixTable() {
         let rowUniqueCodes = new Set();
         let isRowSelected = matrixSelectedFilter && matrixSelectedFilter.rowKey === rKey;
 
-        // Chấm màu nhận diện ngành kho
-        let badgeColor = '#94a3b8';
-        if (rKey.includes('FGA')) badgeColor = '#f59e0b';
-        else if (rKey.includes('CLA') || rKey.includes('FZA')) badgeColor = '#38bdf8';
-        else if (rKey.includes('MFA')) badgeColor = '#ef4444';
-        else if (rKey.includes('FEA')) badgeColor = '#10b981';
-        else if (rKey.includes('SCF') || rKey.includes('CHILL')) badgeColor = '#ec4899';
-        else if (rKey.includes('SEEDLOG')) badgeColor = '#8b5cf6';
-
-        tbodyHtml += `<tr style="${isRowSelected ? 'background:rgba(244,63,94,0.15);' : ''}">
-            <td style="font-weight:700; color:var(--text-primary); padding:8px 14px; border-right:1px solid var(--border-card); white-space:nowrap;">
-                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${badgeColor}; margin-right:8px;"></span>
+        tbodyHtml += `<tr style="${isRowSelected ? 'background:rgba(255,255,255,0.06);' : ''}">
+            <td style="font-weight:500; color:#e2e8f0; padding:7px 12px; border-right:1px solid rgba(255,255,255,0.04); white-space:nowrap; font-size:0.82rem;">
                 <span style="cursor:pointer;" onclick="filterDetailByMatrixCell('${rKey.replace(/'/g, "\\'")}', 'all')" title="Bấm để lọc toàn bộ phiếu của ${rKey}">${rKey}</span>
             </td>`;
 
@@ -14914,24 +14824,24 @@ function renderPendingMatrixTable() {
 
             if (cnt > 0) {
                 tbodyHtml += `
-                    <td style="text-align:center; padding:6px 4px; border-right:1px solid rgba(255,255,255,0.04);">
-                        <span class="tag-pill" onclick="filterDetailByMatrixCell('${rKey.replace(/'/g, "\\'")}', '${d}')" 
-                              style="cursor:pointer; font-weight:800; font-size:0.82rem; padding:3px 9px; border-radius:5px; transition:all 0.15s;
-                                     ${isCellSelected ? 'background:#f43f5e; color:#fff; box-shadow:0 0 10px rgba(244,63,94,0.7); font-weight:900;' : 'background:rgba(56,189,248,0.16); color:#38bdf8;'}">
+                    <td style="text-align:center; padding:5px 4px; border-right:1px solid rgba(255,255,255,0.03);">
+                        <span onclick="filterDetailByMatrixCell('${rKey.replace(/'/g, "\\'")}', '${d}')" 
+                              style="cursor:pointer; display:inline-block; font-weight:600; font-size:0.82rem; padding:2px 7px; border-radius:4px; transition:background 0.15s;
+                                     ${isCellSelected ? 'background:#334155; color:#fff; font-weight:700;' : 'color:#f1f5f9; background:rgba(255,255,255,0.05);'}">
                             ${cnt.toLocaleString()}
                         </span>
                     </td>`;
             } else {
-                tbodyHtml += `<td style="text-align:center; color:rgba(255,255,255,0.15); padding:6px 4px; border-right:1px solid rgba(255,255,255,0.04);">-</td>`;
+                tbodyHtml += `<td style="text-align:center; color:#475569; padding:5px 4px; border-right:1px solid rgba(255,255,255,0.03);">-</td>`;
             }
         });
 
         const isRowTotalSelected = isRowSelected && matrixSelectedFilter.date === 'all';
         tbodyHtml += `
-            <td style="text-align:right; padding:8px 14px; font-weight:900; background:rgba(251,191,36,0.06); border-left:1px solid var(--border-card);">
-                <span class="tag-pill" onclick="filterDetailByMatrixCell('${rKey.replace(/'/g, "\\'")}', 'all')" 
-                      style="cursor:pointer; font-weight:900; font-size:0.84rem; padding:4px 10px; border-radius:5px;
-                             ${isRowTotalSelected ? 'background:#fbbf24; color:#000;' : 'background:rgba(251,191,36,0.2); color:#fbbf24;'}">
+            <td style="text-align:right; padding:7px 12px; font-weight:700; color:#f8fafc; background:rgba(255,255,255,0.02); border-left:1px solid rgba(255,255,255,0.04); font-size:0.84rem;">
+                <span onclick="filterDetailByMatrixCell('${rKey.replace(/'/g, "\\'")}', 'all')" 
+                      style="cursor:pointer; padding:2px 6px; border-radius:4px;
+                             ${isRowTotalSelected ? 'background:#334155; color:#fff;' : 'color:#f8fafc;'}">
                     ${rowUniqueCodes.size.toLocaleString()}
                 </span>
             </td>
@@ -14939,30 +14849,30 @@ function renderPendingMatrixTable() {
     });
     tbody.innerHTML = tbodyHtml;
 
-    // Render TFOOT (Grand Total Footer)
+    // TFOOT: Tối giản, trang nhã
     if (tfoot) {
-        let tfootHtml = `<tr style="border-top:2px solid var(--border-card); background:rgba(0,0,0,0.45);">
-            <td style="padding:10px 14px; font-weight:900; color:#fff; text-transform:uppercase; border-right:1px solid var(--border-card);">
-                <i class="fa-solid fa-calculator" style="color:#38bdf8;"></i> Grand Total
+        let tfootHtml = `<tr style="border-top:1px solid rgba(255,255,255,0.12); background:#1e293b;">
+            <td style="padding:8px 12px; font-weight:700; color:#f8fafc; text-transform:uppercase; font-size:0.8rem; border-right:1px solid rgba(255,255,255,0.06);">
+                Grand Total
             </td>`;
         sortedDates.forEach(d => {
             const sumD = dateTotals[d] || 0;
             const isColSelected = matrixSelectedFilter && matrixSelectedFilter.rowKey === 'all' && matrixSelectedFilter.date === d;
             tfootHtml += `
-                <td style="text-align:center; padding:8px 4px; border-right:1px solid rgba(255,255,255,0.04);">
-                    <span class="tag-pill" onclick="filterDetailByMatrixCell('all', '${d}')" 
-                          style="cursor:pointer; font-weight:800; font-size:0.84rem; padding:4px 9px; border-radius:5px;
-                                 ${isColSelected ? 'background:#38bdf8; color:#000; font-weight:900;' : 'background:rgba(56,189,248,0.2); color:#38bdf8;'}">
+                <td style="text-align:center; padding:7px 4px; border-right:1px solid rgba(255,255,255,0.04);">
+                    <span onclick="filterDetailByMatrixCell('all', '${d}')" 
+                          style="cursor:pointer; font-weight:700; font-size:0.82rem; padding:2px 6px; border-radius:4px;
+                                 ${isColSelected ? 'background:#334155; color:#fff;' : 'color:#f8fafc;'}">
                         ${sumD.toLocaleString()}
                     </span>
                 </td>`;
         });
         const isGrandSelected = matrixSelectedFilter && matrixSelectedFilter.rowKey === 'all' && matrixSelectedFilter.date === 'all';
         tfootHtml += `
-            <td style="text-align:right; padding:10px 14px; font-size:0.95rem; font-weight:900; background:rgba(251,191,36,0.18); border-left:1px solid var(--border-card);">
-                <span class="tag-pill" onclick="filterDetailByMatrixCell('all', 'all')" 
-                      style="cursor:pointer; font-weight:900; font-size:0.88rem; padding:4px 12px; border-radius:6px;
-                             ${isGrandSelected ? 'background:#fbbf24; color:#000;' : 'background:#fbbf24; color:#0f172a;'}">
+            <td style="text-align:right; padding:8px 12px; font-size:0.88rem; font-weight:700; color:#f8fafc; background:rgba(255,255,255,0.05); border-left:1px solid rgba(255,255,255,0.06);">
+                <span onclick="filterDetailByMatrixCell('all', 'all')" 
+                      style="cursor:pointer; padding:2px 8px; border-radius:4px;
+                             ${isGrandSelected ? 'background:#334155; color:#fff;' : 'color:#f8fafc;'}">
                     ${grandTotalUniqueCodes.size.toLocaleString()}
                 </span>
             </td>
@@ -14988,9 +14898,9 @@ function filterDetailByMatrixCell(rowKey, date) {
     const badgeText = document.getElementById('matrixActiveFilterText');
 
     let label = '';
-    if (rowKey !== 'all') label += `Kho DC: ${rowKey}`;
+    if (rowKey !== 'all') label += `Kho: ${rowKey}`;
     if (date !== 'all') label += (label ? ' • ' : '') + `Ngày: ${date}`;
-    if (!label) label = 'Toàn bộ bảng';
+    if (!label) label = 'Toàn bộ';
 
     if (badge && badgeText) {
         badgeText.innerText = label;
@@ -15020,7 +14930,7 @@ function clearMatrixFilter(shouldRender = true) {
 }
 
 // =========================================================================
-// BẢNG TRA CỨU CHI TIẾT PHIẾU TREO
+// BẢNG TRA CỨU CHI TIẾT PHIẾU TREO (MINIMALIST STYLE)
 // =========================================================================
 function renderPendingTicketsTable() {
     if (!window.PENDING_TICKETS_DATA) return;
@@ -15039,7 +14949,7 @@ function renderPendingTicketsTable() {
             const tName = resolveBranchName(x.to_name);
             list.push({
                 sys_type: 'pt',
-                sys_type_label: '1. Phiếu Chuyển',
+                sys_type_label: 'Phiếu Chuyển',
                 code: x.code,
                 from_name: fName,
                 to_name: tName,
@@ -15063,7 +14973,7 @@ function renderPendingTicketsTable() {
             const tName = resolveBranchName(x.to_name || x.pt_from_name);
             list.push({
                 sys_type: 'to',
-                sys_type_label: '2. YC Xử Lý',
+                sys_type_label: 'YC Xử Lý',
                 code: x.code,
                 from_name: fName,
                 to_name: tName,
@@ -15090,7 +15000,7 @@ function renderPendingTicketsTable() {
             const tName = resolveBranchName(x.to_name);
             list.push({
                 sys_type: 'hk',
-                sys_type_label: '3. Phiếu Hậu Kiểm',
+                sys_type_label: 'Phiếu HK',
                 code: x.double_check_code || x.pt_code,
                 double_check_code: x.double_check_code,
                 pt_code: x.pt_code,
@@ -15110,7 +15020,6 @@ function renderPendingTicketsTable() {
         });
     }
 
-    // Áp dụng bộ lọc tìm kiếm & dropdowns
     pendingFilteredItems = list.filter(item => {
         if (query) {
             const hay = `${item.code} ${item.from_name} ${item.to_name} ${item.category} ${item.status_text} ${item.hk_code || ''} ${item.from_pt_code || ''} ${item.handled_pt_code || ''} ${item.pt_code || ''}`.toLowerCase();
@@ -15121,7 +15030,6 @@ function renderPendingTicketsTable() {
         if (statusFilter !== 'all' && item.status_text !== statusFilter) return false;
         if (storeFilter !== 'all' && item.to_name !== storeFilter) return false;
 
-        // Áp dụng bộ lọc ma trận (nếu đang chọn 1 ô hoặc 1 dòng trong Pivot)
         if (matrixSelectedFilter) {
             let itemWh = item.from_name;
             if (curPendingSubMode === 'pt') {
@@ -15154,64 +15062,64 @@ function renderPendingTableHeader() {
     if (curPendingSubMode === 'pt') {
         thead.innerHTML = `
             <tr>
-                <th style="width:45px; text-align:center;">STT</th>
-                <th style="min-width:130px;">Mã Phiếu Chuyển</th>
-                <th style="min-width:110px;">Nơi Chuyển</th>
-                <th style="min-width:200px;">Chi Nhánh Chuyển</th>
-                <th style="min-width:110px;">Nơi Nhận</th>
-                <th style="min-width:220px;">Chi Nhánh Nhận</th>
-                <th style="min-width:110px;">Ngành Hàng</th>
-                <th style="min-width:120px; text-align:center;">Trạng Thái</th>
-                <th style="width:65px; text-align:right;">SKU</th>
-                <th style="width:95px; text-align:right;">SL Chuyển</th>
-                <th style="min-width:140px;">Ngày Chuyển Hàng</th>
-                <th style="min-width:120px;">Mã Phiếu HK</th>
+                <th style="width:40px; text-align:center;">STT</th>
+                <th style="min-width:120px;">Mã Phiếu Chuyển</th>
+                <th style="width:80px; text-align:center;">Nơi Chuyển</th>
+                <th style="min-width:190px;">Chi Nhánh Chuyển</th>
+                <th style="width:80px; text-align:center;">Nơi Nhận</th>
+                <th style="min-width:210px;">Chi Nhánh Nhận</th>
+                <th style="min-width:100px;">Ngành Hàng</th>
+                <th style="min-width:110px; text-align:center;">Trạng Thái</th>
+                <th style="width:60px; text-align:right;">SKU</th>
+                <th style="width:90px; text-align:right;">SL Chuyển</th>
+                <th style="min-width:130px;">Ngày Chuyển</th>
+                <th style="min-width:110px;">Mã HK</th>
             </tr>
         `;
     } else if (curPendingSubMode === 'to') {
         thead.innerHTML = `
             <tr>
-                <th style="width:45px; text-align:center;">STT</th>
-                <th style="min-width:130px;">Mã Yêu Cầu</th>
-                <th style="min-width:110px; text-align:center;">Trạng Thái</th>
-                <th style="width:65px; text-align:right;">SKU</th>
-                <th style="width:110px; text-align:right;">SL Tạo / Conf</th>
-                <th style="min-width:130px;">PT Chuyển Đi</th>
+                <th style="width:40px; text-align:center;">STT</th>
+                <th style="min-width:120px;">Mã Yêu Cầu</th>
+                <th style="min-width:100px; text-align:center;">Trạng Thái</th>
+                <th style="width:60px; text-align:right;">SKU</th>
+                <th style="width:100px; text-align:right;">SL Tạo / Conf</th>
+                <th style="min-width:120px;">PT Chuyển Đi</th>
                 <th style="min-width:130px;">Ngày Chuyển Đi</th>
                 <th style="min-width:180px;">Kho Nguồn Xuất Đi</th>
-                <th style="min-width:130px;">PT Chuyển Hoàn</th>
+                <th style="min-width:120px;">PT Chuyển Hoàn</th>
                 <th style="min-width:180px;">ST Chuyển Hoàn</th>
-                <th style="min-width:180px;">Kho Nhận Chuyển Hoàn</th>
+                <th style="min-width:180px;">Kho Nhận Hoàn</th>
             </tr>
         `;
     } else if (curPendingSubMode === 'hk') {
         thead.innerHTML = `
             <tr>
-                <th style="width:45px; text-align:center;">STT</th>
-                <th style="min-width:130px;">Mã Hậu Kiểm</th>
-                <th style="min-width:130px;">Gốc: Phiếu Chuyển</th>
-                <th style="min-width:200px;">Kho Nguồn Xuất Đi</th>
-                <th style="min-width:220px;">Siêu Thị Nhận Hàng</th>
-                <th style="min-width:110px;">Ngành Hàng</th>
-                <th style="min-width:120px; text-align:center;">Trạng Thái HK</th>
-                <th style="width:65px; text-align:right;">SKU</th>
-                <th style="width:105px; text-align:right;">SL Xuất / Nhận</th>
-                <th style="min-width:140px;">Thời Gian Nhận Hàng</th>
+                <th style="width:40px; text-align:center;">STT</th>
+                <th style="min-width:120px;">Mã Hậu Kiểm</th>
+                <th style="min-width:120px;">Gốc: Phiếu Chuyển</th>
+                <th style="min-width:190px;">Kho Nguồn Xuất Đi</th>
+                <th style="min-width:210px;">Siêu Thị Nhận Hàng</th>
+                <th style="min-width:100px;">Ngành Hàng</th>
+                <th style="min-width:110px; text-align:center;">Trạng Thái HK</th>
+                <th style="width:60px; text-align:right;">SKU</th>
+                <th style="width:100px; text-align:right;">SL Xuất / Nhận</th>
+                <th style="min-width:130px;">Thời Gian Nhận</th>
             </tr>
         `;
     } else {
         thead.innerHTML = `
             <tr>
-                <th style="width:45px; text-align:center;">STT</th>
-                <th style="min-width:110px;">Phân Hệ</th>
-                <th style="min-width:130px;">Mã Phiếu / YC</th>
-                <th style="min-width:200px;">Nơi Chuyển / Gửi</th>
-                <th style="min-width:220px;">Nơi Nhận / Đích</th>
-                <th style="min-width:110px;">Ngành Hàng</th>
-                <th style="min-width:120px; text-align:center;">Trạng Thái</th>
-                <th style="width:65px; text-align:right;">SKU</th>
-                <th style="width:95px; text-align:right;">Số Lượng</th>
-                <th style="min-width:140px;">Thời Gian</th>
+                <th style="width:40px; text-align:center;">STT</th>
+                <th style="min-width:100px;">Phân Hệ</th>
+                <th style="min-width:120px;">Mã Phiếu / YC</th>
+                <th style="min-width:190px;">Nơi Chuyển / Gửi</th>
+                <th style="min-width:210px;">Nơi Nhận / Đích</th>
+                <th style="min-width:100px;">Ngành Hàng</th>
+                <th style="min-width:110px; text-align:center;">Trạng Thái</th>
+                <th style="width:60px; text-align:right;">SKU</th>
+                <th style="width:90px; text-align:right;">Số Lượng</th>
+                <th style="min-width:130px;">Thời Gian</th>
             </tr>
         `;
     }
@@ -15232,9 +15140,9 @@ function renderPendingTicketsTableRows() {
     if (badgeCount) badgeCount.innerText = total.toLocaleString() + ' phiếu';
 
     if (total === 0) {
-        tbody.innerHTML = '<tr><td colspan="12" class="text-center" style="padding:2.5rem; color:var(--text-muted);">Không tìm thấy phiếu nào phù hợp với bộ lọc hiện tại.</td></tr>';
-        if (pageInfoTop) pageInfoTop.innerText = 'Hiển thị 0 - 0 trong tổng số 0 phiếu';
-        if (pageInfoBottom) pageInfoBottom.innerText = 'Hiển thị 0 - 0 trong tổng số 0 phiếu';
+        tbody.innerHTML = '<tr><td colspan="12" class="text-center" style="padding:2.5rem; color:#64748b;">Không tìm thấy phiếu nào phù hợp với bộ lọc.</td></tr>';
+        if (pageInfoTop) pageInfoTop.innerText = '0 - 0 trong 0';
+        if (pageInfoBottom) pageInfoBottom.innerText = '0 - 0 trong 0';
         if (pageText) pageText.innerText = 'Trang 1 / 1';
         if (btnPrev) btnPrev.disabled = true;
         if (btnNext) btnNext.disabled = true;
@@ -15261,117 +15169,103 @@ function renderPendingTicketsTableRows() {
         const stt = startIdx + idx + 1;
 
         if (curPendingSubMode === 'pt') {
-            const fPill = it.from_type === 'Kho' ? '<span class="tag-pill" style="background:rgba(56,189,248,0.18); color:#38bdf8; font-weight:700;">Kho</span>' : '<span class="tag-pill" style="background:rgba(16,185,129,0.18); color:#10b981; font-weight:700;">ST</span>';
-            const tPill = it.to_type === 'Kho' ? '<span class="tag-pill" style="background:rgba(56,189,248,0.18); color:#38bdf8; font-weight:700;">Kho</span>' : '<span class="tag-pill" style="background:rgba(16,185,129,0.18); color:#10b981; font-weight:700;">ST</span>';
+            const fPill = it.from_type === 'Kho' ? '<span style="color:#94a3b8; font-size:0.75rem;">Kho</span>' : '<span style="color:#64748b; font-size:0.75rem;">ST</span>';
+            const tPill = it.to_type === 'Kho' ? '<span style="color:#94a3b8; font-size:0.75rem;">Kho</span>' : '<span style="color:#64748b; font-size:0.75rem;">ST</span>';
 
             html += `
                 <tr>
-                    <td class="text-center" style="color:var(--text-muted);">${stt}</td>
+                    <td class="text-center" style="color:#64748b;">${stt}</td>
                     <td>
-                        <strong style="color:#38bdf8; cursor:pointer;" onclick="copyTicketCode('${it.code}')" title="Bấm để sao chép mã">
+                        <strong style="color:#f1f5f9; cursor:pointer;" onclick="copyTicketCode('${it.code}')" title="Sao chép">
                             ${it.code}
                         </strong>
                     </td>
                     <td class="text-center">${fPill}</td>
-                    <td>${it.from_name}</td>
+                    <td style="color:#cbd5e1;">${it.from_name}</td>
                     <td class="text-center">${tPill}</td>
-                    <td>${it.to_name}</td>
-                    <td><span class="tag-pill" style="font-size:0.75rem;">${it.category}</span></td>
+                    <td style="color:#cbd5e1;">${it.to_name}</td>
+                    <td style="color:#94a3b8; font-size:0.78rem;">${it.category}</td>
                     <td class="text-center">
-                        <span class="tag-pill" style="background:rgba(56,189,248,0.18); color:#38bdf8; font-weight:700;">
-                            <i class="fa-solid fa-truck-fast"></i> ${it.status_text}
-                        </span>
+                        <span style="color:#cbd5e1; font-size:0.78rem;">${it.status_text}</span>
                     </td>
-                    <td class="text-right font-mono">${it.sku || 0}</td>
-                    <td class="text-right font-mono" style="font-weight:700; color:#38bdf8;">${(it.quantity || 0).toLocaleString()}</td>
-                    <td style="color:var(--text-secondary); font-size:0.8rem;">${it.date_str}</td>
-                    <td>${it.hk_code ? `<span style="color:#f43f5e; font-weight:600;">${it.hk_code}</span>` : '<span style="color:var(--text-muted);">---</span>'}</td>
+                    <td class="text-right font-mono" style="color:#94a3b8;">${it.sku || 0}</td>
+                    <td class="text-right font-mono" style="font-weight:600; color:#f8fafc;">${(it.quantity || 0).toLocaleString()}</td>
+                    <td style="color:#64748b; font-size:0.78rem;">${it.date_str}</td>
+                    <td>${it.hk_code ? `<span style="color:#94a3b8;">${it.hk_code}</span>` : '<span style="color:#475569;">---</span>'}</td>
                 </tr>
             `;
         } else if (curPendingSubMode === 'to') {
-            const isMoi = it.status_text === 'Mới';
             html += `
                 <tr>
-                    <td class="text-center" style="color:var(--text-muted);">${stt}</td>
+                    <td class="text-center" style="color:#64748b;">${stt}</td>
                     <td>
-                        <strong style="color:#fbbf24; cursor:pointer;" onclick="copyTicketCode('${it.code}')" title="Bấm để sao chép mã">
+                        <strong style="color:#f1f5f9; cursor:pointer;" onclick="copyTicketCode('${it.code}')" title="Sao chép">
                             ${it.code}
                         </strong>
                     </td>
                     <td class="text-center">
-                        <span class="tag-pill" style="${isMoi ? 'background:rgba(59,130,246,0.18); color:#60a5fa;' : 'background:rgba(245,158,11,0.18); color:#fbbf24;'} font-weight:700;">
-                            ${it.status_text}
-                        </span>
+                        <span style="color:#cbd5e1; font-size:0.78rem;">${it.status_text}</span>
                     </td>
-                    <td class="text-right font-mono">${it.sku || 0}</td>
-                    <td class="text-right font-mono" style="font-weight:700;">
-                        ${(it.quantity || 0).toLocaleString()} / <span style="color:var(--text-muted);">${(it.qty_confirmed || 0).toLocaleString()}</span>
+                    <td class="text-right font-mono" style="color:#94a3b8;">${it.sku || 0}</td>
+                    <td class="text-right font-mono" style="font-weight:600; color:#f8fafc;">
+                        ${(it.quantity || 0).toLocaleString()} / <span style="color:#64748b;">${(it.qty_confirmed || 0).toLocaleString()}</span>
                     </td>
                     <td>
-                        ${it.from_pt_code ? `<a href="https://next.kingfood.co/operation/transfer-item/transfer-item-list?code=${it.from_pt_code}" target="_blank" style="color:#38bdf8; text-decoration:none; font-weight:600;">${it.from_pt_code}</a>` : '---'}
+                        ${it.from_pt_code ? `<a href="https://next.kingfood.co/operation/transfer-item/transfer-item-list?code=${it.from_pt_code}" target="_blank" style="color:#93c5fd; text-decoration:none;">${it.from_pt_code}</a>` : '---'}
                     </td>
-                    <td style="color:var(--text-secondary); font-size:0.8rem;">${it.date_str}</td>
-                    <td style="font-size:0.82rem;">${it.pt_from_name || '---'}</td>
+                    <td style="color:#64748b; font-size:0.78rem;">${it.date_str}</td>
+                    <td style="font-size:0.8rem; color:#cbd5e1;">${it.pt_from_name || '---'}</td>
                     <td>
-                        ${it.handled_pt_code ? `<span style="color:#ec4899; font-weight:600;">${it.handled_pt_code}</span>` : '<span style="color:var(--text-muted);">Chưa tạo</span>'}
+                        ${it.handled_pt_code ? `<span style="color:#cbd5e1;">${it.handled_pt_code}</span>` : '<span style="color:#475569;">Chưa tạo</span>'}
                     </td>
-                    <td style="font-size:0.82rem;">${it.from_name}</td>
-                    <td style="font-size:0.82rem;">${it.to_name}</td>
+                    <td style="font-size:0.8rem; color:#cbd5e1;">${it.from_name}</td>
+                    <td style="font-size:0.8rem; color:#cbd5e1;">${it.to_name}</td>
                 </tr>
             `;
         } else if (curPendingSubMode === 'hk') {
             html += `
                 <tr>
-                    <td class="text-center" style="color:var(--text-muted);">${stt}</td>
+                    <td class="text-center" style="color:#64748b;">${stt}</td>
                     <td>
-                        <strong style="color:#f43f5e; cursor:pointer;" onclick="copyTicketCode('${it.double_check_code}')" title="Bấm để sao chép mã HK">
+                        <strong style="color:#f1f5f9; cursor:pointer;" onclick="copyTicketCode('${it.double_check_code}')" title="Sao chép">
                             ${it.double_check_code}
                         </strong>
                     </td>
                     <td>
-                        <span style="color:#38bdf8; font-weight:600;">${it.pt_code}</span>
+                        <span style="color:#93c5fd;">${it.pt_code}</span>
                     </td>
-                    <td>${it.from_name}</td>
-                    <td>${it.to_name}</td>
-                    <td><span class="tag-pill" style="font-size:0.75rem;">${it.category}</span></td>
+                    <td style="color:#cbd5e1;">${it.from_name}</td>
+                    <td style="color:#cbd5e1;">${it.to_name}</td>
+                    <td style="color:#94a3b8; font-size:0.78rem;">${it.category}</td>
                     <td class="text-center">
-                        <span class="tag-pill" style="background:rgba(244,63,94,0.18); color:#f43f5e; font-weight:700;">
-                            ⚠️ Cần hậu kiểm
-                        </span>
+                        <span style="color:#cbd5e1; font-size:0.78rem;">Cần hậu kiểm</span>
                     </td>
-                    <td class="text-right font-mono">${it.sku || 0}</td>
-                    <td class="text-right font-mono" style="font-weight:700; color:#f43f5e;">
+                    <td class="text-right font-mono" style="color:#94a3b8;">${it.sku || 0}</td>
+                    <td class="text-right font-mono" style="font-weight:600; color:#f8fafc;">
                         ${(it.transfer_qty || 0).toLocaleString()} / ${(it.quantity || 0).toLocaleString()}
                     </td>
-                    <td style="color:var(--text-secondary); font-size:0.8rem;">${it.date_str}</td>
+                    <td style="color:#64748b; font-size:0.78rem;">${it.date_str}</td>
                 </tr>
             `;
         } else {
-            // Mode 'all'
-            let pillBadge = '<span class="tag-pill" style="background:rgba(56,189,248,0.18); color:#38bdf8;">Phiếu Chuyển</span>';
-            if (it.sys_type === 'to') pillBadge = '<span class="tag-pill" style="background:rgba(245,158,11,0.18); color:#fbbf24;">YC Xử Lý</span>';
-            else if (it.sys_type === 'hk') pillBadge = '<span class="tag-pill" style="background:rgba(244,63,94,0.18); color:#f43f5e;">Hậu Kiểm</span>';
-
             html += `
                 <tr>
-                    <td class="text-center" style="color:var(--text-muted);">${stt}</td>
-                    <td>${pillBadge}</td>
+                    <td class="text-center" style="color:#64748b;">${stt}</td>
+                    <td style="color:#94a3b8; font-size:0.78rem;">${it.sys_type_label}</td>
                     <td>
-                        <strong style="color:#fff; cursor:pointer;" onclick="copyTicketCode('${it.code}')" title="Bấm để sao chép mã">
+                        <strong style="color:#f1f5f9; cursor:pointer;" onclick="copyTicketCode('${it.code}')" title="Sao chép">
                             ${it.code}
                         </strong>
                     </td>
-                    <td>${it.from_name}</td>
-                    <td>${it.to_name}</td>
-                    <td><span class="tag-pill" style="font-size:0.75rem;">${it.category}</span></td>
+                    <td style="color:#cbd5e1;">${it.from_name}</td>
+                    <td style="color:#cbd5e1;">${it.to_name}</td>
+                    <td style="color:#94a3b8; font-size:0.78rem;">${it.category}</td>
                     <td class="text-center">
-                        <span class="tag-pill" style="font-weight:700; ${it.sys_type==='hk' ? 'color:#f43f5e; background:rgba(244,63,94,0.16);' : (it.sys_type==='to' ? 'color:#fbbf24; background:rgba(245,158,11,0.16);' : 'color:#38bdf8; background:rgba(56,189,248,0.16);')}">
-                            ${it.status_text}
-                        </span>
+                        <span style="color:#cbd5e1; font-size:0.78rem;">${it.status_text}</span>
                     </td>
-                    <td class="text-right font-mono">${it.sku || 0}</td>
-                    <td class="text-right font-mono" style="font-weight:700;">${(it.quantity || 0).toLocaleString()}</td>
-                    <td style="color:var(--text-secondary); font-size:0.8rem;">${it.date_str}</td>
+                    <td class="text-right font-mono" style="color:#94a3b8;">${it.sku || 0}</td>
+                    <td class="text-right font-mono" style="font-weight:600; color:#f8fafc;">${(it.quantity || 0).toLocaleString()}</td>
+                    <td style="color:#64748b; font-size:0.78rem;">${it.date_str}</td>
                 </tr>
             `;
         }
@@ -15410,15 +15304,11 @@ function exportPendingTicketsWorkbook(isMatrixOnly = false) {
     const data = window.PENDING_TICKETS_DATA;
     const wb = XLSX.utils.book_new();
 
-    // 1. TẠO SHEET "PV phiếu" (CHỨA CÁC BẢNG PIVOT TỔNG HỢP THEO KHO DC)
     const pvRows = [];
-
-    // Bảng 1A: Nơi chuyển = Kho
     pvRows.push(["Nơi chuyển", "Kho"]);
     pvRows.push([]);
     pvRows.push(["Distinct Count of Mã chuyển hàng", "Column Labels"]);
 
-    // Tổng hợp Bảng 1A
     const ptList = data.pt_dang_chuyen || [];
     const list1A = ptList.filter(x => classifyLocationType(x.from_name) === 'Kho');
     const dates1ASet = new Set();
@@ -15459,7 +15349,6 @@ function exportPendingTicketsWorkbook(isMatrixOnly = false) {
     totalRow1A.push(grand1ASet.size);
     pvRows.push(totalRow1A);
 
-    // Bảng 1B: Nơi nhận = Kho
     pvRows.push([]);
     pvRows.push([]);
     pvRows.push(["Nơi nhận", "Kho"]);
@@ -15508,7 +15397,6 @@ function exportPendingTicketsWorkbook(isMatrixOnly = false) {
     const wsPV = XLSX.utils.aoa_to_sheet(pvRows);
     XLSX.utils.book_append_sheet(wb, wsPV, "PV phiếu");
 
-    // 2. TẠO SHEET "transfer" (DANH SÁCH CHI TIẾT CÓ CỘT A: Nơi chuyển, CỘT B: Nơi nhận)
     if (!isMatrixOnly) {
         const sourceList = pendingFilteredItems.length > 0 ? pendingFilteredItems : (data.pt_dang_chuyen || []);
         const transRows = sourceList.map((it, idx) => {
@@ -15568,7 +15456,7 @@ function syncPendingTicketsRealtime() {
             })
         }).then(res => {
             if (res.ok) {
-                alert("🚀 Đã kích hoạt GitHub Actions đồng bộ Realtime từ CDC WMS! Dữ liệu sẽ sẵn sàng sau khoảng 1-2 phút.");
+                alert("Đã kích hoạt đồng bộ Realtime từ CDC WMS. Dữ liệu sẽ sẵn sàng sau 1-2 phút.");
                 let pollCount = 0;
                 const pollTimer = setInterval(() => {
                     pollCount++;
@@ -15582,8 +15470,7 @@ function syncPendingTicketsRealtime() {
                                 renderPendingMatrixTable();
                                 renderPendingTicketsTable();
                                 if (btn) btn.disabled = false;
-                                if (icon) icon.className = 'fa-solid fa-bolt';
-                                alert("🎉 DỮ LIỆU ĐÃ ĐƯỢC CẬP NHẬT REALTIME MỚI NHẤT TỪ CDC!");
+                                if (icon) icon.className = 'fa-solid fa-rotate';
                                 clearInterval(pollTimer);
                             }
                         } catch(e) {}
@@ -15592,14 +15479,13 @@ function syncPendingTicketsRealtime() {
                     if (pollCount >= 12) {
                         clearInterval(pollTimer);
                         if (btn) btn.disabled = false;
-                        if (icon) icon.className = 'fa-solid fa-bolt';
+                        if (icon) icon.className = 'fa-solid fa-rotate';
                     }
                 }, 10000);
             } else {
                 throw new Error("GitHub dispatch error: " + res.status);
             }
         }).catch(err => {
-            console.warn("Kích hoạt Actions thất bại, làm mới bộ nhớ đệm client:", err);
             refreshPendingTicketsClientOnly(btn, icon);
         });
     } else {
@@ -15620,19 +15506,18 @@ function refreshPendingTicketsClientOnly(btn, icon) {
                 renderPendingTicketsTable();
             }
             if (btn) btn.disabled = false;
-            if (icon) icon.className = 'fa-solid fa-bolt';
-            alert("✅ Đã làm mới hiển thị dữ liệu phiếu treo mới nhất từ máy chủ!");
+            if (icon) icon.className = 'fa-solid fa-rotate';
+            alert("Đã làm mới dữ liệu phiếu treo từ máy chủ.");
         }, 100);
     };
     s.onerror = () => {
         if (btn) btn.disabled = false;
-        if (icon) icon.className = 'fa-solid fa-bolt';
-        alert("⚠️ Không thể tải file dữ liệu realtime.");
+        if (icon) icon.className = 'fa-solid fa-rotate';
+        alert("Không thể tải file dữ liệu realtime.");
     };
     document.head.appendChild(s);
 }
 
-// Export ra window
 window.setPendingSubMode = setPendingSubMode;
 window.setPTViewMode = setPTViewMode;
 window.filterDetailByMatrixCell = filterDetailByMatrixCell;
