@@ -231,7 +231,7 @@ async def main():
         chat_map.update(dict(zip(df_chat['Tên Siêu thị'].astype(str).str.strip(), df_chat['CHAT ID'])))
 
     print("Đang tải dữ liệu trực tiếp từ Google Sheet (ĐÔNG MÁT)...")
-    url_csv = 'https://docs.google.com/spreadsheets/d/18LwNc2FTqSy9aKMtnqlBFmVQJPPn9E7ALnXajVXHhzI/gviz/tq?tqx=out:csv&sheet=Ch%C3%AAnnh%20l%E1%BB%87ch%20ST'
+    url_csv = 'https://docs.google.com/spreadsheets/d/18LwNc2FTqSy9aKMtnqlBFmVQJPPn9E7ALnXajVXHhzI/export?format=csv&gid=1422896115'
     url_xlsx = 'https://docs.google.com/spreadsheets/d/18LwNc2FTqSy9aKMtnqlBFmVQJPPn9E7ALnXajVXHhzI/export?format=xlsx'
     cache_file = 'temp_google_sheet_dongmat.xlsx'
     df_thieu = None
@@ -245,9 +245,13 @@ async def main():
             lines = res.content.decode('utf-8-sig', errors='replace').splitlines()
             if len(lines) > 2:
                 import io
+                # Dòng 0 là dòng tổng cộng, dòng 1 là Header
                 df_thieu = pd.read_csv(io.StringIO('\n'.join(lines[1:])), dtype=str, low_memory=False)
-                print(f"⚡ Đã tải thành công qua CSV: {len(df_thieu):,} dòng!", flush=True)
-                break
+                if len(df_thieu) > 50:
+                    print(f"⚡ Đã tải thành công qua CSV: {len(df_thieu):,} dòng!", flush=True)
+                    break
+                else:
+                    df_thieu = None
         except Exception as e:
             print(f"⚠️ Thử tải CSV lần {attempt} thất bại: {e}", flush=True)
             time.sleep(1.5)
@@ -304,13 +308,16 @@ async def main():
                 latest_date = target_dt
                 print(f"📅 Đã chọn lọc theo ngày chỉ định: {args.date}")
             else:
-                # Khong co data cho ngay chi dinh -> lay ngay moi nhat trong Sheet
-                latest_date = df_thieu[col_ngay].dropna().max()
+                # Khong co data cho ngay chi dinh -> lay ngay moi nhat trong Sheet (loai bo ngay tuong lai do loi go nham)
+                valid_dates = df_thieu[df_thieu[col_ngay] <= pd.Timestamp.now()][col_ngay]
+                latest_date = valid_dates.dropna().max() if len(valid_dates) > 0 else df_thieu[col_ngay].dropna().max()
                 print(f"⚠️ Ngày {args.date} chưa có dữ liệu trong Sheet, tự động lọc ngày mới nhất: {latest_date.strftime('%Y-%m-%d')}")
         except Exception:
-            latest_date = df_thieu[col_ngay].dropna().max()
+            valid_dates = df_thieu[df_thieu[col_ngay] <= pd.Timestamp.now()][col_ngay]
+            latest_date = valid_dates.dropna().max() if len(valid_dates) > 0 else df_thieu[col_ngay].dropna().max()
     else:
-        latest_date = df_thieu[col_ngay].dropna().max()
+        valid_dates = df_thieu[df_thieu[col_ngay] <= pd.Timestamp.now()][col_ngay]
+        latest_date = valid_dates.dropna().max() if len(valid_dates) > 0 else df_thieu[col_ngay].dropna().max()
 
     if pd.isna(latest_date):
         print("[LỖI] Không tìm thấy dữ liệu ngày hợp lệ trong Cột A!")
