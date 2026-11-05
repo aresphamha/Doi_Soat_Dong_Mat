@@ -155,6 +155,25 @@ def get_all_chat_ids():
         s['chat_id_rc'] = ''
     return stores
 
+def get_latest_pending_tickets_data():
+    try:
+        p1 = os.path.join(ROOT_DIR, "daily_details", "pending_tickets.js")
+        p2 = os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "daily_details", "pending_tickets.js")
+        target_path = p1 if os.path.exists(p1) else (p2 if os.path.exists(p2) else None)
+        if not target_path:
+            return None
+        with open(target_path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+        prefix = "window.PENDING_TICKETS_DATA ="
+        if content.startswith(prefix):
+            content = content[len(prefix):].strip()
+        if content.endswith(";"):
+            content = content[:-1].strip()
+        return json.loads(content)
+    except Exception as e:
+        print(f"⚠️ Lỗi đọc pending_tickets.js: {e}")
+        return None
+
 def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name=None, chat_id_dc=None):
     if not store_id:
         return False, "Thiếu Mã Siêu Thị (store_id)!"
