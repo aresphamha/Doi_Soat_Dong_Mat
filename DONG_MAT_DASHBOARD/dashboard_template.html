@@ -5716,6 +5716,9 @@
             <!-- ========================================================================= -->
             <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
             <!-- ========================================================================= -->
+            <!-- ========================================================================= -->
+            <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
+            <!-- ========================================================================= -->
             <div class="big-tab-panel" id="big-panel-7">
                 <!-- HERO HEADER -->
                 <div class="tele-hero-card" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem 1.5rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
@@ -5957,6 +5960,7 @@
                     </div>
                 </div>
             </div>
+
 
 
 
@@ -14491,6 +14495,8 @@ function copyChatId(chatId, btnEl) {
 // =========================================================================
 
 // =========================================================================
+
+// =========================================================================
 // ENGINE XỬ LÝ DỮ LIỆU & GIAO DIỆN TAB 7: THEO DÕI PHIẾU TREO REALTIME
 // PHONG CÁCH: TỐI GIẢN, THANH LỊCH, DỊU MẮT (MINIMALIST CLEAN CORPORATE)
 // Tiết chế toàn bộ màu sắc sặc sỡ, tập trung vào số liệu rõ ràng chuẩn nghiệp vụ
@@ -15573,7 +15579,7 @@ async function syncPendingTicketsRealtime() {
     } catch(e) {}
 
     // Dự phòng thêm localhost nếu người dùng mở file html trực tiếp hoặc chạy trên máy
-    if (window.location.protocol === 'http:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    if (window.location.protocol === 'http:' || window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         candidateUrls.push('http://127.0.0.1:8088');
     }
 
@@ -15613,51 +15619,11 @@ async function syncPendingTicketsRealtime() {
         }
     }
 
-    // 2. NẾU CHƯA CÓ RUNNER SẴN SÀNG: THỬ QUA GITHUB ACTIONS CLOUD RUNNER
-    let pat = localStorage.getItem('SCM_GH_PAT') || localStorage.getItem('GH_ACTION_PAT') || '';
-    if (!pat && typeof DEFAULT_GH_PAT !== 'undefined' && DEFAULT_GH_PAT) {
-        pat = DEFAULT_GH_PAT;
-    }
-
-    if (pat) {
-        try {
-            const ghRes = await fetch('https://api.github.com/repos/aresphamha/Doi_Soat_Dong_Mat/actions/workflows/run_spam_tools.yml/dispatches', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${pat}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    ref: 'main',
-                    inputs: {
-                        tool: 'sync_pending_tickets'
-                    }
-                })
-            });
-
-            if (ghRes.ok || ghRes.status === 204) {
-                alert(`🚀 ĐÃ GỬI LỆNH ĐỒNG BỘ LÊN GITHUB ACTIONS!\n\nĐang truy vấn CDC WMS. Trang sẽ tự động làm mới số liệu ngay khi có dữ liệu mới.`);
-                let attempts = 0;
-                const pollInterval = setInterval(async () => {
-                    attempts++;
-                    const hasNew = await pollCheckNewPendingTickets(oldTimestamp);
-                    if (hasNew || attempts >= 18) {
-                        clearInterval(pollInterval);
-                        resetBtn();
-                        if (hasNew) {
-                            alert(`🎉 ĐỒNG BỘ THÀNH CÔNG!\n\n• Giờ mới: ${window.PENDING_TICKETS_DATA?.updated_at}`);
-                        }
-                    }
-                }, 6000);
-                return;
-            }
-        } catch (err) {}
-    }
-
-    // 3. NẾU CẢ RUNNER VÀ CLOUD ĐỀU KHÔNG TRẢ LỜI: HƯỚNG DẪN 1 CLICK
+    // 2. NẾU RUNNER OFFLINE: THÔNG BÁO RÕ RÀNG VÀ RESET NÚT NGAY LẬP TỨC
     resetBtn();
-    alert("⚠️ Dịch vụ Runner chưa sẵn sàng để kết nối CDC WMS.\n\nHãy chắc chắn máy tính của bạn đã bật file 'Cap_Nhat_Phieu_Treo_CDC.bat' hoặc 'Chay_Local_Runner.bat' trong thư mục dự án để tự động đồng bộ tức thì!");
+    alert("⚠️ TRẠM RUNNER CỤC BỘ ĐANG TẮT!\n\n" +
+          "🔒 Do cơ sở dữ liệu CDC WMS (103.140.248.250) chỉ cho phép truy cập từ máy tính nội bộ Việt Nam (máy chủ Cloud GitHub Actions bị tường lửa chặn bảo mật),\n\n" +
+          "👉 Bạn hãy chạy file 'Chay_Local_Runner.bat' (hoặc 'Chay_An_Local_Runner.vbs') trên máy tính là có thể bấm CẬP NHẬT REALTIME trên Web tức thì trong 1 giây!");
 }
 
 function forceReloadPendingTickets() {

@@ -72,6 +72,13 @@ def init_cloudflare_tunnel():
             return
             
     try:
+        # Tắt tiến trình cloudflared cũ nếu còn sót để tránh xung đột cổng
+        try:
+            subprocess.run(["taskkill", "/F", "/IM", "cloudflared.exe"], capture_output=True)
+            time.sleep(1)
+        except Exception:
+            pass
+
         cmd = [cloudflared_exe, "tunnel", "--url", f"http://127.0.0.1:{PORT}"]
         CLOUDFLARED_PROC = subprocess.Popen(
             cmd,
@@ -110,6 +117,26 @@ def init_cloudflare_tunnel():
                 
                 with open(os.path.join(ROOT_DIR, "RUNNER_REMOTE_URL.txt"), "w", encoding="utf-8") as rf:
                     rf.write(CLOUDFLARE_TUNNEL_URL)
+
+                # TỰ ĐỘNG ĐẨY URL TUNNEL MỚI LÊN GITHUB ĐỂ GITHUB PAGES NHẬN DIỆN NGAY LẬP TỨC
+                try:
+                    print("🚀 Đang tự động đẩy Cloudflare Tunnel URL mới lên GitHub Pages...")
+                    subprocess.run(
+                        ["git", "add", "runner_remote_url.json", "DONG_MAT_DASHBOARD/runner_remote_url.json", "RUNNER_REMOTE_URL.txt"],
+                        cwd=ROOT_DIR, capture_output=True, timeout=15
+                    )
+                    subprocess.run(
+                        ["git", "commit", "-m", f"🤖 [Runner] Cập nhật Cloudflare Tunnel Realtime: {CLOUDFLARE_TUNNEL_URL}"],
+                        cwd=ROOT_DIR, capture_output=True, timeout=15
+                    )
+                    subprocess.run(
+                        ["git", "push", "origin", "main"],
+                        cwd=ROOT_DIR, capture_output=True, timeout=30
+                    )
+                    print("✅ Đã đẩy Cloudflare Tunnel URL lên GitHub Pages thành công!")
+                except Exception as gerr:
+                    print(f"⚠️ Lỗi đẩy Git cho runner_remote_url: {gerr}")
+
                 break
     except Exception as e:
         print(f"⚠️ Lỗi khởi chạy Cloudflare Tunnel: {e}")
@@ -920,6 +947,24 @@ def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_role
             IS_CURRENT_PAUSED = False
 
 
+
+def periodic_background_sync():
+    """Tự động đồng bộ phiếu treo từ CDC mỗi 10 phút một lần để Web luôn có số liệu mới nhất."""
+    time.sleep(30)
+    while True:
+        try:
+            time.sleep(600)  # 10 phút
+            if CURRENT_RUNNING_PROC is None:
+                print("🔄 [AUTO-SYNC] Đang tự động quét đồng bộ Phiếu Treo CDC định kỳ...")
+                sync_script = os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "sync_pending_tickets.py")
+                res = subprocess.run([PYTHON_EXE, sync_script], cwd=ROOT_DIR, capture_output=True, text=True, timeout=60)
+                if res.returncode == 0:
+                    print("✅ [AUTO-SYNC] Đồng bộ CDC thành công, đang đẩy lên GitHub Pages...")
+                    from push_to_github import sync_and_push
+                    sync_and_push("🤖 [Auto-Sync] Tự động đồng bộ phiếu treo CDC định kỳ")
+        except Exception as e:
+            print(f"⚠️ [AUTO-SYNC] Lỗi đồng bộ định kỳ: {e}")
+
 def start_server():
     log_path = os.path.join(ROOT_DIR, "local_runner_service.log")
     try:
@@ -928,6 +973,8 @@ def start_server():
         
         # Khởi động Cloudflare Remote Tunnel ở background thread
         threading.Thread(target=init_cloudflare_tunnel, daemon=True).start()
+        # Khởi động luồng tự động đồng bộ CDC định kỳ 10 phút/lần
+        threading.Thread(target=periodic_background_sync, daemon=True).start()
 
         server = ThreadingHTTPServer(('0.0.0.0', PORT), SCMRequestHandler)
         with open(log_path, "a", encoding="utf-8") as f:
