@@ -5713,6 +5713,9 @@
             <!-- ========================================================================= -->
             <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
             <!-- ========================================================================= -->
+            <!-- ========================================================================= -->
+            <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
+            <!-- ========================================================================= -->
             <div class="big-tab-panel" id="big-panel-7">
                 <!-- HERO HEADER -->
                 <div class="tele-hero-card" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem 1.5rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
@@ -5954,6 +5957,7 @@
                     </div>
                 </div>
             </div>
+
 
 
 
@@ -14485,6 +14489,8 @@ function copyChatId(chatId, btnEl) {
 // =========================================================================
 
 // =========================================================================
+
+// =========================================================================
 // ENGINE XỬ LÝ DỮ LIỆU & GIAO DIỆN TAB 7: THEO DÕI PHIẾU TREO REALTIME
 // PHONG CÁCH: TỐI GIẢN, THANH LỊCH, DỊU MẮT (MINIMALIST CLEAN CORPORATE)
 // Tiết chế toàn bộ màu sắc sặc sỡ, tập trung vào số liệu rõ ràng chuẩn nghiệp vụ
@@ -14664,6 +14670,9 @@ function setPendingSubMode(mode) {
     if (ptToggleGroup) {
         ptToggleGroup.style.display = (mode === 'pt' || mode === 'all') ? 'inline-flex' : 'none';
     }
+
+    const stSelect = document.getElementById('pendingStatusSelect');
+    if (stSelect) stSelect.value = 'all';
 
     clearMatrixFilter(false);
     renderPendingMatrixTable();
@@ -14930,6 +14939,12 @@ function filterDetailByMatrixCell(rowKey, date) {
         subMode: curPendingSubMode, 
         viewMode: curPTViewMode 
     };
+
+    // Tự động giải phóng bộ lọc trạng thái và ô tìm kiếm để hiển thị đúng số lượng phiếu trong ô ma trận vừa bấm
+    const stSelect = document.getElementById('pendingStatusSelect');
+    if (stSelect) stSelect.value = 'all';
+    const sInput = document.getElementById('pendingSearchInput');
+    if (sInput) sInput.value = '';
 
     const badge = document.getElementById('matrixActiveFilterBadge');
     const badgeText = document.getElementById('matrixActiveFilterText');
@@ -15212,7 +15227,26 @@ function renderPendingTicketsTableRows() {
     if (badgeCount) badgeCount.innerText = total.toLocaleString() + ' phiếu';
 
     if (total === 0) {
-        tbody.innerHTML = '<tr><td colspan="12" class="text-center" style="padding:2.5rem; color:#64748b;">Không tìm thấy phiếu nào phù hợp với bộ lọc.</td></tr>';
+        const hasExtraFilters = (statusFilter !== 'all' || query || catFilter !== 'all' || storeFilter !== 'all');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="12" class="text-center" style="padding:2.5rem; color:#94a3b8;">
+                    <div style="font-size:1.05rem; color:#cbd5e1; margin-bottom:6px;">
+                        <i class="fa-solid fa-filter-circle-xmark" style="color:#64748b; margin-right:6px;"></i> Không tìm thấy phiếu nào phù hợp với bộ lọc.
+                    </div>
+                    ${hasExtraFilters ? `
+                        <div style="margin-top:10px;">
+                            <span style="font-size:0.8rem; color:#94a3b8; display:block; margin-bottom:8px;">
+                                (Đang có bộ lọc bổ sung khiến các phiếu bị ẩn${statusFilter !== 'all' ? `: Trạng thái: <strong>${statusFilter}</strong>` : ''}${query ? `, Từ khóa: <strong>"${query}"</strong>` : ''})
+                            </span>
+                            <button type="button" onclick="resetPendingFilters()" style="background:#0284c7; color:#fff; border:none; border-radius:6px; font-size:0.78rem; font-weight:600; padding:6px 14px; cursor:pointer;">
+                                <i class="fa-solid fa-rotate-left"></i> Đặt lại tất cả bộ lọc về "Tất cả"
+                            </button>
+                        </div>
+                    ` : ''}
+                </td>
+            </tr>
+        `;
         if (pageInfoTop) pageInfoTop.innerText = '0 - 0 trong 0';
         if (pageInfoBottom) pageInfoBottom.innerText = '0 - 0 trong 0';
         if (pageText) pageText.innerText = 'Trang 1 / 1';
@@ -15671,6 +15705,19 @@ function pollCheckNewPendingTickets(oldTimestamp) {
 
 window.setPendingSubMode = setPendingSubMode;
 window.setPTViewMode = setPTViewMode;
+function resetPendingFilters() {
+    const sInput = document.getElementById('pendingSearchInput');
+    const cSelect = document.getElementById('pendingCategorySelect');
+    const stSelect = document.getElementById('pendingStatusSelect');
+    const dSelect = document.getElementById('pendingStoreSelect');
+    if (sInput) sInput.value = '';
+    if (cSelect) cSelect.value = 'all';
+    if (stSelect) stSelect.value = 'all';
+    if (dSelect) dSelect.value = 'all';
+    curPendingPage = 1;
+    renderPendingTicketsTable();
+}
+window.resetPendingFilters = resetPendingFilters;
 window.filterDetailByMatrixCell = filterDetailByMatrixCell;
 window.clearMatrixFilter = clearMatrixFilter;
 window.exportMatrixExcel = exportMatrixExcel;
