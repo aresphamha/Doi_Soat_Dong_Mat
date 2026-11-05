@@ -32,19 +32,23 @@ def sync_and_push(custom_message=None, specific_files=None):
     msg = custom_message or f"Cập nhật Báo Cáo Đối Soát - {time.strftime('%Y-%m-%d %H:%M:%S')}"
 
     try:
-        # 1. Pull trước để tránh xung đột
-        clear_git_lock()
-        subprocess.run(["git", "pull", "--rebase", "origin", "main"], cwd=ROOT_DIR, check=False, capture_output=True, encoding='utf-8', errors='ignore')
-
-        # 2. Add files
+        # 1. Add all modified & untracked files
         clear_git_lock()
         if specific_files:
             cmd_add = ["git", "add"] + specific_files
         else:
-            cmd_add = ["git", "add", "daily_details/", "DONG_MAT_DASHBOARD/daily_details/", "index.html", "Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay.html", "DONG_MAT_DASHBOARD/dashboard_template.html", "runner_remote_url.json", "DONG_MAT_DASHBOARD/runner_remote_url.json", "push_to_github.py", "local_runner_service.py"]
+            cmd_add = ["git", "add", "-A"]
         subprocess.run(cmd_add, cwd=ROOT_DIR, check=False)
 
-        # 3. Commit
+        # 2. Pull rebase with autostash để tránh xung đột
+        clear_git_lock()
+        subprocess.run(["git", "pull", "--rebase", "--autostash", "origin", "main"], cwd=ROOT_DIR, check=False, capture_output=True, encoding='utf-8', errors='ignore')
+
+        # 3. Add lại sau rebase nếu có file phát sinh
+        clear_git_lock()
+        subprocess.run(["git", "add", "-A"], cwd=ROOT_DIR, check=False)
+
+        # 4. Commit
         clear_git_lock()
         res_commit = subprocess.run(["git", "commit", "-m", msg], cwd=ROOT_DIR, capture_output=True, encoding='utf-8', errors='ignore')
         out_str = (res_commit.stdout or '') + (res_commit.stderr or '')
@@ -53,11 +57,11 @@ def sync_and_push(custom_message=None, specific_files=None):
         else:
             print(f"📦 Đã tạo bản ghi commit: {msg}")
 
-        # 4. Pull rebase lần nữa nếu có commit mới
+        # 5. Pull rebase lần nữa nếu có commit mới từ remote
         clear_git_lock()
-        subprocess.run(["git", "pull", "--rebase", "origin", "main"], cwd=ROOT_DIR, check=False, capture_output=True, encoding='utf-8', errors='ignore')
+        subprocess.run(["git", "pull", "--rebase", "--autostash", "origin", "main"], cwd=ROOT_DIR, check=False, capture_output=True, encoding='utf-8', errors='ignore')
 
-        # 5. Push
+        # 6. Push
         clear_git_lock()
         res_push = subprocess.run(["git", "push", "origin", "main"], cwd=ROOT_DIR, capture_output=True, encoding='utf-8', errors='ignore')
         if res_push.returncode == 0:
