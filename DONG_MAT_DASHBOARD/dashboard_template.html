@@ -5710,6 +5710,9 @@
             <!-- ========================================================================= -->
             <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
             <!-- ========================================================================= -->
+            <!-- ========================================================================= -->
+            <!-- TAB 7: TRUNG TÂM THEO DÕI & TRA CỨU PHIẾU TREO (WMS CDC REALTIME)           -->
+            <!-- ========================================================================= -->
             <div class="big-tab-panel" id="big-panel-7">
                 <!-- HERO HEADER -->
                 <div class="tele-hero-card" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem 1.5rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
@@ -5951,6 +5954,7 @@
                     </div>
                 </div>
             </div>
+
 
 
 
@@ -14479,6 +14483,8 @@ function copyChatId(chatId, btnEl) {
 // =========================================================================
 
 // =========================================================================
+
+// =========================================================================
 // ENGINE XỬ LÝ DỮ LIỆU & GIAO DIỆN TAB 7: THEO DÕI PHIẾU TREO REALTIME
 // PHONG CÁCH: TỐI GIẢN, THANH LỊCH, DỊU MẮT (MINIMALIST CLEAN CORPORATE)
 // Tiết chế toàn bộ màu sắc sặc sỡ, tập trung vào số liệu rõ ràng chuẩn nghiệp vụ
@@ -15543,10 +15549,19 @@ async function syncPendingTicketsRealtime() {
             if (res.ok) {
                 const data = await res.json();
                 if (data.success) {
-                    await forceReloadPendingTickets();
+                    if (data.data) {
+                        window.PENDING_TICKETS_DATA = data.data;
+                        updatePendingSummaryKPIs(window.PENDING_TICKETS_DATA);
+                        populatePendingStoreOptions(window.PENDING_TICKETS_DATA);
+                        renderPendingMatrixTable();
+                        renderPendingTicketsTable();
+                    } else {
+                        await forceReloadPendingTickets();
+                    }
                     resetBtn();
                     const newTime = window.PENDING_TICKETS_DATA?.updated_at || 'Vừa xong';
-                    alert(`🎉 ĐỒNG BỘ REALTIME THÀNH CÔNG TỪ CDC WMS!\n\n• Giờ đồng bộ mới: ${newTime}\n• Dữ liệu phiếu treo đã được tự động lưu và cập nhật trực tiếp.`);
+                    const totalCnt = window.PENDING_TICKETS_DATA?.summary?.total_pending?.toLocaleString() || '';
+                    alert(`🎉 ĐỒNG BỘ REALTIME THÀNH CÔNG TỪ CDC WMS!\n\n• Giờ đồng bộ mới: ${newTime}\n• Tổng số phiếu treo: ${totalCnt} phiếu\n• Đã tự động cập nhật ngay trên Web và đẩy lên GitHub!`);
                     return;
                 }
             }

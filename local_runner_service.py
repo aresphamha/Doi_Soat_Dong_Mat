@@ -494,6 +494,9 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
                     sync_and_push("Update: Realtime Pending Tickets CDC")
                 except Exception as pe:
                     print(f"Push error: {pe}")
+            data_obj = get_latest_pending_tickets_data()
+            if data_obj:
+                result['data'] = data_obj
             self.send_response(200 if result.get('success') else 500)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self._send_cors_headers()
@@ -652,6 +655,9 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
                     sync_and_push("Update: Realtime Pending Tickets CDC")
                 except Exception as pe:
                     print(f"Push error: {pe}")
+            data_obj = get_latest_pending_tickets_data()
+            if data_obj:
+                result['data'] = data_obj
             self.send_response(200 if result.get('success') else 500)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self._send_cors_headers()
