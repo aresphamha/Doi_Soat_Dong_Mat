@@ -14503,8 +14503,10 @@ const DC_HEX_NAMES = {
     '6aabb14ef426e20007f805da': 'FGA10104 _ Bình Thắng _ Chờ Đối Soát',
     '6aabb403055d2e0007eb9ded': 'FEA20104 _ Bình Thắng _ Chờ Đối Soát',
     '6aabb4e6e493030007272a95': 'MFA30104 _ Sóng Thần _ Chờ Đối Soát',
-    '6aa77e599d7b1b00070121f5': 'CLB40104 _ Long Biên _ Chờ Đối Soát',
-    '6aa77de130fded00073d4521': 'CLB40102 _ Long Biên _ Quá Cảnh',
+    '6aa77e599d7b1b00070121f5': 'FZA50104 _ Sóng Thần _ Chờ Đối Soát',
+    '6aa77de130fded00073d4521': 'FZA50102 _ Sóng Thần _ Quá Cảnh',
+    '6ab276bfa719be00074ff66b': 'CLB40102 _ Long Biên _ Quá Cảnh',
+    '6ab276ad5e8f270007798886': 'CLB40101 _ Long Biên _ Lưu Hàng',
     '6a34ed8d6607ba000703e235': 'MeatFish - Miền Đông - SCF - Quá Cảnh',
     '6aa6a1eedf3d880007871f3f': 'CLA40102 _ Sóng Thần _ Quá Cảnh',
     '6aabb0a2f426e20007f80123': 'FGA10101 _ Bình Thắng _ Lưu Hàng',
@@ -14744,7 +14746,7 @@ function renderPendingMatrixTable() {
         items = data.to_yeu_cau || [];
         colHeaderLabel = 'Kho DC Tiếp Nhận Xử Lý Yêu Cầu';
         if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-table-cells" style="color:#94a3b8;"></i> BẢNG TỔNG HỢP: DS YC XỬ LÝ (MỚI & ĐANG XỬ LÝ) THEO KHO DC';
-        filterConditionDesc = 'Thống kê Distinct Count số lượng mã TO yêu cầu xử lý chuyển hoàn gửi về Kho DC theo ngày';
+        filterConditionDesc = 'Thống kê Distinct Count số lượng mã TO yêu cầu xử lý chuyển hoàn gửi về Kho DC theo Ngày tạo yêu cầu';
     } else if (curPendingSubMode === 'hk') {
         items = data.hk_can_hau_kiem || [];
         colHeaderLabel = 'Kho Nguồn Phát Hàng (Kho DC xuất đi)';
@@ -14778,6 +14780,9 @@ function renderPendingMatrixTable() {
     items.forEach(it => {
         let code = it.code || it.double_check_code || it.pt_code;
         let dStr = it.transfer_date || it.pt_transfer_date || it.received_date || it.created_at;
+        if (curPendingSubMode === 'to') {
+            dStr = it.created_at || it.pt_transfer_date;
+        }
         let dm = extractDayMonthYear(dStr);
         datesSet.add(dm);
 
@@ -14806,7 +14811,7 @@ function renderPendingMatrixTable() {
             ${colHeaderLabel}
         </th>
         <th colspan="${sortedDates.length}" style="text-align:center; padding:7px 10px; font-weight:600; color:#cbd5e1; background:#0f172a; border-bottom:1px solid rgba(255,255,255,0.06); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.5px;">
-            Ngày Phát Sinh / Chuyển Hàng
+            ${curPendingSubMode === 'to' ? 'Ngày Tạo Yêu Cầu (WMS)' : 'Ngày Phát Sinh / Chuyển Hàng'}
         </th>
         <th rowspan="2" style="width:105px; text-align:right; padding:9px 12px; vertical-align:middle; font-weight:700; color:#f8fafc; background:#1e293b; border-left:1px solid rgba(255,255,255,0.06); font-size:0.8rem;">
             Grand Total
@@ -15049,7 +15054,9 @@ function renderPendingTicketsTable() {
                 sku: x.sku,
                 quantity: x.qty_created || 0,
                 qty_confirmed: x.qty_confirmed || 0,
-                date_str: x.pt_transfer_date || x.created_at,
+                date_str: x.created_at || x.pt_transfer_date,
+                created_at: x.created_at,
+                pt_transfer_date: x.pt_transfer_date,
                 from_pt_code: x.from_pt_code || '',
                 handled_pt_code: x.handled_pt_code || '',
                 pt_from_name: resolveBranchName(x.pt_from_name),
@@ -15148,6 +15155,7 @@ function renderPendingTableHeader() {
                 <th style="min-width:100px; text-align:center;">Trạng Thái</th>
                 <th style="width:60px; text-align:right;">SKU</th>
                 <th style="width:100px; text-align:right;">SL Tạo / Conf</th>
+                <th style="min-width:130px;">Ngày Tạo YC</th>
                 <th style="min-width:120px;">PT Chuyển Đi</th>
                 <th style="min-width:130px;">Ngày Chuyển Đi</th>
                 <th style="min-width:180px;">Kho Nguồn Xuất Đi</th>
@@ -15274,10 +15282,11 @@ function renderPendingTicketsTableRows() {
                     <td class="text-right font-mono" style="font-weight:600; color:#f8fafc;">
                         ${(it.quantity || 0).toLocaleString()} / <span style="color:#64748b;">${(it.qty_confirmed || 0).toLocaleString()}</span>
                     </td>
+                    <td style="color:#38bdf8; font-size:0.78rem; font-weight:600;">${it.created_at || it.date_str}</td>
                     <td>
                         ${it.from_pt_code ? `<a href="https://next.kingfood.co/operation/transfer-item/transfer-item-list?code=${it.from_pt_code}" target="_blank" style="color:#93c5fd; text-decoration:none;">${it.from_pt_code}</a>` : '---'}
                     </td>
-                    <td style="color:#64748b; font-size:0.78rem;">${it.date_str}</td>
+                    <td style="color:#64748b; font-size:0.78rem;">${it.pt_transfer_date || '---'}</td>
                     <td style="font-size:0.8rem; color:#cbd5e1;">${it.pt_from_name || '---'}</td>
                     <td>
                         ${it.handled_pt_code ? `<span style="color:#cbd5e1;">${it.handled_pt_code}</span>` : '<span style="color:#475569;">Chưa tạo</span>'}
