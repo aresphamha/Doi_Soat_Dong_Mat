@@ -32,7 +32,11 @@ def sync_and_push(custom_message=None, specific_files=None):
     msg = custom_message or f"Cập nhật Báo Cáo Đối Soát - {time.strftime('%Y-%m-%d %H:%M:%S')}"
 
     try:
-        # 1. Add files
+        # 1. Pull trước để tránh xung đột
+        clear_git_lock()
+        subprocess.run(["git", "pull", "--rebase", "origin", "main"], cwd=ROOT_DIR, check=False, capture_output=True, encoding='utf-8', errors='ignore')
+
+        # 2. Add files
         clear_git_lock()
         if specific_files:
             cmd_add = ["git", "add"] + specific_files
@@ -40,7 +44,7 @@ def sync_and_push(custom_message=None, specific_files=None):
             cmd_add = ["git", "add", "daily_details/", "DONG_MAT_DASHBOARD/daily_details/", "index.html", "Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay.html", "DONG_MAT_DASHBOARD/dashboard_template.html", "runner_remote_url.json", "DONG_MAT_DASHBOARD/runner_remote_url.json", "push_to_github.py", "local_runner_service.py"]
         subprocess.run(cmd_add, cwd=ROOT_DIR, check=False)
 
-        # 2. Commit
+        # 3. Commit
         clear_git_lock()
         res_commit = subprocess.run(["git", "commit", "-m", msg], cwd=ROOT_DIR, capture_output=True, encoding='utf-8', errors='ignore')
         out_str = (res_commit.stdout or '') + (res_commit.stderr or '')
@@ -49,11 +53,11 @@ def sync_and_push(custom_message=None, specific_files=None):
         else:
             print(f"📦 Đã tạo bản ghi commit: {msg}")
 
-        # 3. Pull merge
+        # 4. Pull rebase lần nữa nếu có commit mới
         clear_git_lock()
-        subprocess.run(["git", "pull", "--no-rebase", "origin", "main", "--no-edit"], cwd=ROOT_DIR, check=False, capture_output=True, encoding='utf-8', errors='ignore')
+        subprocess.run(["git", "pull", "--rebase", "origin", "main"], cwd=ROOT_DIR, check=False, capture_output=True, encoding='utf-8', errors='ignore')
 
-        # 4. Push
+        # 5. Push
         clear_git_lock()
         res_push = subprocess.run(["git", "push", "origin", "main"], cwd=ROOT_DIR, capture_output=True, encoding='utf-8', errors='ignore')
         if res_push.returncode == 0:
@@ -64,10 +68,7 @@ def sync_and_push(custom_message=None, specific_files=None):
             return True
         else:
             print(f"⚠️ Push gặp lỗi: {res_push.stderr}")
-            clear_git_lock()
-            subprocess.run(["git", "pull", "--rebase", "origin", "main"], cwd=ROOT_DIR, check=False, capture_output=True, encoding='utf-8', errors='ignore')
-            res_push2 = subprocess.run(["git", "push", "origin", "main"], cwd=ROOT_DIR, capture_output=True, encoding='utf-8', errors='ignore')
-            return res_push2.returncode == 0
+            return False
     except Exception as e:
         print(f"❌ Lỗi khi thực hiện git sync_and_push: {e}")
         return False
