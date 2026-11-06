@@ -24,26 +24,31 @@ WAREHOUSE_CATEGORIES = {
     # Kho Khô
     '6aabb0a2f426e20007f80123': 'Kho Khô (FGA)',
     '6aabb0d73c46470007f935ce': 'Kho Khô (FGA)',
-    '6aa77de130fded00073d4521': 'Kho Khô (Vệ Tinh)',
+    '6aabb14ef426e20007f805da': 'Kho Khô (FGA)',
+    '6aa77de130fded00073d4521': 'Đông Mát (FZA/Đông)',
     '6234219eb35d1d00073793ab': 'Kho Khô (Seedlog)',
     '62342407b35d1d0007379692': 'Kho Khô (Seedlog KT)',
     '6ab13e28361da10007bc829f': 'Kho Khô (Long Biên)',
     
     # Rau Củ
     '6aabb3f3f426e20007f81559': 'Rau Củ (FEA)',
+    '6aabb403055d2e0007eb9ded': 'Rau Củ (FEA)',
     '5fdc170ebd89c10006f15b7c': 'Rau Củ (KRC Cũ)',
     '6aabb45fd18e9d00073200a4': 'Rau Củ (Bánh Tươi)',
     '6a3e383fe20b440007640326': 'Rau Củ (Bánh Tươi Cũ)',
     
     # Thịt Cá
     '6aabb4d0e493030007272a3f': 'Thịt Cá (MFA)',
+    '6aabb4e6e493030007272a95': 'Thịt Cá (MFA)',
     '6a34ed56f23028000774139f': 'Thịt Cá (SCF/MF01)',
+    '6a34ed8d6607ba000703e235': 'Thịt Cá (SCF/MF01)',
     '6acda3bafe8e0c0007012c06': 'Thịt Cá (Onelife)',
     
     # Đông Mát
     '6aa6a1eedf3d880007871f3f': 'Đông Mát (CLA/Mát)',
+    '6aa6a22bdf3d880007872063': 'Đông Mát (CLA/Mát)',
     '6a34ee2aebb48c000760d803': 'Đông Mát (Chill SCF)',
-    '6aa77de130fded00073d4521': 'Đông Mát (FZA/Đông)',
+    '6aa77e599d7b1b00070121f5': 'Đông Mát (FZA/Đông)',
     '6a34ec8d77173000073e64e2': 'Đông Mát (Frozen SCF)',
 }
 
@@ -73,6 +78,14 @@ def get_db_connection():
         read_timeout=60
     )
 
+def fmt_num(val):
+    if val is None:
+        return 0
+    f = round(float(val), 3)
+    if f == int(f):
+        return int(f)
+    return f
+
 def fetch_and_build_pending_tickets():
     start_t = time.time()
     print("⏳ [Pending Tickets] Đang kết nối CDC Database 103.140.248.250:9030...")
@@ -87,6 +100,19 @@ def fetch_and_build_pending_tickets():
     GROUP BY branch_id, branch_name
     """)
     branch_names = dict(cur.fetchall())
+
+    # Bổ sung từ bảng claim_tickets nếu có branch_id chưa có trong stockcard
+    try:
+        cur.execute("""
+        SELECT DISTINCT request_branch__id, request_branch__code FROM __cdc_kfm_kf_inventories_kf_claim_tickets
+        UNION
+        SELECT DISTINCT claim_branch__id, claim_branch__code FROM __cdc_kfm_kf_inventories_kf_claim_tickets
+        """)
+        for bid, bcode in cur.fetchall():
+            if bid and bcode and bid not in branch_names:
+                branch_names[bid] = bcode
+    except Exception:
+        pass
 
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     stores_json_path = os.path.join(root_dir, 'CONFIG_DATA_STORES.json')
@@ -112,7 +138,9 @@ def fetch_and_build_pending_tickets():
         '6a34ed8d6607ba000703e235': 'MeatFish - Miền Đông - SCF - Quá Cảnh',
         '6aa6a1eedf3d880007871f3f': 'CLA40102 _ Sóng Thần _ Quá Cảnh',
         '6aabb0a2f426e20007f80123': 'FGA10101 _ Bình Thắng _ Lưu Hàng',
-        '6a4f0127f163350007c29221': 'KFM_HCM_TDU - BS08 Vinhomes Grand Park'
+        '6aabb0d73c46470007f935ce': 'FGA10103 _ Bình Thắng _ Khai Trương',
+        '6a4f0127f163350007c29221': 'KFM_HCM_TDU - BS08 Vinhomes Grand Park',
+        '6aa8a8d3e4930300071e47b2': 'KFM_Siêu Thị Khai Trương Mới (6aa8a8)'
     }
     for hid, hname in HEX_DC_MAPPING.items():
         branch_names[hid] = hname
@@ -123,11 +151,23 @@ def fetch_and_build_pending_tickets():
         return branch_names.get(bstr, bstr)
 
     def format_dt(dt_val):
-        if not dt_val: return '---'
+        """
+        Chuẩn hóa toàn bộ thời gian từ CDC (cả kiểu DATETIME lẫn chuỗi ISO UTC)
+        sang múi giờ Việt Nam (UTC+7: DD/MM/YYYY HH:MM).
+        """
+        if not dt_val:
+            return '---'
         try:
             if isinstance(dt_val, datetime):
-                return dt_val.strftime('%d/%m/%Y %H:%M')
-            dt_str = str(dt_val).replace('Z', '+00:00')
+                if dt_val.tzinfo:
+                    dt_vn = dt_val.astimezone(vn_tz)
+                else:
+                    dt_vn = dt_val + timedelta(hours=7)
+                return dt_vn.strftime('%d/%m/%Y %H:%M')
+            dt_str = str(dt_val).strip()
+            if not dt_str or dt_str.lower() in ('none', 'null', ''):
+                return '---'
+            dt_str = dt_str.replace('Z', '+00:00')
             dt_obj = datetime.fromisoformat(dt_str)
             if dt_obj.tzinfo:
                 dt_vn = dt_obj.astimezone(vn_tz)
@@ -153,7 +193,9 @@ def fetch_and_build_pending_tickets():
         status,
         double_check_code
     FROM __cdc_kfm_kf_inventories_kf_transfer_items
-    WHERE status = 3 AND (created_at >= '2026-10-01' OR transfer_date >= '2026-10-01')
+    WHERE status = 3 
+      AND (deleted = 0 OR deleted IS NULL)
+      AND (created_at >= '2026-10-01' OR transfer_date >= '2026-10-01')
     ORDER BY created_at DESC
     """)
     pt_list = []
@@ -163,7 +205,7 @@ def fetch_and_build_pending_tickets():
         to_name = get_name(to_id)
         cat = detect_category(from_id, from_name)
         sku_val = int(tot_sku) if tot_sku is not None and tot_sku > 0 else (int(sku) if sku else 0)
-        qty_val = round(float(tot_qty), 2) if tot_qty is not None else 0.0
+        qty_val = fmt_num(tot_qty)
         pt_list.append({
             'code': str(code or ''),
             'from_id': str(from_id or ''),
@@ -190,8 +232,12 @@ def fetch_and_build_pending_tickets():
         total_sku,
         total_created_quantity,
         total_confirm_quantity,
+        total_pending,
+        total_store_transfer_quantity,
+        total_warehouse_transfer_quantity,
         from_pt_code,
         pt_transfer_date,
+        pt_received_date,
         pt_from_branch,
         handled_pt_code,
         from_branch,
@@ -199,35 +245,54 @@ def fetch_and_build_pending_tickets():
         created_at
     FROM __cdc_kfm_kf_transfer_tickets_kf_transfer_tickets
     WHERE status IN (1, 3)
+      AND (deleted = 0 OR deleted IS NULL)
       AND created_at >= '2026-10-01'
       AND (completed_at IS NULL OR completed_at = '')
-      AND NOT (status = 3 AND total_created_quantity > 0 AND total_confirm_quantity >= total_created_quantity)
+      AND NOT (status = 3 AND total_sku_created >= total_sku AND total_sku > 0 AND total_created_quantity >= COALESCE(total_pending, 0) - 0.0001)
     ORDER BY created_at DESC
     """)
     to_list = []
     for r in cur.fetchall():
-        code, stt, sku_cr, tot_sku, qty_cr, qty_conf, from_pt, pt_tdate, pt_from_b, handled_pt, from_b, to_b, c_at = r
+        (
+            code, stt, sku_cr, tot_sku, qty_cr, qty_conf, tot_pend,
+            qty_store, qty_wh, from_pt, pt_tdate, pt_rdate, pt_from_b,
+            handled_pt, from_b, to_b, c_at
+        ) = r
         stt_int = int(stt) if stt is not None else 1
         stt_text = 'Mới' if stt_int == 1 else ('Đang xử lý' if stt_int == 3 else 'Khác')
         pt_from_name = get_name(pt_from_b)
         from_name = get_name(from_b)
         to_name = get_name(to_b)
-        cat = detect_category(pt_from_b, pt_from_name)
+        cat = detect_category(to_b, to_name)
+        if cat == 'Khác':
+            cat = detect_category(pt_from_b, pt_from_name)
         if cat == 'Khác':
             cat = detect_category(from_b, from_name)
-        sku_val = int(tot_sku) if tot_sku else (int(sku_cr) if sku_cr else 0)
-        qty_cr_val = round(float(qty_cr), 2) if qty_cr is not None else 0.0
-        qty_conf_val = round(float(qty_conf), 2) if qty_conf is not None else 0.0
+
+        sku_cr_val = int(sku_cr) if sku_cr is not None else 0
+        sku_tot_val = int(tot_sku) if tot_sku is not None else sku_cr_val
+        qty_cr_val = fmt_num(qty_cr)
+        qty_pend_val = fmt_num(tot_pend if tot_pend is not None else qty_cr)
+        qty_comp_val = fmt_num((float(qty_store or 0) + float(qty_wh or 0)) if (qty_store is not None or qty_wh is not None) else (qty_cr or 0))
+        qty_conf_val = fmt_num(qty_conf)
+
         to_list.append({
             'code': str(code or ''),
             'status_code': stt_int,
             'status_text': stt_text,
             'category': cat,
-            'sku': sku_val,
+            'sku_created': sku_cr_val,
+            'sku': sku_tot_val,
+            'sku_display': f"{sku_cr_val}/{sku_tot_val}",
             'qty_created': qty_cr_val,
+            'qty_completed': qty_comp_val,
+            'qty_pending': qty_pend_val,
             'qty_confirmed': qty_conf_val,
+            'qty_created_display': f"{qty_cr_val}/{qty_pend_val}",
+            'qty_completed_display': f"{qty_comp_val}/{qty_pend_val}",
             'from_pt_code': str(from_pt or ''),
             'pt_transfer_date': format_dt(pt_tdate),
+            'pt_received_date': format_dt(pt_rdate),
             'pt_from_name': pt_from_name,
             'handled_pt_code': str(handled_pt or ''),
             'from_name': from_name,
@@ -254,6 +319,7 @@ def fetch_and_build_pending_tickets():
         double_checked_status
     FROM __cdc_kfm_kf_inventories_kf_transfer_items
     WHERE double_checked_status = 1 
+      AND (deleted = 0 OR deleted IS NULL)
       AND double_check_code IS NOT NULL 
       AND double_check_code != ''
       AND (created_at >= '2026-10-01' OR received_date >= '2026-10-01' OR transfer_date >= '2026-10-01')
@@ -266,8 +332,8 @@ def fetch_and_build_pending_tickets():
         to_name = get_name(to_id)
         cat = detect_category(from_id, from_name)
         sku_val = int(tot_sku) if tot_sku else (int(sku) if sku else 0)
-        qty_val = round(float(tot_qty), 2) if tot_qty is not None else 0.0
-        rcv_qty_val = round(float(rcv_qty), 2) if rcv_qty is not None else 0.0
+        qty_val = fmt_num(tot_qty)
+        rcv_qty_val = fmt_num(rcv_qty)
         hk_list.append({
             'double_check_code': str(hk_code or ''),
             'pt_code': str(pt_code or ''),

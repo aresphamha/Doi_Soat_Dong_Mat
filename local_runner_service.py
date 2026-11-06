@@ -528,11 +528,13 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             push = params.get('push', ['true'])[0].lower() in ['true', '1', 'yes']
             result = run_tool_sync("sync_pending_tickets", "", False)
             if result.get('success') and push:
-                try:
-                    from push_to_github import sync_and_push
-                    sync_and_push("Update: Realtime Pending Tickets CDC")
-                except Exception as pe:
-                    print(f"Push error: {pe}")
+                def _bg_push_pending():
+                    try:
+                        from push_to_github import sync_and_push
+                        sync_and_push("Update: Realtime Pending Tickets CDC", ["daily_details/pending_tickets.js", "DONG_MAT_DASHBOARD/daily_details/pending_tickets.js"])
+                    except Exception as pe:
+                        print(f"Push error: {pe}")
+                threading.Thread(target=_bg_push_pending, daemon=True).start()
             data_obj = get_latest_pending_tickets_data()
             if data_obj:
                 result['data'] = data_obj
@@ -689,11 +691,13 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             push = data.get('push', True)
             result = run_tool_sync("sync_pending_tickets", "", False)
             if result.get('success') and push:
-                try:
-                    from push_to_github import sync_and_push
-                    sync_and_push("Update: Realtime Pending Tickets CDC")
-                except Exception as pe:
-                    print(f"Push error: {pe}")
+                def _bg_push_pending_post():
+                    try:
+                        from push_to_github import sync_and_push
+                        sync_and_push("Update: Realtime Pending Tickets CDC", ["daily_details/pending_tickets.js", "DONG_MAT_DASHBOARD/daily_details/pending_tickets.js"])
+                    except Exception as pe:
+                        print(f"Push error: {pe}")
+                threading.Thread(target=_bg_push_pending_post, daemon=True).start()
             data_obj = get_latest_pending_tickets_data()
             if data_obj:
                 result['data'] = data_obj
