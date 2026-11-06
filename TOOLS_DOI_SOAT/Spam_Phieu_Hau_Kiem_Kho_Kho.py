@@ -177,6 +177,25 @@ def load_store_and_dc_chat_mappings():
     st_to_code['200 Đường Số 5 Bình Hưng Hòa'] = 'A258'
     st_to_code['Đường Số 5 Bình Hưng Hòa'] = 'A258'
 
+    dc_code_map['A264'] = '-1004476519775' # DC - A264 (Sky Garden 3-R1-3)
+    dc_code_map['A227'] = '-1004381965932' # DC - A227 (Sunshine Diamond River)
+    dc_code_map['A117'] = '-4699467473'     # DC DRY - A117 (The Rivana)
+
+    st_to_code['KFM_HCM_Q07 - 1016/41 Chung Cư Sky Garden 3-R1-3'] = 'A264'
+    st_to_code['1016/41 Chung Cư Sky Garden 3-R1-3'] = 'A264'
+    st_to_code['Sky Garden 3-R1-3'] = 'A264'
+    st_to_code['Sky Garden 3'] = 'A264'
+    st_to_code['1016/41'] = 'A264'
+
+    st_to_code['KFM_HCM_Q07 - Block C Sunshine Diamond River'] = 'A227'
+    st_to_code['Block C Sunshine Diamond River'] = 'A227'
+    st_to_code['Sunshine Diamond River'] = 'A227'
+    st_to_code['Sunshine Diamond'] = 'A227'
+
+    st_to_code['KFM_BDU_TAN - SH04 The Rivana'] = 'A117'
+    st_to_code['SH04 The Rivana'] = 'A117'
+    st_to_code['The Rivana'] = 'A117'
+
     # 2. Đọc mapping Siêu thị -> Mã ST & Chat ID DC/ĐM từ CONFIG_DATA_STORES.json
     stores_json = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')
     if os.path.exists(stores_json):
@@ -261,6 +280,8 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         GROUP BY branch_id, branch_name
         """)
         id_to_name = {bid: bname for bid, bname in cur.fetchall() if bname}
+        id_to_name['6aa8a8d3e4930300071e47b2'] = 'KFM_HCM_Q07 - 1016/41 Chung Cư Sky Garden 3-R1-3'
+        id_to_name['6abb2390d77de90007295419'] = 'KFM_HCM_Q07 - Block C Sunshine Diamond River'
 
         # QUERY CHUẨN 100% VỚI TAB "CẦN HẬU KIỂM" TRÊN WMS:
         # Lọc các phiếu Hậu kiểm kho khô FGA chưa quét xong (double_checked_status = 1) và đang trong trạng thái xử lý (status = 3 hoặc 5)
