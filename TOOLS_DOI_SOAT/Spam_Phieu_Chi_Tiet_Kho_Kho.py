@@ -128,6 +128,11 @@ def load_store_and_dc_chat_mappings():
     dc_code_map['HHM'] = '-1003822384320' # HHM - DC (165 Hoàng Hoa Thám)
     dc_code_map['VGP'] = '-937608678'     # VGP - DC (S06.06 Vinhomes Grand Park)
     dc_code_map['A260'] = '-1003986929642' # DC - A260 (Lê Thị Kỉnh)
+    dc_code_map['A248'] = '-1003906666364' # DC - A248 (Garden Plaza)
+    st_to_code['KFM_HCM_Q07 - CN2-2 Garden Plaza Phú Mỹ Hưng'] = 'A248'
+    st_to_code['CN2-2 Garden Plaza Phú Mỹ Hưng'] = 'A248'
+    st_to_code['Garden Plaza Phú Mỹ Hưng'] = 'A248'
+    st_to_code['Garden Plaza'] = 'A248'
     st_to_code['KFM_HCM_NBE - 30 Lê Thị Kỉnh'] = 'A260'
     st_to_code['30 Lê Thị Kỉnh'] = 'A260'
     st_to_code['Lê Thị Kỉnh'] = 'A260'
