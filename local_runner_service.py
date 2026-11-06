@@ -121,17 +121,10 @@ def init_cloudflare_tunnel():
                 # TỰ ĐỘNG ĐẨY URL TUNNEL MỚI LÊN GITHUB ĐỂ GITHUB PAGES NHẬN DIỆN NGAY LẬP TỨC
                 try:
                     print("🚀 Đang tự động đẩy Cloudflare Tunnel URL mới lên GitHub Pages...")
-                    subprocess.run(
-                        ["git", "add", "runner_remote_url.json", "DONG_MAT_DASHBOARD/runner_remote_url.json", "RUNNER_REMOTE_URL.txt"],
-                        cwd=ROOT_DIR, capture_output=True, timeout=15
-                    )
-                    subprocess.run(
-                        ["git", "commit", "-m", f"🤖 [Runner] Cập nhật Cloudflare Tunnel Realtime: {CLOUDFLARE_TUNNEL_URL}"],
-                        cwd=ROOT_DIR, capture_output=True, timeout=15
-                    )
-                    subprocess.run(
-                        ["git", "push", "origin", "main"],
-                        cwd=ROOT_DIR, capture_output=True, timeout=30
+                    from push_to_github import sync_and_push
+                    sync_and_push(
+                        f"🤖 [Runner] Cập nhật Cloudflare Tunnel Realtime: {CLOUDFLARE_TUNNEL_URL}",
+                        ["runner_remote_url.json", "DONG_MAT_DASHBOARD/runner_remote_url.json", "RUNNER_REMOTE_URL.txt"]
                     )
                     print("✅ Đã đẩy Cloudflare Tunnel URL lên GitHub Pages thành công!")
                 except Exception as gerr:
