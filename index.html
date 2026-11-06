@@ -5832,6 +5832,13 @@
                                 <button class="seg-btn" id="btn-pt-matrix-1b" onclick="setPTViewMode('to_dc')">📥 Bảng 1B: Về Kho DC (Nơi nhận: Kho)</button>
                             </div>
 
+                            <!-- Nút chuyển đổi mốc ngày cho DS YC Xử Lý (Ngày tạo YC / Ngày nhận / Ngày chuyển đi) -->
+                            <div class="seg-pill" id="toMatrixDateGroup" style="display:none;">
+                                <button class="seg-btn active" id="btn-to-date-created" onclick="setTODateMode('created')" title="Thống kê theo Ngày Tạo Yêu Cầu (Giờ VN UTC+7)">📅 Ngày Tạo YC</button>
+                                <button class="seg-btn" id="btn-to-date-received" onclick="setTODateMode('received')" title="Thống kê theo Ngày Nhận trên WMS (Giờ VN UTC+7)">📥 Ngày Nhận (WMS)</button>
+                                <button class="seg-btn" id="btn-to-date-transfer" onclick="setTODateMode('transfer')" title="Thống kê theo Ngày Chuyển Đi của phiếu PT gốc">🚚 Ngày Chuyển Đi</button>
+                            </div>
+
                             <!-- Export Matrix Excel -->
                             <button onclick="exportMatrixExcel()" style="padding:0.42rem 0.85rem; background:#0f766e; color:#fff; border:1px solid #115e59; border-radius:6px; font-weight:600; font-size:0.78rem; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
                                 <i class="fa-solid fa-file-excel"></i> Xuất Sheet PV Phiếu
@@ -14139,6 +14146,11 @@ function copyChatId(chatId, btnEl) {
         
         
         function openRealtimeSyncModal() {
+            const p7 = document.getElementById('big-panel-7');
+            if (p7 && p7.classList.contains('active') && typeof syncPendingTicketsRealtime === 'function') {
+                syncPendingTicketsRealtime();
+                return;
+            }
             const m = document.getElementById('realtimeHadaSyncModal');
             if (m) {
                 m.classList.add('active');
@@ -14504,10 +14516,22 @@ function copyChatId(chatId, btnEl) {
 
 let curPendingSubMode = 'pt'; // 'pt', 'to', 'hk', 'all'
 let curPTViewMode = 'from_dc'; // 'from_dc' (Bảng 1A: Nơi chuyển Kho) hoặc 'to_dc' (Bảng 1B: Nơi nhận Kho)
+let curTODateMode = 'created'; // 'created' (Ngày Tạo YC), 'received' (Ngày Nhận WMS), 'transfer' (Ngày Chuyển Đi)
 let matrixSelectedFilter = null; // { rowKey, date, subMode, viewMode }
 let curPendingPage = 1;
 let pendingPageSize = 100;
 let pendingFilteredItems = [];
+
+function getTODateStr(it) {
+    if (!it) return '---';
+    if (curTODateMode === 'received') {
+        return (it.pt_received_date && it.pt_received_date !== '---') ? it.pt_received_date : (it.created_at || it.pt_transfer_date || '---');
+    }
+    if (curTODateMode === 'transfer') {
+        return (it.pt_transfer_date && it.pt_transfer_date !== '---') ? it.pt_transfer_date : (it.created_at || '---');
+    }
+    return it.created_at || it.pt_received_date || it.pt_transfer_date || '---';
+}
 
 // Mapping ID hex sang tên Kho DC chuẩn
 const DC_HEX_NAMES = {
@@ -14677,9 +14701,29 @@ function setPendingSubMode(mode) {
         ptToggleGroup.style.display = (mode === 'pt' || mode === 'all') ? 'inline-flex' : 'none';
     }
 
+    const toDateGroup = document.getElementById('toMatrixDateGroup');
+    if (toDateGroup) {
+        toDateGroup.style.display = (mode === 'to') ? 'inline-flex' : 'none';
+    }
+
     const stSelect = document.getElementById('pendingStatusSelect');
     if (stSelect) stSelect.value = 'all';
 
+    clearMatrixFilter(false);
+    renderPendingMatrixTable();
+    curPendingPage = 1;
+    renderPendingTicketsTable();
+}
+
+function setTODateMode(dMode) {
+    curTODateMode = dMode;
+    ['created', 'received', 'transfer'].forEach(m => {
+        const btn = document.getElementById('btn-to-date-' + m);
+        if (btn) {
+            if (m === dMode) btn.classList.add('active');
+            else btn.classList.remove('active');
+        }
+    });
     clearMatrixFilter(false);
     renderPendingMatrixTable();
     curPendingPage = 1;
@@ -14760,8 +14804,9 @@ function renderPendingMatrixTable() {
     } else if (curPendingSubMode === 'to') {
         items = data.to_yeu_cau || [];
         colHeaderLabel = 'Kho DC Tiếp Nhận Xử Lý Yêu Cầu';
-        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-table-cells" style="color:#94a3b8;"></i> BẢNG TỔNG HỢP: DS YC XỬ LÝ (MỚI & ĐANG XỬ LÝ) THEO KHO DC';
-        filterConditionDesc = 'Thống kê Distinct Count số lượng mã TO yêu cầu xử lý chuyển hoàn gửi về Kho DC theo Ngày tạo yêu cầu';
+        const toDateLabel = curTODateMode === 'received' ? 'Ngày Nhận (WMS)' : (curTODateMode === 'transfer' ? 'Ngày Chuyển Đi' : 'Ngày Tạo Yêu Cầu (Giờ VN)');
+        if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-table-cells" style="color:#94a3b8;"></i> BẢNG TỔNG HỢP: DS YC XỬ LÝ (MỚI & ĐANG XỬ LÝ) THEO KHO DC`;
+        filterConditionDesc = `Thống kê Distinct Count số lượng mã TO yêu cầu xử lý phiếu chuyển gửi về Kho DC theo ${toDateLabel}`;
     } else if (curPendingSubMode === 'hk') {
         items = data.hk_can_hau_kiem || [];
         colHeaderLabel = 'Kho Nguồn Phát Hàng (Kho DC xuất đi)';
@@ -14782,6 +14827,19 @@ function renderPendingMatrixTable() {
         items = items.filter(it => (it.category || '').includes(catFilter));
     }
 
+    const statusFilter = document.getElementById('pendingStatusSelect')?.value || 'all';
+    if (statusFilter !== 'all') {
+        items = items.filter(it => {
+            const stText = it.status_text || (it.status_code === 1 ? 'Mới' : (it.status_code === 3 && curPendingSubMode === 'to' ? 'Đang xử lý' : (curPendingSubMode === 'hk' ? 'Cần hậu kiểm' : 'Đang chuyển')));
+            return stText === statusFilter;
+        });
+    }
+
+    const storeFilter = document.getElementById('pendingStoreSelect')?.value || 'all';
+    if (storeFilter !== 'all') {
+        items = items.filter(it => resolveBranchName(it.to_name || it.pt_from_name) === storeFilter);
+    }
+
     if (items.length === 0) {
         thead.innerHTML = '';
         tbody.innerHTML = '<tr><td colspan="10" class="text-center" style="padding:2.5rem; color:#64748b;">Không có dữ liệu phiếu treo phù hợp.</td></tr>';
@@ -14796,7 +14854,7 @@ function renderPendingMatrixTable() {
         let code = it.code || it.double_check_code || it.pt_code;
         let dStr = it.transfer_date || it.pt_transfer_date || it.received_date || it.created_at;
         if (curPendingSubMode === 'to') {
-            dStr = it.created_at || it.pt_transfer_date;
+            dStr = getTODateStr(it);
         }
         let dm = extractDayMonthYear(dStr);
         datesSet.add(dm);
@@ -14819,6 +14877,8 @@ function renderPendingMatrixTable() {
 
     const sortedDates = Array.from(datesSet).sort((a, b) => parseSortableDate(a) - parseSortableDate(b));
 
+    const toHeaderTitle = curTODateMode === 'received' ? 'Ngày Nhận Trên WMS (Giờ VN)' : (curTODateMode === 'transfer' ? 'Ngày Chuyển Đi (PT Gốc)' : 'Ngày Tạo Yêu Cầu (WMS - Giờ VN)');
+
     // THEAD 2 tầng nhã nhặn, tối giản
     let theadHtml = `
     <tr>
@@ -14826,7 +14886,7 @@ function renderPendingMatrixTable() {
             ${colHeaderLabel}
         </th>
         <th colspan="${sortedDates.length}" style="text-align:center; padding:7px 10px; font-weight:600; color:#cbd5e1; background:#0f172a; border-bottom:1px solid rgba(255,255,255,0.06); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.5px;">
-            ${curPendingSubMode === 'to' ? 'Ngày Tạo Yêu Cầu (WMS)' : 'Ngày Phát Sinh / Chuyển Hàng'}
+            ${curPendingSubMode === 'to' ? toHeaderTitle : 'Ngày Phát Sinh / Chuyển Hàng'}
         </th>
         <th rowspan="2" style="width:105px; text-align:right; padding:9px 12px; vertical-align:middle; font-weight:700; color:#f8fafc; background:#1e293b; border-left:1px solid rgba(255,255,255,0.06); font-size:0.8rem;">
             Grand Total
@@ -15073,11 +15133,19 @@ function renderPendingTicketsTable() {
                 status_code: x.status_code,
                 status_text: x.status_text || (x.status_code === 1 ? 'Mới' : 'Đang xử lý'),
                 sku: x.sku,
-                quantity: x.qty_created || 0,
+                sku_created: x.sku_created || 0,
+                sku_display: x.sku_display || `${x.sku_created || 0}/${x.sku || 0}`,
+                quantity: x.qty_pending ?? x.qty_created ?? 0,
+                qty_created: x.qty_created || 0,
+                qty_pending: x.qty_pending || 0,
+                qty_completed: x.qty_completed || 0,
                 qty_confirmed: x.qty_confirmed || 0,
-                date_str: x.created_at || x.pt_transfer_date,
-                created_at: x.created_at,
-                pt_transfer_date: x.pt_transfer_date,
+                qty_created_display: x.qty_created_display || `${x.qty_created || 0}/${x.qty_pending ?? x.qty_created ?? 0}`,
+                qty_completed_display: x.qty_completed_display || `${x.qty_completed || 0}/${x.qty_pending ?? x.qty_confirmed ?? 0}`,
+                date_str: getTODateStr(x),
+                created_at: x.created_at || '---',
+                pt_transfer_date: x.pt_transfer_date || '---',
+                pt_received_date: x.pt_received_date || '---',
                 from_pt_code: x.from_pt_code || '',
                 handled_pt_code: x.handled_pt_code || '',
                 pt_from_name: resolveBranchName(x.pt_from_name),
@@ -15172,17 +15240,19 @@ function renderPendingTableHeader() {
         thead.innerHTML = `
             <tr>
                 <th style="width:40px; text-align:center;">STT</th>
-                <th style="min-width:120px;">Mã Yêu Cầu</th>
-                <th style="min-width:100px; text-align:center;">Trạng Thái</th>
-                <th style="width:60px; text-align:right;">SKU</th>
-                <th style="width:100px; text-align:right;">SL Tạo / Conf</th>
-                <th style="min-width:130px;">Ngày Tạo YC</th>
-                <th style="min-width:120px;">PT Chuyển Đi</th>
-                <th style="min-width:130px;">Ngày Chuyển Đi</th>
-                <th style="min-width:180px;">Kho Nguồn Xuất Đi</th>
-                <th style="min-width:120px;">PT Chuyển Hoàn</th>
-                <th style="min-width:180px;">ST Chuyển Hoàn</th>
-                <th style="min-width:180px;">Kho Nhận Hoàn</th>
+                <th style="min-width:105px;">Mã Yêu Cầu</th>
+                <th style="min-width:95px; text-align:center;">Trạng Thái</th>
+                <th style="width:65px; text-align:right;" title="Số SKU đã tạo phiếu / Tổng SKU yêu cầu">SKU</th>
+                <th style="width:110px; text-align:right;" title="Số lượng đã tạo phiếu / Tổng SL yêu cầu">SL Đã Tạo Phiếu</th>
+                <th style="width:105px; text-align:right;" title="Số lượng hoàn thành / Tổng SL yêu cầu">SL Hoàn Thành</th>
+                <th style="min-width:110px;">PT Chuyển Đi</th>
+                <th style="min-width:125px;">Ngày Chuyển Đi</th>
+                <th style="min-width:170px;">Nơi Chuyển Đi</th>
+                <th style="min-width:115px;">PT Chuyển Hoàn</th>
+                <th style="min-width:175px;">Nơi Chuyển Hoàn</th>
+                <th style="min-width:175px;">Nơi Nhận Chuyển Hoàn</th>
+                <th style="min-width:125px;">Ngày Nhận</th>
+                <th style="min-width:125px;">Ngày Tạo YC</th>
             </tr>
         `;
     } else if (curPendingSubMode === 'hk') {
@@ -15233,10 +15303,15 @@ function renderPendingTicketsTableRows() {
     if (badgeCount) badgeCount.innerText = total.toLocaleString() + ' phiếu';
 
     if (total === 0) {
+        const query = (document.getElementById('pendingSearchInput')?.value || '').trim();
+        const catFilter = document.getElementById('pendingCategorySelect')?.value || 'all';
+        const statusFilter = document.getElementById('pendingStatusSelect')?.value || 'all';
+        const storeFilter = document.getElementById('pendingStoreSelect')?.value || 'all';
         const hasExtraFilters = (statusFilter !== 'all' || query || catFilter !== 'all' || storeFilter !== 'all');
+        const colSpan = curPendingSubMode === 'to' ? 14 : 12;
         tbody.innerHTML = `
             <tr>
-                <td colspan="12" class="text-center" style="padding:2.5rem; color:#94a3b8;">
+                <td colspan="${colSpan}" class="text-center" style="padding:2.5rem; color:#94a3b8;">
                     <div style="font-size:1.05rem; color:#cbd5e1; margin-bottom:6px;">
                         <i class="fa-solid fa-filter-circle-xmark" style="color:#64748b; margin-right:6px;"></i> Không tìm thấy phiếu nào phù hợp với bộ lọc.
                     </div>
@@ -15318,21 +15393,25 @@ function renderPendingTicketsTableRows() {
                     <td class="text-center">
                         ${renderStatusPill(it.status_text)}
                     </td>
-                    <td class="text-right font-mono" style="color:#94a3b8;">${it.sku || 0}</td>
+                    <td class="text-right font-mono" style="color:#cbd5e1; font-weight:600;">${it.sku_display || ((it.sku_created || 0) + '/' + (it.sku || 0))}</td>
                     <td class="text-right font-mono" style="font-weight:600; color:#f8fafc;">
-                        ${(it.quantity || 0).toLocaleString()} / <span style="color:#64748b;">${(it.qty_confirmed || 0).toLocaleString()}</span>
+                        ${it.qty_created_display || ((it.qty_created || 0) + '/' + (it.qty_pending ?? it.quantity ?? 0))}
                     </td>
-                    <td style="color:#38bdf8; font-size:0.78rem; font-weight:600;">${it.created_at || it.date_str}</td>
+                    <td class="text-right font-mono" style="font-weight:600; color:#cbd5e1;">
+                        ${it.qty_completed_display || ((it.qty_completed || 0) + '/' + (it.qty_pending ?? it.qty_confirmed ?? 0))}
+                    </td>
                     <td>
                         ${it.from_pt_code ? `<a href="https://next.kingfood.co/operation/transfer-item/transfer-item-list?code=${it.from_pt_code}" target="_blank" style="color:#93c5fd; text-decoration:none;">${it.from_pt_code}</a>` : '---'}
                     </td>
-                    <td style="color:#64748b; font-size:0.78rem;">${it.pt_transfer_date || '---'}</td>
+                    <td style="color:#94a3b8; font-size:0.78rem;">${it.pt_transfer_date || '---'}</td>
                     <td style="font-size:0.8rem; color:#cbd5e1;">${it.pt_from_name || '---'}</td>
                     <td>
-                        ${it.handled_pt_code ? `<span style="color:#cbd5e1;">${it.handled_pt_code}</span>` : '<span style="color:#475569;">Chưa tạo</span>'}
+                        ${it.handled_pt_code ? `<span style="color:#93c5fd;">${it.handled_pt_code}</span>` : '<span style="color:#475569;">---</span>'}
                     </td>
                     <td style="font-size:0.8rem; color:#cbd5e1;">${it.from_name}</td>
                     <td style="font-size:0.8rem; color:#cbd5e1;">${it.to_name}</td>
+                    <td style="color:#34d399; font-size:0.78rem; font-weight:600;">${it.pt_received_date || '---'}</td>
+                    <td style="color:#38bdf8; font-size:0.78rem;">${it.created_at || '---'}</td>
                 </tr>
             `;
         } else if (curPendingSubMode === 'hk') {
@@ -15511,10 +15590,29 @@ function exportPendingTicketsWorkbook(isMatrixOnly = false) {
     XLSX.utils.book_append_sheet(wb, wsPV, "PV phiếu");
 
     if (!isMatrixOnly) {
-        const sourceList = pendingFilteredItems.length > 0 ? pendingFilteredItems : (data.pt_dang_chuyen || []);
+        const sourceList = pendingFilteredItems.length > 0 ? pendingFilteredItems : (curPendingSubMode === 'to' ? (data.to_yeu_cau || []) : (data.pt_dang_chuyen || []));
         const transRows = sourceList.map((it, idx) => {
             const fName = resolveBranchName(it.from_name);
             const tName = resolveBranchName(it.to_name);
+            if (curPendingSubMode === 'to' || it.sys_type === 'to') {
+                return {
+                    "STT": idx + 1,
+                    "Mã yêu cầu": it.code,
+                    "Trạng thái": it.status_text,
+                    "SKU": it.sku_display || `${it.sku_created || 0}/${it.sku || 0}`,
+                    "SL đã tạo phiếu": it.qty_created_display || `${it.qty_created || 0}/${it.qty_pending ?? it.quantity ?? 0}`,
+                    "SL hoàn thành": it.qty_completed_display || `${it.qty_completed || 0}/${it.qty_pending ?? it.qty_confirmed ?? 0}`,
+                    "PT chuyển đi": it.from_pt_code || '',
+                    "Ngày chuyển đi": it.pt_transfer_date || '',
+                    "Nơi chuyển đi": resolveBranchName(it.pt_from_name),
+                    "PT chuyển hoàn": it.handled_pt_code || '',
+                    "Nơi chuyển hoàn": fName,
+                    "Nơi nhận chuyển hoàn": tName,
+                    "Ngày nhận": it.pt_received_date || '',
+                    "Ngày tạo YC": it.created_at || '',
+                    "Ngành hàng": it.category || 'Khác'
+                };
+            }
             return {
                 "Nơi chuyển": classifyLocationType(fName),
                 "Nơi nhận": classifyLocationType(tName),
@@ -15531,7 +15629,7 @@ function exportPendingTicketsWorkbook(isMatrixOnly = false) {
         });
 
         const wsTrans = XLSX.utils.json_to_sheet(transRows);
-        XLSX.utils.book_append_sheet(wb, wsTrans, "transfer");
+        XLSX.utils.book_append_sheet(wb, wsTrans, curPendingSubMode === 'to' ? "DS_YC_Xu_Ly" : "transfer");
     }
 
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
@@ -15587,7 +15685,7 @@ async function syncPendingTicketsRealtime() {
         try {
             console.log("Đang thử đồng bộ qua Runner:", url);
             const ctrl = new AbortController();
-            const tid = setTimeout(() => ctrl.abort(), 12000);
+            const tid = setTimeout(() => ctrl.abort(), 30000);
             const res = await fetch(`${url}/api/sync_pending_tickets?push=true`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -15671,6 +15769,7 @@ function pollCheckNewPendingTickets(oldTimestamp) {
 
 window.setPendingSubMode = setPendingSubMode;
 window.setPTViewMode = setPTViewMode;
+window.setTODateMode = setTODateMode;
 function resetPendingFilters() {
     const sInput = document.getElementById('pendingSearchInput');
     const cSelect = document.getElementById('pendingCategorySelect');
@@ -15681,6 +15780,7 @@ function resetPendingFilters() {
     if (stSelect) stSelect.value = 'all';
     if (dSelect) dSelect.value = 'all';
     curPendingPage = 1;
+    renderPendingMatrixTable();
     renderPendingTicketsTable();
 }
 window.resetPendingFilters = resetPendingFilters;

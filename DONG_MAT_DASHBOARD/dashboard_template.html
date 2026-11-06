@@ -15590,10 +15590,29 @@ function exportPendingTicketsWorkbook(isMatrixOnly = false) {
     XLSX.utils.book_append_sheet(wb, wsPV, "PV phiếu");
 
     if (!isMatrixOnly) {
-        const sourceList = pendingFilteredItems.length > 0 ? pendingFilteredItems : (data.pt_dang_chuyen || []);
+        const sourceList = pendingFilteredItems.length > 0 ? pendingFilteredItems : (curPendingSubMode === 'to' ? (data.to_yeu_cau || []) : (data.pt_dang_chuyen || []));
         const transRows = sourceList.map((it, idx) => {
             const fName = resolveBranchName(it.from_name);
             const tName = resolveBranchName(it.to_name);
+            if (curPendingSubMode === 'to' || it.sys_type === 'to') {
+                return {
+                    "STT": idx + 1,
+                    "Mã yêu cầu": it.code,
+                    "Trạng thái": it.status_text,
+                    "SKU": it.sku_display || `${it.sku_created || 0}/${it.sku || 0}`,
+                    "SL đã tạo phiếu": it.qty_created_display || `${it.qty_created || 0}/${it.qty_pending ?? it.quantity ?? 0}`,
+                    "SL hoàn thành": it.qty_completed_display || `${it.qty_completed || 0}/${it.qty_pending ?? it.qty_confirmed ?? 0}`,
+                    "PT chuyển đi": it.from_pt_code || '',
+                    "Ngày chuyển đi": it.pt_transfer_date || '',
+                    "Nơi chuyển đi": resolveBranchName(it.pt_from_name),
+                    "PT chuyển hoàn": it.handled_pt_code || '',
+                    "Nơi chuyển hoàn": fName,
+                    "Nơi nhận chuyển hoàn": tName,
+                    "Ngày nhận": it.pt_received_date || '',
+                    "Ngày tạo YC": it.created_at || '',
+                    "Ngành hàng": it.category || 'Khác'
+                };
+            }
             return {
                 "Nơi chuyển": classifyLocationType(fName),
                 "Nơi nhận": classifyLocationType(tName),
@@ -15610,7 +15629,7 @@ function exportPendingTicketsWorkbook(isMatrixOnly = false) {
         });
 
         const wsTrans = XLSX.utils.json_to_sheet(transRows);
-        XLSX.utils.book_append_sheet(wb, wsTrans, "transfer");
+        XLSX.utils.book_append_sheet(wb, wsTrans, curPendingSubMode === 'to' ? "DS_YC_Xu_Ly" : "transfer");
     }
 
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '_');
@@ -15666,7 +15685,7 @@ async function syncPendingTicketsRealtime() {
         try {
             console.log("Đang thử đồng bộ qua Runner:", url);
             const ctrl = new AbortController();
-            const tid = setTimeout(() => ctrl.abort(), 12000);
+            const tid = setTimeout(() => ctrl.abort(), 30000);
             const res = await fetch(`${url}/api/sync_pending_tickets?push=true`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -15750,6 +15769,7 @@ function pollCheckNewPendingTickets(oldTimestamp) {
 
 window.setPendingSubMode = setPendingSubMode;
 window.setPTViewMode = setPTViewMode;
+window.setTODateMode = setTODateMode;
 function resetPendingFilters() {
     const sInput = document.getElementById('pendingSearchInput');
     const cSelect = document.getElementById('pendingCategorySelect');
@@ -15760,6 +15780,7 @@ function resetPendingFilters() {
     if (stSelect) stSelect.value = 'all';
     if (dSelect) dSelect.value = 'all';
     curPendingPage = 1;
+    renderPendingMatrixTable();
     renderPendingTicketsTable();
 }
 window.resetPendingFilters = resetPendingFilters;
