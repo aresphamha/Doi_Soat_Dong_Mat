@@ -372,12 +372,12 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
             p_pt = (p.get('pt_code') or '').upper()
             
             matched = False
-            p_addr = p_name.split('-')[-1].strip() if '-' in p_name else p_name
+            p_addr = p_name.split(' - ', 1)[-1].strip() if ' - ' in p_name else p_name
             for t in target_set:
-                t_addr = t.split('-')[-1].strip() if '-' in t else t
+                t_addr = t.split(' - ', 1)[-1].strip() if ' - ' in t else t
                 if (t in [p_code, p_hk, p_pt] or 
                     t in p_name or p_name in t or 
-                    (len(t_addr) > 5 and (t_addr in p_name or t_addr in p_addr or p_addr in t_addr))):
+                    (len(t_addr) > 5 and len(p_addr) > 5 and (t_addr in p_name or t_addr in p_addr or p_addr in t_addr))):
                     matched = True
                     break
             if matched:
