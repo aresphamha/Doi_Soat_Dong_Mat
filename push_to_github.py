@@ -16,10 +16,26 @@ if sys.stdout.encoding != 'utf-8':
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def clear_git_lock():
-    lock_file = os.path.join(ROOT_DIR, ".git", "index.lock")
-    if os.path.exists(lock_file):
+    git_dir = os.path.join(ROOT_DIR, ".git")
+    for lock_name in ["index.lock", "ORIG_HEAD", "rebase-merge", "rebase-apply"]:
+        target = os.path.join(git_dir, lock_name)
+        if os.path.exists(target):
+            try:
+                if lock_name == "ORIG_HEAD":
+                    with open(target, 'r', encoding='utf-8', errors='ignore') as f:
+                        if not f.read().strip():
+                            os.remove(target)
+                elif lock_name.endswith(".lock"):
+                    os.remove(target)
+            except Exception:
+                pass
+    # Kiểm tra ref origin/main nếu bị rỗng do sập nguồn đột ngột
+    origin_main_ref = os.path.join(git_dir, "refs", "remotes", "origin", "main")
+    if os.path.exists(origin_main_ref):
         try:
-            os.remove(lock_file)
+            with open(origin_main_ref, 'r', encoding='utf-8', errors='ignore') as f:
+                if not f.read().strip():
+                    os.remove(origin_main_ref)
         except Exception:
             pass
 
