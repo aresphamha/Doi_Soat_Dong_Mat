@@ -128,6 +128,64 @@ def get_db_connection():
         write_timeout=30
     )
 
+def export_table_image(df_data, output_path, header_color='#739EC7', col_widths=None):
+    """Kết xuất ảnh bảng phiếu treo / hậu kiểm với màu Header đặc trưng từng ngành hàng."""
+    import matplotlib.pyplot as plt
+    from PIL import Image
+
+    n_rows = len(df_data)
+    fig_height = max(1.2, 0.8 + n_rows * 0.45)
+    fig, ax = plt.subplots(figsize=(13.5, fig_height), dpi=200)
+    ax.axis('off')
+
+    if col_widths is None:
+        if len(df_data.columns) == 5:
+            col_widths = [0.16, 0.16, 0.27, 0.29, 0.12]
+        elif len(df_data.columns) == 4:
+            col_widths = [0.18, 0.34, 0.34, 0.14]
+        else:
+            col_widths = [1.0 / len(df_data.columns)] * len(df_data.columns)
+
+    table = ax.table(
+        cellText=df_data.values,
+        colLabels=df_data.columns,
+        colWidths=col_widths,
+        cellLoc='center',
+        loc='center'
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(11)
+    table.scale(1, 1.8)
+
+    left_align_cols = {i for i, col_name in enumerate(df_data.columns) if str(col_name) in ('Nơi chuyển', 'Nơi nhận', 'Tên Hàng', 'Tên SP')}
+
+    for (r, c), cell in table.get_celld().items():
+        if r == 0:
+            cell.set_facecolor(header_color)
+            cell.set_text_props(color='white', weight='bold')
+        else:
+            cell.set_facecolor('#f8fafc' if r % 2 == 1 else '#ffffff')
+            if c in left_align_cols:
+                cell.set_text_props(ha='left')
+
+    plt.tight_layout()
+    plt.savefig(output_path, bbox_inches='tight', dpi=200)
+    plt.close(fig)
+
+    # Đảm bảo tỷ lệ khung hình hợp lệ khi gửi qua Telegram Bot API
+    try:
+        with Image.open(output_path) as img:
+            width, height = img.size
+            if width / height > 15:
+                new_height = int(width / 15)
+                new_img = Image.new("RGB", (width, new_height), "white")
+                offset = (new_height - height) // 2
+                new_img.paste(img, (0, offset))
+                new_img.save(output_path)
+    except Exception:
+        pass
+    return output_path
+
 def execute_external_tool(script_path, extra_args=None, cwd=None):
     """Thực thi file script Python cục bộ với môi trường UTF-8 chuẩn xác và in log Real-time từng dòng."""
     if not os.path.exists(script_path):

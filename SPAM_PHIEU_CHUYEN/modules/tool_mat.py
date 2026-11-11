@@ -30,7 +30,8 @@ from .common import (
     load_sent_stores,
     record_sent_store,
     get_tags_for_group,
-    get_db_connection
+    get_db_connection,
+    export_table_image
 )
 
 async def run(target_date=None, dry_run=False):
@@ -140,16 +141,8 @@ async def run(target_date=None, dry_run=False):
                 img_path = f"temp_mat_{int(chat_id)}.png"
                 cols_to_keep = ['Mã phiếu chuyển', 'Nơi chuyển', 'Nơi nhận', 'Trạng thái', 'Trạng thái PXK TS']
                 df_slice = group[cols_to_keep].reset_index(drop=True)
-                dfi.export(df_slice, img_path, table_conversion="matplotlib", dpi=200)
-                
-                with Image.open(img_path) as img:
-                    width, height = img.size
-                    if width / height > 15:
-                        new_height = int(width / 15)
-                        new_img = Image.new("RGB", (width, new_height), "white")
-                        offset = (new_height - height) // 2
-                        new_img.paste(img, (0, offset))
-                        new_img.save(img_path)
+                # CHI TIẾT HÀNG MÁT: 🔵 Xanh dương pastel (Steel Blue - #739EC7)
+                export_table_image(df_slice, img_path, header_color='#739EC7', col_widths=[0.16, 0.27, 0.29, 0.13, 0.15])
 
                 with open(img_path, 'rb') as f:
                     resp = requests.post(
