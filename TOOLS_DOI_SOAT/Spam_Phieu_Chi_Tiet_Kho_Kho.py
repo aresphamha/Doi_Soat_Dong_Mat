@@ -175,6 +175,12 @@ def load_store_and_dc_chat_mappings():
     dc_code_map['A264'] = '-1004476519775' # DC - A264 (Sky Garden 3-R1-3)
     dc_code_map['A227'] = '-1004381965932' # DC - A227 (Sunshine Diamond River)
     dc_code_map['A117'] = '-4699467473'     # DC DRY - A117 (The Rivana)
+    dc_code_map['A277'] = '-1004438892013' # DC - A277 (Sunshine Sky City)
+
+    st_to_code['KFM_HCM_Q07 - S1.A1 Sunshine Sky City Phú Thuận'] = 'A277'
+    st_to_code['S1.A1 Sunshine Sky City Phú Thuận'] = 'A277'
+    st_to_code['Sunshine Sky City Phú Thuận'] = 'A277'
+    st_to_code['Sunshine Sky City'] = 'A277'
 
     st_to_code['KFM_HCM_Q07 - 1016/41 Chung Cư Sky Garden 3-R1-3'] = 'A264'
     st_to_code['1016/41 Chung Cư Sky Garden 3-R1-3'] = 'A264'
