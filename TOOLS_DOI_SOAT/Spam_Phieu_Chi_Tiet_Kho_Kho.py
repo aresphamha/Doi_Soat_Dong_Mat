@@ -370,11 +370,28 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
     print(f"🏪 Tổng số Đích nhận có phiếu chuyển treo: {len(grouped)}")
 
     # Khởi động Telegram client
-    client = TelegramClient(SESSION_PATH, API_ID, API_HASH)
+    import shutil
+    active_session = SESSION_PATH
+    temp_session_file = None
+    try:
+        src_file = SESSION_PATH + '.session'
+        if os.path.exists(src_file):
+            temp_session_file = os.path.join(ROOT_DIR, f'temp_session_ct_{os.getpid()}')
+            shutil.copy2(src_file, temp_session_file + '.session')
+            active_session = temp_session_file
+    except Exception:
+        active_session = SESSION_PATH
+
+    client = TelegramClient(active_session, API_ID, API_HASH)
     await client.connect()
     if not await client.is_user_authorized():
         print("⚠️ Session Telegram chưa được xác thực. Vui lòng chạy Dang_Nhap_Telegram.py trước!")
         await client.disconnect()
+        if temp_session_file and os.path.exists(temp_session_file + '.session'):
+            try:
+                os.remove(temp_session_file + '.session')
+            except Exception:
+                pass
         return
 
     sent_today = load_sent_stores('chi_tiet_kho_kho', date_iso)
@@ -544,6 +561,11 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
             if os.path.exists(img_path): os.remove(img_path)
 
     await client.disconnect()
+    if temp_session_file and os.path.exists(temp_session_file + '.session'):
+        try:
+            os.remove(temp_session_file + '.session')
+        except Exception:
+            pass
     print("=======================================================")
     print(f"🎉 HOÀN TẤT! Đã gửi: {success_count} ST. Lỗi/Bỏ qua: {fail_count} ST.")
     print("=======================================================")
