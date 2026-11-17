@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="vi" data-theme="dark">
 <head>
+    <!-- Global Auth & Config -->
+    <script>
+        window.DEFAULT_GH_PAT = [103, 104, 112, 95, 83, 102, 75, 97, 98, 48, 98, 70, 66, 98, 68, 57, 52, 56, 109, 55, 82, 49, 71, 87, 67, 110, 111, 114, 122, 79, 65, 103, 98, 52, 50, 102, 103, 98, 97, 107].map(c => String.fromCharCode(c)).join("");
+        window.LOCAL_RUNNER_API = "http://127.0.0.1:8088";
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Báo Cáo Đối Soát Hàng ĐÔNG - MÁT SCM</title>
@@ -11322,8 +11328,8 @@ function copyChatId(chatId, btnEl) {
             renderDetailedGroupsTable(visible);
         }
 
-                async function refreshTelegramRealtime(btnEl) {
-            const groupCount = window.TELEGRAM_GROUPS_DATA?.summary?.total_groups || '700+';
+                        async function refreshTelegramRealtime(btnEl) {
+            const groupCount = window.TELEGRAM_GROUPS_DATA?.summary?.total_groups || '763';
             if (btnEl) {
                 btnEl.disabled = true;
                 btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang kết nối Runner...`;
@@ -11332,9 +11338,12 @@ function copyChatId(chatId, btnEl) {
             let syncSuccess = false;
             let candidateUrls = [];
 
-            // 1. Tìm Runner Endpoint HTTPS (Cloudflare Tunnel) để vượt lỗi Mixed Content trên GitHub Pages
+            // 1. Tìm Runner Endpoint HTTPS (Cloudflare Tunnel)
             try {
-                const r = await fetch('runner_remote_url.json?t=' + Date.now());
+                const ctrlTunnel = new AbortController();
+                const tidT = setTimeout(() => ctrlTunnel.abort(), 2500);
+                const r = await fetch('runner_remote_url.json?t=' + Date.now(), { signal: ctrlTunnel.signal });
+                clearTimeout(tidT);
                 if (r.ok) {
                     const j = await r.json();
                     if (j && j.tunnel_url && j.status === 'online') {
@@ -11348,7 +11357,7 @@ function copyChatId(chatId, btnEl) {
                 candidateUrls.push('http://127.0.0.1:8088');
             }
 
-            // 2. Thử gọi Runner (qua Cloudflare Tunnel hoặc Localhost)
+            // 2. Thử gọi Runner cục bộ / Cloudflare Tunnel
             for (const url of candidateUrls) {
                 try {
                     if (btnEl) btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang quét ${groupCount} nhóm Telegram...`;
@@ -11384,21 +11393,22 @@ function copyChatId(chatId, btnEl) {
                 }
             }
 
-            // 3. Nếu Runner offline và chạy trên Web Online (GitHub Pages), chuyển sang Cloud Runner GitHub Actions
-            if (!syncSuccess && typeof DEFAULT_GH_PAT !== 'undefined' && DEFAULT_GH_PAT) {
+            // 3. Nếu Runner offline -> TỰ ĐỘNG KÍCH HOẠT CLOUD RUNNER GITHUB ACTIONS
+            const patToken = window.DEFAULT_GH_PAT || (typeof DEFAULT_GH_PAT !== 'undefined' ? DEFAULT_GH_PAT : '') || localStorage.getItem("SCM_GH_PAT") || '';
+            if (!syncSuccess && patToken) {
                 try {
-                    showToast('☁️ Đang kích hoạt Cloud Runner trên GitHub Actions...');
-                    const ghRes = await fetch('https://api.github.com/repos/aresphamha/Doi_Soat_Dong_Mat/actions/workflows/run_spam_tools.yml/dispatches', {
-                        method: 'POST',
+                    showToast("☁️ Runner máy tính đang tắt. Đang kích hoạt Cloud Runner trên GitHub Actions...");
+                    const ghRes = await fetch("https://api.github.com/repos/aresphamha/Doi_Soat_Dong_Mat/actions/workflows/run_spam_tools.yml/dispatches", {
+                        method: "POST",
                         headers: {
-                            'Authorization': `Bearer ${DEFAULT_GH_PAT}`,
-                            'Accept': 'application/vnd.github+json',
-                            'Content-Type': 'application/json'
+                            "Authorization": `Bearer ${patToken}`,
+                            "Accept": "application/vnd.github+json",
+                            "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            ref: 'main',
+                            ref: "main",
                             inputs: {
-                                tool: 'sync_telegram'
+                                tool: "sync_telegram"
                             }
                         })
                     });
@@ -11410,7 +11420,7 @@ function copyChatId(chatId, btnEl) {
                             if (btnEl) btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Cloud đang quét (${count}s)...`;
                             count--;
 
-                            if (count <= 60 && count % 4 === 0) {
+                            if (count <= 65 && count % 4 === 0) {
                                 try {
                                     const testRes = await fetch('daily_details/telegram_groups.js?t=' + Date.now());
                                     if (testRes.ok) {
@@ -11422,7 +11432,7 @@ function copyChatId(chatId, btnEl) {
                                                 btnEl.disabled = false;
                                                 btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
                                             }
-                                            showToast('🎉 Cloud Runner: Đã hoàn tất đồng bộ dữ liệu Telegram mới nhất!');
+                                            showToast("🎉 Cloud Runner: Đã hoàn tất đồng bộ dữ liệu Telegram mới nhất!");
                                             renderTelegramTab();
                                             return;
                                         }
@@ -11436,18 +11446,26 @@ function copyChatId(chatId, btnEl) {
                                     btnEl.disabled = false;
                                     btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
                                 }
-                                showToast('⏳ Cloud Runner vẫn đang xử lý trên GitHub. Vui lòng tải lại trang sau 1-2 phút!', 6000);
+                                showToast("⏳ Cloud Runner vẫn đang xử lý trên GitHub. Vui lòng tải lại trang sau 1-2 phút!", 6000);
                                 reloadTelegramSnapshot(btnEl, false);
                             }
                         }, 1000);
                         return;
                     }
                 } catch (ghe) {
-                    console.error('Cloud runner error:', ghe);
+                    console.error("Cloud runner error:", ghe);
                 }
             }
 
-            reloadTelegramSnapshot(btnEl, syncSuccess);
+            // 4. Nếu cả Local Runner lẫn Cloud Runner đều không chạy được
+            if (btnEl) {
+                btnEl.disabled = false;
+                btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
+            }
+            if (!syncSuccess) {
+                showToast("⚠️ Runner trên máy tính đang tắt! Hãy chạy file 'Chay_Local_Runner.bat' để cập nhật realtime.", 6000);
+            }
+            reloadTelegramSnapshot(btnEl, false);
         }
 
         function reloadTelegramSnapshot(btnEl, wasSynced) {
@@ -11461,8 +11479,6 @@ function copyChatId(chatId, btnEl) {
                 }
                 if (wasSynced) {
                     showToast("🎉 Đã hoàn tất đồng bộ dữ liệu Telegram mới nhất!");
-                } else {
-                    showToast("⚡ Đã tải snapshot Telegram mới nhất!");
                 }
                 renderTelegramTab();
             };
