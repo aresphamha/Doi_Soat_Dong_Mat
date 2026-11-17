@@ -11,6 +11,10 @@ on:
       - 'DONG_MAT_DASHBOARD/**'
       - '.github/workflows/**'
       - 'requirements.txt'
+      - 'daily_details/**'
+      - 'index.html'
+      - 'Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay.html'
+      - 'runner_remote_url.json'
   repository_dispatch:
     types: [sheet_updated, sync_data]
   workflow_dispatch:

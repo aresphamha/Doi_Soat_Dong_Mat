@@ -135,6 +135,28 @@ def init_cloudflare_tunnel():
         print(f"⚠️ Lỗi khởi chạy Cloudflare Tunnel: {e}")
 
 
+def _load_telegram_groups_payload():
+    for p in [
+        os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "data", "telegram_groups.json"),
+        os.path.join(ROOT_DIR, "data", "telegram_groups.json"),
+        os.path.join(ROOT_DIR, "daily_details", "telegram_groups.js")
+    ]:
+        if os.path.exists(p):
+            try:
+                if p.endswith('.json'):
+                    with open(p, 'r', encoding='utf-8') as f:
+                        return json.load(f)
+                else:
+                    with open(p, 'r', encoding='utf-8') as f:
+                        c = f.read()
+                        if 'window.TELEGRAM_GROUPS_DATA = ' in c:
+                            raw = c.split('window.TELEGRAM_GROUPS_DATA = ', 1)[1].rstrip(';\n ')
+                            return json.loads(raw)
+            except Exception:
+                pass
+    return None
+
+
 def get_stores_list():
     try:
         from SPAM_PHIEU_CHUYEN.run_spam_tool import find_mapping_file
@@ -503,12 +525,22 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
         elif path == "/api/sync_telegram" or path == "/sync_telegram":
             push = params.get('push', ['false'])[0].lower() in ['true', '1', 'yes']
             result = run_tool_sync("sync_telegram", "", False)
+            tele_payload = _load_telegram_groups_payload()
+            if tele_payload:
+                result["data"] = tele_payload
             if result.get('success') and push:
-                try:
-                    from push_to_github import sync_and_push
-                    sync_and_push("Update: Realtime Telegram groups and store clusters")
-                except Exception as pe:
-                    print(f"Push error: {pe}")
+                def _bg_push_telegram():
+                    try:
+                        from push_to_github import sync_and_push
+                        sync_and_push("Update: Realtime Telegram groups and store clusters", [
+                            "daily_details/telegram_groups.js",
+                            "DONG_MAT_DASHBOARD/daily_details/telegram_groups.js",
+                            "DONG_MAT_DASHBOARD/data/telegram_groups.json",
+                            "Danh_Sach_Group_Telegram_SCM.xlsx"
+                        ])
+                    except Exception as pe:
+                        print(f"Push error: {pe}")
+                threading.Thread(target=_bg_push_telegram, daemon=True).start()
             self.send_response(200 if result.get('success') else 500)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self._send_cors_headers()
@@ -666,12 +698,22 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
         elif path == "/api/sync_telegram" or path == "/sync_telegram":
             push = data.get('push', False)
             result = run_tool_sync("sync_telegram", "", False)
+            tele_payload = _load_telegram_groups_payload()
+            if tele_payload:
+                result["data"] = tele_payload
             if result.get('success') and push:
-                try:
-                    from push_to_github import sync_and_push
-                    sync_and_push("Update: Realtime Telegram groups and store clusters")
-                except Exception as pe:
-                    print(f"Push error: {pe}")
+                def _bg_push_telegram():
+                    try:
+                        from push_to_github import sync_and_push
+                        sync_and_push("Update: Realtime Telegram groups and store clusters", [
+                            "daily_details/telegram_groups.js",
+                            "DONG_MAT_DASHBOARD/daily_details/telegram_groups.js",
+                            "DONG_MAT_DASHBOARD/data/telegram_groups.json",
+                            "Danh_Sach_Group_Telegram_SCM.xlsx"
+                        ])
+                    except Exception as pe:
+                        print(f"Push error: {pe}")
+                threading.Thread(target=_bg_push_telegram, daemon=True).start()
             self.send_response(200 if result.get('success') else 500)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self._send_cors_headers()

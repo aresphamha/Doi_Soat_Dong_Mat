@@ -11324,37 +11324,68 @@ function copyChatId(chatId, btnEl) {
         }
 
         async function refreshTelegramRealtime(btnEl) {
+            const groupCount = window.TELEGRAM_GROUPS_DATA?.summary?.total_groups || '700+';
             if (btnEl) {
                 btnEl.disabled = true;
-                btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang quét 588 nhóm Telegram...';
+                btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang kết nối Runner...`;
             }
 
             let syncSuccess = false;
-            const runnerUrl = typeof LOCAL_RUNNER_API !== 'undefined' ? LOCAL_RUNNER_API : "http://127.0.0.1:8088";
-            
-            // 1. Thử gọi Local Runner (khi mở trên máy tính có bật Chay_Local_Runner.bat hoặc localhost)
+            let candidateUrls = [];
+
+            // 1. Tìm Runner Endpoint HTTPS (Cloudflare Tunnel) để vượt lỗi Mixed Content trên GitHub Pages
             try {
-                const ctrl = new AbortController();
-                const tid = setTimeout(() => ctrl.abort(), 3500);
-                const res = await fetch(`${runnerUrl}/api/sync_telegram`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ push: true }),
-                    signal: ctrl.signal
-                });
-                clearTimeout(tid);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.success) {
-                        syncSuccess = true;
-                        showToast("🎉 Local Runner: Đã quét realtime từ Telegram và đồng bộ thành công!");
+                const r = await fetch('runner_remote_url.json?t=' + Date.now());
+                if (r.ok) {
+                    const j = await r.json();
+                    if (j && j.tunnel_url && j.status === 'online') {
+                        candidateUrls.push(j.tunnel_url);
                     }
                 }
-            } catch (e) {
-                console.log("Local Runner không khả dụng trên trình duyệt web online (Mixed Content / Offline). Chuyển sang Cloud Runner...", e);
+            } catch(e) {}
+
+            // Dự phòng Localhost nếu mở trực tiếp trên máy hoặc HTTP
+            if (window.location.protocol === 'http:' || window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                candidateUrls.push('http://127.0.0.1:8088');
             }
 
-            // 2. Nếu chạy trên Web Online (GitHub Pages), tự động kích hoạt Cloud Runner qua GitHub Actions
+            // 2. Thử gọi Runner (qua Cloudflare Tunnel hoặc Localhost)
+            for (const url of candidateUrls) {
+                try {
+                    if (btnEl) btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang quét ${groupCount} nhóm Telegram...`;
+                    console.log("Đang gọi Telegram Runner qua:", url);
+                    const ctrl = new AbortController();
+                    const tid = setTimeout(() => ctrl.abort(), 65000); // Đủ thời gian quét 30-50s
+                    const res = await fetch(`${url}/api/sync_telegram?push=true`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ push: true }),
+                        signal: ctrl.signal
+                    });
+                    clearTimeout(tid);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.success) {
+                            syncSuccess = true;
+                            if (btnEl) {
+                                btnEl.disabled = false;
+                                btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
+                            }
+                            if (data.data) {
+                                window.TELEGRAM_GROUPS_DATA = data.data;
+                                renderTelegramTab();
+                                showToast("🎉 Realtime Runner: Đã quét Telegram và đồng bộ thành công!");
+                                return;
+                            }
+                            break;
+                        }
+                    }
+                } catch (e) {
+                    console.warn(`Runner ${url} không phản hồi:`, e);
+                }
+            }
+
+            // 3. Nếu Runner offline và chạy trên Web Online (GitHub Pages), chuyển sang Cloud Runner GitHub Actions
             if (!syncSuccess && typeof DEFAULT_GH_PAT !== 'undefined' && DEFAULT_GH_PAT) {
                 try {
                     showToast("☁️ Đang kích hoạt Cloud Runner trên GitHub Actions...");
@@ -11372,16 +11403,16 @@ function copyChatId(chatId, btnEl) {
                             }
                         })
                     });
-                                        if (ghRes.ok || ghRes.status === 204) {
-                        showToast("🚀 Đã kích hoạt Cloud Runner! Đang quét trực tiếp 590 nhóm Telegram trên Cloud...");
-                        let count = 42;
+                    if (ghRes.ok || ghRes.status === 204) {
+                        showToast(`🚀 Đã kích hoạt Cloud Runner! Đang quét trực tiếp ${groupCount} nhóm Telegram trên Cloud...`);
+                        let count = 90;
                         const initialSyncTime = window.TELEGRAM_GROUPS_DATA?.summary?.account?.synced_at || '';
                         const timer = setInterval(async () => {
                             if (btnEl) btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Cloud đang quét (${count}s)...`;
                             count--;
 
-                            // Bắt đầu poll kiểm tra file mới từ giây 25 trở đi
-                            if (count <= 25 && count % 3 === 0) {
+                            // Bắt đầu poll kiểm tra file mới từ giây 30 trở đi
+                            if (count <= 60 && count % 4 === 0) {
                                 try {
                                     const testRes = await fetch('daily_details/telegram_groups.js?t=' + Date.now());
                                     if (testRes.ok) {
@@ -11403,7 +11434,12 @@ function copyChatId(chatId, btnEl) {
 
                             if (count < 0) {
                                 clearInterval(timer);
-                                reloadTelegramSnapshot(btnEl, true);
+                                if (btnEl) {
+                                    btnEl.disabled = false;
+                                    btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
+                                }
+                                showToast("⏳ Cloud Runner vẫn đang xử lý trên GitHub. Vui lòng tải lại trang sau 1-2 phút!", 6000);
+                                reloadTelegramSnapshot(btnEl, false);
                             }
                         }, 1000);
                         return;

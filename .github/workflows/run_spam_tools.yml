@@ -178,6 +178,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "Báo cáo không thay đổi."
           else
-            git commit -m "🤖 [Cloud-Runner] Tự động cập nhật Telegram Realtime [skip ci]"
+            git commit -m "🤖 [Cloud-Runner] Tự động cập nhật Telegram Realtime"
             git push origin main
           fi
