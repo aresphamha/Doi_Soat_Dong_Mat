@@ -597,7 +597,7 @@ def build_and_export_web_report():
 
     # 7. Đọc template HTML và bơm dữ liệu BUNDLES
     template_path = os.path.join(current_dir, "dashboard_template.html")
-    if not os.path.exists(template_path):
+    if not os.path.exists(template_path) or os.path.getsize(template_path) < 10000:
         template_path = os.path.join(os.path.dirname(current_dir), "LOGIC", "dashboard_template.html")
 
     with open(template_path, "r", encoding="utf-8") as f:
