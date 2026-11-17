@@ -18,7 +18,7 @@ if %ERRORLEVEL% EQU 0 (
     echo ==============================================================================
 ) else (
     echo.
-    echo ❌ LỖI: Không thể kết nối tới Database CDC! Hãy kiểm tra WireGuard VPN.
+    echo ❌ LỖI: Không thể kết nối tới Database CDC! Hãy kiểm tra kết nối ứng dụng NetBird (Bật Connected).
 )
 
 pause
