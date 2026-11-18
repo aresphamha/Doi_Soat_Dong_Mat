@@ -11363,7 +11363,7 @@ function copyChatId(chatId, btnEl) {
                     if (btnEl) btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang quét ${groupCount} nhóm Telegram...`;
                     console.log('Đang gọi Telegram Runner qua:', url);
                     const ctrl = new AbortController();
-                    const tid = setTimeout(() => ctrl.abort(), 10000); // chỉ cần 10s để nhận ACK
+                    const tid = setTimeout(() => ctrl.abort(), 65000);
                     const res = await fetch(`${url}/api/sync_telegram?push=true`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -11371,51 +11371,22 @@ function copyChatId(chatId, btnEl) {
                         signal: ctrl.signal
                     });
                     clearTimeout(tid);
-                    if (res.status === 200 || res.status === 202) {
+                    if (res.ok) {
                         const data = await res.json();
-                        syncSuccess = true;
-                        // Nếu có data ngay -> render luôn
-                        if (data.data) {
-                            window.TELEGRAM_GROUPS_DATA = data.data;
-                            renderTelegramTab();
-                            showToast('🎉 Runner: Đang quét mới, hiện dữ liệu gần nhất!');
-                        }
-                        // Poll /status + /api/sync_telegram/result cho đến khi done
-                        let pollCount = 0;
-                        const maxPoll = 120; // tối đa 2 phút
-                        const pollTimer = setInterval(async () => {
-                            pollCount++;
-                            try {
-                                const statusRes = await fetch(`${url}/status`, { signal: (new AbortController()).signal });
-                                if (statusRes.ok) {
-                                    const st = await statusRes.json();
-                                    if (btnEl) btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang quét (${pollCount}s)...`;
-                                    if (st.tool === 'sync_telegram' && st.status === 'done') {
-                                        clearInterval(pollTimer);
-                                        // Lấy result
-                                        try {
-                                            const rr = await fetch(`${url}/api/sync_telegram/result`);
-                                            if (rr.ok) {
-                                                const rd = await rr.json();
-                                                if (rd.data) {
-                                                    window.TELEGRAM_GROUPS_DATA = rd.data;
-                                                    renderTelegramTab();
-                                                }
-                                            }
-                                        } catch(ee) {}
-                                        if (btnEl) { btnEl.disabled = false; btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime'; }
-                                        showToast('🎉 Realtime Runner: Đã quét xong và đồng bộ Telegram thành công!');
-                                        return;
-                                    }
-                                }
-                            } catch(pe) {}
-                            if (pollCount >= maxPoll) {
-                                clearInterval(pollTimer);
-                                if (btnEl) { btnEl.disabled = false; btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime'; }
-                                showToast('⏳ Scan Telegram đang chạy nền. Dữ liệu sẽ cập nhật sau vài phút!', 5000);
+                        if (data.success) {
+                            syncSuccess = true;
+                            if (btnEl) {
+                                btnEl.disabled = false;
+                                btnEl.innerHTML = '<i class="fa-solid fa-rotate"></i> Cập Nhật Realtime';
                             }
-                        }, 1000);
-                        return;
+                            if (data.data) {
+                                window.TELEGRAM_GROUPS_DATA = data.data;
+                                renderTelegramTab();
+                                showToast('🎉 Realtime Runner: Đã quét Telegram và đồng bộ thành công!');
+                                return;
+                            }
+                            break;
+                        }
                     }
                 } catch (e) {
                     console.warn(`Runner ${url} không phản hồi:`, e);
