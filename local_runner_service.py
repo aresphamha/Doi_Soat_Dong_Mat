@@ -52,6 +52,17 @@ EXECUTION_LOCK = threading.Lock()
 CLOUDFLARE_TUNNEL_URL = ""
 CLOUDFLARED_PROC = None
 
+# Cache kết quả scan Telegram gần nhất (dùng cho async polling)
+TELEGRAM_SCAN_RESULT = {
+    "status": "idle",   # idle | running | done | error
+    "started_at": None,
+    "completed_at": None,
+    "data": None,       # payload telegram_groups đầy đủ
+    "success": False,
+    "message": ""
+}
+TELEGRAM_SCAN_LOCK = threading.Lock()
+
 def init_cloudflare_tunnel():
     """Khởi động Cloudflare Quick Tunnel để cho phép các máy tính khác / điện thoại điều khiển từ xa qua Internet."""
     global CLOUDFLARE_TUNNEL_URL, CLOUDFLARED_PROC
@@ -155,6 +166,52 @@ def _load_telegram_groups_payload():
             except Exception:
                 pass
     return None
+
+
+def _run_telegram_scan_async(push=True):
+    """Chạy scan Telegram ở background thread, lưu kết quả vào TELEGRAM_SCAN_RESULT."""
+    global TELEGRAM_SCAN_RESULT
+    with TELEGRAM_SCAN_LOCK:
+        if TELEGRAM_SCAN_RESULT["status"] == "running":
+            return  # Đang chạy rồi, không chạy thêm
+        TELEGRAM_SCAN_RESULT["status"] = "running"
+        TELEGRAM_SCAN_RESULT["started_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+        TELEGRAM_SCAN_RESULT["data"] = None
+        TELEGRAM_SCAN_RESULT["success"] = False
+        TELEGRAM_SCAN_RESULT["message"] = "⏳ Đang quét Telegram..."
+
+    def _worker():
+        global TELEGRAM_SCAN_RESULT
+        try:
+            result = run_tool_sync("sync_telegram", "", False)
+            tele_payload = _load_telegram_groups_payload()
+            with TELEGRAM_SCAN_LOCK:
+                TELEGRAM_SCAN_RESULT["status"] = "done" if result.get("success") else "error"
+                TELEGRAM_SCAN_RESULT["completed_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+                TELEGRAM_SCAN_RESULT["success"] = result.get("success", False)
+                TELEGRAM_SCAN_RESULT["message"] = result.get("message", "")
+                if tele_payload:
+                    TELEGRAM_SCAN_RESULT["data"] = tele_payload
+            # Push lên GitHub ở background sau khi scan xong
+            if result.get("success") and push:
+                try:
+                    from push_to_github import sync_and_push
+                    sync_and_push("🤖 [Runner] Cập nhật Realtime Telegram groups", [
+                        "daily_details/telegram_groups.js",
+                        "DONG_MAT_DASHBOARD/daily_details/telegram_groups.js",
+                        "DONG_MAT_DASHBOARD/data/telegram_groups.json",
+                        "Danh_Sach_Group_Telegram_SCM.xlsx"
+                    ])
+                except Exception as pe:
+                    print(f"Push error: {pe}")
+        except Exception as e:
+            with TELEGRAM_SCAN_LOCK:
+                TELEGRAM_SCAN_RESULT["status"] = "error"
+                TELEGRAM_SCAN_RESULT["completed_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+                TELEGRAM_SCAN_RESULT["success"] = False
+                TELEGRAM_SCAN_RESULT["message"] = f"❌ Lỗi scan: {e}"
+
+    threading.Thread(target=_worker, daemon=True).start()
 
 
 def get_stores_list():
@@ -522,30 +579,43 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
             return
 
-        elif path == "/api/sync_telegram" or path == "/sync_telegram":
-            push = params.get('push', ['false'])[0].lower() in ['true', '1', 'yes']
-            result = run_tool_sync("sync_telegram", "", False)
-            tele_payload = _load_telegram_groups_payload()
-            if tele_payload:
-                result["data"] = tele_payload
-            if result.get('success') and push:
-                def _bg_push_telegram():
-                    try:
-                        from push_to_github import sync_and_push
-                        sync_and_push("Update: Realtime Telegram groups and store clusters", [
-                            "daily_details/telegram_groups.js",
-                            "DONG_MAT_DASHBOARD/daily_details/telegram_groups.js",
-                            "DONG_MAT_DASHBOARD/data/telegram_groups.json",
-                            "Danh_Sach_Group_Telegram_SCM.xlsx"
-                        ])
-                    except Exception as pe:
-                        print(f"Push error: {pe}")
-                threading.Thread(target=_bg_push_telegram, daemon=True).start()
-            self.send_response(200 if result.get('success') else 500)
+        elif path == \"/api/sync_telegram\" or path == \"/sync_telegram\":
+            # GET: Khởi chạy scan async (non-blocking) + trả về data hiện có ngay lập tức
+            push = params.get('push', ['true'])[0].lower() in ['true', '1', 'yes']
+            _run_telegram_scan_async(push=push)
+            # Trả ngay data cũ (nếu có) hoặc status đang chạy
+            with TELEGRAM_SCAN_LOCK:
+                current = dict(TELEGRAM_SCAN_RESULT)
+            if current.get("data"):
+                resp = {
+                    "success": True,
+                    "status": current["status"],
+                    "message": "✅ Đang quét mới, trả dữ liệu hiện có. Poll /status để biết khi xong.",
+                    "data": current["data"]
+                }
+                self.send_response(200)
+            else:
+                resp = {
+                    "success": False,
+                    "status": "running",
+                    "message": "⏳ Đang quét Telegram lần đầu, vui lòng poll /status và /api/sync_telegram/result sau 90 giây."
+                }
+                self.send_response(202)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self._send_cors_headers()
             self.end_headers()
-            self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+            self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
+            return
+
+        elif path == \"/api/sync_telegram/result\" or path == \"/sync_telegram/result\":
+            # Lấy kết quả scan mới nhất (không trigger scan mới)
+            with TELEGRAM_SCAN_LOCK:
+                current = dict(TELEGRAM_SCAN_RESULT)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            self.wfile.write(json.dumps(current, ensure_ascii=False).encode('utf-8'))
             return
 
         elif path == "/api/sync_cdc" or path == "/sync_cdc":
@@ -696,29 +766,30 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             return
 
         elif path == "/api/sync_telegram" or path == "/sync_telegram":
-            push = data.get('push', False)
-            result = run_tool_sync("sync_telegram", "", False)
-            tele_payload = _load_telegram_groups_payload()
-            if tele_payload:
-                result["data"] = tele_payload
-            if result.get('success') and push:
-                def _bg_push_telegram():
-                    try:
-                        from push_to_github import sync_and_push
-                        sync_and_push("Update: Realtime Telegram groups and store clusters", [
-                            "daily_details/telegram_groups.js",
-                            "DONG_MAT_DASHBOARD/daily_details/telegram_groups.js",
-                            "DONG_MAT_DASHBOARD/data/telegram_groups.json",
-                            "Danh_Sach_Group_Telegram_SCM.xlsx"
-                        ])
-                    except Exception as pe:
-                        print(f"Push error: {pe}")
-                threading.Thread(target=_bg_push_telegram, daemon=True).start()
-            self.send_response(200 if result.get('success') else 500)
+            # POST: Khởi chạy scan async (non-blocking) + trả về data hiện có ngay lập tức
+            push = data.get('push', True)
+            _run_telegram_scan_async(push=bool(push))
+            with TELEGRAM_SCAN_LOCK:
+                current = dict(TELEGRAM_SCAN_RESULT)
+            if current.get("data"):
+                resp = {
+                    "success": True,
+                    "status": current["status"],
+                    "message": "✅ Đang quét mới, trả dữ liệu hiện có. Poll /status để biết khi xong.",
+                    "data": current["data"]
+                }
+                self.send_response(200)
+            else:
+                resp = {
+                    "success": False,
+                    "status": "running",
+                    "message": "⏳ Đang quét Telegram lần đầu, vui lòng poll /status và /api/sync_telegram/result sau 90 giây."
+                }
+                self.send_response(202)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self._send_cors_headers()
             self.end_headers()
-            self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+            self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
             return
 
         elif path == "/api/sync_cdc" or path == "/sync_cdc":
