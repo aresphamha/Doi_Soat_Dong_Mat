@@ -579,7 +579,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
             return
 
-        elif path == \"/api/sync_telegram\" or path == \"/sync_telegram\":
+        elif path == "/api/sync_telegram" or path == "/sync_telegram":
             # GET: Khởi chạy scan async (non-blocking) + trả về data hiện có ngay lập tức
             push = params.get('push', ['true'])[0].lower() in ['true', '1', 'yes']
             _run_telegram_scan_async(push=push)
@@ -607,7 +607,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(resp, ensure_ascii=False).encode('utf-8'))
             return
 
-        elif path == \"/api/sync_telegram/result\" or path == \"/sync_telegram/result\":
+        elif path == "/api/sync_telegram/result" or path == "/sync_telegram/result":
             # Lấy kết quả scan mới nhất (không trigger scan mới)
             with TELEGRAM_SCAN_LOCK:
                 current = dict(TELEGRAM_SCAN_RESULT)
