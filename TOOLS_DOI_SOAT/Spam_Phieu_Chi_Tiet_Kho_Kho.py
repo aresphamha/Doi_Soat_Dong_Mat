@@ -176,6 +176,17 @@ def load_store_and_dc_chat_mappings():
     dc_code_map['A227'] = '-1004381965932' # DC - A227 (Sunshine Diamond River)
     dc_code_map['A117'] = '-4699467473'     # DC DRY - A117 (The Rivana)
     dc_code_map['A277'] = '-1004438892013' # DC - A277 (Sunshine Sky City)
+    dc_code_map['A270'] = '-1004408149925' # DC - A270 (Nguyễn Xí)
+    dc_code_map['A278'] = '-1003971888276' # DC - A278 (C-Sky View)
+
+    st_to_code['KFM_HCM_BTH - 184 Nguyễn Xí'] = 'A270'
+    st_to_code['184 Nguyễn Xí'] = 'A270'
+    st_to_code['Nguyễn Xí'] = 'A270'
+
+    st_to_code['KFM_BDU_TDM - BSH01 C-Sky View'] = 'A278'
+    st_to_code['BSH01 C-Sky View'] = 'A278'
+    st_to_code['C-Sky View'] = 'A278'
+    st_to_code['C-Sky'] = 'A278'
 
     st_to_code['KFM_HCM_Q07 - S1.A1 Sunshine Sky City Phú Thuận'] = 'A277'
     st_to_code['S1.A1 Sunshine Sky City Phú Thuận'] = 'A277'
@@ -270,6 +281,8 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
         id_to_name = {bid: bname for bid, bname in cur.fetchall() if bname}
         id_to_name['6aa8a8d3e4930300071e47b2'] = 'KFM_HCM_Q07 - 1016/41 Chung Cư Sky Garden 3-R1-3'
         id_to_name['6abb2390d77de90007295419'] = 'KFM_HCM_Q07 - Block C Sunshine Diamond River'
+        id_to_name['6abf6ab6c4c64e00072052aa'] = 'KFM_HCM_BTH - 184 Nguyễn Xí'
+        id_to_name['6ac5feb2a7dd480007062a7d'] = 'KFM_BDU_TDM - BSH01 C-Sky View'
 
         # Query phiếu chuyển của kho FGA10101 & FGA10103
         sql = f"""
