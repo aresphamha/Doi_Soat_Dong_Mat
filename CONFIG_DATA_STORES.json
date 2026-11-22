@@ -1996,5 +1996,21 @@
     "chat_id_dm": "",
     "chat_id_rc": "",
     "chat_id_dc": "-1003971888276"
+  },
+  {
+    "id": "A206",
+    "name": "KFM_HCM_NBE - B.1.1 Phú Hoàng Anh",
+    "short": "A206",
+    "chat_id_dm": "",
+    "chat_id_rc": "",
+    "chat_id_dc": "-1003939271297"
+  },
+  {
+    "id": "A228",
+    "name": "KFM_HCM_TDU - B7-C.TMDV.02 Masterise Lumiere Boulevard",
+    "short": "A228",
+    "chat_id_dm": "",
+    "chat_id_rc": "",
+    "chat_id_dc": "-1004408424255"
   }
 ]

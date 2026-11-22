@@ -178,6 +178,17 @@ def load_store_and_dc_chat_mappings():
     dc_code_map['A277'] = '-1004438892013' # DC - A277 (Sunshine Sky City)
     dc_code_map['A270'] = '-1004408149925' # DC - A270 (Nguyễn Xí)
     dc_code_map['A278'] = '-1003971888276' # DC - A278 (C-Sky View)
+    dc_code_map['A206'] = '-1003939271297' # DC - A206 (Phú Hoàng Anh)
+    dc_code_map['A228'] = '-1004408424255' # DC - A228 (Masterise Lumiere Boulevard)
+
+    st_to_code['KFM_HCM_NBE - B.1.1 Phú Hoàng Anh'] = 'A206'
+    st_to_code['B.1.1 Phú Hoàng Anh'] = 'A206'
+    st_to_code['Phú Hoàng Anh'] = 'A206'
+
+    st_to_code['KFM_HCM_TDU - B7-C.TMDV.02 Masterise Lumiere Boulevard'] = 'A228'
+    st_to_code['B7-C.TMDV.02 Masterise Lumiere Boulevard'] = 'A228'
+    st_to_code['Masterise Lumiere Boulevard'] = 'A228'
+    st_to_code['Lumiere Boulevard'] = 'A228'
 
     st_to_code['KFM_HCM_BTH - 184 Nguyễn Xí'] = 'A270'
     st_to_code['184 Nguyễn Xí'] = 'A270'
