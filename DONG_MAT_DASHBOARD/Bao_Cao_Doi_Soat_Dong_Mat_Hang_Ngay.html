@@ -11343,10 +11343,9 @@ function copyChatId(chatId, btnEl) {
                 }
             } catch(e) {}
 
-            // Dự phòng Localhost nếu mở trực tiếp trên máy hoặc HTTP
-            if (window.location.protocol === 'http:' || window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                candidateUrls.push('http://127.0.0.1:8088');
-            }
+            // Luôn dự phòng Localhost & 127.0.0.1 (kết nối trực tiếp tức thì 1ms nếu mở trên máy trạm)
+            candidateUrls.push('http://127.0.0.1:8088');
+            candidateUrls.push('http://localhost:8088');
 
             // 2. Thử gọi Runner (qua Cloudflare Tunnel hoặc Localhost)
             for (const url of candidateUrls) {
@@ -15711,10 +15710,9 @@ async function syncPendingTicketsRealtime() {
         }
     } catch(e) {}
 
-    // Dự phòng thêm localhost nếu người dùng mở file html trực tiếp hoặc chạy trên máy
-    if (window.location.protocol === 'http:' || window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        candidateUrls.push('http://127.0.0.1:8088');
-    }
+    // Luôn dự phòng Localhost & 127.0.0.1 (kết nối trực tiếp tức thì 1ms nếu mở trên máy trạm)
+    candidateUrls.push('http://127.0.0.1:8088');
+    candidateUrls.push('http://localhost:8088');
 
     for (const url of candidateUrls) {
         try {
