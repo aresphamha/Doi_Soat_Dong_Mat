@@ -603,6 +603,31 @@ def build_and_export_web_report():
     with open(template_path, "r", encoding="utf-8") as f:
         html_content = f.read()
 
+    # 7.0. Tự động bơm danh sách Chat ID mới nhất từ CONFIG_DATA_STORES.json để không bao giờ bị ghi đè bản cũ
+    try:
+        import re as _re_stores
+        stores_cfg_path = os.path.join(os.path.dirname(current_dir), "CONFIG_DATA_STORES.json")
+        if os.path.exists(stores_cfg_path):
+            with open(stores_cfg_path, "r", encoding="utf-8") as f_st:
+                _stores_list = json.load(f_st)
+            if isinstance(_stores_list, list) and len(_stores_list) >= 100:
+                _stores_json = json.dumps(_stores_list, ensure_ascii=False)
+                html_content = _re_stores.sub(
+                    r"window\.GLOBAL_STORE_CHAT_IDS\s*=\s*\[.*?\];",
+                    lambda m: f"window.GLOBAL_STORE_CHAT_IDS = {_stores_json};",
+                    html_content,
+                    count=1
+                )
+                html_content = _re_stores.sub(
+                    r"(\?\s*window\.GLOBAL_STORE_CHAT_IDS\s*\r?\n\s*:\s*)\[\{\"id\":.*?\];",
+                    lambda m: m.group(1) + _stores_json + ";",
+                    html_content,
+                    count=1
+                )
+                print(f"✅ Đã tự động đồng bộ {len(_stores_list)} siêu thị từ CONFIG_DATA_STORES.json vào HTML.")
+    except Exception as e_st:
+        print(f"⚠️ [Stores Config Auto-Inject Warning]: {e_st}")
+
     # 7.1. Xuất dữ liệu BUNDLES siêu nhẹ sang file daily_details/data_bundles.js (~300 KB)
     bundles_json_str = json.dumps(bundles_dict, ensure_ascii=False)
     data_bundles_js = f"window.BUNDLES = {bundles_json_str};\n"
