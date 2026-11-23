@@ -962,6 +962,8 @@ def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_role
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "sync_telegram_groups.py")]
         elif tool in ["sync_cdc", "cdc", "sync_cdc_prices", "dong_bo_cdc"]:
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "Cap_Nhat_Gia_Nhap_Tu_CDC.py")]
+        elif tool in ["sync_fmcg", "fmcg_matrix", "fmcg"]:
+            cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "sync_fmcg_matrix.py")]
         elif tool in ["add_thanh_vien", "4_Add_Thanh_Vien", "4_add_thanh_vien"]:
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "DONG_MAT", "4_Add_Thanh_Vien.py")]
             if message and str(message).strip():

@@ -274,7 +274,8 @@
         .sidebar-tab-btn.active-tab4,
         .sidebar-tab-btn.active-tab5,
         .sidebar-tab-btn.active-tab6,
-        .sidebar-tab-btn.active-tab7 {
+        .sidebar-tab-btn.active-tab7,
+        .sidebar-tab-btn.active-tab8 {
             background: rgba(255, 255, 255, 0.08) !important;
             border: 1px solid rgba(255, 255, 255, 0.2) !important;
             color: #ffffff !important;
@@ -2934,6 +2935,8 @@
     <!-- Dữ liệu BUNDLES siêu nhẹ cho Tab 1 & 2 (~300 KB) -->
     <script src="daily_details/data_bundles.js"></script>
     <script src="daily_details/pending_tickets.js"></script>
+    <script src="daily_details/fmcg_matrix.js"></script>
+    <script src="daily_details/fmcg_matrix_engine.js"></script>
 </head>
 <body>
 
@@ -3050,6 +3053,14 @@
                     <span class="tab-desc">Đang chuyển • YC xử lý • Cần hậu kiểm</span>
                 </div>
             </button>
+            <button class="sidebar-tab-btn" id="btn-big-tab-8" onclick="switchBigTab(8)">
+                <div class="tab-icon-wrap" style="color:#06b6d4;"><i class="fa-solid fa-boxes-stacked" style="font-size:1.15rem;"></i></div>
+                <div class="tab-text">
+                    <span class="tab-title">BÁO CÁO LOGISTICS FMCG</span>
+                    <span class="tab-desc">Ma trận Đối soát Kho Khô (Seedlog)</span>
+                </div>
+            </button>
+
 
 
 
@@ -6267,6 +6278,79 @@
     </div>
 
 
+    
+            <!-- ========================================================================= -->
+            <!-- TAB 8: BÁO CÁO LOGISTICS KHO KHÔ FMCG (SEEDLOG)                            -->
+            <!-- ========================================================================= -->
+            <div class="big-tab-panel" id="big-panel-8">
+                <!-- HERO HEADER -->
+                <div class="tele-hero-card" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem 1.5rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                    <div style="display:flex; align-items:center; gap:0.9rem;">
+                        <div style="width:44px; height:44px; border-radius:10px; background:rgba(6,182,212,0.15); color:#06b6d4; display:flex; align-items:center; justify-content:center; font-size:1.35rem; border:1px solid rgba(6,182,212,0.3);">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                        <div>
+                            <h2 style="font-size:1.25rem; font-weight:800; color:#f1f5f9; margin:0 0 0.25rem 0; display:flex; align-items:center; gap:0.6rem;">
+                                BÁO CÁO LOGISTICS FMCG
+                                <span style="font-size:0.7rem; font-weight:700; color:#06b6d4; background:rgba(6,182,212,0.15); border:1px solid rgba(6,182,212,0.3); padding:2px 8px; border-radius:12px; letter-spacing:0.5px;">SEEDLOG • T11/2026 TRỞ ĐI</span>
+                            </h2>
+                            <p style="font-size:0.8rem; color:#94a3b8; margin:0;" id="fmcg-status-text">
+                                Ma trận 48 chỉ số luân chuyển kho khô theo ngày • Tự động đồng bộ từ Google Sheet
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+                        <button id="btn-fmcg-sort" onclick="toggleFmcgSort()" style="background:#1e293b; color:#cbd5e1; border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:0.45rem 0.85rem; font-size:0.8rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
+                            <i class="fa-solid fa-arrow-down-wide-short"></i> Ngày Mới Nhất Trước
+                        </button>
+
+                        <button id="btn-fmcg-refresh" onclick="fetchGoogleSheetFmcgLive()" style="background:#0284c7; color:#fff; border:1px solid #38bdf8; border-radius:8px; padding:0.45rem 0.85rem; font-size:0.8rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.4rem; box-shadow:0 0 10px rgba(56,189,248,0.25);">
+                            <i class="fa-solid fa-arrows-rotate"></i> Cập Nhật Google Sheet
+                        </button>
+
+                        <button onclick="exportFmcgExcel()" style="background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); border-radius:8px; padding:0.45rem 0.85rem; font-size:0.8rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
+                            <i class="fa-solid fa-file-excel"></i> Xuất Excel
+                        </button>
+
+                        <a href="https://docs.google.com/spreadsheets/d/1ZTLRCJjr-8surASFt9Rm6M-2SYJZfa2dc2phS6vg4_k/edit?gid=1213759414" target="_blank" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:0.45rem 0.85rem; font-size:0.8rem; font-weight:600; text-decoration:none; display:flex; align-items:center; gap:0.4rem;">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Sheet Gốc
+                        </a>
+                    </div>
+                </div>
+
+                <!-- KPI CARDS -->
+                <div id="fmcg-kpi-cards" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:0.85rem; margin-bottom:1.25rem;">
+                    <!-- Dynamic KPI Cards -->
+                </div>
+
+                <!-- SEARCH & SECTION FILTER BAR -->
+                <div style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:0.85rem 1.15rem; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem;">
+                    <div style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap;">
+                        <span style="font-size:0.75rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-right:0.3rem;">Khối chỉ số:</span>
+                        <button class="fmcg-sec-pill" data-sec="all" onclick="filterFmcgSection('all')" style="background:#0284c7; color:#fff; border:1px solid #38bdf8; border-radius:6px; padding:0.3rem 0.65rem; font-size:0.76rem; font-weight:600; cursor:pointer;">Tất cả (6 Khối)</button>
+                        <button class="fmcg-sec-pill" data-sec="sec_san_luong" onclick="filterFmcgSection('sec_san_luong')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:0.3rem 0.65rem; font-size:0.76rem; font-weight:600; cursor:pointer;">1. Sản lượng</button>
+                        <button class="fmcg-sec-pill" data-sec="sec_gia_tri" onclick="filterFmcgSection('sec_gia_tri')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:0.3rem 0.65rem; font-size:0.76rem; font-weight:600; cursor:pointer;">2. Giá trị</button>
+                        <button class="fmcg-sec-pill" data-sec="sec_ty_le" onclick="filterFmcgSection('sec_ty_le')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:0.3rem 0.65rem; font-size:0.76rem; font-weight:600; cursor:pointer;">3. Tỷ lệ %</button>
+                        <button class="fmcg-sec-pill" data-sec="sec_sieu_thi" onclick="filterFmcgSection('sec_sieu_thi')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:0.3rem 0.65rem; font-size:0.76rem; font-weight:600; cursor:pointer;">4. Siêu thị</button>
+                        <button class="fmcg-sec-pill" data-sec="sec_dc_phan_hoi" onclick="filterFmcgSection('sec_dc_phan_hoi')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:0.3rem 0.65rem; font-size:0.76rem; font-weight:600; cursor:pointer;">5. DC phản hồi</button>
+                        <button class="fmcg-sec-pill" data-sec="sec_luy_ke" onclick="filterFmcgSection('sec_luy_ke')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:0.3rem 0.65rem; font-size:0.76rem; font-weight:600; cursor:pointer;">6. Lũy kế</button>
+                    </div>
+
+                    <div style="position:relative; width:260px;">
+                        <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#64748b; font-size:0.8rem;"></i>
+                        <input type="text" placeholder="Tìm tên chỉ số..." oninput="searchFmcgMetrics(this)" style="width:100%; background:#0f172a; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:0.4rem 0.65rem 0.4rem 2rem; color:#f1f5f9; font-size:0.8rem; outline:none;">
+                    </div>
+                </div>
+
+                <!-- MATRIX TABLE CONTAINER -->
+                <div id="fmcg-table-container" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; overflow-x:auto; max-height:75vh; box-shadow:0 8px 24px rgba(0,0,0,0.3);">
+                    <!-- Dynamic Table generated by renderMatrixTable() -->
+                </div>
+            </div>
+
+
     <!-- Script Logic -->
     <!-- daily_records.js removed for on-demand lazy loading -->
     <script>
@@ -6480,6 +6564,7 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 const btn5 = document.getElementById('btn-big-tab-5');
                 const btn6 = document.getElementById('btn-big-tab-6');
                 const btn7 = document.getElementById('btn-big-tab-7');
+                const btn8 = document.getElementById('btn-big-tab-8');
 
                 const p1 = document.getElementById('big-panel-1');
                 const p2 = document.getElementById('big-panel-2');
@@ -6488,6 +6573,7 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 const p5 = document.getElementById('big-panel-5');
                 const p6 = document.getElementById('big-panel-6');
                 const p7 = document.getElementById('big-panel-7');
+                const p8 = document.getElementById('big-panel-8');
 
                 if (btn1) btn1.className = 'sidebar-tab-btn' + (tabNum === 1 ? ' active-tab1' : '');
                 if (btn2) btn2.className = 'sidebar-tab-btn' + (tabNum === 2 ? ' active-tab2' : '');
@@ -6496,6 +6582,7 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 if (btn5) btn5.className = 'sidebar-tab-btn' + (tabNum === 5 ? ' active-tab5' : '');
                 if (btn6) btn6.className = 'sidebar-tab-btn' + (tabNum === 6 ? ' active-tab6' : '');
                 if (btn7) btn7.className = 'sidebar-tab-btn' + (tabNum === 7 ? ' active-tab7' : '');
+                if (btn8) btn8.className = 'sidebar-tab-btn' + (tabNum === 8 ? ' active-tab8' : '');
 
                 if (p1) p1.className = 'big-tab-panel' + (tabNum === 1 ? ' active' : '');
                 if (p2) p2.className = 'big-tab-panel' + (tabNum === 2 ? ' active' : '');
@@ -6504,6 +6591,7 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                 if (p5) p5.className = 'big-tab-panel' + (tabNum === 5 ? ' active' : '');
                 if (p6) p6.className = 'big-tab-panel' + (tabNum === 6 ? ' active' : '');
                 if (p7) p7.className = 'big-tab-panel' + (tabNum === 7 ? ' active' : '');
+                if (p8) p8.className = 'big-tab-panel' + (tabNum === 8 ? ' active' : '');
 
                 if (tabNum === 3) {
                     setTimeout(() => {
@@ -6541,6 +6629,12 @@ if (typeof window !== 'undefined' && !window.BUNDLES && typeof BUNDLES !== 'unde
                     setTimeout(() => {
                         try {
                             if (typeof initPendingTicketsModule === 'function') initPendingTicketsModule();
+                        } catch(e) {}
+                    }, 20);
+                } else if (tabNum === 8) {
+                    setTimeout(() => {
+                        try {
+                            if (typeof window.renderFmcgMatrix === 'function') window.renderFmcgMatrix();
                         } catch(e) {}
                     }, 20);
                 } else if (tabNum === 6) {
