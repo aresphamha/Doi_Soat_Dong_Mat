@@ -133,7 +133,7 @@
     "short": "A117",
     "chat_id_dm": "-1003595238765",
     "chat_id_rc": "-4863824080",
-    "chat_id_dc": "-4699467473"
+    "chat_id_dc": ""
   },
   {
     "id": "A118",
@@ -910,14 +910,6 @@
     "chat_id_dc": "-5404865328"
   },
   {
-    "id": "A227",
-    "name": "KFM_HCM_Q07 - Block C Sunshine Diamond River",
-    "short": "A227",
-    "chat_id_dm": "",
-    "chat_id_rc": "",
-    "chat_id_dc": "-1004381965932"
-  },
-  {
     "id": "A229",
     "name": "KFM_HCM_TPH - 58 Nguyễn Hữu Tiến",
     "short": "A229",
@@ -1086,28 +1078,12 @@
     "chat_id_dc": "-1004469485931"
   },
   {
-    "id": "A260",
-    "name": "KFM_HCM_NBE - 30 Lê Thị Kỉnh",
-    "short": "A260",
-    "chat_id_dm": "-1003986929642",
-    "chat_id_rc": "-1003986929642",
-    "chat_id_dc": "-1003986929642"
-  },
-  {
     "id": "A262",
     "name": "KFM_BDU_DAN - R01.14 Block A2 Charm Ruby",
     "short": "A262",
     "chat_id_dm": "-1004438420846",
     "chat_id_rc": "-1004438420846",
     "chat_id_dc": "-1004438420846"
-  },
-  {
-    "id": "A264",
-    "name": "KFM_HCM_Q07 - 1016/41 Chung Cư Sky Garden 3-R1-3",
-    "short": "A264",
-    "chat_id_dm": "",
-    "chat_id_rc": "",
-    "chat_id_dc": "-1004476519775"
   },
   {
     "id": "A265",
@@ -1137,25 +1113,9 @@
     "id": "A271",
     "name": "KFM_HCM_TDU - 145 Linh Đông",
     "short": "A271",
-    "chat_id_dm": "",
-    "chat_id_rc": "",
+    "chat_id_dm": "-1004316755312",
+    "chat_id_rc": "-1004316755312",
     "chat_id_dc": "-1004316755312"
-  },
-  {
-    "id": "A277",
-    "name": "KFM_HCM_Q07 - S1.A1 Sunshine Sky City Phú Thuận",
-    "short": "A277",
-    "chat_id_dm": "",
-    "chat_id_rc": "",
-    "chat_id_dc": "-1004438892013"
-  },
-  {
-    "id": "A279",
-    "name": "KFM_HCM_Q12 - 138 Dương Thị Giang",
-    "short": "A279",
-    "chat_id_dm": "-1004441835983",
-    "chat_id_rc": "-1004441835983",
-    "chat_id_dc": "-1004441835983"
   },
   {
     "id": "ACU",
@@ -1891,7 +1851,7 @@
     "short": "VGP",
     "chat_id_dm": "-991292712",
     "chat_id_rc": "-948922477",
-    "chat_id_dc": "-937608678"
+    "chat_id_dc": ""
   },
   {
     "id": "VH2",
@@ -1980,37 +1940,5 @@
     "chat_id_dm": "-1002881624302",
     "chat_id_rc": "-5588180836",
     "chat_id_dc": "-4870472668"
-  },
-  {
-    "id": "A270",
-    "name": "KFM_HCM_BTH - 184 Nguyễn Xí",
-    "short": "A270",
-    "chat_id_dm": "",
-    "chat_id_rc": "",
-    "chat_id_dc": "-1004408149925"
-  },
-  {
-    "id": "A278",
-    "name": "KFM_BDU_TDM - BSH01 C-Sky View",
-    "short": "A278",
-    "chat_id_dm": "",
-    "chat_id_rc": "",
-    "chat_id_dc": "-1003971888276"
-  },
-  {
-    "id": "A206",
-    "name": "KFM_HCM_NBE - B.1.1 Phú Hoàng Anh",
-    "short": "A206",
-    "chat_id_dm": "",
-    "chat_id_rc": "",
-    "chat_id_dc": "-1003939271297"
-  },
-  {
-    "id": "A228",
-    "name": "KFM_HCM_TDU - B7-C.TMDV.02 Masterise Lumiere Boulevard",
-    "short": "A228",
-    "chat_id_dm": "",
-    "chat_id_rc": "",
-    "chat_id_dc": "-1004408424255"
   }
 ]
