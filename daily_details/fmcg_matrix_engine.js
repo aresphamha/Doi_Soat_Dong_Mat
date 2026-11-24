@@ -261,10 +261,11 @@
             <table style="width:100%; border-collapse:collapse; font-size:0.81rem; text-align:right;">
                 <thead>
                     <tr style="background:#0f172a; position:sticky; top:0; z-index:22; border-bottom:2px solid rgba(56,189,248,0.3);">
-                        <th style="position:sticky; left:0; z-index:26; background:#0f172a; min-width:52px; max-width:52px; text-align:center; padding:0.72rem 0.4rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08);">ĐC</th>
-                        <th style="position:sticky; left:52px; z-index:26; background:#0f172a; min-width:225px; max-width:250px; text-align:left; padding:0.72rem 0.75rem; color:#38bdf8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08);">TIÊU CHÍ (FLOW FMCG)</th>
-                        <th style="position:sticky; left:277px; z-index:26; background:#0f172a; min-width:98px; max-width:98px; text-align:center; padding:0.72rem 0.45rem; color:#94a3b8; font-weight:700; border-right:1px solid rgba(255,255,255,0.12);">ĐƠN VỊ</th>
-                        <th style="position:sticky; left:375px; z-index:25; background:#172554; min-width:128px; text-align:right; padding:0.72rem 0.65rem; color:#fbbf24; font-weight:800; border-right:2px solid rgba(251,191,36,0.35); box-shadow:2px 0 6px rgba(0,0,0,0.45);">
+                        <th style="position:sticky; left:0; z-index:26; background:#0f172a; min-width:44px; max-width:44px; text-align:center; padding:0.72rem 0.3rem; color:#64748b; font-weight:800; border-right:1px solid rgba(255,255,255,0.08);">STT</th>
+                        <th style="position:sticky; left:44px; z-index:26; background:#0f172a; min-width:52px; max-width:52px; text-align:center; padding:0.72rem 0.4rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08);">ĐC</th>
+                        <th style="position:sticky; left:96px; z-index:26; background:#0f172a; min-width:225px; max-width:250px; text-align:left; padding:0.72rem 0.75rem; color:#38bdf8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08);">TIÊU CHÍ (FLOW FMCG)</th>
+                        <th style="position:sticky; left:321px; z-index:26; background:#0f172a; min-width:98px; max-width:98px; text-align:center; padding:0.72rem 0.45rem; color:#94a3b8; font-weight:700; border-right:1px solid rgba(255,255,255,0.12);">ĐƠN VỊ</th>
+                        <th style="position:sticky; left:419px; z-index:25; background:#172554; min-width:128px; text-align:right; padding:0.72rem 0.65rem; color:#fbbf24; font-weight:800; border-right:2px solid rgba(251,191,36,0.35); box-shadow:2px 0 6px rgba(0,0,0,0.45);">
                             <div style="font-size:0.82rem;">${monthCol.label}</div>
                             <div style="font-size:0.66rem; color:#93c5fd; font-weight:500;">${monthCol.sub}</div>
                         </th>
@@ -287,7 +288,7 @@
 
             html += `
                 <tr style="background:linear-gradient(90deg, ${blk.accent}24, rgba(15,23,42,0.95)); border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.08);">
-                    <td colspan="${otherCols.length + 4}" style="position:sticky; left:0; z-index:15; padding:0.58rem 0.85rem; text-align:left; font-weight:800; color:${blk.accent}; font-size:0.82rem; letter-spacing:0.35px;">
+                    <td colspan="${otherCols.length + 5}" style="position:sticky; left:0; z-index:15; padding:0.58rem 0.85rem; text-align:left; font-weight:800; color:${blk.accent}; font-size:0.82rem; letter-spacing:0.35px;">
                         <i class="${blk.icon}" style="margin-right:0.5rem;"></i> ${blk.title}
                     </td>
                 </tr>
@@ -301,12 +302,13 @@
 
                 html += `
                     <tr style="background:${rowBg}; border-bottom:1px solid rgba(255,255,255,0.04); opacity:${r.is_empty_template ? '0.62' : '1'};">
-                        <td style="position:sticky; left:0; z-index:13; background:${rowBg}; text-align:center; padding:0.52rem 0.35rem; font-weight:700; color:${blk.accent}; font-size:0.74rem; border-right:1px solid rgba(255,255,255,0.06);">${r.diem_chan}</td>
-                        <td style="position:sticky; left:52px; z-index:13; background:${rowBg}; text-align:left; padding:0.52rem 0.7rem; font-weight:600; color:#e2e8f0; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;" title="${escapeHtml(r.nguon + ' — ' + r.cach_tinh)}">${escapeHtml(r.tieu_chi)}</td>
-                        <td style="position:sticky; left:277px; z-index:13; background:${rowBg}; text-align:center; padding:0.52rem 0.4rem; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">
+                        <td style="position:sticky; left:0; z-index:13; background:${rowBg}; text-align:center; padding:0.52rem 0.3rem; font-weight:700; color:#64748b; font-size:0.74rem; font-family:'JetBrains Mono', monospace; border-right:1px solid rgba(255,255,255,0.06);">${totalRowsShown}</td>
+                        <td style="position:sticky; left:44px; z-index:13; background:${rowBg}; text-align:center; padding:0.52rem 0.35rem; font-weight:700; color:${blk.accent}; font-size:0.74rem; border-right:1px solid rgba(255,255,255,0.06);">${r.diem_chan}</td>
+                        <td style="position:sticky; left:96px; z-index:13; background:${rowBg}; text-align:left; padding:0.52rem 0.7rem; font-weight:600; color:#e2e8f0; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;" title="${escapeHtml(r.nguon + ' — ' + r.cach_tinh)}">${escapeHtml(r.tieu_chi)}</td>
+                        <td style="position:sticky; left:321px; z-index:13; background:${rowBg}; text-align:center; padding:0.52rem 0.4rem; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">
                             <span style="font-size:0.68rem; font-weight:700; color:${dvColor}; background:${dvColor}18; padding:2px 6px; border-radius:4px;">${escapeHtml(r.don_vi)}</span>
                         </td>
-                        <td style="position:sticky; left:375px; z-index:12; background:${isEven ? '#172033' : '#131b2b'}; padding:0.52rem 0.65rem; border-right:2px solid rgba(251,191,36,0.25); font-family:'JetBrains Mono', monospace; font-size:0.79rem; font-weight:700; color:#fde68a; white-space:nowrap; box-shadow:2px 0 5px rgba(0,0,0,0.35);">
+                        <td style="position:sticky; left:419px; z-index:12; background:${isEven ? '#172033' : '#131b2b'}; padding:0.52rem 0.65rem; border-right:2px solid rgba(251,191,36,0.25); font-family:'JetBrains Mono', monospace; font-size:0.79rem; font-weight:700; color:#fde68a; white-space:nowrap; box-shadow:2px 0 5px rgba(0,0,0,0.35);">
                             ${r.values[monthCol.key] || '-'}
                         </td>
                 `;
@@ -406,13 +408,14 @@
             <table class="fmcg-matrix-table" style="width:100%; border-collapse:collapse; font-size:0.83rem; text-align:right;">
                 <thead>
                     <tr style="background:#0f172a; position:sticky; top:0; z-index:20; border-bottom:2px solid rgba(56,189,248,0.3);">
-                        <th style="position:sticky; left:0; z-index:26; background:#0f172a; min-width:270px; max-width:310px; text-align:left; padding:0.8rem 0.9rem; color:#38bdf8; font-weight:800; border-right:1px solid rgba(255,255,255,0.12);">
+                        <th style="position:sticky; left:0; z-index:26; background:#0f172a; min-width:44px; max-width:44px; text-align:center; padding:0.8rem 0.3rem; color:#64748b; font-weight:800; border-right:1px solid rgba(255,255,255,0.08);">STT</th>
+                        <th style="position:sticky; left:44px; z-index:26; background:#0f172a; min-width:260px; max-width:300px; text-align:left; padding:0.8rem 0.85rem; color:#38bdf8; font-weight:800; border-right:1px solid rgba(255,255,255,0.12);">
                             <div style="display:flex; align-items:center; justify-content:space-between;">
                                 <span>CHỈ SỐ LOGISTICS FMCG</span>
                                 <span style="font-size:0.68rem; font-weight:600; color:#94a3b8; background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:4px;">Bấm ⓘ xem logic</span>
                             </div>
                         </th>
-                        <th style="position:sticky; left:270px; z-index:25; background:#172554; min-width:130px; text-align:right; padding:0.8rem 0.7rem; color:#fbbf24; font-weight:800; border-right:2px solid rgba(251,191,36,0.35); box-shadow: 2px 0 6px rgba(0,0,0,0.45);">
+                        <th style="position:sticky; left:304px; z-index:25; background:#172554; min-width:130px; text-align:right; padding:0.8rem 0.7rem; color:#fbbf24; font-weight:800; border-right:2px solid rgba(251,191,36,0.35); box-shadow: 2px 0 6px rgba(0,0,0,0.45);">
                             <div style="font-size:0.8rem;">TỔNG / LŨY KẾ</div>
                             <div style="font-size:0.68rem; color:#93c5fd; font-weight:500;">${dates.length} ngày T11</div>
                         </th>
@@ -440,7 +443,7 @@
 
             tableHtml += `
                 <tr style="background:linear-gradient(90deg, ${sec.accent}22, rgba(15,23,42,0.95)); border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.08);">
-                    <td colspan="${dates.length + 2}" style="position:sticky; left:0; z-index:15; padding:0.6rem 0.9rem; text-align:left; font-weight:800; color:${sec.accent}; font-size:0.83rem; letter-spacing:0.4px;">
+                    <td colspan="${dates.length + 3}" style="position:sticky; left:0; z-index:15; padding:0.6rem 0.9rem; text-align:left; font-weight:800; color:${sec.accent}; font-size:0.83rem; letter-spacing:0.4px;">
                         <i class="${sec.icon}" style="margin-right:0.55rem;"></i> ${sec.title}
                     </td>
                 </tr>
@@ -452,13 +455,14 @@
                 const hasLogic = !!rowItem.logic;
                 tableHtml += `
                     <tr class="fmcg-data-row" style="background:${rowBg}; border-bottom:1px solid rgba(255,255,255,0.04);">
-                        <td style="position:sticky; left:0; z-index:13; background:${rowBg}; text-align:left; padding:0.58rem 0.85rem; font-weight:600; color:#cbd5e1; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">
+                        <td style="position:sticky; left:0; z-index:13; background:${rowBg}; text-align:center; padding:0.58rem 0.3rem; font-weight:700; color:#64748b; font-size:0.75rem; font-family:'JetBrains Mono', monospace; border-right:1px solid rgba(255,255,255,0.06);">${rowItem.row_idx}</td>
+                        <td style="position:sticky; left:44px; z-index:13; background:${rowBg}; text-align:left; padding:0.58rem 0.85rem; font-weight:600; color:#cbd5e1; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">
                             <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
-                                <span><span style="color:#64748b; font-size:0.72rem; margin-right:0.35rem;">${rowItem.row_idx}.</span>${formatMetricTitle(rowItem.name)}</span>
+                                <span>${formatMetricTitle(rowItem.name)}</span>
                                 ${hasLogic ? `<button onclick="showFmcgRowLogic(${rowItem.row_idx})" title="Xem logic & công thức lấy dữ liệu dòng này" style="background:rgba(56,189,248,0.12); color:#38bdf8; border:1px solid rgba(56,189,248,0.28); border-radius:50%; width:20px; height:20px; font-size:0.68rem; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">i</button>` : ''}
                             </div>
                         </td>
-                        <td style="position:sticky; left:270px; z-index:12; background:${isEven ? '#172033' : '#131b2b'}; padding:0.58rem 0.7rem; border-right:2px solid rgba(251,191,36,0.25); font-family:'JetBrains Mono', monospace; font-size:0.81rem; font-weight:700; color:#fde68a; white-space:nowrap; box-shadow: 2px 0 5px rgba(0,0,0,0.35);">
+                        <td style="position:sticky; left:304px; z-index:12; background:${isEven ? '#172033' : '#131b2b'}; padding:0.58rem 0.7rem; border-right:2px solid rgba(251,191,36,0.25); font-family:'JetBrains Mono', monospace; font-size:0.81rem; font-weight:700; color:#fde68a; white-space:nowrap; box-shadow: 2px 0 5px rgba(0,0,0,0.35);">
                             ${rowItem.total || '-'}
                         </td>
                 `;
@@ -633,6 +637,7 @@
                     <table style="width:100%; border-collapse:collapse; font-size:0.8rem; text-align:right;">
                         <thead>
                             <tr style="background:#0f172a; color:#38bdf8; border-bottom:2px solid rgba(56,189,248,0.3);">
+                                <th style="padding:0.65rem 0.45rem; text-align:center; color:#64748b;">STT</th>
                                 <th style="padding:0.65rem; text-align:center;">Ngày</th>
                                 <th style="padding:0.65rem;">Phiếu PT</th>
                                 <th style="padding:0.65rem;">SL Chuyển (CDC)</th>
@@ -659,6 +664,7 @@
 
             html += `
                 <tr style="background:${bg}; border-bottom:1px solid rgba(255,255,255,0.04); font-family:'JetBrains Mono', monospace;">
+                    <td style="padding:0.55rem 0.45rem; text-align:center; color:#64748b; font-weight:700;">${idx + 1}</td>
                     <td style="padding:0.55rem 0.65rem; text-align:center; font-weight:700; color:#e2e8f0;">${r.date}</td>
                     <td style="padding:0.55rem 0.65rem; color:#94a3b8;">${fmtNum(r.pt_cnt)}</td>
                     <td style="padding:0.55rem 0.65rem; color:#f1f5f9;">${fmtNum(r.sl_chuyen)}</td>
