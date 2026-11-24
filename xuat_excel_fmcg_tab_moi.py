@@ -1250,6 +1250,205 @@ def export_web_js(all_dates, daily_metrics, df_cdc):
         "raw": datetime.strptime(d, "%Y-%m-%d").strftime("%m/%d/%Y"),
     } for d in all_dates]
 
+    # ==================== TEMPLATE MỚI: FLOW ĐIỂM CHẶN (Đ0 -> Đ4 + B. TỒN ÂM) ====================
+    # Tính nhóm tuần ISO (W44, W45, W46, W47, W48...) cho các ngày từ 01/11/2026
+    weeks_order = []
+    week_to_dates = {}
+    for d_iso in all_dates:
+        d_obj = datetime.strptime(d_iso, "%Y-%m-%d").date()
+        wk_num = d_obj.isocalendar()[1]
+        wk_key = f"W{wk_num}"
+        if wk_key not in week_to_dates:
+            weeks_order.append(wk_key)
+            week_to_dates[wk_key] = []
+        week_to_dates[wk_key].append(d_iso)
+
+    # Danh sách cột theo thứ tự: Σ T11, rồi từng tuần (các ngày trong tuần + Σ Wxx)
+    flow_columns = [{"key": "SIGMA_T11", "label": "Σ T11", "sub": "Tháng 11", "type": "month"}]
+    for wk_key in weeks_order:
+        wk_dates = week_to_dates[wk_key]
+        for d_iso in wk_dates:
+            d_obj = datetime.strptime(d_iso, "%Y-%m-%d").date()
+            dow = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"][d_obj.weekday()]
+            flow_columns.append({
+                "key": d_iso, "label": d_obj.strftime("%d/%m"), "sub": f"{dow} • {wk_key}", "type": "day", "week": wk_key
+            })
+        d_first = datetime.strptime(wk_dates[0], "%Y-%m-%d").strftime("%d/%m")
+        d_last = datetime.strptime(wk_dates[-1], "%Y-%m-%d").strftime("%d/%m")
+        flow_columns.append({
+            "key": f"SIGMA_{wk_key}", "label": f"Σ {wk_key}", "sub": f"{d_first}–{d_last}", "type": "week", "week": wk_key
+        })
+
+    # Định nghĩa các dòng của Template Mới theo đúng Google Sheet 'Báo cáo đối soát FMCG'
+    # (block_id, block_title, accent, icon, rows: [(diem_chan, tieu_chi, don_vi, tab8_metric_name_or_None, agg_mode, num_fmt, nguon, cach_tinh)])
+    # agg_mode: 'sum' | 'last' | 'ratio' | 'empty'
+    FLOW_BLOCKS_DEF = [
+        ("D0", "Đ0 · T1→T5 · TỔNG QUAN ĐỐI SOÁT", "#38bdf8", "fa-solid fa-gauge-high", [
+            ("Đ0", "Giá trị chuyển", "Giá trị (VND)", "Giá trị chuyển", "sum", "#,##0", "Công thức", "Link từ Đ1 - Giá trị chuyển"),
+            ("Đ0", "Giá trị chênh lệch", "Giá trị (VND)", "Giá trị chênh lệch", "sum", "#,##0", "Công thức", "Link từ Đ1 - Giá trị chênh lệch"),
+            ("Đ0", "% giá trị chênh lệch", "% giá trị", "% giá trị chênh lệch", "ratio_cl", "0.00%", "Công thức", "Giá trị chênh lệch / Giá trị chuyển"),
+            ("Đ0", "% giá trị trả DC (sau net dư)", "% giá trị", "% giá trị trả DC (SAU NET)", "ratio_dc_net", "0.00%", "Công thức", "MAX(0, % GT trả DC - % GT NET DƯ)"),
+            ("Đ0", "Tổng thất thoát", "Giá trị (VND)", "Tổng giá trị thất thoát", "sum", "#,##0", "Công thức", "Link từ Đ4 - Tổng thất thoát"),
+            ("Đ0", "DC chịu", "Giá trị (VND)", "Tổng giá trị DC chịu", "sum", "#,##0", "Công thức", "Link từ Đ4 - DC chịu"),
+            ("Đ0", "KFM chịu", "Giá trị (VND)", "Tổng giá trị KFM chịu", "sum", "#,##0", "Công thức", "Link từ Đ4 - KFM chịu"),
+            ("Đ0", "Tổng giá trị đã net - off", "Giá trị (VND)", None, "empty", "#,##0", "Mở rộng", "Chưa phát sinh nguồn dữ liệu tự động"),
+            ("Đ0", "Tổng giá trị còn lại sau khi đã net - off", "Giá trị (VND)", None, "empty", "#,##0", "Mở rộng", "Chưa phát sinh nguồn dữ liệu tự động"),
+        ]),
+        ("D1", "Đ1 · T1→T2 · DC CHUYỂN – SIÊU THỊ NHẬN", "#10b981", "fa-solid fa-truck-fast", [
+            ("Đ1", "Chuyển", "SL (ĐVT kho)", "SL chuyển", "sum", "#,##0", "CDC StarRocks", "SUM(SL chuyển FGA10101 -> Siêu thị KFM)"),
+            ("Đ1", "Chuyển", "Giá trị (VND)", "Giá trị chuyển", "sum", "#,##0", "CDC StarRocks", "SUM(SL chuyển * gia_cost Stockcard)"),
+            ("Đ1", "Chuyển", "Số ST (lượt)", "SL ST chuyển", "sum", "#,##0", "CDC StarRocks", "COUNT(DISTINCT to_branch_id) mỗi ngày"),
+            ("Đ1", "Nhận", "SL (ĐVT kho)", "SL nhận", "sum", "#,##0", "CDC StarRocks", "SUM(SL nhận Capped <= SL chuyển + bảng TO)"),
+            ("Đ1", "Nhận", "Giá trị (VND)", "Giá trị nhận", "sum", "#,##0", "CDC StarRocks", "SUM(SL nhận Capped * gia_cost Stockcard)"),
+            ("Đ1", "Nhận", "Số ST (lượt)", "SL ST nhận", "sum", "#,##0", "CDC StarRocks", "COUNT(DISTINCT to_branch_id có nhận > 0)"),
+            ("Đ1", "Chênh lệch", "SL (ĐVT kho)", "SL chênh lệch", "sum", "#,##0", "Seedlog Cột M<0", "SUM(Cột M < 0 trên Seedlog)"),
+            ("Đ1", "Chênh lệch", "Giá trị (VND)", "Giá trị chênh lệch", "sum", "#,##0", "Seedlog + Cost CDC", "SUM(Cột M < 0 * gia_cost CDC)"),
+            ("Đ1", "Chênh lệch", "% giá trị", "% giá trị chênh lệch", "ratio_cl", "0.00%", "Công thức", "Giá trị chênh lệch / Giá trị chuyển"),
+            ("Đ1", "Chênh lệch", "Số ST (lượt)", "SL ST chênh lệch", "sum", "#,##0", "Seedlog Cột D", "COUNT(DISTINCT Store có Cột M < 0)"),
+        ]),
+        ("D2", "Đ2 · T2→T3 · SCM PHÂN LOẠI CHÊNH LỆCH", "#f59e0b", "fa-solid fa-filter", [
+            ("Đ2", "Trả DC", "SL (ĐVT kho)", "SL trả DC", "sum", "#,##0", "Seedlog M/V", "Cột V = 'Trả tồn về DC'"),
+            ("Đ2", "Trả DC", "Giá trị (VND)", "Giá trị trả DC", "sum", "#,##0", "Seedlog + Cost CDC", "SUM(ABS(M) * gia_cost) với V = Trả DC"),
+            ("Đ2", "Trả DC", "% giá trị", "% giá trị trả DC", "ratio_dc", "0.00%", "Công thức", "Giá trị trả DC / Giá trị chuyển"),
+            ("Đ2", "Trả ST", "SL (ĐVT kho)", "SL trả ST", "sum", "#,##0", "Seedlog M/V", "Cột V = 'Trả tồn về ST'"),
+            ("Đ2", "Trả ST", "Giá trị (VND)", "Giá trị trả ST", "sum", "#,##0", "Seedlog + Cost CDC", "SUM(ABS(M) * gia_cost) với V = Trả ST"),
+            ("Đ2", "Trả ST", "% giá trị", "% giá trị trả ST", "ratio_st", "0.00%", "Công thức", "Giá trị trả ST / Giá trị chuyển"),
+            ("Đ2", "Chênh lệch KG", "SL (ĐVT kho)", None, "empty", "#,##0", "Mở rộng", "Hàng khô FMCG không có chênh lệch KG"),
+            ("Đ2", "Chênh lệch KG", "Giá trị (VND)", None, "empty", "#,##0", "Mở rộng", "Hàng khô FMCG không có chênh lệch KG"),
+            ("Đ2", "Chênh lệch KG", "% giá trị", None, "empty", "0.00%", "Mở rộng", "Hàng khô FMCG không có chênh lệch KG"),
+            ("Đ2", "Write-off", "SL (ĐVT kho)", "SL Write - OFF", "sum", "#,##0", "Seedlog M/V", "Cột V = 'lỗi hệ thống'"),
+            ("Đ2", "Write-off", "Giá trị (VND)", "Giá trị Write - OFF", "sum", "#,##0", "Seedlog + Cost CDC", "SUM(ABS(M) * gia_cost) với V = lỗi hệ thống"),
+            ("Đ2", "Write-off", "% giá trị", None, "ratio_wo", "0.00%", "Công thức", "Giá trị Write-off / Giá trị chuyển"),
+            ("Đ2", "SCM chưa check", "SL (ĐVT kho)", "SL SCM chưa check", "sum", "#,##0", "Seedlog M/V", "Cột V = blank"),
+            ("Đ2", "SCM chưa check", "Giá trị (VND)", "Giá trị SCM chưa check", "sum", "#,##0", "Seedlog + Cost CDC", "SUM(ABS(M) * gia_cost) với V = blank"),
+            ("Đ2", "SCM chưa check", "% giá trị", "% giá trị SCM chưa check", "ratio_scm", "0.00%", "Công thức", "Giá trị SCM chưa check / Giá trị chuyển"),
+            ("Đ2", "Dư", "SL (ĐVT kho)", "SL dư", "sum", "#,##0", "CDC StarRocks", "SUM(nhận - chuyển) với nhận > chuyển"),
+            ("Đ2", "Dư", "Giá trị (VND)", "Giá trị dư", "sum", "#,##0", "CDC StarRocks", "SUM(SL dư * gia_cost CDC)"),
+            ("Đ2", "Dư", "% giá trị", "% giá trị NET DƯ", "ratio_du", "0.00%", "Công thức", "Giá trị dư / Giá trị chuyển"),
+            ("Đ2", "Trả DC sau net dư", "% giá trị", "% giá trị trả DC (SAU NET)", "ratio_dc_net", "0.00%", "Công thức", "MAX(0, % Trả DC - % Dư)"),
+            ("Đ2", "ST nhập sai", "Số ST (lượt)", "SL ST nhập sai", "sum", "#,##0", "Seedlog D/Y", "Cột Y: ST thao tác sai / kiểm sai vị trí"),
+            ("Đ2", "ST phát sinh chênh lệch KG", "Số ST (lượt)", None, "empty", "#,##0", "Mở rộng", "Hàng khô FMCG không có"),
+            ("Đ2", "ST được DC giao bổ sung / soạn sai giữa các kiện", "Số ST (lượt)", "SL ST DC giao bổ sung", "sum", "#,##0", "Seedlog D/Y", "Cột Y: DC giao bs"),
+            ("Đ2", "ST bị DC giao thiếu (CL)", "Số ST (lượt)", "SL ST DC giao thiếu", "sum", "#,##0", "Seedlog D/Y", "6 từ khóa lỗi DC giao thiếu trên Cột Y"),
+            ("Đ2", "ST nhận dư", "Số ST (lượt)", "SL ST nhận dư", "sum", "#,##0", "CDC StarRocks", "COUNT(DISTINCT ST nhận dư)"),
+        ]),
+        ("D3", "Đ3 · T3→T4 · DC PHẢN HỒI / XÁC NHẬN", "#8b5cf6", "fa-solid fa-truck-ramp-box", [
+            ("Đ3", "DC xác nhận thiếu", "SL (ĐVT kho)", "SL DC xác nhận thiếu", "sum", "#,##0", "Seedlog M/V/U", "Cột V = Trả DC, Cột U = hoàn thành (theo SL món)"),
+            ("Đ3", "DC xác nhận thiếu", "Giá trị (VND)", "Giá trị DC xác nhận", "sum", "#,##0", "Seedlog + Cost CDC", "SUM(ABS(M) * gia_cost)"),
+            ("Đ3", "DC xác nhận thiếu", "% giá trị", "% Giá trị DC xác nhận", "ratio_dc_xn", "0.00%", "Công thức", "Giá trị DC xác nhận / Giá trị chuyển"),
+            ("Đ3", "Siêu thị nhập sai", "SL (ĐVT kho)", None, "empty", "#,##0", "Mở rộng", "Cập nhật khi tách riêng dòng Đ3"),
+            ("Đ3", "Siêu thị nhập sai", "Giá trị (VND)", None, "empty", "#,##0", "Mở rộng", "Cập nhật khi tách riêng dòng Đ3"),
+            ("Đ3", "Siêu thị nhập sai", "% giá trị", None, "empty", "0.00%", "Mở rộng", "Cập nhật khi tách riêng dòng Đ3"),
+            ("Đ3", "DC đang kiểm tra", "SL (ĐVT kho)", "SL DC đang kiểm tra", "sum", "#,##0", "Seedlog M/V/U", "Cột V = Trả DC, Cột U = chưa tạo phiếu/blank"),
+            ("Đ3", "DC đang kiểm tra", "Giá trị (VND)", "Giá trị DC kiểm tra", "sum", "#,##0", "Seedlog + Cost CDC", "SUM(ABS(M) * gia_cost)"),
+            ("Đ3", "DC đang kiểm tra", "% giá trị", "% Giá trị DC kiểm tra", "ratio_dc_kt", "0.00%", "Công thức", "Giá trị DC kiểm tra / Giá trị chuyển"),
+            ("Đ3", "DC từ chối (trừ bì)", "SL (ĐVT kho)", "SL DC từ chối do trừ bì", "sum", "#,##0", "Mặc định", "Auto = 0"),
+            ("Đ3", "DC từ chối (trừ bì)", "Giá trị (VND)", "Giá trị DC từ chối do trừ bì", "sum", "#,##0", "Mặc định", "Auto = 0"),
+            ("Đ3", "DC từ chối (trừ bì)", "% giá trị", "% Giá trị DC từ chối do trừ bì", "empty", "0.00%", "Mặc định", "Auto = 0%"),
+            ("Đ3", "DC chưa phản hồi (<D+2)", "SL (ĐVT kho)", "SL DC chưa phản hồi (<D+2)", "sum", "#,##0", "Seedlog M/V/U", "Trong hạn SLA <= 2 ngày"),
+            ("Đ3", "DC chưa phản hồi (<D+2)", "Giá trị (VND)", "Giá trị DC chưa phản hồi (<D+2)", "sum", "#,##0", "Seedlog + Cost CDC", "SUM(ABS(M) * gia_cost)"),
+            ("Đ3", "DC chưa phản hồi (<D+2)", "% giá trị", "% Giá trị DC chưa phản hồi (<D+2)", "ratio_le2", "0.00%", "Công thức", "GT <D+2 / Giá trị chuyển"),
+            ("Đ3", "DC chưa phản hồi (>D+2) – trễ timeline", "SL (ĐVT kho)", "SL DC chưa phản hồi (>D+2)", "sum", "#,##0", "Seedlog M/V/U", "Quá hạn SLA > 2 ngày"),
+            ("Đ3", "DC chưa phản hồi (>D+2) – trễ timeline", "Giá trị (VND)", "Giá trị DC chưa phản hồi (>D+2)", "sum", "#,##0", "Seedlog + Cost CDC", "SUM(ABS(M) * gia_cost)"),
+            ("Đ3", "DC chưa phản hồi (>D+2) – trễ timeline", "% giá trị", "% Giá trị DC chưa phản hồi (>D+2)", "ratio_gt2", "0.00%", "Công thức", "GT >D+2 / Giá trị chuyển"),
+        ]),
+        ("D4", "Đ4 · T4→T5 · CHỐT KẾT QUẢ ĐỐI SOÁT & LŨY KẾ", "#06b6d4", "fa-solid fa-coins", [
+            ("Đ4", "Tổng thất thoát", "Giá trị (VND)", "Tổng giá trị thất thoát", "sum", "#,##0", "Công thức", "MAX(0, ABS(GT CL) - GT trả ST)"),
+            ("Đ4", "DC chịu", "Giá trị (VND)", "Tổng giá trị DC chịu", "sum", "#,##0", "Công thức", "Giá trị DC xác nhận"),
+            ("Đ4", "KFM chịu", "Giá trị (VND)", "Tổng giá trị KFM chịu", "sum", "#,##0", "Công thức", "Hao hụt + Write-off"),
+            ("Đ4", "KFM chịu: hao hụt", "Giá trị (VND)", "Giá trị hao hụt", "sum", "#,##0", "Mặc định", "Auto = 0"),
+            ("Đ4", "KFM chịu: write-off <100k", "Giá trị (VND)", "Giá trị Write - OFF", "sum", "#,##0", "Seedlog + Cost CDC", "Giá trị Write-off"),
+            ("Đ4", "Vận tải sai", "Giá trị (VND)", None, "empty", "#,##0", "Mở rộng", "Chưa có dữ liệu"),
+            ("Đ4", "Lỗi hệ thống", "Giá trị (VND)", "Giá trị Write - OFF", "sum", "#,##0", "Seedlog + Cost CDC", "Cột V = 'lỗi hệ thống'"),
+            ("Đ4", "Tổng giá trị chuyển lũy kế", "Giá trị (VND)", "Tổng giá trị chuyển lũy kế", "last", "#,##0", "Lũy kế", "Giá trị ngày cuối kỳ"),
+            ("Đ4", "Tồn kho chênh lệch", "Giá trị (VND)", "Tồn kho chênh lệch", "last", "#,##0", "Lũy kế", "Tồn(D-1) - GT chênh lệch(D)"),
+            ("Đ4", "Tỷ lệ chênh lệch chuyển hàng", "% giá trị", "Tỷ lệ chênh lệch chuyển hàng", "ratio_luy_ke", "0.00%", "Công thức", "Tồn kho CL / Tổng GT chuyển lũy kế"),
+        ]),
+        ("B1", "B. TỒN ÂM · 6 NHÓM LÝ DO (MỞ RỘNG)", "#ec4899", "fa-solid fa-layer-group", [
+            ("B1", "NCC giao dư / bù hao hụt", "Giá trị (VND)", None, "empty", "#,##0", "Chưa có nguồn", "Sẵn sàng tích hợp khi có dữ liệu tồn âm"),
+            ("B1", "ST add dư / hệ thống auto add dư", "Giá trị (VND)", None, "empty", "#,##0", "Chưa có nguồn", "Sẵn sàng tích hợp khi có dữ liệu tồn âm"),
+            ("B1", "Chia sai / giao nhầm ST", "Giá trị (VND)", None, "empty", "#,##0", "Chưa có nguồn", "Sẵn sàng tích hợp khi có dữ liệu tồn âm"),
+            ("B1", "Lệch PO / Nhập Sai Chứng Từ", "Giá trị (VND)", None, "empty", "#,##0", "Chưa có nguồn", "Sẵn sàng tích hợp khi có dữ liệu tồn âm"),
+            ("B1", "Lệch cân mã KG / free-weight", "Giá trị (VND)", None, "empty", "#,##0", "Chưa có nguồn", "Sẵn sàng tích hợp khi có dữ liệu tồn âm"),
+            ("B1", "Khác", "Giá trị (VND)", None, "empty", "#,##0", "Chưa có nguồn", "Sẵn sàng tích hợp khi có dữ liệu tồn âm"),
+            ("B1", "Tổng cộng 6 nhóm lý do", "Giá trị (VND)", None, "empty", "#,##0", "Công thức", "SUM 6 nhóm lý do tồn âm"),
+        ]),
+    ]
+
+    def calc_agg_for_dates(d_list, tab8_key, agg_mode):
+        if agg_mode == "empty":
+            return None
+        gt_tr = sum(daily_metrics[d]["Giá trị chuyển"] for d in d_list)
+        if agg_mode == "sum":
+            return sum(daily_metrics[d][tab8_key] for d in d_list)
+        if agg_mode == "last":
+            return daily_metrics[d_list[-1]][tab8_key]
+        if agg_mode == "ratio_cl":
+            return sum(daily_metrics[d]["Giá trị chênh lệch"] for d in d_list) / gt_tr if gt_tr else 0.0
+        if agg_mode == "ratio_dc":
+            return sum(daily_metrics[d]["Giá trị trả DC"] for d in d_list) / gt_tr if gt_tr else 0.0
+        if agg_mode == "ratio_st":
+            return sum(daily_metrics[d]["Giá trị trả ST"] for d in d_list) / gt_tr if gt_tr else 0.0
+        if agg_mode == "ratio_wo":
+            return sum(daily_metrics[d]["Giá trị Write - OFF"] for d in d_list) / gt_tr if gt_tr else 0.0
+        if agg_mode == "ratio_scm":
+            return sum(daily_metrics[d]["Giá trị SCM chưa check"] for d in d_list) / gt_tr if gt_tr else 0.0
+        if agg_mode == "ratio_du":
+            return sum(daily_metrics[d]["Giá trị dư"] for d in d_list) / gt_tr if gt_tr else 0.0
+        if agg_mode == "ratio_dc_net":
+            p_dc = sum(daily_metrics[d]["Giá trị trả DC"] for d in d_list) / gt_tr if gt_tr else 0.0
+            p_du = sum(daily_metrics[d]["Giá trị dư"] for d in d_list) / gt_tr if gt_tr else 0.0
+            return max(0.0, p_dc - p_du)
+        if agg_mode == "ratio_dc_xn":
+            return sum(daily_metrics[d]["Giá trị DC xác nhận"] for d in d_list) / gt_tr if gt_tr else 0.0
+        if agg_mode == "ratio_dc_kt":
+            return sum(daily_metrics[d]["Giá trị DC kiểm tra"] for d in d_list) / gt_tr if gt_tr else 0.0
+        if agg_mode == "ratio_le2":
+            return sum(daily_metrics[d]["Giá trị DC chưa phản hồi (<D+2)"] for d in d_list) / gt_tr if gt_tr else 0.0
+        if agg_mode == "ratio_gt2":
+            return sum(daily_metrics[d]["Giá trị DC chưa phản hồi (>D+2)"] for d in d_list) / gt_tr if gt_tr else 0.0
+        if agg_mode == "ratio_luy_ke":
+            last_d = d_list[-1]
+            lk_tr = daily_metrics[last_d]["Tổng giá trị chuyển lũy kế"]
+            lk_ton = daily_metrics[last_d]["Tồn kho chênh lệch"]
+            return lk_ton / lk_tr if lk_tr else 0.0
+        return None
+
+    flow_blocks_payload = []
+    for b_id, b_title, b_accent, b_icon, b_rows in FLOW_BLOCKS_DEF:
+        out_rows = []
+        for dc, tc, dv, t8_key, agg_mode, num_fmt, nguon, cach_tinh in b_rows:
+            vals = {}
+            # Σ T11
+            v_t11 = calc_agg_for_dates(all_dates, t8_key, agg_mode)
+            vals["SIGMA_T11"] = fmt_val(v_t11, num_fmt) if v_t11 is not None else "-"
+            # Từng ngày
+            for d_iso in all_dates:
+                if agg_mode == "empty":
+                    vals[d_iso] = "-"
+                elif agg_mode == "ratio_wo":
+                    gt_tr_d = daily_metrics[d_iso]["Giá trị chuyển"]
+                    vals[d_iso] = fmt_val(daily_metrics[d_iso]["Giá trị Write - OFF"] / gt_tr_d if gt_tr_d else 0.0, num_fmt)
+                else:
+                    vals[d_iso] = fmt_val(daily_metrics[d_iso][t8_key], num_fmt)
+            # Từng tuần Σ Wxx
+            for wk_key in weeks_order:
+                v_wk = calc_agg_for_dates(week_to_dates[wk_key], t8_key, agg_mode)
+                vals[f"SIGMA_{wk_key}"] = fmt_val(v_wk, num_fmt) if v_wk is not None else "-"
+
+            out_rows.append({
+                "diem_chan": dc,
+                "tieu_chi": tc,
+                "don_vi": dv,
+                "nguon": nguon,
+                "cach_tinh": cach_tinh,
+                "is_empty_template": (agg_mode == "empty"),
+                "values": vals,
+            })
+        flow_blocks_payload.append({
+            "id": b_id, "title": b_title, "accent": b_accent, "icon": b_icon, "rows": out_rows
+        })
+
     payload = {
         "updated_at": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
         "filter_scope": "Từ 01/11/2026 trở về sau • CDC StarRocks (FGA10101 -> Siêu thị KFM + Bảng TO) + Seedlog + Cost Stockcard",
@@ -1258,6 +1457,10 @@ def export_web_js(all_dates, daily_metrics, df_cdc):
         "sections": list(sections_dict.values()),
         "col_logic": col_logic,
         "reconciliation": reconciliation,
+        "flow_template": {
+            "columns": flow_columns,
+            "blocks": flow_blocks_payload,
+        },
     }
 
     js_text = (

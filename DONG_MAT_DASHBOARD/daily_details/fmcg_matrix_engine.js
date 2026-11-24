@@ -10,7 +10,9 @@
     let sortDescending = true;
     let filterSection = 'all';
     let searchQuery = '';
-    let activeSubView = 'matrix'; // 'matrix' | 'logic' | 'reconcile'
+    let activeSubView = 'matrix'; // 'matrix' | 'flow' | 'logic' | 'reconcile'
+    let flowBlockFilter = 'all';  // 'all' | 'D0' | 'D1' | 'D2' | 'D3' | 'D4' | 'B1'
+    let flowSummaryOnly = false;  // false = Ngày + Σ Tuần + Σ T11, true = Chỉ Σ T11 + Σ Tuần
 
     window.renderFmcgMatrix = function () {
         if (!currentData && window.FMCG_MATRIX_DATA) {
@@ -48,24 +50,172 @@
 
         const secBar = document.getElementById('fmcg-filter-bar');
         if (secBar) {
-            secBar.style.display = (viewName === 'reconcile') ? 'none' : 'flex';
+            secBar.style.display = (viewName === 'reconcile' || viewName === 'flow') ? 'none' : 'flex';
         }
         const tblWrap = document.getElementById('fmcg-table-container');
         if (tblWrap) {
-            tblWrap.style.maxHeight = (viewName === 'matrix') ? '74vh' : 'none';
+            tblWrap.style.maxHeight = (viewName === 'matrix' || viewName === 'flow') ? '74vh' : 'none';
             tblWrap.style.overflowX = (viewName === 'logic') ? 'visible' : 'auto';
         }
         renderActiveSubView();
     };
 
     function renderActiveSubView() {
-        if (activeSubView === 'logic') {
+        if (activeSubView === 'flow') {
+            renderFlowTemplateView();
+        } else if (activeSubView === 'logic') {
             renderLogicView();
         } else if (activeSubView === 'reconcile') {
             renderReconcileView();
         } else {
             renderMatrixTable();
         }
+    }
+
+    window.setFmcgFlowBlock = function (blkId) {
+        flowBlockFilter = blkId;
+        renderFlowTemplateView();
+    };
+
+    window.toggleFmcgFlowSummaryOnly = function () {
+        flowSummaryOnly = !flowSummaryOnly;
+        renderFlowTemplateView();
+    };
+
+    // ==================== VIEW NEW: TEMPLATE FLOW ĐIỂM CHẶN (Đ0 -> Đ4 + B. TỒN ÂM) ====================
+    function renderFlowTemplateView() {
+        const container = document.getElementById('fmcg-table-container');
+        if (!container) return;
+
+        const ft = currentData.flow_template;
+        if (!ft || !ft.blocks || !ft.columns) {
+            container.innerHTML = `<div style="padding:2.5rem; text-align:center; color:#94a3b8;">Chưa có dữ liệu Template Flow Điểm Chặn. Hãy bấm <strong>Cập Nhật Realtime (CDC &amp; Seedlog)</strong> để nạp mới nhất!</div>`;
+            return;
+        }
+
+        // Lọc cột: Σ T11 luôn đứng đầu cố định; các cột còn lại lọc theo flowSummaryOnly và sortDescending
+        const monthCol = ft.columns.find(c => c.type === 'month') || ft.columns[0];
+        let otherCols = ft.columns.filter(c => c.type !== 'month');
+        if (flowSummaryOnly) {
+            otherCols = otherCols.filter(c => c.type === 'week');
+        }
+        if (sortDescending) {
+            // Đảo thứ tự tuần (W48 -> W44) nhưng giữ Σ Wxx đứng ngay đầu mỗi tuần cho dễ đọc
+            const weeks = [];
+            const byWeek = {};
+            otherCols.forEach(c => {
+                const wk = c.week || 'OTHER';
+                if (!byWeek[wk]) { weeks.push(wk); byWeek[wk] = []; }
+                byWeek[wk].push(c);
+            });
+            weeks.reverse();
+            otherCols = [];
+            weeks.forEach(wk => {
+                const colsInWk = byWeek[wk];
+                const wkSum = colsInWk.filter(c => c.type === 'week');
+                const wkDays = colsInWk.filter(c => c.type === 'day').reverse();
+                otherCols.push(...wkSum, ...wkDays);
+            });
+        }
+
+        const blockPills = [
+            { id: 'all', label: 'Tất cả (Đ0–Đ4 + B)' },
+            { id: 'D0', label: 'Đ0 · Tổng quan' },
+            { id: 'D1', label: 'Đ1 · Chuyển–Nhận' },
+            { id: 'D2', label: 'Đ2 · SCM Phân loại' },
+            { id: 'D3', label: 'Đ3 · DC Phản hồi' },
+            { id: 'D4', label: 'Đ4 · Chốt KQ' },
+            { id: 'B1', label: 'B. Tồn âm' },
+        ];
+
+        let html = `
+            <div style="padding:0.85rem 1rem; background:#0f172a; border-bottom:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.65rem; position:sticky; left:0; z-index:28;">
+                <div style="display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap;">
+                    <span style="font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-right:0.25rem;">Điểm chặn:</span>
+                    ${blockPills.map(p => {
+                        const act = flowBlockFilter === p.id;
+                        return `<button onclick="setFmcgFlowBlock('${p.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.08)'}; border-radius:6px; padding:0.28rem 0.62rem; font-size:0.75rem; font-weight:600; cursor:pointer;">${p.label}</button>`;
+                    }).join('')}
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <button onclick="toggleFmcgFlowSummaryOnly()" style="background:${flowSummaryOnly ? 'rgba(245,158,11,0.2)' : '#1e293b'}; color:${flowSummaryOnly ? '#fbbf24' : '#cbd5e1'}; border:1px solid ${flowSummaryOnly ? '#f59e0b' : 'rgba(255,255,255,0.12)'}; border-radius:6px; padding:0.32rem 0.72rem; font-size:0.76rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.35rem;">
+                        <i class="fa-solid ${flowSummaryOnly ? 'fa-calendar-days' : 'fa-compress'}"></i>
+                        ${flowSummaryOnly ? 'Đang xem: Chỉ Σ T11 & Σ Tuần' : 'Thu gọn: Chỉ xem Σ T11 & Σ Tuần'}
+                    </button>
+                </div>
+            </div>
+
+            <table style="width:100%; border-collapse:collapse; font-size:0.81rem; text-align:right;">
+                <thead>
+                    <tr style="background:#0f172a; position:sticky; top:0; z-index:22; border-bottom:2px solid rgba(56,189,248,0.3);">
+                        <th style="position:sticky; left:0; z-index:26; background:#0f172a; min-width:52px; max-width:52px; text-align:center; padding:0.72rem 0.4rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08);">ĐC</th>
+                        <th style="position:sticky; left:52px; z-index:26; background:#0f172a; min-width:225px; max-width:250px; text-align:left; padding:0.72rem 0.75rem; color:#38bdf8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08);">TIÊU CHÍ (FLOW FMCG)</th>
+                        <th style="position:sticky; left:277px; z-index:26; background:#0f172a; min-width:98px; max-width:98px; text-align:center; padding:0.72rem 0.45rem; color:#94a3b8; font-weight:700; border-right:1px solid rgba(255,255,255,0.12);">ĐƠN VỊ</th>
+                        <th style="position:sticky; left:375px; z-index:25; background:#172554; min-width:128px; text-align:right; padding:0.72rem 0.65rem; color:#fbbf24; font-weight:800; border-right:2px solid rgba(251,191,36,0.35); box-shadow:2px 0 6px rgba(0,0,0,0.45);">
+                            <div style="font-size:0.82rem;">${monthCol.label}</div>
+                            <div style="font-size:0.66rem; color:#93c5fd; font-weight:500;">${monthCol.sub}</div>
+                        </th>
+        `;
+
+        otherCols.forEach(c => {
+            const isWk = c.type === 'week';
+            html += `
+                <th style="min-width:${isWk ? '118px' : '102px'}; padding:0.65rem 0.55rem; text-align:right; color:${isWk ? '#38bdf8' : '#e2e8f0'}; font-weight:${isWk ? '800' : '600'}; background:${isWk ? '#0c2444' : '#0f172a'}; border-right:${isWk ? '2px solid rgba(56,189,248,0.3)' : '1px solid rgba(255,255,255,0.05)'};">
+                    <div style="font-size:0.8rem; font-family:'JetBrains Mono', monospace;">${c.label}</div>
+                    <div style="font-size:0.66rem; color:${isWk ? '#7dd3fc' : '#64748b'}; font-weight:500;">${c.sub}</div>
+                </th>
+            `;
+        });
+        html += `</tr></thead><tbody>`;
+
+        let totalRowsShown = 0;
+        ft.blocks.forEach(blk => {
+            if (flowBlockFilter !== 'all' && blk.id !== flowBlockFilter) return;
+
+            html += `
+                <tr style="background:linear-gradient(90deg, ${blk.accent}24, rgba(15,23,42,0.95)); border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.08);">
+                    <td colspan="${otherCols.length + 4}" style="position:sticky; left:0; z-index:15; padding:0.58rem 0.85rem; text-align:left; font-weight:800; color:${blk.accent}; font-size:0.82rem; letter-spacing:0.35px;">
+                        <i class="${blk.icon}" style="margin-right:0.5rem;"></i> ${blk.title}
+                    </td>
+                </tr>
+            `;
+
+            blk.rows.forEach((r, idx) => {
+                totalRowsShown++;
+                const isEven = idx % 2 === 0;
+                const rowBg = r.is_empty_template ? '#0d1117' : (isEven ? '#161b22' : '#11161d');
+                const dvColor = r.don_vi.includes('%') ? '#ec4899' : (r.don_vi.includes('VND') ? '#fbbf24' : (r.don_vi.includes('ST') ? '#34d399' : '#38bdf8'));
+
+                html += `
+                    <tr style="background:${rowBg}; border-bottom:1px solid rgba(255,255,255,0.04); opacity:${r.is_empty_template ? '0.62' : '1'};">
+                        <td style="position:sticky; left:0; z-index:13; background:${rowBg}; text-align:center; padding:0.52rem 0.35rem; font-weight:700; color:${blk.accent}; font-size:0.74rem; border-right:1px solid rgba(255,255,255,0.06);">${r.diem_chan}</td>
+                        <td style="position:sticky; left:52px; z-index:13; background:${rowBg}; text-align:left; padding:0.52rem 0.7rem; font-weight:600; color:#e2e8f0; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;" title="${escapeHtml(r.nguon + ' — ' + r.cach_tinh)}">${escapeHtml(r.tieu_chi)}</td>
+                        <td style="position:sticky; left:277px; z-index:13; background:${rowBg}; text-align:center; padding:0.52rem 0.4rem; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">
+                            <span style="font-size:0.68rem; font-weight:700; color:${dvColor}; background:${dvColor}18; padding:2px 6px; border-radius:4px;">${escapeHtml(r.don_vi)}</span>
+                        </td>
+                        <td style="position:sticky; left:375px; z-index:12; background:${isEven ? '#172033' : '#131b2b'}; padding:0.52rem 0.65rem; border-right:2px solid rgba(251,191,36,0.25); font-family:'JetBrains Mono', monospace; font-size:0.79rem; font-weight:700; color:#fde68a; white-space:nowrap; box-shadow:2px 0 5px rgba(0,0,0,0.35);">
+                            ${r.values[monthCol.key] || '-'}
+                        </td>
+                `;
+
+                otherCols.forEach(c => {
+                    const val = r.values[c.key] || '-';
+                    const isWk = c.type === 'week';
+                    const wkBg = isWk ? (isEven ? '#0e223d' : '#0a1b33') : '';
+                    html += `
+                        <td style="padding:0.52rem 0.55rem; ${wkBg ? 'background:' + wkBg + ';' : ''} border-right:${isWk ? '2px solid rgba(56,189,248,0.22)' : '1px solid rgba(255,255,255,0.04)'}; font-family:'JetBrains Mono', monospace; font-size:0.78rem; white-space:nowrap; font-weight:${isWk ? '700' : '400'};">
+                            ${formatCellValue(val, r.tieu_chi)}
+                        </td>
+                    `;
+                });
+
+                html += `</tr>`;
+            });
+        });
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+        updateStatusText(`Template <strong>Flow Điểm Chặn (Đ0–Đ4 + B. Tồn âm)</strong> • <strong>${totalRowsShown}</strong> dòng • Tự động gộp <strong>Σ T11 &amp; Σ Tuần</strong> từ CDC StarRocks + Seedlog • Cập nhật: <strong>${currentData.updated_at || ''}</strong>`);
     }
 
     function fmtVndClean(strVal) {
@@ -540,6 +690,19 @@
                     ws3Data.push([r.date, r.pt_cnt, r.sl_chuyen, r.sl_nhan, r.cdc_blank0, r.cdc_blank_m1, r.seedlog, r.diff_0, r.diff_m1, r.sl_du, r.status_txt]);
                 });
                 XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws3Data), 'DOI_CHIEU_CDC_SEEDLOG');
+            }
+
+            // Sheet 4: Flow Điểm Chặn (Đ0-Đ4 + B. Tồn âm)
+            if (currentData.flow_template && currentData.flow_template.blocks) {
+                const cols = currentData.flow_template.columns;
+                const ws4Data = [['Điểm Chặn', 'Tiêu Chí', 'Đơn Vị', 'Nguồn', ...cols.map(c => c.label)]];
+                currentData.flow_template.blocks.forEach(blk => {
+                    ws4Data.push([blk.id, blk.title, '', '', ...cols.map(() => '')]);
+                    blk.rows.forEach(r => {
+                        ws4Data.push([r.diem_chan, r.tieu_chi, r.don_vi, r.nguon, ...cols.map(c => r.values[c.key] || '-')]);
+                    });
+                });
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws4Data), 'FLOW_DIEM_CHAN_D0_D4');
             }
 
             const filename = `Bao_Cao_FMCG_Va_Logic_${new Date().toISOString().slice(0, 10)}.xlsx`;

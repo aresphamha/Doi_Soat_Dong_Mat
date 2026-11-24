@@ -2935,8 +2935,8 @@
     <!-- Dữ liệu BUNDLES siêu nhẹ cho Tab 1 & 2 (~300 KB) -->
     <script src="daily_details/data_bundles.js"></script>
     <script src="daily_details/pending_tickets.js"></script>
-    <script src="daily_details/fmcg_matrix.js?v=20261124_5"></script>
-    <script src="daily_details/fmcg_matrix_engine.js?v=20261124_5"></script>
+    <script src="daily_details/fmcg_matrix.js?v=20261124_6"></script>
+    <script src="daily_details/fmcg_matrix_engine.js?v=20261124_6"></script>
 </head>
 <body>
 
@@ -6328,12 +6328,16 @@
                                 <i class="fa-solid fa-table"></i> 1. Ma Trận (53 Chỉ Số)
                             </button>
 
+                            <button class="fmcg-subview-btn" data-view="flow" onclick="switchFmcgSubView('flow')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.46rem 0.95rem; font-size:0.81rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.45rem;">
+                                <i class="fa-solid fa-diagram-project"></i> 2. Flow Điểm Chặn (Đ0–Đ4)
+                            </button>
+
                             <button class="fmcg-subview-btn" data-view="logic" onclick="switchFmcgSubView('logic')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.46rem 0.95rem; font-size:0.81rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.45rem;">
-                                <i class="fa-solid fa-book-open"></i> 2. Logic Chi Tiết (Hàng &amp; Cột)
+                                <i class="fa-solid fa-book-open"></i> 3. Logic Chi Tiết (Hàng &amp; Cột)
                             </button>
 
                             <button class="fmcg-subview-btn" data-view="reconcile" onclick="switchFmcgSubView('reconcile')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.46rem 0.95rem; font-size:0.81rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.45rem;">
-                                <i class="fa-solid fa-circle-check"></i> 3. Đối Chiếu CDC vs Seedlog
+                                <i class="fa-solid fa-circle-check"></i> 4. Đối Chiếu CDC vs Seedlog
                             </button>
                         </div>
                     </div>
