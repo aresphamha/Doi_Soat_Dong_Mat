@@ -825,7 +825,7 @@
                     candidateUrls.push(j.tunnel_url);
                 }
             }
-        } catch (e) {}
+        } catch (e) { }
         candidateUrls.push('http://127.0.0.1:8088');
         candidateUrls.push('http://localhost:8088');
 
