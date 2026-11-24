@@ -2935,8 +2935,8 @@
     <!-- Dữ liệu BUNDLES siêu nhẹ cho Tab 1 & 2 (~300 KB) -->
     <script src="daily_details/data_bundles.js"></script>
     <script src="daily_details/pending_tickets.js"></script>
-    <script src="daily_details/fmcg_matrix.js?v=20261124_4"></script>
-    <script src="daily_details/fmcg_matrix_engine.js?v=20261124_4"></script>
+    <script src="daily_details/fmcg_matrix.js?v=20261124_5"></script>
+    <script src="daily_details/fmcg_matrix_engine.js?v=20261124_5"></script>
 </head>
 <body>
 
@@ -6284,61 +6284,63 @@
             <!-- ========================================================================= -->
             <div class="big-tab-panel" id="big-panel-8">
                 <!-- HERO HEADER -->
-                <div class="tele-hero-card" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.15rem 1.4rem; margin-bottom:1.1rem; display:flex; flex-direction:column; gap:0.9rem;">
-                    <!-- Row 1: Title + Utility Actions -->
-                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.85rem;">
-                        <div style="display:flex; align-items:center; gap:0.9rem;">
-                            <div style="width:44px; height:44px; border-radius:10px; background:rgba(6,182,212,0.15); color:#06b6d4; display:flex; align-items:center; justify-content:center; font-size:1.35rem; border:1px solid rgba(6,182,212,0.3); flex-shrink:0;">
+                <div class="tele-hero-card" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1rem 1.25rem; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.8rem;">
+                    <!-- Row 1: Title (left) + 3 Action Buttons (right, cùng 1 hàng) -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+                        <div style="display:flex; align-items:center; gap:0.8rem; min-width:0;">
+                            <div style="width:42px; height:42px; border-radius:10px; background:rgba(6,182,212,0.15); color:#06b6d4; display:flex; align-items:center; justify-content:center; font-size:1.3rem; border:1px solid rgba(6,182,212,0.3); flex-shrink:0;">
                                 <i class="fa-solid fa-boxes-stacked"></i>
                             </div>
-                            <div>
-                                <h2 style="font-size:1.22rem; font-weight:800; color:#f1f5f9; margin:0 0 0.2rem 0; display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+                            <div style="min-width:0;">
+                                <h2 style="font-size:1.18rem; font-weight:800; color:#f1f5f9; margin:0 0 0.18rem 0; display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap;">
                                     BÁO CÁO LOGISTICS FMCG
-                                    <span style="font-size:0.7rem; font-weight:700; color:#06b6d4; background:rgba(6,182,212,0.15); border:1px solid rgba(6,182,212,0.3); padding:2px 8px; border-radius:12px; letter-spacing:0.5px;">CDC STARROCKS + SEEDLOG • T11/2026 TRỞ ĐI</span>
+                                    <span style="font-size:0.68rem; font-weight:700; color:#06b6d4; background:rgba(6,182,212,0.15); border:1px solid rgba(6,182,212,0.3); padding:2px 8px; border-radius:12px; letter-spacing:0.4px;">CDC STARROCKS + SEEDLOG • T11/2026 TRỞ ĐI</span>
                                 </h2>
-                                <p style="font-size:0.8rem; color:#94a3b8; margin:0;" id="fmcg-status-text">
+                                <p style="font-size:0.78rem; color:#94a3b8; margin:0;" id="fmcg-status-text">
                                     Ma trận 53 chỉ số luân chuyển kho khô FGA10101 (chỉ Siêu thị KFM + bảng TO) • Giá vốn Stockcard CDC
                                 </p>
                             </div>
                         </div>
 
-                        <div style="display:flex; gap:0.45rem; flex-wrap:wrap; align-items:center;">
-                            <button id="btn-fmcg-realtime" onclick="syncFmcgRealtime()" style="background:linear-gradient(135deg, #0284c7, #2563eb); color:#fff; border:1px solid #38bdf8; border-radius:8px; padding:0.44rem 0.9rem; font-size:0.79rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.4rem; box-shadow:0 0 12px rgba(56,189,248,0.35);">
+                        <div style="display:flex; gap:0.45rem; flex-wrap:wrap; align-items:center; flex-shrink:0;">
+                            <button id="btn-fmcg-realtime" onclick="syncFmcgRealtime()" style="background:linear-gradient(135deg, #0284c7, #2563eb); color:#fff; border:1px solid #38bdf8; border-radius:8px; padding:0.42rem 0.8rem; font-size:0.78rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.38rem; box-shadow:0 0 12px rgba(56,189,248,0.35); white-space:nowrap;">
                                 <i class="fa-solid fa-bolt-lightning"></i> Cập Nhật Realtime (CDC &amp; Seedlog)
                             </button>
 
-                            <button id="btn-fmcg-sort" onclick="toggleFmcgSort()" style="background:#1e293b; color:#cbd5e1; border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:0.42rem 0.8rem; font-size:0.78rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
-                                <i class="fa-solid fa-arrow-down-wide-short"></i> Ngày Mới Nhất Trước
-                            </button>
-
-                            <button onclick="exportFmcgExcel()" style="background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); border-radius:8px; padding:0.42rem 0.8rem; font-size:0.78rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
+                            <button onclick="exportFmcgExcel()" style="background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); border-radius:8px; padding:0.42rem 0.8rem; font-size:0.78rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.38rem; white-space:nowrap;">
                                 <i class="fa-solid fa-file-excel"></i> Xuất Excel (Kèm Logic)
                             </button>
 
-                            <a href="https://docs.google.com/spreadsheets/d/1IM-3V5PRmnv191JQUx7yPQAMYFVtQRfgCU4ANLGnRBQ/edit?gid=0" target="_blank" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:0.42rem 0.8rem; font-size:0.78rem; font-weight:600; text-decoration:none; display:flex; align-items:center; gap:0.4rem;">
+                            <a href="https://docs.google.com/spreadsheets/d/1IM-3V5PRmnv191JQUx7yPQAMYFVtQRfgCU4ANLGnRBQ/edit?gid=0" target="_blank" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:0.42rem 0.8rem; font-size:0.78rem; font-weight:600; text-decoration:none; display:flex; align-items:center; gap:0.38rem; white-space:nowrap;">
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i> Seedlog Gốc
                             </a>
                         </div>
                     </div>
 
-                    <!-- Row 2: Clean Sub-View Tabs -->
-                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; padding-top:0.75rem; border-top:1px solid rgba(255,255,255,0.07);">
-                        <button class="fmcg-subview-btn" data-view="matrix" onclick="switchFmcgSubView('matrix')" style="background:linear-gradient(135deg, #0284c7, #0ea5e9); color:#fff; border:1px solid #38bdf8; border-radius:8px; padding:0.48rem 1rem; font-size:0.82rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.45rem; box-shadow:0 0 12px rgba(56,189,248,0.3);">
-                            <i class="fa-solid fa-table"></i> 1. Ma Trận (53 Chỉ Số)
+                    <!-- Row 2: Sort Button + 3 Sub-View Tabs -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:0.55rem; flex-wrap:wrap; padding-top:0.7rem; border-top:1px solid rgba(255,255,255,0.07);">
+                        <button id="btn-fmcg-sort" onclick="toggleFmcgSort()" style="background:#1e293b; color:#cbd5e1; border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:0.46rem 0.9rem; font-size:0.8rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
+                            <i class="fa-solid fa-arrow-down-wide-short"></i> Ngày Mới Nhất Trước
                         </button>
 
-                        <button class="fmcg-subview-btn" data-view="logic" onclick="switchFmcgSubView('logic')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.48rem 1rem; font-size:0.82rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.45rem;">
-                            <i class="fa-solid fa-book-open"></i> 2. Logic Chi Tiết (Hàng &amp; Cột)
-                        </button>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+                            <button class="fmcg-subview-btn" data-view="matrix" onclick="switchFmcgSubView('matrix')" style="background:linear-gradient(135deg, #0284c7, #0ea5e9); color:#fff; border:1px solid #38bdf8; border-radius:8px; padding:0.46rem 0.95rem; font-size:0.81rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.45rem; box-shadow:0 0 12px rgba(56,189,248,0.3);">
+                                <i class="fa-solid fa-table"></i> 1. Ma Trận (53 Chỉ Số)
+                            </button>
 
-                        <button class="fmcg-subview-btn" data-view="reconcile" onclick="switchFmcgSubView('reconcile')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.48rem 1rem; font-size:0.82rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.45rem;">
-                            <i class="fa-solid fa-circle-check"></i> 3. Đối Chiếu CDC vs Seedlog
-                        </button>
+                            <button class="fmcg-subview-btn" data-view="logic" onclick="switchFmcgSubView('logic')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.46rem 0.95rem; font-size:0.81rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.45rem;">
+                                <i class="fa-solid fa-book-open"></i> 2. Logic Chi Tiết (Hàng &amp; Cột)
+                            </button>
+
+                            <button class="fmcg-subview-btn" data-view="reconcile" onclick="switchFmcgSubView('reconcile')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.46rem 0.95rem; font-size:0.81rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.45rem;">
+                                <i class="fa-solid fa-circle-check"></i> 3. Đối Chiếu CDC vs Seedlog
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- KPI CARDS (3 cột x 2 hàng rộng rãi, không tràn số) -->
-                <div id="fmcg-kpi-cards" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(290px, 1fr)); gap:0.85rem; margin-bottom:1.15rem;">
+                <!-- KPI CARDS (Đúng 3 thẻ lũy kế trên 1 hàng duy nhất) -->
+                <div id="fmcg-kpi-cards" style="display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:0.85rem; margin-bottom:1rem;">
                     <!-- Dynamic KPI Cards -->
                 </div>
 
