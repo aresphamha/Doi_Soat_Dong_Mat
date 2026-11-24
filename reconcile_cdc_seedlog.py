@@ -99,6 +99,55 @@ def load_seedlog():
     return df
 
 def compute_seedlog_totals(df):
+    # Seedlog CSV has columns: Column 1 (year), Tháng (month), Ngày (day), ... and a diff column (e.g., 'Difference' or contains 'chênh lệch')
+    # Build a proper date string "dd/MM/yyyy" for merging.
+    # Identify year, month, day columns (fallback to positional indexes if names differ).
+    year_col = None
+    month_col = None
+    day_col = None
+    for col in df.columns:
+        name = str(col).lower()
+        if 'column 1' in name or 'year' in name:
+            year_col = col
+        if 'tháng' in name or 'month' in name:
+            month_col = col
+        if 'ngày' in name or 'day' in name:
+            day_col = col
+    # Fallback to first three columns if not found
+    if year_col is None:
+        year_col = df.columns[0]
+    if month_col is None:
+        month_col = df.columns[1] if len(df.columns) > 1 else None
+    if day_col is None:
+        day_col = df.columns[2] if len(df.columns) > 2 else None
+    # Identify diff column (contains 'chênh lệch' or 'difference')
+    diff_col = None
+    for col in df.columns:
+        if isinstance(col, str) and ('chênh lệch' in col.lower() or 'difference' in col.lower()):
+            diff_col = col
+            break
+    if diff_col is None:
+        # try column M (index 11) as fallback
+        diff_col = df.columns[11] if len(df.columns) > 11 else None
+    if diff_col is None:
+        raise ValueError('Cannot locate diff column in Seedlog')
+    # Clean numeric diff
+    df[diff_col] = pd.to_numeric(df[diff_col], errors='coerce').fillna(0)
+    # Build date string
+    def build_date(row):
+        y = str(row[year_col]).strip()
+        m = str(row[month_col]).strip() if month_col is not None else ''
+        d = str(row[day_col]).strip() if day_col is not None else ''
+        # Ensure month and day are two‑digit
+        if m.isdigit():
+            m = m.zfill(2)
+        if d.isdigit():
+            d = d.zfill(2)
+        return f"{d}/{m}/{y}" if d and m else f"{y}"  # fallback to year only
+    df['date'] = df.apply(build_date, axis=1)
+    # Group by constructed date
+    grouped = df.groupby('date').agg(seedlog_diff=pd.NamedAgg(column=diff_col, aggfunc='sum')).reset_index()
+    return grouped
     # Assume there is a date column and a diff column (cột M?)
     # Identify date column (first column) and diff column (column containing 'chênh lệch' or 'M')
     date_col = df.columns[0]
@@ -150,7 +199,35 @@ def main():
         cdc_totals = compute_cdc_totals(cdc_df)
         seedlog_df = load_seedlog()
         seedlog_totals = compute_seedlog_totals(seedlog_df)
-        # Merge for comparison
+            # Filter dates from November 2026 onward
+        def parse_date(s):
+            try:
+                return pd.to_datetime(s, dayfirst=True)
+            except Exception:
+                return pd.NaT
+        cdc_totals['date_dt'] = cdc_totals['date'].apply(parse_date)
+        seedlog_totals['date_dt'] = seedlog_totals['date'].apply(parse_date)
+        mask_cdc = cdc_totals['date_dt'] >= pd.Timestamp('2026-11-01')
+        mask_seed = seedlog_totals['date_dt'] >= pd.Timestamp('2026-11-01')
+        cdc_totals = cdc_totals[mask_cdc].drop(columns=['date_dt'])
+        seedlog_totals = seedlog_totals[mask_seed].drop(columns=['date_dt'])
+
+    def parse_date(s):
+        try:
+            return pd.to_datetime(s, dayfirst=True)
+        except Exception:
+            return pd.NaT
+    cdc_totals['date_dt'] = cdc_totals['date'].apply(parse_date)
+    seedlog_totals['date_dt'] = seedlog_totals['date'].apply(parse_date)
+    # Keep only dates >= 2026-11-01
+    mask_cdc = cdc_totals['date_dt'] >= pd.Timestamp('2026-11-01')
+    mask_seed = seedlog_totals['date_dt'] >= pd.Timestamp('2026-11-01')
+    cdc_totals = cdc_totals[mask_cdc]
+    seedlog_totals = seedlog_totals[mask_seed]
+    # Drop auxiliary column before merge
+    cdc_totals = cdc_totals.drop(columns=['date_dt'])
+    seedlog_totals = seedlog_totals.drop(columns=['date_dt'])
+
         merged = pd.merge(cdc_totals, seedlog_totals, on='date', how='outer', suffixes=('_cdc','_seed'))
         merged = merged.fillna(0)
         merged['match'] = (merged['diff'].round(6) == merged['seedlog_diff'].round(6))
