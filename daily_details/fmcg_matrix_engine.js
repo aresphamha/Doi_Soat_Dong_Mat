@@ -50,6 +50,11 @@
         if (secBar) {
             secBar.style.display = (viewName === 'reconcile') ? 'none' : 'flex';
         }
+        const tblWrap = document.getElementById('fmcg-table-container');
+        if (tblWrap) {
+            tblWrap.style.maxHeight = (viewName === 'matrix') ? '74vh' : 'none';
+            tblWrap.style.overflowX = (viewName === 'logic') ? 'visible' : 'auto';
+        }
         renderActiveSubView();
     };
 
@@ -63,78 +68,82 @@
         }
     }
 
+    function fmtVndClean(strVal) {
+        if (!strVal) return '0';
+        const num = parseFloat(String(strVal).replace(/,/g, ''));
+        if (isNaN(num)) return strVal;
+        return Math.round(num).toLocaleString('en-US');
+    }
+
+    function fmtVndShort(strVal) {
+        if (!strVal) return '';
+        const num = parseFloat(String(strVal).replace(/,/g, ''));
+        if (isNaN(num)) return '';
+        const abs = Math.abs(num);
+        const sign = num < 0 ? '-' : '';
+        if (abs >= 1e9) return `${sign}${(abs / 1e9).toFixed(2)} tỷ`;
+        if (abs >= 1e6) return `${sign}${(abs / 1e6).toFixed(2)} tr`;
+        return `${sign}${Math.round(abs).toLocaleString('en-US')} đ`;
+    }
+
     function renderKPICards() {
         const s = currentData.summary || {};
         const kpiContainer = document.getElementById('fmcg-kpi-cards');
         if (!kpiContainer) return;
 
-        kpiContainer.innerHTML = `
-            <div class="kpi-fmcg-card" style="background:linear-gradient(135deg, rgba(6,182,212,0.12), rgba(15,23,42,0.6)); border:1px solid rgba(6,182,212,0.3); border-radius:12px; padding:1.05rem; display:flex; align-items:center; gap:0.85rem;">
-                <div style="width:46px; height:46px; border-radius:10px; background:rgba(6,182,212,0.18); color:#06b6d4; display:flex; align-items:center; justify-content:center; font-size:1.35rem; flex-shrink:0;">
-                    <i class="fa-solid fa-chart-line"></i>
-                </div>
-                <div>
-                    <div style="font-size:0.72rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.4px;">Tổng Chuyển Lũy Kế</div>
-                    <div style="font-size:1.3rem; font-weight:800; color:#38bdf8; font-family:'JetBrains Mono', monospace; margin:0.12rem 0;">${s.tong_luy_ke || '0'} <span style="font-size:0.74rem; font-weight:600; color:#cbd5e1;">VNĐ</span></div>
-                    <div style="font-size:0.7rem; color:#64748b;">Lũy kế 01/11 → ${s.latest_cdc_date || s.latest_date || ''}</div>
-                </div>
-            </div>
+        const cards = [
+            {
+                icon: 'fa-solid fa-chart-line', color: '#06b6d4', valColor: '#38bdf8',
+                label: 'Tổng Chuyển Lũy Kế',
+                value: fmtVndClean(s.tong_luy_ke), unit: 'VNĐ',
+                sub: `≈ ${fmtVndShort(s.tong_luy_ke)} • Lũy kế 01/11 → ${s.latest_cdc_date || s.latest_date || ''}`
+            },
+            {
+                icon: 'fa-solid fa-scale-unbalanced', color: '#f59e0b', valColor: '#fbbf24',
+                label: 'Tồn Kho Chênh Lệch',
+                value: fmtVndClean(s.ton_kho_chenh_lech), unit: 'VNĐ',
+                sub: `≈ ${fmtVndShort(s.ton_kho_chenh_lech)} • Lũy kế theo gia_cost CDC`
+            },
+            {
+                icon: 'fa-solid fa-percent', color: '#ec4899', valColor: '#f43f5e',
+                label: 'Tỷ Lệ Lệch Chuyển Hàng',
+                value: s.ty_le_chenh_lech || '0.00%', unit: '',
+                sub: 'Tồn kho chênh lệch / Tổng GT lũy kế'
+            },
+            {
+                icon: 'fa-solid fa-truck-fast', color: '#10b981', valColor: '#34d399',
+                label: `SL Chuyển (Ngày ${s.latest_date ? s.latest_date.slice(0, 5) : ''})`,
+                value: fmtVndClean(s.sl_chuyen_ngay), unit: 'món',
+                sub: `Giá trị: ${fmtVndClean(s.gia_tri_chuyen_ngay)} đ`
+            },
+            {
+                icon: 'fa-solid fa-triangle-exclamation', color: '#8b5cf6', valColor: '#a78bfa',
+                label: `SL Chênh Lệch (Ngày ${s.latest_date ? s.latest_date.slice(0, 5) : ''})`,
+                value: fmtVndClean(s.sl_chenh_lech_ngay), unit: 'món',
+                sub: `Tiền lệch: ${fmtVndClean(s.gia_tri_chenh_lech_ngay)} đ`
+            },
+            {
+                icon: 'fa-solid fa-store', color: '#38bdf8', valColor: '#38bdf8',
+                label: `Siêu Thị Có Lệch (${s.latest_date ? s.latest_date.slice(0, 5) : ''})`,
+                value: fmtVndClean(s.sl_st_chenh_lech), unit: 'Siêu thị',
+                sub: `Giá trị trả DC: ${fmtVndClean(s.gia_tri_tra_dc)} đ`
+            }
+        ];
 
-            <div class="kpi-fmcg-card" style="background:linear-gradient(135deg, rgba(245,158,11,0.12), rgba(15,23,42,0.6)); border:1px solid rgba(245,158,11,0.3); border-radius:12px; padding:1.05rem; display:flex; align-items:center; gap:0.85rem;">
-                <div style="width:46px; height:46px; border-radius:10px; background:rgba(245,158,11,0.18); color:#f59e0b; display:flex; align-items:center; justify-content:center; font-size:1.35rem; flex-shrink:0;">
-                    <i class="fa-solid fa-scale-unbalanced"></i>
+        kpiContainer.innerHTML = cards.map(c => `
+            <div class="kpi-fmcg-card" style="background:linear-gradient(135deg, ${c.color}18, rgba(15,23,42,0.75)); border:1px solid ${c.color}44; border-radius:12px; padding:1rem 1.15rem; display:flex; align-items:center; gap:0.9rem; min-width:0; overflow:hidden;">
+                <div style="width:44px; height:44px; border-radius:10px; background:${c.color}24; color:${c.color}; display:flex; align-items:center; justify-content:center; font-size:1.25rem; flex-shrink:0;">
+                    <i class="${c.icon}"></i>
                 </div>
-                <div>
-                    <div style="font-size:0.72rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.4px;">Tồn Kho Chênh Lệch</div>
-                    <div style="font-size:1.3rem; font-weight:800; color:#fbbf24; font-family:'JetBrains Mono', monospace; margin:0.12rem 0;">${s.ton_kho_chenh_lech || '0'} <span style="font-size:0.74rem; font-weight:600; color:#cbd5e1;">VNĐ</span></div>
-                    <div style="font-size:0.7rem; color:#64748b;">Lũy kế theo gia_cost CDC</div>
-                </div>
-            </div>
-
-            <div class="kpi-fmcg-card" style="background:linear-gradient(135deg, rgba(236,72,153,0.12), rgba(15,23,42,0.6)); border:1px solid rgba(236,72,153,0.3); border-radius:12px; padding:1.05rem; display:flex; align-items:center; gap:0.85rem;">
-                <div style="width:46px; height:46px; border-radius:10px; background:rgba(236,72,153,0.18); color:#ec4899; display:flex; align-items:center; justify-content:center; font-size:1.35rem; flex-shrink:0;">
-                    <i class="fa-solid fa-percent"></i>
-                </div>
-                <div>
-                    <div style="font-size:0.72rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.4px;">Tỷ Lệ Lệch Chuyển Hàng</div>
-                    <div style="font-size:1.3rem; font-weight:800; color:#f43f5e; font-family:'JetBrains Mono', monospace; margin:0.12rem 0;">${s.ty_le_chenh_lech || '0.00%'}</div>
-                    <div style="font-size:0.7rem; color:#64748b;">Tồn kho CL / Tổng GT lũy kế</div>
+                <div style="min-width:0; flex:1;">
+                    <div style="font-size:0.72rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.label}</div>
+                    <div style="font-size:1.22rem; font-weight:800; color:${c.valColor}; font-family:'JetBrains Mono', monospace; margin:0.18rem 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${c.value} ${c.unit}">
+                        ${c.value}${c.unit ? ` <span style="font-size:0.72rem; font-weight:600; color:#cbd5e1;">${c.unit}</span>` : ''}
+                    </div>
+                    <div style="font-size:0.72rem; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${c.sub}">${c.sub}</div>
                 </div>
             </div>
-
-            <div class="kpi-fmcg-card" style="background:linear-gradient(135deg, rgba(16,185,129,0.12), rgba(15,23,42,0.6)); border:1px solid rgba(16,185,129,0.3); border-radius:12px; padding:1.05rem; display:flex; align-items:center; gap:0.85rem;">
-                <div style="width:46px; height:46px; border-radius:10px; background:rgba(16,185,129,0.18); color:#10b981; display:flex; align-items:center; justify-content:center; font-size:1.35rem; flex-shrink:0;">
-                    <i class="fa-solid fa-truck-fast"></i>
-                </div>
-                <div>
-                    <div style="font-size:0.72rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.4px;">SL Chuyển (${s.latest_date ? s.latest_date.slice(0, 5) : ''})</div>
-                    <div style="font-size:1.3rem; font-weight:800; color:#34d399; font-family:'JetBrains Mono', monospace; margin:0.12rem 0;">${s.sl_chuyen_ngay || '0'} <span style="font-size:0.74rem; font-weight:600; color:#cbd5e1;">món</span></div>
-                    <div style="font-size:0.7rem; color:#64748b;">GT: ${s.gia_tri_chuyen_ngay || '0'} đ</div>
-                </div>
-            </div>
-
-            <div class="kpi-fmcg-card" style="background:linear-gradient(135deg, rgba(139,92,246,0.12), rgba(15,23,42,0.6)); border:1px solid rgba(139,92,246,0.3); border-radius:12px; padding:1.05rem; display:flex; align-items:center; gap:0.85rem;">
-                <div style="width:46px; height:46px; border-radius:10px; background:rgba(139,92,246,0.18); color:#8b5cf6; display:flex; align-items:center; justify-content:center; font-size:1.35rem; flex-shrink:0;">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                </div>
-                <div>
-                    <div style="font-size:0.72rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.4px;">Lệch Ngày ${s.latest_date ? s.latest_date.slice(0, 5) : ''}</div>
-                    <div style="font-size:1.3rem; font-weight:800; color:#a78bfa; font-family:'JetBrains Mono', monospace; margin:0.12rem 0;">${s.sl_chenh_lech_ngay || '0'} <span style="font-size:0.74rem; font-weight:600; color:#cbd5e1;">món</span></div>
-                    <div style="font-size:0.7rem; color:#64748b;">Tiền lệch: ${s.gia_tri_chenh_lech_ngay || '0'} đ</div>
-                </div>
-            </div>
-
-            <div class="kpi-fmcg-card" style="background:linear-gradient(135deg, rgba(56,189,248,0.12), rgba(15,23,42,0.6)); border:1px solid rgba(56,189,248,0.3); border-radius:12px; padding:1.05rem; display:flex; align-items:center; gap:0.85rem;">
-                <div style="width:46px; height:46px; border-radius:10px; background:rgba(56,189,248,0.18); color:#38bdf8; display:flex; align-items:center; justify-content:center; font-size:1.35rem; flex-shrink:0;">
-                    <i class="fa-solid fa-store"></i>
-                </div>
-                <div>
-                    <div style="font-size:0.72rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.4px;">Siêu Thị Có Lệch</div>
-                    <div style="font-size:1.3rem; font-weight:800; color:#38bdf8; font-family:'JetBrains Mono', monospace; margin:0.12rem 0;">${s.sl_st_chenh_lech || '0'} <span style="font-size:0.74rem; font-weight:600; color:#cbd5e1;">ST</span></div>
-                    <div style="font-size:0.7rem; color:#64748b;">Trả DC: ${s.gia_tri_tra_dc || '0'} đ</div>
-                </div>
-            </div>
-        `;
+        `).join('');
     }
 
     // ==================== VIEW 1: BẢNG MA TRẬN 53 CHỈ SỐ ====================
