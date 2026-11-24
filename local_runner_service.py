@@ -1061,19 +1061,23 @@ def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_role
 
 
 def periodic_background_sync():
-    """Tự động đồng bộ phiếu treo từ CDC mỗi 10 phút một lần để Web luôn có số liệu mới nhất."""
+    """Tự động đồng bộ phiếu treo & Báo cáo Logistics FMCG từ CDC mỗi 10 phút một lần để Web luôn có số liệu mới nhất."""
     time.sleep(30)
     while True:
         try:
             time.sleep(600)  # 10 phút
             if CURRENT_RUNNING_PROC is None:
-                print("🔄 [AUTO-SYNC] Đang tự động quét đồng bộ Phiếu Treo CDC định kỳ...")
+                print("🔄 [AUTO-SYNC] Đang tự động quét đồng bộ Phiếu Treo & FMCG CDC định kỳ...")
                 sync_script = os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "sync_pending_tickets.py")
-                res = subprocess.run([PYTHON_EXE, sync_script], cwd=ROOT_DIR, capture_output=True, text=True, timeout=60)
-                if res.returncode == 0:
-                    print("✅ [AUTO-SYNC] Đồng bộ CDC thành công, đang đẩy lên GitHub Pages...")
+                res1 = subprocess.run([PYTHON_EXE, sync_script], cwd=ROOT_DIR, capture_output=True, text=True, timeout=60)
+
+                fmcg_script = os.path.join(ROOT_DIR, "xuat_excel_fmcg_tab_moi.py")
+                res2 = subprocess.run([PYTHON_EXE, fmcg_script], cwd=ROOT_DIR, capture_output=True, text=True, timeout=120)
+
+                if res1.returncode == 0 or res2.returncode == 0:
+                    print("✅ [AUTO-SYNC] Đồng bộ CDC (Phiếu Treo + FMCG) thành công, đang đẩy lên GitHub Pages...")
                     from push_to_github import sync_and_push
-                    sync_and_push("🤖 [Auto-Sync] Tự động đồng bộ phiếu treo CDC định kỳ")
+                    sync_and_push("🤖 [Auto-Sync] Tự động đồng bộ phiếu treo & FMCG CDC định kỳ")
         except Exception as e:
             print(f"⚠️ [AUTO-SYNC] Lỗi đồng bộ định kỳ: {e}")
 
