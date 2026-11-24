@@ -280,18 +280,17 @@
                     <div style="font-size:0.84rem; font-weight:800; color:#fbbf24; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.75rem;">
                         <i class="fa-solid fa-layer-group" style="margin-right:0.4rem;"></i> PHẦN A: LOGIC CẤU TRÚC CỘT &amp; QUY TẮC TRUY VẤN HỆ THỐNG
                     </div>
-                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(420px, 1fr)); gap:0.85rem;">
+                    <div style="display:flex; flex-direction:column; gap:0.65rem;">
         `;
 
         colLogic.forEach((item, idx) => {
-            const isFull = (idx === colLogic.length - 1 && colLogic.length % 2 === 1);
             html += `
-                <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.22); border-left:3px solid #38bdf8; border-radius:10px; padding:1rem 1.15rem; min-width:0; ${isFull ? 'grid-column: 1 / -1;' : ''}">
-                    <div style="margin-bottom:0.5rem;">
-                        <div style="color:#f8fafc; font-size:0.88rem; font-weight:800; margin-bottom:0.35rem; line-height:1.35;">${idx + 1}. ${escapeHtml(item.title)}</div>
-                        <span style="display:inline-block; font-size:0.7rem; font-weight:700; color:#38bdf8; background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.25); padding:2px 8px; border-radius:6px; word-break:break-word;">${escapeHtml(item.source)}</span>
+                <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.22); border-left:3px solid #38bdf8; border-radius:10px; padding:0.9rem 1.15rem; width:100%; box-sizing:border-box;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.4rem;">
+                        <div style="color:#f8fafc; font-size:0.88rem; font-weight:800; line-height:1.35;">${idx + 1}. ${escapeHtml(item.title)}</div>
+                        <span style="display:inline-block; font-size:0.7rem; font-weight:700; color:#38bdf8; background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.25); padding:2px 8px; border-radius:6px;">${escapeHtml(item.source)}</span>
                     </div>
-                    <div style="font-size:0.8rem; color:#cbd5e1; line-height:1.6; overflow-wrap:anywhere;">${formatInlineCode(item.detail)}</div>
+                    <div style="font-size:0.82rem; color:#cbd5e1; line-height:1.55; overflow-wrap:anywhere;">${formatInlineCode(item.detail)}</div>
                 </div>
             `;
         });
