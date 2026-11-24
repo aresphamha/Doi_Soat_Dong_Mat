@@ -2935,8 +2935,8 @@
     <!-- Dữ liệu BUNDLES siêu nhẹ cho Tab 1 & 2 (~300 KB) -->
     <script src="daily_details/data_bundles.js"></script>
     <script src="daily_details/pending_tickets.js"></script>
-    <script src="daily_details/fmcg_matrix.js?v=20261124_6"></script>
-    <script src="daily_details/fmcg_matrix_engine.js?v=20261124_6"></script>
+    <script src="daily_details/fmcg_matrix.js?v=20261124_7"></script>
+    <script src="daily_details/fmcg_matrix_engine.js?v=20261124_7"></script>
 </head>
 <body>
 
@@ -6317,11 +6317,23 @@
                         </div>
                     </div>
 
-                    <!-- Row 2: Sort Button + 3 Sub-View Tabs -->
+                    <!-- Row 2: Sort + Fullscreen/Zoom + 4 Sub-View Tabs -->
                     <div style="display:flex; justify-content:space-between; align-items:center; gap:0.55rem; flex-wrap:wrap; padding-top:0.7rem; border-top:1px solid rgba(255,255,255,0.07);">
-                        <button id="btn-fmcg-sort" onclick="toggleFmcgSort()" style="background:#1e293b; color:#cbd5e1; border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:0.46rem 0.9rem; font-size:0.8rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
-                            <i class="fa-solid fa-arrow-down-wide-short"></i> Ngày Mới Nhất Trước
-                        </button>
+                        <div style="display:flex; gap:0.45rem; flex-wrap:wrap; align-items:center;">
+                            <button id="btn-fmcg-sort" onclick="toggleFmcgSort()" style="background:#1e293b; color:#cbd5e1; border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:0.44rem 0.85rem; font-size:0.79rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
+                                <i class="fa-solid fa-arrow-down-wide-short"></i> Ngày Mới Nhất Trước
+                            </button>
+
+                            <button id="btn-fmcg-fullscreen" onclick="toggleFmcgFullscreen()" style="background:rgba(245,158,11,0.16); color:#fbbf24; border:1px solid rgba(245,158,11,0.4); border-radius:8px; padding:0.44rem 0.85rem; font-size:0.79rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
+                                <i class="fa-solid fa-expand"></i> Mở Rộng Bảng
+                            </button>
+
+                            <div style="display:inline-flex; align-items:center; background:#1e293b; border:1px solid rgba(255,255,255,0.12); border-radius:8px; overflow:hidden;">
+                                <button onclick="adjustFmcgZoom(-10)" title="Thu nhỏ bảng" style="background:transparent; color:#e2e8f0; border:none; padding:0.42rem 0.6rem; cursor:pointer; font-weight:800;">−</button>
+                                <button onclick="adjustFmcgZoom(0)" title="Đặt lại 100%" id="fmcg-zoom-label-out" style="background:rgba(56,189,248,0.1); color:#38bdf8; border:none; border-left:1px solid rgba(255,255,255,0.08); border-right:1px solid rgba(255,255,255,0.08); padding:0.42rem 0.5rem; cursor:pointer; font-size:0.75rem; font-weight:700; font-family:'JetBrains Mono', monospace;">100%</button>
+                                <button onclick="adjustFmcgZoom(10)" title="Phóng to bảng" style="background:transparent; color:#e2e8f0; border:none; padding:0.42rem 0.6rem; cursor:pointer; font-weight:800;">+</button>
+                            </div>
+                        </div>
 
                         <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
                             <button class="fmcg-subview-btn" data-view="matrix" onclick="switchFmcgSubView('matrix')" style="background:linear-gradient(135deg, #0284c7, #0ea5e9); color:#fff; border:1px solid #38bdf8; border-radius:8px; padding:0.46rem 0.95rem; font-size:0.81rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.45rem; box-shadow:0 0 12px rgba(56,189,248,0.3);">

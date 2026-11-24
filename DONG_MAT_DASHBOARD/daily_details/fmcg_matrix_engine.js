@@ -13,6 +13,112 @@
     let activeSubView = 'matrix'; // 'matrix' | 'flow' | 'logic' | 'reconcile'
     let flowBlockFilter = 'all';  // 'all' | 'D0' | 'D1' | 'D2' | 'D3' | 'D4' | 'B1'
     let flowSummaryOnly = false;  // false = Ngày + Σ Tuần + Σ T11, true = Chỉ Σ T11 + Σ Tuần
+    let isFullscreen = false;
+    let tableZoom = 100;          // 70 .. 130 (%)
+
+    // Phím ESC để thoát chế độ mở rộng toàn màn hình
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && isFullscreen) {
+            window.toggleFmcgFullscreen(false);
+        }
+    });
+
+    window.toggleFmcgFullscreen = function (forceState) {
+        isFullscreen = (typeof forceState === 'boolean') ? forceState : !isFullscreen;
+        const wrap = document.getElementById('fmcg-table-container');
+        const btn = document.getElementById('btn-fmcg-fullscreen');
+        if (!wrap) return;
+
+        if (isFullscreen) {
+            wrap.style.position = 'fixed';
+            wrap.style.inset = '0';
+            wrap.style.width = '100vw';
+            wrap.style.height = '100vh';
+            wrap.style.maxHeight = '100vh';
+            wrap.style.zIndex = '9998';
+            wrap.style.borderRadius = '0';
+            wrap.style.overflow = 'auto';
+            wrap.style.background = '#0b1120';
+            document.body.style.overflow = 'hidden';
+        } else {
+            wrap.style.position = '';
+            wrap.style.inset = '';
+            wrap.style.width = '';
+            wrap.style.height = '';
+            wrap.style.maxHeight = (activeSubView === 'matrix' || activeSubView === 'flow') ? '74vh' : 'none';
+            wrap.style.zIndex = '';
+            wrap.style.borderRadius = '12px';
+            wrap.style.overflow = '';
+            wrap.style.overflowX = (activeSubView === 'logic') ? 'visible' : 'auto';
+            wrap.style.background = '#161b22';
+            document.body.style.overflow = '';
+        }
+
+        if (btn) {
+            btn.innerHTML = isFullscreen
+                ? '<i class="fa-solid fa-compress"></i> Thu Nhỏ Bảng'
+                : '<i class="fa-solid fa-expand"></i> Mở Rộng Bảng';
+        }
+        renderActiveSubView();
+    };
+
+    window.adjustFmcgZoom = function (delta) {
+        if (delta === 0) {
+            tableZoom = 100;
+        } else {
+            tableZoom = Math.min(130, Math.max(70, tableZoom + delta));
+        }
+        applyFmcgZoomAndBar();
+    };
+
+    function getFullscreenTopBarHtml() {
+        if (!isFullscreen) return '';
+        const views = [
+            { id: 'matrix', label: '1. Ma Trận (53 Chỉ Số)', icon: 'fa-table' },
+            { id: 'flow', label: '2. Flow Điểm Chặn (Đ0–Đ4)', icon: 'fa-diagram-project' },
+            { id: 'logic', label: '3. Logic Chi Tiết', icon: 'fa-book-open' },
+            { id: 'reconcile', label: '4. Đối Chiếu CDC', icon: 'fa-circle-check' },
+        ];
+        return `
+            <div id="fmcg-fs-topbar" style="position:sticky; top:0; left:0; z-index:40; background:#020617; border-bottom:2px solid rgba(56,189,248,0.35); padding:0.55rem 1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
+                <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
+                    <span style="color:#38bdf8; font-weight:800; font-size:0.84rem; margin-right:0.4rem;">
+                        <i class="fa-solid fa-expand" style="margin-right:0.35rem;"></i> CHẾ ĐỘ XEM TOÀN MÀN HÌNH
+                    </span>
+                    ${views.map(v => {
+                        const act = activeSubView === v.id;
+                        return `<button onclick="switchFmcgSubView('${v.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.32rem 0.7rem; font-size:0.76rem; font-weight:700; cursor:pointer;"><i class="fa-solid ${v.icon}" style="margin-right:0.3rem;"></i>${v.label}</button>`;
+                    }).join('')}
+                </div>
+                <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
+                    <div style="display:inline-flex; align-items:center; background:#1e293b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; overflow:hidden;">
+                        <button onclick="adjustFmcgZoom(-10)" title="Thu nhỏ chữ" style="background:transparent; color:#e2e8f0; border:none; padding:0.3rem 0.6rem; cursor:pointer; font-weight:800;">−</button>
+                        <button onclick="adjustFmcgZoom(0)" title="Đặt lại 100%" id="fmcg-zoom-label" style="background:rgba(56,189,248,0.12); color:#38bdf8; border:none; border-left:1px solid rgba(255,255,255,0.08); border-right:1px solid rgba(255,255,255,0.08); padding:0.3rem 0.55rem; cursor:pointer; font-size:0.74rem; font-weight:700; font-family:'JetBrains Mono', monospace;">${tableZoom}%</button>
+                        <button onclick="adjustFmcgZoom(10)" title="Phóng to chữ" style="background:transparent; color:#e2e8f0; border:none; padding:0.3rem 0.6rem; cursor:pointer; font-weight:800;">+</button>
+                    </div>
+                    <button onclick="exportFmcgExcel()" style="background:rgba(16,185,129,0.18); color:#34d399; border:1px solid rgba(16,185,129,0.35); border-radius:6px; padding:0.34rem 0.75rem; font-size:0.76rem; font-weight:700; cursor:pointer;">
+                        <i class="fa-solid fa-file-excel"></i> Xuất Excel
+                    </button>
+                    <button onclick="toggleFmcgFullscreen(false)" style="background:rgba(244,63,94,0.2); color:#fda4af; border:1px solid rgba(244,63,94,0.45); border-radius:6px; padding:0.34rem 0.85rem; font-size:0.76rem; font-weight:800; cursor:pointer;">
+                        ✕ Thu Nhỏ (ESC)
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    function applyFmcgZoomAndBar() {
+        const wrap = document.getElementById('fmcg-table-container');
+        if (!wrap) return;
+        const inner = wrap.querySelector('.fmcg-zoom-target');
+        if (inner) {
+            inner.style.zoom = (tableZoom / 100);
+        }
+        const zLbl = document.getElementById('fmcg-zoom-label');
+        if (zLbl) zLbl.textContent = tableZoom + '%';
+        const zLblOut = document.getElementById('fmcg-zoom-label-out');
+        if (zLblOut) zLblOut.textContent = tableZoom + '%';
+    }
 
     window.renderFmcgMatrix = function () {
         if (!currentData && window.FMCG_MATRIX_DATA) {
@@ -53,7 +159,7 @@
             secBar.style.display = (viewName === 'reconcile' || viewName === 'flow') ? 'none' : 'flex';
         }
         const tblWrap = document.getElementById('fmcg-table-container');
-        if (tblWrap) {
+        if (tblWrap && !isFullscreen) {
             tblWrap.style.maxHeight = (viewName === 'matrix' || viewName === 'flow') ? '74vh' : 'none';
             tblWrap.style.overflowX = (viewName === 'logic') ? 'visible' : 'auto';
         }
@@ -70,16 +176,23 @@
         } else {
             renderMatrixTable();
         }
+        // Bọc nội dung vào lớp zoom + chèn thanh Fullscreen Top Bar nếu đang mở rộng
+        const wrap = document.getElementById('fmcg-table-container');
+        if (wrap) {
+            const contentHtml = wrap.innerHTML;
+            wrap.innerHTML = getFullscreenTopBarHtml() + `<div class="fmcg-zoom-target" style="zoom:${tableZoom / 100};">${contentHtml}</div>`;
+        }
+        applyFmcgZoomAndBar();
     }
 
     window.setFmcgFlowBlock = function (blkId) {
         flowBlockFilter = blkId;
-        renderFlowTemplateView();
+        renderActiveSubView();
     };
 
     window.toggleFmcgFlowSummaryOnly = function () {
         flowSummaryOnly = !flowSummaryOnly;
-        renderFlowTemplateView();
+        renderActiveSubView();
     };
 
     // ==================== VIEW NEW: TEMPLATE FLOW ĐIỂM CHẶN (Đ0 -> Đ4 + B. TỒN ÂM) ====================
@@ -825,7 +938,7 @@
                     candidateUrls.push(j.tunnel_url);
                 }
             }
-        } catch (e) {}
+        } catch (e) { }
         candidateUrls.push('http://127.0.0.1:8088');
         candidateUrls.push('http://localhost:8088');
 
