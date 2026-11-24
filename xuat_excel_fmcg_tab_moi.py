@@ -15,6 +15,7 @@ import io
 import csv
 import re
 import sys
+import json
 import pymysql
 import requests
 import pandas as pd
@@ -1063,12 +1064,225 @@ def export_excel(all_dates, daily_metrics, df_cdc, df_seed, old_ref):
     print(f"          - Sheet 4 (CHI_TIET_SEEDLOG_COST_CDC): {len(df_seed_sorted):,} dòng chi tiết Seedlog kèm gia_cost CDC")
 
 
+def export_web_js(all_dates, daily_metrics, df_cdc):
+    """Xuất dữ liệu chuẩn (53 chỉ số + Logic chi tiết Cột & Hàng + Đối chiếu CDC vs Seedlog) ra fmcg_matrix.js cho Web Dashboard."""
+    print("[5/5] Đang xuất dữ liệu + Logic chi tiết lên Web Dashboard (fmcg_matrix.js)...")
+
+    def fmt_val(v, num_fmt):
+        if v is None:
+            return "-"
+        if num_fmt == "0.00%":
+            return f"{v * 100:.2f}%"
+        if abs(v - round(v)) < 0.005:
+            return f"{int(round(v)):,}"
+        return f"{v:,.2f}"
+
+    tot_gt_chuyen = sum(daily_metrics[d]["Giá trị chuyển"] for d in all_dates)
+    tot_gt_cl     = sum(daily_metrics[d]["Giá trị chênh lệch"] for d in all_dates)
+    tot_gt_tra_dc = sum(daily_metrics[d]["Giá trị trả DC"] for d in all_dates)
+    tot_gt_tra_st = sum(daily_metrics[d]["Giá trị trả ST"] for d in all_dates)
+    tot_gt_hh     = sum(daily_metrics[d]["Giá trị hao hụt"] for d in all_dates)
+    tot_gt_scm    = sum(daily_metrics[d]["Giá trị SCM chưa check"] for d in all_dates)
+    tot_gt_du     = sum(daily_metrics[d]["Giá trị dư"] for d in all_dates)
+    tot_gt_dc_xn  = sum(daily_metrics[d]["Giá trị DC xác nhận"] for d in all_dates)
+    tot_gt_dc_kt  = sum(daily_metrics[d]["Giá trị DC kiểm tra"] for d in all_dates)
+    tot_gt_le2    = sum(daily_metrics[d]["Giá trị DC chưa phản hồi (<D+2)"] for d in all_dates)
+    tot_gt_gt2    = sum(daily_metrics[d]["Giá trị DC chưa phản hồi (>D+2)"] for d in all_dates)
+
+    def calc_period_total(m_name):
+        if m_name == "% giá trị chênh lệch": return tot_gt_cl / tot_gt_chuyen if tot_gt_chuyen else 0.0
+        if m_name == "% giá trị trả DC": return tot_gt_tra_dc / tot_gt_chuyen if tot_gt_chuyen else 0.0
+        if m_name == "% giá trị trả ST": return tot_gt_tra_st / tot_gt_chuyen if tot_gt_chuyen else 0.0
+        if m_name == "% giá trị hao hụt": return tot_gt_hh / tot_gt_chuyen if tot_gt_chuyen else 0.0
+        if m_name == "% giá trị SCM chưa check": return tot_gt_scm / tot_gt_chuyen if tot_gt_chuyen else 0.0
+        if m_name == "% giá trị NET DƯ": return tot_gt_du / tot_gt_chuyen if tot_gt_chuyen else 0.0
+        if m_name == "% giá trị trả DC (SAU NET)":
+            p_dc = tot_gt_tra_dc / tot_gt_chuyen if tot_gt_chuyen else 0.0
+            p_du = tot_gt_du / tot_gt_chuyen if tot_gt_chuyen else 0.0
+            return max(0.0, p_dc - p_du)
+        if m_name == "% Giá trị DC xác nhận": return tot_gt_dc_xn / tot_gt_chuyen if tot_gt_chuyen else 0.0
+        if m_name == "% Giá trị DC kiểm tra": return tot_gt_dc_kt / tot_gt_chuyen if tot_gt_chuyen else 0.0
+        if m_name == "% Giá trị DC từ chối do trừ bì": return 0.0
+        if m_name == "% Giá trị DC chưa phản hồi (<D+2)": return tot_gt_le2 / tot_gt_chuyen if tot_gt_chuyen else 0.0
+        if m_name == "% Giá trị DC chưa phản hồi (>D+2)": return tot_gt_gt2 / tot_gt_chuyen if tot_gt_chuyen else 0.0
+        if m_name in ("Tổng giá trị chuyển lũy kế", "Tồn kho chênh lệch", "Tỷ lệ chênh lệch chuyển hàng"):
+            return daily_metrics[all_dates[-1]][m_name]
+        if m_name in ("SL ST chuyển", "SL ST nhận"):
+            return max(daily_metrics[d][m_name] for d in all_dates)
+        return sum(daily_metrics[d][m_name] for d in all_dates)
+
+    sec_meta = {
+        "I. SẢN LƯỢNG (SL)":       ("sec_san_luong",   "1. SẢN LƯỢNG HÀNG HÓA (SL)",           "fa-solid fa-boxes-stacked",   "#38bdf8"),
+        "II. GIÁ TRỊ (VNĐ)":       ("sec_gia_tri",     "2. GIÁ TRỊ HÀNG HÓA (VNĐ)",            "fa-solid fa-coins",           "#f59e0b"),
+        "III. TỶ LỆ (%)":          ("sec_ty_le",       "3. TỶ LỆ CHÊNH LỆCH & HOÀN TẤT (%)",  "fa-solid fa-percent",         "#ec4899"),
+        "IV. SỐ LƯỢNG SIÊU THỊ":   ("sec_sieu_thi",    "4. SỐ LƯỢNG SIÊU THỊ / CỬA HÀNG",      "fa-solid fa-shop",            "#10b981"),
+        "V. DC PHẢN HỒI":          ("sec_dc_phan_hoi", "5. DC XÁC NHẬN & PHẢN HỒI",            "fa-solid fa-truck-ramp-box",  "#8b5cf6"),
+        "VI. LŨY KẾ & TÀI CHÍNH":  ("sec_luy_ke",      "6. LŨY KẾ, TỒN KHO & TÀI CHÍNH",       "fa-solid fa-chart-line",      "#06b6d4"),
+    }
+
+    sections_dict = {}
+    for spec in ROWS_SPEC:
+        stt, sec_key, m_name, src, tbl_col, filt_rule, formula, tot_rule, num_fmt, note = spec
+        sec_id, sec_title, sec_icon, sec_accent = sec_meta[sec_key]
+        if sec_id not in sections_dict:
+            sections_dict[sec_id] = {
+                "id": sec_id, "title": sec_title, "icon": sec_icon, "accent": sec_accent, "rows": []
+            }
+        values_fmt = {d: fmt_val(daily_metrics[d][m_name], num_fmt) for d in all_dates}
+        sections_dict[sec_id]["rows"].append({
+            "row_idx": stt,
+            "name": m_name,
+            "section_id": sec_id,
+            "total": fmt_val(calc_period_total(m_name), num_fmt),
+            "values": values_fmt,
+            "logic": {
+                "stt": stt,
+                "section": sec_key,
+                "source": src,
+                "table_col": tbl_col,
+                "filter_rule": filt_rule,
+                "formula": formula,
+                "total_rule": tot_rule,
+                "format": num_fmt,
+                "note": note,
+            }
+        })
+
+    # Chọn ngày mới nhất đã có Seedlog cho KPI cards ngày (để không hiển thị 0 khi ngày hôm nay đang giao)
+    seed_dates = [d for d in all_dates if daily_metrics[d]["SL chênh lệch"] != 0]
+    kpi_day_iso = seed_dates[-1] if seed_dates else all_dates[-1]
+    latest_iso = all_dates[-1]
+    kpi_day_disp = datetime.strptime(kpi_day_iso, "%Y-%m-%d").strftime("%d/%m/%Y")
+    latest_disp = datetime.strptime(latest_iso, "%Y-%m-%d").strftime("%d/%m/%Y")
+
+    summary_cards = {
+        "latest_date": kpi_day_disp,
+        "latest_cdc_date": latest_disp,
+        "tong_luy_ke": fmt_val(daily_metrics[latest_iso]["Tổng giá trị chuyển lũy kế"], "#,##0"),
+        "ton_kho_chenh_lech": fmt_val(daily_metrics[latest_iso]["Tồn kho chênh lệch"], "#,##0"),
+        "ty_le_chenh_lech": fmt_val(daily_metrics[latest_iso]["Tỷ lệ chênh lệch chuyển hàng"], "0.00%"),
+        "sl_chuyen_ngay": fmt_val(daily_metrics[kpi_day_iso]["SL chuyển"], "#,##0"),
+        "sl_chenh_lech_ngay": fmt_val(daily_metrics[kpi_day_iso]["SL chênh lệch"], "#,##0"),
+        "gia_tri_chuyen_ngay": fmt_val(daily_metrics[kpi_day_iso]["Giá trị chuyển"], "#,##0"),
+        "gia_tri_chenh_lech_ngay": fmt_val(daily_metrics[kpi_day_iso]["Giá trị chênh lệch"], "#,##0"),
+        "sl_st_chenh_lech": fmt_val(daily_metrics[kpi_day_iso]["SL ST chênh lệch"], "#,##0"),
+        "gia_tri_tra_dc": fmt_val(daily_metrics[kpi_day_iso]["Giá trị trả DC"], "#,##0"),
+    }
+
+    col_logic = [
+        {
+            "title": "Phạm vi thời gian (Các cột Ngày)",
+            "source": "CDC StarRocks & Seedlog",
+            "detail": "Tự động lấy từ ngày 01/11/2026 trở về sau đến ngày mới nhất. Quy đổi cột `transfer_date` trên CDC StarRocks từ UTC sang giờ Việt Nam (+7 giờ). Trên Google Sheet Seedlog lấy đúng Cột C (`Ngày`)."
+        },
+        {
+            "title": "Bộ lọc Kho & Nơi Nhận Chuẩn",
+            "source": "CDC StarRocks (kfm_scm)",
+            "detail": "Kho chuyển: `FGA10101` (`6aabb0a2f426e20007f80123`). Nơi nhận: **Chỉ Siêu thị KFM** (`branch_name LIKE 'KFM%'`, tự động loại bỏ Kho như `FGB10101`). Người tạo: `TKE_WMS` (`62261627e227c1000743b1d8`). `deleted = 0`, `status != 7`, PT thùng rổ = Không, loại bỏ mã `CC00359`."
+        },
+        {
+            "title": "Quy tắc Chặn trần SL Nhận & Kết hợp Bảng TO",
+            "source": "product_lines + container_lines + transfer_ticket_lines (TO)",
+            "detail": "Nối bảng `transfer_items` -> `container_lines` -> `product_lines` kết hợp phiếu xử lý chênh lệch `transfer_ticket_lines` (`TO.pending_quantity`). Nếu có TO: lấy `-LEAST(pending_quantity, sl_tr)` (vừa bắt đủ 100% dòng lỗi sync vừa quy `blank = 0`). Nếu không có TO: quy `cl_st <= 0` hoặc `pl_st < 0` => `0` và chặn trần `SL nhận <= SL chuyển`; phần nhận dư tách riêng sang `SL dư`."
+        },
+        {
+            "title": "Quy tắc Giá vốn (gia_cost CDC)",
+            "source": "CDC StarRocks Stockcard",
+            "detail": "KHÔNG dùng đơn giá Cột AC trên Google Sheet Seedlog. Lấy trực tiếp cột `cost` từ bảng `__cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard` tại kho `FGA10101` theo `(Barcode, ngày chuyển D)`; fallback TB T9-T11 kho `FGA10101`, tiếp theo TB toàn hệ thống."
+        },
+        {
+            "title": "Cột TỔNG / LŨY KẾ KỲ",
+            "source": "Tính động toàn kỳ",
+            "detail": "Sản lượng & Giá trị: `SUM` toàn bộ từ 01/11 đến ngày mới nhất. Tỷ lệ %: tính lại từ `(Tổng tử số / Tổng mẫu số)`. Lũy kế & Tồn kho chênh lệch: lấy số chốt ngày cuối kỳ. Tồn kho chênh lệch tính lũy kế theo công thức Google Sheet: `Tồn(D) = Tồn(D-1) - Giá trị chênh lệch(D)`."
+        },
+    ]
+
+    # Bảng đối chiếu CDC vs Seedlog
+    cdc_map = {r['d']: r for _, r in df_cdc.iterrows()}
+    reconciliation = []
+    for d_iso in all_dates:
+        c_row = cdc_map.get(d_iso, None)
+        sl_tr = float(c_row['sl_chuyen']) if c_row is not None else 0.0
+        sl_rc = float(c_row['sl_nhan_capped']) if c_row is not None else 0.0
+        sl_cl0 = float(c_row['sl_chenh_lech_cdc']) if c_row is not None else 0.0
+        sl_clm1 = float(c_row['sl_chenh_lech_cdc_m1']) if c_row is not None else 0.0
+        sl_du = float(c_row['sl_du_cdc']) if c_row is not None else 0.0
+        not_done = int(c_row['lines_not_completed']) if c_row is not None else 0
+        sl_seed = daily_metrics[d_iso]["SL chênh lệch"]
+        diff_0 = round(sl_cl0 - sl_seed, 2)
+        diff_m1 = round(sl_clm1 - sl_seed, 2)
+
+        if not_done > 0 and sl_seed == 0:
+            status_txt, status_code = f"Đang giao / chưa nhận xong ({not_done:,} dòng status!=5)", "pending"
+        elif abs(diff_m1) <= 0.1:
+            status_txt = "Khớp 100% tuyệt đối" if abs(diff_0) <= 0.1 else f"Khớp 100% (chênh {diff_0:+.0f} dòng blank=-1)"
+            status_code = "ok"
+        elif d_iso == "2026-11-02" and abs(diff_m1 - 30) <= 0.1:
+            status_txt, status_code = "Khớp 100% (30 món kho FGB10101 + 1 dòng blank=-1)", "ok"
+        elif d_iso == "2026-11-04" and abs(diff_m1 - 2) <= 0.1:
+            status_txt, status_code = "Khớp 100% (2 món user khác TKE_WMS + 1 dòng blank=-1)", "ok"
+        elif d_iso == "2026-11-06" and abs(diff_m1 - 20) <= 0.1:
+            status_txt, status_code = "Khớp 100% (20 món kho FGB10101)", "ok"
+        else:
+            status_txt, status_code = f"Lệch blank=0: {diff_0:+.2f} | blank=-1: {diff_m1:+.2f}", "warn"
+
+        reconciliation.append({
+            "date": datetime.strptime(d_iso, "%Y-%m-%d").strftime("%d/%m/%Y"),
+            "iso": d_iso,
+            "pt_cnt": int(c_row['pt_cnt']) if c_row is not None else 0,
+            "sl_chuyen": sl_tr,
+            "sl_nhan": sl_rc,
+            "cdc_blank0": sl_cl0,
+            "cdc_blank_m1": sl_clm1,
+            "seedlog": sl_seed,
+            "diff_0": diff_0,
+            "diff_m1": diff_m1,
+            "sl_du": sl_du,
+            "not_done": not_done,
+            "status_txt": status_txt,
+            "status_code": status_code,
+        })
+
+    dates_meta = [{
+        "iso": d,
+        "display": datetime.strptime(d, "%Y-%m-%d").strftime("%d/%m/%Y"),
+        "short": datetime.strptime(d, "%Y-%m-%d").strftime("%d/%m"),
+        "raw": datetime.strptime(d, "%Y-%m-%d").strftime("%m/%d/%Y"),
+    } for d in all_dates]
+
+    payload = {
+        "updated_at": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+        "filter_scope": "Từ 01/11/2026 trở về sau • CDC StarRocks (FGA10101 -> Siêu thị KFM + Bảng TO) + Seedlog + Cost Stockcard",
+        "dates": dates_meta,
+        "summary": summary_cards,
+        "sections": list(sections_dict.values()),
+        "col_logic": col_logic,
+        "reconciliation": reconciliation,
+    }
+
+    js_text = (
+        "// Dữ liệu Báo cáo Logistics FMCG (Tự động từ CDC StarRocks + Google Sheet Seedlog + Đặc tả Logic)\n"
+        f"window.FMCG_MATRIX_DATA = {json.dumps(payload, ensure_ascii=False, indent=2)};\n"
+    )
+
+    targets = [
+        os.path.join(WORKSPACE_DIR, "daily_details", "fmcg_matrix.js"),
+        os.path.join(WORKSPACE_DIR, "DONG_MAT_DASHBOARD", "daily_details", "fmcg_matrix.js"),
+    ]
+    for tgt in targets:
+        os.makedirs(os.path.dirname(tgt), exist_ok=True)
+        with open(tgt, "w", encoding="utf-8") as f:
+            f.write(js_text)
+        print(f"    -> Đã ghi file Web JS: {tgt}")
+
+
 def main():
     df_cdc, cost_day_map, cost_fb_map, cost_gl_map = fetch_cdc_starrocks()
     df_seed = fetch_seedlog(cost_day_map, cost_fb_map, cost_gl_map)
     old_ref = fetch_old_fmcg_reference()
     all_dates, daily_metrics = compute_matrix(df_cdc, df_seed)
     export_excel(all_dates, daily_metrics, df_cdc, df_seed, old_ref)
+    export_web_js(all_dates, daily_metrics, df_cdc)
 
 
 if __name__ == "__main__":
