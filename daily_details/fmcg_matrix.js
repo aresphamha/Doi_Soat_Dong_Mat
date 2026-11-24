@@ -1,6 +1,6 @@
 // Dữ liệu Báo cáo Logistics FMCG (Tự động từ CDC StarRocks + Google Sheet Seedlog + Đặc tả Logic)
 window.FMCG_MATRIX_DATA = {
-  "updated_at": "24/11/2026 20:22:02",
+  "updated_at": "24/11/2026 20:33:00",
   "filter_scope": "Từ 01/11/2026 trở về sau • CDC StarRocks (FGA10101 -> Siêu thị KFM + Bảng TO) + Seedlog + Cost Stockcard",
   "dates": [
     {
@@ -215,7 +215,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 2,
           "name": "SL nhận",
           "section_id": "sec_san_luong",
-          "total": "6,494,036.64",
+          "total": "6,494,387.64",
           "values": {
             "2026-11-01": "2,508",
             "2026-11-02": "344,825",
@@ -239,8 +239,8 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-20": "305,428",
             "2026-11-21": "382,024.94",
             "2026-11-22": "4,333",
-            "2026-11-23": "359,907",
-            "2026-11-24": "77,993"
+            "2026-11-23": "360,019",
+            "2026-11-24": "78,232"
           },
           "logic": {
             "stt": 2,
@@ -610,7 +610,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 11,
           "name": "Giá trị nhận",
           "section_id": "sec_gia_tri",
-          "total": "111,424,272,784.43",
+          "total": "111,432,875,802.95",
           "values": {
             "2026-11-01": "48,492,798.07",
             "2026-11-02": "6,009,734,811.75",
@@ -634,8 +634,8 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-20": "5,401,136,220.69",
             "2026-11-21": "6,900,225,892.44",
             "2026-11-22": "86,449,320.06",
-            "2026-11-23": "6,661,043,841.95",
-            "2026-11-24": "1,444,995,730.49"
+            "2026-11-23": "6,664,621,272.49",
+            "2026-11-24": "1,450,021,318.48"
           },
           "logic": {
             "stt": 11,
@@ -793,7 +793,7 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-07": "1,293,079.35",
             "2026-11-08": "0",
             "2026-11-09": "8,594,112.68",
-            "2026-11-10": "722,313.50",
+            "2026-11-10": "722,313.51",
             "2026-11-11": "8,913,554.59",
             "2026-11-12": "2,593,718.03",
             "2026-11-13": "6,839,239.32",
@@ -2843,7 +2843,7 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-21",
       "pt_cnt": 161,
       "sl_chuyen": 383096.0,
-      "sl_nhan": 382024.93999999994,
+      "sl_nhan": 382024.94,
       "cdc_blank0": -1071.06,
       "cdc_blank_m1": -1071.06,
       "seedlog": -1071.0,
@@ -2875,12 +2875,12 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-23",
       "pt_cnt": 151,
       "sl_chuyen": 362956.0,
-      "sl_nhan": 359907.0,
-      "cdc_blank0": -3049.0,
-      "cdc_blank_m1": -3051.0,
+      "sl_nhan": 360019.0,
+      "cdc_blank0": -2937.0,
+      "cdc_blank_m1": -2939.0,
       "seedlog": 0.0,
-      "diff_0": -3049.0,
-      "diff_m1": -3051.0,
+      "diff_0": -2937.0,
+      "diff_m1": -2939.0,
       "sl_du": 49.0,
       "not_done": 440,
       "status_txt": "Đang giao / chưa nhận xong (440 dòng status!=5)",
@@ -2891,15 +2891,15 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-24",
       "pt_cnt": 125,
       "sl_chuyen": 255860.0,
-      "sl_nhan": 77993.0,
-      "cdc_blank0": -177867.0,
-      "cdc_blank_m1": -177867.0,
+      "sl_nhan": 78232.0,
+      "cdc_blank0": -177628.0,
+      "cdc_blank_m1": -177628.0,
       "seedlog": 0.0,
-      "diff_0": -177867.0,
-      "diff_m1": -177867.0,
+      "diff_0": -177628.0,
+      "diff_m1": -177628.0,
       "sl_du": 4.0,
-      "not_done": 24589,
-      "status_txt": "Đang giao / chưa nhận xong (24,589 dòng status!=5)",
+      "not_done": 24449,
+      "status_txt": "Đang giao / chưa nhận xong (24,449 dòng status!=5)",
       "status_code": "pending"
     }
   ]
