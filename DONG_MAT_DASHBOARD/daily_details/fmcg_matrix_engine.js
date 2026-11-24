@@ -109,24 +109,6 @@
                 label: 'Tỷ Lệ Lệch Chuyển Hàng',
                 value: s.ty_le_chenh_lech || '0.00%', unit: '',
                 sub: 'Tồn kho chênh lệch / Tổng GT lũy kế'
-            },
-            {
-                icon: 'fa-solid fa-truck-fast', color: '#10b981', valColor: '#34d399',
-                label: `SL Chuyển (Ngày ${s.latest_date ? s.latest_date.slice(0, 5) : ''})`,
-                value: fmtVndClean(s.sl_chuyen_ngay), unit: 'món',
-                sub: `Giá trị: ${fmtVndClean(s.gia_tri_chuyen_ngay)} đ`
-            },
-            {
-                icon: 'fa-solid fa-triangle-exclamation', color: '#8b5cf6', valColor: '#a78bfa',
-                label: `SL Chênh Lệch (Ngày ${s.latest_date ? s.latest_date.slice(0, 5) : ''})`,
-                value: fmtVndClean(s.sl_chenh_lech_ngay), unit: 'món',
-                sub: `Tiền lệch: ${fmtVndClean(s.gia_tri_chenh_lech_ngay)} đ`
-            },
-            {
-                icon: 'fa-solid fa-store', color: '#38bdf8', valColor: '#38bdf8',
-                label: `Siêu Thị Có Lệch (${s.latest_date ? s.latest_date.slice(0, 5) : ''})`,
-                value: fmtVndClean(s.sl_st_chenh_lech), unit: 'Siêu thị',
-                sub: `Giá trị trả DC: ${fmtVndClean(s.gia_tri_tra_dc)} đ`
             }
         ];
 
