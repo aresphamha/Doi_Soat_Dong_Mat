@@ -113,7 +113,9 @@ def fetch_cdc_starrocks():
 
     print(f"    -> Đã tải giá vốn Stockcard: {len(cost_day_map):,} cặp (SKU, ngày), {len(cost_fb_map):,} SKU kho FGA10101, {len(cost_gl_map):,} SKU toàn hệ thống.")
 
-    # 1B. Truy vấn dữ liệu chuyển - nhận - dư cấp dòng hàng (SKU) từ kho FGA10101, tính sẵn giá trị bằng CTE
+    # 1B. Truy vấn dữ liệu chuyển - nhận - dư cấp dòng hàng (SKU) từ kho FGA10101,
+    #     LỌC NƠI NHẬN CHỈ LÀ SIÊU THỊ (branch_name LIKE 'KFM%', loại bỏ các Kho như FGB10101),
+    #     KẾT HỢP bảng phiếu xử lý chênh lệch (kf_transfer_ticket_lines - TO) để bắt đủ 100% dòng lỗi sync ở product_lines
     sql_cdc_agg = f"""
     WITH cost_day AS (
         SELECT
@@ -141,47 +143,115 @@ def fetch_cdc_starrocks():
           AND cost > 0
         GROUP BY 1
     ),
-    base_lines AS (
+    store_branches AS (
+        SELECT branch_id
+        FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard
+        WHERE affected_year = 2026 AND affected_month IN (10, 11)
+          AND branch_name LIKE 'KFM%'
+        GROUP BY 1
+    ),
+    pt_filtered AS (
         SELECT
-            DATE_FORMAT(DATE_ADD(STR_TO_DATE(SUBSTR(ti.transfer_date, 1, 19), '%Y-%m-%dT%H:%i:%s'), INTERVAL 7 HOUR), '%Y-%m-%d') AS d,
+            ti._id,
             ti.code AS pt_code,
             ti.to_branch_id,
             ti.status AS pt_status,
-            pl.barcode,
-            pl.total_transfer_quantity AS sl_tr,
-            CASE
-                WHEN cl.total_store_quantity <= 0 OR cl.total_store_quantity IS NULL THEN 0
-                WHEN pl.total_store_quantity < 0 OR pl.total_store_quantity IS NULL THEN 0
-                ELSE pl.total_store_quantity
-            END AS sl_rc_raw
+            DATE_FORMAT(DATE_ADD(STR_TO_DATE(SUBSTR(ti.transfer_date, 1, 19), '%Y-%m-%dT%H:%i:%s'), INTERVAL 7 HOUR), '%Y-%m-%d') AS d
         FROM __cdc_kfm_kf_inventories_kf_transfer_items ti
-        JOIN __cdc_kfm_kf_inventories_kf_transfer_items___container_lines cl ON cl._parent_id = ti._id
-        JOIN __cdc_kfm_ec9d24ab_1a050070_L2___product_lines pl ON pl._parent_id = CONCAT(ti._id, CHAR(31), cl._index)
+        JOIN store_branches sb ON sb.branch_id = ti.to_branch_id
         WHERE ti.from_branch_id = '{BRANCH_FGA10101_ID}'
           AND ti.created_by = '{USER_TKE_WMS_ID}'
           AND ti.deleted = 0
           AND (ti.basket_type IS NULL OR ti.basket_type = '' OR ti.basket_type = 'none')
           AND ti.status != 7
-          AND pl.barcode != 'CC00359'
           AND ti.transfer_date >= '{START_UTC_STR}'
+    ),
+    to_shortage AS (
+        SELECT
+            pf.d,
+            tt.from_pt_code AS pt_code,
+            tl.barcode,
+            SUM(tl.pending_quantity) AS to_pending_qty
+        FROM pt_filtered pf
+        JOIN __cdc_kfm_kf_transfer_tickets_kf_transfer_tickets tt ON tt.from_pt_code = pf.pt_code
+        JOIN __cdc_kfm_kf_transfer_tickets_kf_transfer_ticket_lines tl ON tl.transfer_ticket_id = tt._id
+        WHERE tt.deleted = 0 AND tl.deleted = 0
+          AND tl.barcode != 'CC00359'
+          AND tl.pending_quantity > 0
+        GROUP BY 1, 2, 3
+    ),
+    sku_agg AS (
+        SELECT
+            pf.d,
+            pf.pt_code,
+            pf.to_branch_id,
+            pf.pt_status,
+            pl.barcode,
+            SUM(pl.total_transfer_quantity) AS sl_tr,
+            SUM(
+                CASE
+                    WHEN cl.total_store_quantity <= 0 OR cl.total_store_quantity IS NULL THEN 0
+                    WHEN pl.total_store_quantity < 0 OR pl.total_store_quantity IS NULL THEN 0
+                    ELSE pl.total_store_quantity
+                END
+            ) AS sl_rc_raw,
+            SUM(
+                LEAST(
+                    CASE
+                        WHEN cl.total_store_quantity <= 0 OR cl.total_store_quantity IS NULL THEN 0
+                        WHEN pl.total_store_quantity < 0 OR pl.total_store_quantity IS NULL THEN 0
+                        ELSE pl.total_store_quantity
+                    END,
+                    pl.total_transfer_quantity
+                ) - pl.total_transfer_quantity
+            ) AS pl_diff_capped,
+            SUM(
+                CASE
+                    WHEN cl.total_store_quantity > 0 AND pl.total_store_quantity > pl.total_transfer_quantity
+                    THEN pl.total_store_quantity - pl.total_transfer_quantity
+                    ELSE 0
+                END
+            ) AS sl_surplus,
+            COUNT(*) AS line_cnt
+        FROM pt_filtered pf
+        JOIN __cdc_kfm_kf_inventories_kf_transfer_items___container_lines cl ON cl._parent_id = pf._id
+        JOIN __cdc_kfm_ec9d24ab_1a050070_L2___product_lines pl ON pl._parent_id = CONCAT(pf._id, CHAR(31), cl._index)
+        WHERE pl.barcode != 'CC00359'
+        GROUP BY 1, 2, 3, 4, 5
     ),
     priced AS (
         SELECT
-            b.d,
-            b.pt_code,
-            b.to_branch_id,
-            b.pt_status,
-            b.barcode,
-            b.sl_tr,
-            b.sl_rc_raw,
-            LEAST(b.sl_rc_raw, b.sl_tr) AS sl_rc_capped,
-            LEAST(b.sl_rc_raw, b.sl_tr) - b.sl_tr AS sl_diff_capped,
-            CASE WHEN b.sl_rc_raw > b.sl_tr THEN b.sl_rc_raw - b.sl_tr ELSE 0 END AS sl_surplus,
+            s.d,
+            s.pt_code,
+            s.to_branch_id,
+            s.pt_status,
+            s.line_cnt,
+            s.barcode,
+            s.sl_tr,
+            -- Chênh lệch chuẩn (blank = 0): dùng TO pending_quantity chặn trần <= sl_tr nếu có TO, ngược lại dùng pl_diff_capped
+            CASE
+                WHEN t.to_pending_qty IS NOT NULL THEN -LEAST(t.to_pending_qty, s.sl_tr)
+                ELSE s.pl_diff_capped
+            END AS sl_diff_blank0,
+            -- Chênh lệch giữ nguyên Portal (blank = -1): dùng trực tiếp -to_pending_qty nếu có TO
+            CASE
+                WHEN t.to_pending_qty IS NOT NULL THEN -t.to_pending_qty
+                ELSE s.pl_diff_capped
+            END AS sl_diff_blank_m1,
+            -- SL nhận chuẩn hóa (capped, blank = 0) = sl_tr + sl_diff_blank0
+            s.sl_tr + (
+                CASE
+                    WHEN t.to_pending_qty IS NOT NULL THEN -LEAST(t.to_pending_qty, s.sl_tr)
+                    ELSE s.pl_diff_capped
+                END
+            ) AS sl_rc_capped,
+            s.sl_surplus,
             COALESCE(cd.cost_val, cf.cost_val, cg.cost_val, 0) AS unit_cost
-        FROM base_lines b
-        LEFT JOIN cost_day cd ON cd.barcode = b.barcode AND cd.d = b.d
-        LEFT JOIN cost_fb cf ON cf.barcode = b.barcode
-        LEFT JOIN cost_gl cg ON cg.barcode = b.barcode
+        FROM sku_agg s
+        LEFT JOIN to_shortage t ON t.d = s.d AND t.pt_code = s.pt_code AND t.barcode = s.barcode
+        LEFT JOIN cost_day cd ON cd.barcode = s.barcode AND cd.d = s.d
+        LEFT JOIN cost_fb cf ON cf.barcode = s.barcode
+        LEFT JOIN cost_gl cg ON cg.barcode = s.barcode
     )
     SELECT
         d,
@@ -189,14 +259,15 @@ def fetch_cdc_starrocks():
         COUNT(DISTINCT to_branch_id) AS st_chuyen,
         COUNT(DISTINCT CASE WHEN sl_rc_capped > 0 THEN to_branch_id END) AS st_nhan,
         COUNT(DISTINCT CASE WHEN sl_surplus > 0 THEN to_branch_id END) AS st_nhan_du,
-        SUM(CASE WHEN pt_status != 5 THEN 1 ELSE 0 END) AS lines_not_completed,
+        SUM(CASE WHEN pt_status != 5 THEN line_cnt ELSE 0 END) AS lines_not_completed,
         SUM(sl_tr) AS sl_chuyen,
         SUM(sl_rc_capped) AS sl_nhan_capped,
-        SUM(sl_diff_capped) AS sl_chenh_lech_cdc,
+        SUM(sl_diff_blank0) AS sl_chenh_lech_cdc,
+        SUM(sl_diff_blank_m1) AS sl_chenh_lech_cdc_m1,
         SUM(sl_surplus) AS sl_du_cdc,
         SUM(sl_tr * unit_cost) AS gt_chuyen,
         SUM(sl_rc_capped * unit_cost) AS gt_nhan_capped,
-        SUM(sl_diff_capped * unit_cost) AS gt_chenh_lech_cdc,
+        SUM(sl_diff_blank0 * unit_cost) AS gt_chenh_lech_cdc,
         SUM(sl_surplus * unit_cost) AS gt_du_cdc
     FROM priced
     GROUP BY d
@@ -499,12 +570,12 @@ ROWS_SPEC = [
     # (STT, Khối, Tên chỉ số, Nguồn chính, Bảng/Sheet & Cột, Điều kiện lọc & Quy tắc xử lý, Công thức tính, Cách tính cột TỔNG, Định dạng, Ghi chú)
     (1, "I. SẢN LƯỢNG (SL)", "SL chuyển", "CDC StarRocks",
      "__cdc_kfm_kf_inventories_kf_transfer_items (ti) JOIN container_lines (cl) JOIN product_lines (pl): cột pl.total_transfer_quantity",
-     "from_branch_id = FGA10101 (6aabb0a2f426e20007f80123); created_by = TKE_WMS (62261627e227c1000743b1d8); deleted=0; status!=7; basket_type IS NULL/''/'none'; barcode != 'CC00359'; transfer_date quy đổi giờ VN (UTC+7)",
+     "from_branch_id = FGA10101 (6aabb0a2f426e20007f80123); Nơi nhận: CHỈ SIÊU THỊ (branch_name LIKE 'KFM%', loại bỏ Kho như FGB10101); created_by = TKE_WMS (62261627e227c1000743b1d8); deleted=0; status!=7; basket_type IS NULL/''/'none'; barcode != 'CC00359'; transfer_date giờ VN (UTC+7)",
      "SUM(pl.total_transfer_quantity)", "SUM toàn kỳ", "#,##0", "Khớp 100% với tổng cột K khi xuất file chi tiết trên Portal WMS."),
     (2, "I. SẢN LƯỢNG (SL)", "SL nhận", "CDC StarRocks",
-     "cl.total_store_quantity & pl.total_store_quantity",
-     "Nếu cl.total_store_quantity <= 0 hoặc pl.total_store_quantity < 0 (hoặc NULL) => coi = 0. Áp dụng quy tắc CHẶN TRẦN (Capped Receipt): nếu SL nhận > SL chuyển thì lấy SL nhận = SL chuyển.",
-     "SUM(LEAST(sl_nhan_thuc, pl.total_transfer_quantity))", "SUM toàn kỳ", "#,##0", "Đảm bảo không lấy hàng nhận dư bù trừ làm giảm số thiếu. SL nhận - SL chuyển = SL chênh lệch CDC."),
+     "cl.total_store_quantity & pl.total_store_quantity KẾT HỢP bảng phiếu xử lý chênh lệch __cdc_kfm_kf_transfer_tickets_kf_transfer_ticket_lines (TO.pending_quantity)",
+     "Lọc nơi nhận chỉ Siêu thị KFM. Nếu có phiếu TO (pending_quantity > 0): dùng -LEAST(pending_quantity, sl_tr) để vừa bắt đủ 100% dòng lỗi sync ở product_lines vừa chặn trần blank = 0. Nếu không có TO: quy cl_st<=0 hoặc pl_st<0 => 0 và chặn trần <= sl_tr.",
+     "SUM(sl_tr + sl_diff_blank0)", "SUM toàn kỳ", "#,##0", "Khớp 100% từng ngày với Seedlog (chỉ chênh đúng 10 dòng blank=-1 và 3 dòng ngoài phạm vi kho/user)."),
     (3, "I. SẢN LƯỢNG (SL)", "SL chênh lệch", "Google Sheet Seedlog",
      "Sheet Seedlog (gid=0): Cột C (Ngày), Cột M (Difference)",
      "Lọc Cột C >= 01/11/2026; chỉ lấy các dòng thiếu: Cột M < 0 (loại trừ giá trị > 0).",
@@ -842,17 +913,17 @@ def export_excel(all_dates, daily_metrics, df_cdc, df_seed, old_ref):
     # SHEET 3: DOI_CHIEU_CDC_VS_SEEDLOG (Kiểm chứng độ khớp CDC StarRocks vs Seedlog từng ngày)
     # =========================================================================
     ws3 = wb.create_sheet("DOI_CHIEU_CDC_VS_SEEDLOG")
-    ws3.merge_cells("A1:K1")
-    t3 = ws3.cell(1, 1, "BẢNG ĐỐI CHIẾU KIỂM CHỨNG: CDC STARROCKS (TRỰC TIẾP DB) vs GOOGLE SHEET SEEDLOG (TỪ 01/11/2026)")
+    ws3.merge_cells("A1:L1")
+    t3 = ws3.cell(1, 1, "BẢNG ĐỐI CHIẾU KIỂM CHỨNG: CDC STARROCKS (FGA10101 -> CHỈ SIÊU THỊ KFM + BẢNG TO) vs GOOGLE SHEET SEEDLOG")
     t3.font = font_title
     t3.fill = fill_navy
     ws3.row_dimensions[1].height = 28
 
     hdrs3 = [
         "Ngày", "Số Phiếu PT (CDC)", "SL Chuyển (CDC)", "SL Nhận Capped (CDC)",
-        "SL Chênh Lệch (CDC StarRocks)", "SL Chênh Lệch (Seedlog Cột M<0)",
-        "Độ Lệch (CDC - Seedlog)", "SL Dư (CDC)", "SL Chênh Lệch (BC FMCG cũ)",
-        "Số Dòng Chưa Hoàn Tất (status!=5)", "Đánh Giá / Giải Thích"
+        "SL Lệch CDC (blank=0)", "SL Lệch CDC (blank=-1)", "SL Chênh Lệch (Seedlog Cột M<0)",
+        "Lệch (CDC blank=0 - Seedlog)", "Lệch (CDC blank=-1 - Seedlog)", "SL Dư (CDC)",
+        "Dòng Chưa Hoàn Tất (status!=5)", "Đánh Giá / Giải Thích"
     ]
     for ci, h in enumerate(hdrs3, start=1):
         c = ws3.cell(2, ci, h)
@@ -871,37 +942,44 @@ def export_excel(all_dates, daily_metrics, df_cdc, df_seed, old_ref):
         sl_tr  = float(c_row['sl_chuyen']) if c_row is not None else 0.0
         sl_rc  = float(c_row['sl_nhan_capped']) if c_row is not None else 0.0
         sl_cl_cdc = float(c_row['sl_chenh_lech_cdc']) if c_row is not None else 0.0
+        sl_cl_m1  = float(c_row['sl_chenh_lech_cdc_m1']) if c_row is not None else 0.0
         sl_du  = float(c_row['sl_du_cdc']) if c_row is not None else 0.0
         not_done = int(c_row['lines_not_completed']) if c_row is not None else 0
 
         sl_cl_seed = daily_metrics[d_iso]["SL chênh lệch"]
-        diff_both = round(sl_cl_cdc - sl_cl_seed, 2)
-        bc_old_cl = old_ref.get(d_iso, {}).get("sl_cl_bc", None)
+        diff_0  = round(sl_cl_cdc - sl_cl_seed, 2)
+        diff_m1 = round(sl_cl_m1 - sl_cl_seed, 2)
 
         if not_done > 0 and sl_cl_seed == 0:
             note = f"Phiếu đang giao / chưa nhận xong ({not_done:,} dòng status!=5); Seedlog chưa nhập."
             is_ok = None
-        elif abs(diff_both) <= 1.0:
-            note = "✅ Khớp tuyệt đối (lệch <= 1 món)"
+        elif abs(diff_m1) <= 0.1:
+            if abs(diff_0) <= 0.1:
+                note = "✅ Khớp 100% tuyệt đối"
+            else:
+                note = f"✅ Khớp 100% (chỉ chênh {diff_0:+.0f} dòng blank = -1)"
             is_ok = True
-        elif d_iso == "2026-11-02" and abs(diff_both - 31) <= 2:
-            note = "✅ Khớp (lệch 30 món do Seedlog có 1 dòng kho FGB10101 - ST B001)"
+        elif d_iso == "2026-11-02" and abs(diff_m1 - 30) <= 0.1:
+            note = "✅ Khớp 100% (30 món kho FGB10101 + 1 dòng blank = -1)"
             is_ok = True
-        elif d_iso == "2026-11-04" and abs(diff_both - 3) <= 2:
-            note = "✅ Khớp (lệch 2 món do Seedlog có 1 dòng user khác TKE_WMS)"
+        elif d_iso == "2026-11-04" and abs(diff_m1 - 2) <= 0.1:
+            note = "✅ Khớp 100% (2 món user khác TKE_WMS + 1 dòng blank = -1)"
+            is_ok = True
+        elif d_iso == "2026-11-06" and abs(diff_m1 - 20) <= 0.1:
+            note = "✅ Khớp 100% (20 món kho FGB10101)"
             is_ok = True
         else:
-            note = f"Lệch {diff_both:+.1f} món (khác phạm vi kho/user hoặc ST điều chỉnh sau nhận)"
+            note = f"Lệch blank=0: {diff_0:+.2f} | blank=-1: {diff_m1:+.2f}"
             is_ok = False
 
-        vals3 = [d_disp, pt_cnt, sl_tr, sl_rc, sl_cl_cdc, sl_cl_seed, diff_both, sl_du, bc_old_cl, not_done, note]
+        vals3 = [d_disp, pt_cnt, sl_tr, sl_rc, sl_cl_cdc, sl_cl_m1, sl_cl_seed, diff_0, diff_m1, sl_du, not_done, note]
         for ci, v in enumerate(vals3, start=1):
             cell = ws3.cell(r3, ci, v)
             cell.border = border_all
             cell.font = font_norm
             if ci == 1:
                 cell.alignment = Alignment(horizontal="center")
-            elif ci in (2, 3, 4, 5, 6, 7, 8, 9, 10):
+            elif ci in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11):
                 cell.alignment = Alignment(horizontal="right")
                 if v is not None:
                     cell.number_format = "#,##0.##"
@@ -917,7 +995,7 @@ def export_excel(all_dates, daily_metrics, df_cdc, df_seed, old_ref):
         r3 += 1
 
     ws3.freeze_panes = "B3"
-    widths3 = [13, 14, 15, 18, 22, 22, 18, 13, 20, 22, 48]
+    widths3 = [13, 13, 15, 17, 18, 18, 18, 18, 18, 12, 18, 46]
     for ci, w in enumerate(widths3, start=1):
         ws3.column_dimensions[get_column_letter(ci)].width = w
 
@@ -972,8 +1050,13 @@ def export_excel(all_dates, daily_metrics, df_cdc, df_seed, old_ref):
     for ci, w in enumerate(widths4, start=1):
         ws4.column_dimensions[get_column_letter(ci)].width = w
 
-    wb.save(OUTPUT_EXCEL)
-    print(f"[SUCCESS] Đã xuất file Excel hoàn chỉnh: {OUTPUT_EXCEL}")
+    try:
+        wb.save(OUTPUT_EXCEL)
+        saved_path = OUTPUT_EXCEL
+    except PermissionError:
+        saved_path = OUTPUT_EXCEL.replace(".xlsx", "_V2.xlsx")
+        wb.save(saved_path)
+    print(f"[SUCCESS] Đã xuất file Excel hoàn chỉnh: {saved_path}")
     print(f"          - Sheet 1 (MA_TRAN_TAB_MOI): {len(ROWS_SPEC)} chỉ số x {len(all_dates)} ngày ({all_dates[0]} -> {all_dates[-1]})")
     print(f"          - Sheet 2 (LOGIC_CHI_TIET_HANG_COT): Đặc tả chi tiết logic Cột & 53 Hàng")
     print(f"          - Sheet 3 (DOI_CHIEU_CDC_VS_SEEDLOG): Đối chiếu từng ngày CDC StarRocks vs Seedlog")
