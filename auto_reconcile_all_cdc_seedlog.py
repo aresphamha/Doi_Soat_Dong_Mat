@@ -23,10 +23,12 @@ def load_seedlog():
     if diff_col is None:
         # fallback to column 11 (index based)
         diff_col = df.columns[10]
+    # Convert diff column to numeric (coerce errors to NaN)
+    df[diff_col] = pd.to_numeric(df[diff_col], errors='coerce')
     # Parse dates (dayfirst=True because format is DD/MM/YYYY)
     df[date_col] = pd.to_datetime(df[date_col], dayfirst=True, errors='coerce')
     df = df.dropna(subset=[date_col])
-    # Keep only rows where difference is negative (shortage)
+    # Keep only rows where difference is negative (shortage) and not NaN
     df = df[df[diff_col] < 0]
     df = df[[date_col, diff_col]].copy()
     df.rename(columns={date_col: 'date', diff_col: 'seedlog_diff'}, inplace=True)
