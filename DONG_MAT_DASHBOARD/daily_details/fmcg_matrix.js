@@ -1,6 +1,6 @@
 // Dữ liệu Báo cáo Logistics FMCG (Tự động từ CDC StarRocks + Google Sheet Seedlog + Đặc tả Logic)
 window.FMCG_MATRIX_DATA = {
-  "updated_at": "24/11/2026 23:23:04",
+  "updated_at": "24/11/2026 23:28:02",
   "filter_scope": "Từ 01/11/2026 trở về sau • CDC StarRocks (FGA10101 -> Siêu thị KFM + Bảng TO) + Seedlog + Cost Stockcard",
   "dates": [
     {
@@ -215,7 +215,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 2,
           "name": "SL nhận",
           "section_id": "sec_san_luong",
-          "total": "6,498,008.64",
+          "total": "6,498,147.64",
           "values": {
             "2026-11-01": "2,508",
             "2026-11-02": "344,825",
@@ -240,7 +240,7 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-21": "382,024.94",
             "2026-11-22": "4,333",
             "2026-11-23": "361,020",
-            "2026-11-24": "80,852"
+            "2026-11-24": "80,991"
           },
           "logic": {
             "stt": 2,
@@ -610,7 +610,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 11,
           "name": "Giá trị nhận",
           "section_id": "sec_gia_tri",
-          "total": "111,488,994,320",
+          "total": "111,491,395,269.41",
           "values": {
             "2026-11-01": "48,492,798.07",
             "2026-11-02": "6,009,734,811.75",
@@ -635,7 +635,7 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-21": "6,900,225,892.44",
             "2026-11-22": "86,449,320.06",
             "2026-11-23": "6,682,161,365.40",
-            "2026-11-24": "1,488,599,742.61"
+            "2026-11-24": "1,491,000,692.03"
           },
           "logic": {
             "stt": 11,
@@ -2668,8 +2668,8 @@ window.FMCG_MATRIX_DATA = {
       "pt_cnt": 224,
       "sl_chuyen": 327345.0,
       "sl_nhan": 326875.92,
-      "cdc_blank0": -469.08,
-      "cdc_blank_m1": -469.08,
+      "cdc_blank0": -469.08000000000004,
+      "cdc_blank_m1": -469.08000000000004,
       "seedlog": -469.1,
       "diff_0": 0.02,
       "diff_m1": 0.02,
@@ -2891,15 +2891,15 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-24",
       "pt_cnt": 125,
       "sl_chuyen": 255860.0,
-      "sl_nhan": 80852.0,
-      "cdc_blank0": -175008.0,
-      "cdc_blank_m1": -175008.0,
+      "sl_nhan": 80991.0,
+      "cdc_blank0": -174869.0,
+      "cdc_blank_m1": -174869.0,
       "seedlog": 0.0,
-      "diff_0": -175008.0,
-      "diff_m1": -175008.0,
+      "diff_0": -174869.0,
+      "diff_m1": -174869.0,
       "sl_du": 4.0,
-      "not_done": 10523,
-      "status_txt": "Đang giao / chưa nhận xong (10,523 dòng status!=5)",
+      "not_done": 8745,
+      "status_txt": "Đang giao / chưa nhận xong (8,745 dòng status!=5)",
       "status_code": "pending"
     }
   ],
@@ -3618,7 +3618,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "SUM(SL nhận Capped <= SL chuyển + bảng TO)",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "6,498,008.64",
+              "SIGMA_T11": "6,498,147.64",
               "2026-11-01": "2,508",
               "2026-11-02": "344,825",
               "2026-11-03": "342,482",
@@ -3642,12 +3642,12 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-21": "382,024.94",
               "2026-11-22": "4,333",
               "2026-11-23": "361,020",
-              "2026-11-24": "80,852",
+              "2026-11-24": "80,991",
               "SIGMA_W44": "2,508",
               "SIGMA_W45": "1,867,207",
               "SIGMA_W46": "2,133,088.70",
               "SIGMA_W47": "2,053,332.94",
-              "SIGMA_W48": "441,872"
+              "SIGMA_W48": "442,011"
             }
           },
           {
@@ -3658,7 +3658,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "SUM(SL nhận Capped * gia_cost Stockcard)",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "111,488,994,320",
+              "SIGMA_T11": "111,491,395,269.41",
               "2026-11-01": "48,492,798.07",
               "2026-11-02": "6,009,734,811.75",
               "2026-11-03": "6,165,838,093.97",
@@ -3682,12 +3682,12 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-21": "6,900,225,892.44",
               "2026-11-22": "86,449,320.06",
               "2026-11-23": "6,682,161,365.40",
-              "2026-11-24": "1,488,599,742.61",
+              "2026-11-24": "1,491,000,692.03",
               "SIGMA_W44": "48,492,798.07",
               "SIGMA_W45": "31,493,564,954.61",
               "SIGMA_W46": "35,414,162,670.43",
               "SIGMA_W47": "36,362,012,788.87",
-              "SIGMA_W48": "8,170,761,108.01"
+              "SIGMA_W48": "8,173,162,057.43"
             }
           },
           {
