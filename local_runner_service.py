@@ -273,6 +273,27 @@ def get_latest_pending_tickets_data():
         print(f"⚠️ Lỗi đọc pending_tickets.js: {e}")
         return None
 
+
+def get_latest_fmcg_matrix_data():
+    try:
+        p1 = os.path.join(ROOT_DIR, "daily_details", "fmcg_matrix.js")
+        p2 = os.path.join(ROOT_DIR, "DONG_MAT_DASHBOARD", "daily_details", "fmcg_matrix.js")
+        target_path = p1 if os.path.exists(p1) else (p2 if os.path.exists(p2) else None)
+        if not target_path:
+            return None
+        with open(target_path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+        marker = "window.FMCG_MATRIX_DATA ="
+        idx = content.find(marker)
+        if idx != -1:
+            content = content[idx + len(marker):].strip()
+        if content.endswith(";"):
+            content = content[:-1].strip()
+        return json.loads(content)
+    except Exception as e:
+        print(f"⚠️ Lỗi đọc fmcg_matrix.js: {e}")
+        return None
+
 def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name=None, chat_id_dc=None):
     if not store_id:
         return False, "Thiếu Mã Siêu Thị (store_id)!"
@@ -646,6 +667,26 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
             return
+        elif path == "/api/sync_fmcg" or path == "/sync_fmcg":
+            push = params.get('push', ['true'])[0].lower() in ['true', '1', 'yes']
+            result = run_tool_sync("sync_fmcg", "", False)
+            if result.get('success') and push:
+                def _bg_push_fmcg():
+                    try:
+                        from push_to_github import sync_and_push
+                        sync_and_push("🤖 [Realtime] Cập nhật Báo cáo Logistics FMCG (CDC StarRocks + Seedlog)", ["daily_details/fmcg_matrix.js", "DONG_MAT_DASHBOARD/daily_details/fmcg_matrix.js"])
+                    except Exception as pe:
+                        print(f"Push FMCG error: {pe}")
+                threading.Thread(target=_bg_push_fmcg, daemon=True).start()
+            data_obj = get_latest_fmcg_matrix_data()
+            if data_obj:
+                result['data'] = data_obj
+            self.send_response(200 if result.get('success') else 500)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+            return
 
         elif path == "/run":
             tool = params.get('tool', ['all'])[0].strip().lower()
@@ -820,6 +861,26 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
             return
+        elif path == "/api/sync_fmcg" or path == "/sync_fmcg":
+            push = data.get('push', True)
+            result = run_tool_sync("sync_fmcg", "", False)
+            if result.get('success') and push:
+                def _bg_push_fmcg_post():
+                    try:
+                        from push_to_github import sync_and_push
+                        sync_and_push("🤖 [Realtime] Cập nhật Báo cáo Logistics FMCG (CDC StarRocks + Seedlog)", ["daily_details/fmcg_matrix.js", "DONG_MAT_DASHBOARD/daily_details/fmcg_matrix.js"])
+                    except Exception as pe:
+                        print(f"Push FMCG error: {pe}")
+                threading.Thread(target=_bg_push_fmcg_post, daemon=True).start()
+            data_obj = get_latest_fmcg_matrix_data()
+            if data_obj:
+                result['data'] = data_obj
+            self.send_response(200 if result.get('success') else 500)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self._send_cors_headers()
+            self.end_headers()
+            self.wfile.write(json.dumps(result, ensure_ascii=False).encode('utf-8'))
+            return
 
         elif path == "/run" or path == "/api/spam_custom":
             tool = data.get('tool', 'spam_tu_chon' if path == '/api/spam_custom' else 'all').strip().lower()
@@ -963,7 +1024,7 @@ def run_tool_sync(tool, target_date, dry_run, stores="ALL", message="", tag_role
         elif tool in ["sync_cdc", "cdc", "sync_cdc_prices", "dong_bo_cdc"]:
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "Cap_Nhat_Gia_Nhap_Tu_CDC.py")]
         elif tool in ["sync_fmcg", "fmcg_matrix", "fmcg"]:
-            cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "sync_fmcg_matrix.py")]
+            cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "xuat_excel_fmcg_tab_moi.py")]
         elif tool in ["add_thanh_vien", "4_Add_Thanh_Vien", "4_add_thanh_vien"]:
             cmd = [PYTHON_EXE, os.path.join(ROOT_DIR, "TOOLS_DOI_SOAT", "DONG_MAT", "4_Add_Thanh_Vien.py")]
             if message and str(message).strip():

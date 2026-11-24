@@ -656,11 +656,73 @@
         renderActiveSubView();
     };
 
-    window.fetchGoogleSheetFmcgLive = function () {
-        if (window.FMCG_MATRIX_DATA) {
-            currentData = JSON.parse(JSON.stringify(window.FMCG_MATRIX_DATA));
-            buildUI();
-            alert('Đã nạp dữ liệu chuẩn mới nhất từ CDC StarRocks + Seedlog (cập nhật lúc ' + (currentData.updated_at || '') + ')!');
+    window.syncFmcgRealtime = async function () {
+        const btn = document.getElementById('btn-fmcg-realtime');
+        const origHtml = '<i class="fa-solid fa-bolt-lightning"></i> Cập Nhật Realtime (CDC & Seedlog)';
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang kéo CDC StarRocks & Seedlog (~15s)...';
         }
+        const resetBtn = () => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
+        };
+
+        // 1. Tìm endpoint Runner (Cloudflare HTTPS Tunnel trước, sau đó Localhost)
+        let candidateUrls = [];
+        try {
+            const r = await fetch('runner_remote_url.json?t=' + Date.now());
+            if (r.ok) {
+                const j = await r.json();
+                if (j && j.tunnel_url && j.status === 'online') {
+                    candidateUrls.push(j.tunnel_url);
+                }
+            }
+        } catch (e) {}
+        candidateUrls.push('http://127.0.0.1:8088');
+        candidateUrls.push('http://localhost:8088');
+
+        for (const url of candidateUrls) {
+            try {
+                const ctrl = new AbortController();
+                const tid = setTimeout(() => ctrl.abort(), 90000); // 90s cho CDC + Seedlog
+                const res = await fetch(`${url}/api/sync_fmcg?push=true`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ push: true }),
+                    signal: ctrl.signal
+                });
+                clearTimeout(tid);
+                if (res.ok) {
+                    const payload = await res.json();
+                    if (payload.success && payload.data) {
+                        window.FMCG_MATRIX_DATA = payload.data;
+                        currentData = JSON.parse(JSON.stringify(payload.data));
+                        buildUI();
+                        resetBtn();
+                        alert(
+                            `🎉 ĐỒNG BỘ REALTIME THÀNH CÔNG (CDC STARROCKS + GOOGLE SHEET SEEDLOG)!\n\n` +
+                            `• Giờ cập nhật mới: ${currentData.updated_at || 'Vừa xong'}\n` +
+                            `• Phạm vi: ${currentData.dates ? currentData.dates.length : 0} ngày (đến ${currentData.summary?.latest_cdc_date || ''})\n` +
+                            `• Đã hiển thị số mới ngay trên Web và tự động đẩy lên GitHub!`
+                        );
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.warn('Thử runner FMCG không thành công:', url, err);
+            }
+        }
+
+        resetBtn();
+        alert(
+            '⚠️ KHÔNG KẾT NỐI ĐƯỢC TRẠM RUNNER CỤC BỘ!\n\n' +
+            '• Database CDC StarRocks (103.140.248.250) yêu cầu máy trạm đang bật NetBird + chạy Local Runner.\n' +
+            '• Hãy chạy file "Chay_Local_Runner.bat" (hoặc "Chay_An_Local_Runner.vbs") trên máy tính, sau đó bấm lại nút Cập Nhật Realtime trên Web!'
+        );
     };
+
+    window.fetchGoogleSheetFmcgLive = window.syncFmcgRealtime;
 })();

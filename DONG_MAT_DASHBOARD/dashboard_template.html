@@ -2935,8 +2935,8 @@
     <!-- Dữ liệu BUNDLES siêu nhẹ cho Tab 1 & 2 (~300 KB) -->
     <script src="daily_details/data_bundles.js"></script>
     <script src="daily_details/pending_tickets.js"></script>
-    <script src="daily_details/fmcg_matrix.js?v=20261124_3"></script>
-    <script src="daily_details/fmcg_matrix_engine.js?v=20261124_3"></script>
+    <script src="daily_details/fmcg_matrix.js?v=20261124_4"></script>
+    <script src="daily_details/fmcg_matrix_engine.js?v=20261124_4"></script>
 </head>
 <body>
 
@@ -6303,6 +6303,10 @@
                         </div>
 
                         <div style="display:flex; gap:0.45rem; flex-wrap:wrap; align-items:center;">
+                            <button id="btn-fmcg-realtime" onclick="syncFmcgRealtime()" style="background:linear-gradient(135deg, #0284c7, #2563eb); color:#fff; border:1px solid #38bdf8; border-radius:8px; padding:0.44rem 0.9rem; font-size:0.79rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.4rem; box-shadow:0 0 12px rgba(56,189,248,0.35);">
+                                <i class="fa-solid fa-bolt-lightning"></i> Cập Nhật Realtime (CDC &amp; Seedlog)
+                            </button>
+
                             <button id="btn-fmcg-sort" onclick="toggleFmcgSort()" style="background:#1e293b; color:#cbd5e1; border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:0.42rem 0.8rem; font-size:0.78rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
                                 <i class="fa-solid fa-arrow-down-wide-short"></i> Ngày Mới Nhất Trước
                             </button>
