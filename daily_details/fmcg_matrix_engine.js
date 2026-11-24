@@ -107,7 +107,7 @@
                     <i class="fa-solid fa-truck-fast"></i>
                 </div>
                 <div>
-                    <div style="font-size:0.72rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.4px;">SL Chuyển (${s.latest_date ? s.latest_date.slice(0,5) : ''})</div>
+                    <div style="font-size:0.72rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.4px;">SL Chuyển (${s.latest_date ? s.latest_date.slice(0, 5) : ''})</div>
                     <div style="font-size:1.3rem; font-weight:800; color:#34d399; font-family:'JetBrains Mono', monospace; margin:0.12rem 0;">${s.sl_chuyen_ngay || '0'} <span style="font-size:0.74rem; font-weight:600; color:#cbd5e1;">món</span></div>
                     <div style="font-size:0.7rem; color:#64748b;">GT: ${s.gia_tri_chuyen_ngay || '0'} đ</div>
                 </div>
@@ -118,7 +118,7 @@
                     <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
                 <div>
-                    <div style="font-size:0.72rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.4px;">Lệch Ngày ${s.latest_date ? s.latest_date.slice(0,5) : ''}</div>
+                    <div style="font-size:0.72rem; text-transform:uppercase; color:#94a3b8; font-weight:700; letter-spacing:0.4px;">Lệch Ngày ${s.latest_date ? s.latest_date.slice(0, 5) : ''}</div>
                     <div style="font-size:1.3rem; font-weight:800; color:#a78bfa; font-family:'JetBrains Mono', monospace; margin:0.12rem 0;">${s.sl_chenh_lech_ngay || '0'} <span style="font-size:0.74rem; font-weight:600; color:#cbd5e1;">món</span></div>
                     <div style="font-size:0.7rem; color:#64748b;">Tiền lệch: ${s.gia_tri_chenh_lech_ngay || '0'} đ</div>
                 </div>
@@ -267,21 +267,22 @@
                 </div>
 
                 <!-- PHẦN A: LOGIC CỘT & NGUYÊN TẮC HỆ THỐNG -->
-                <div style="margin-bottom:1.4rem;">
-                    <div style="font-size:0.82rem; font-weight:800; color:#fbbf24; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.65rem;">
-                        <i class="fa-solid fa-layer-group" style="margin-right:0.4rem;"></i> PHẦN A: LOGIC CẤU TRÚC CỘT & QUY TẮC TRUY VẤN HỆ THỐNG
+                <div style="margin-bottom:1.5rem;">
+                    <div style="font-size:0.84rem; font-weight:800; color:#fbbf24; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.75rem;">
+                        <i class="fa-solid fa-layer-group" style="margin-right:0.4rem;"></i> PHẦN A: LOGIC CẤU TRÚC CỘT &amp; QUY TẮC TRUY VẤN HỆ THỐNG
                     </div>
-                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:0.75rem;">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(420px, 1fr)); gap:0.85rem;">
         `;
 
         colLogic.forEach((item, idx) => {
+            const isFull = (idx === colLogic.length - 1 && colLogic.length % 2 === 1);
             html += `
-                <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.2); border-radius:10px; padding:0.85rem 1rem;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
-                        <strong style="color:#f1f5f9; font-size:0.84rem;">${idx + 1}. ${escapeHtml(item.title)}</strong>
-                        <span style="font-size:0.68rem; font-weight:700; color:#38bdf8; background:rgba(56,189,248,0.12); padding:2px 7px; border-radius:6px; white-space:nowrap;">${escapeHtml(item.source)}</span>
+                <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.22); border-left:3px solid #38bdf8; border-radius:10px; padding:1rem 1.15rem; min-width:0; ${isFull ? 'grid-column: 1 / -1;' : ''}">
+                    <div style="margin-bottom:0.5rem;">
+                        <div style="color:#f8fafc; font-size:0.88rem; font-weight:800; margin-bottom:0.35rem; line-height:1.35;">${idx + 1}. ${escapeHtml(item.title)}</div>
+                        <span style="display:inline-block; font-size:0.7rem; font-weight:700; color:#38bdf8; background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.25); padding:2px 8px; border-radius:6px; word-break:break-word;">${escapeHtml(item.source)}</span>
                     </div>
-                    <div style="font-size:0.78rem; color:#cbd5e1; line-height:1.5;">${formatInlineCode(item.detail)}</div>
+                    <div style="font-size:0.8rem; color:#cbd5e1; line-height:1.6; overflow-wrap:anywhere;">${formatInlineCode(item.detail)}</div>
                 </div>
             `;
         });
@@ -577,7 +578,7 @@
 
     function formatInlineCode(s) {
         return escapeHtml(s)
-            .replace(/`([^`]+)`/g, '<code style="background:rgba(56,189,248,0.12); color:#7dd3fc; padding:1px 4px; border-radius:4px; font-family:\'JetBrains Mono\', monospace; font-size:0.74rem;">$1</code>')
+            .replace(/`([^`]+)`/g, '<code style="background:rgba(56,189,248,0.12); color:#7dd3fc; padding:1px 5px; border-radius:4px; font-family:\'JetBrains Mono\', monospace; font-size:0.74rem; word-break:break-all;">$1</code>')
             .replace(/\*\*([^*]+)\*\*/g, '<strong style="color:#f8fafc;">$1</strong>');
     }
 
