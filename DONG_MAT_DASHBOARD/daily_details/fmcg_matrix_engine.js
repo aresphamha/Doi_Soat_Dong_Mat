@@ -508,10 +508,10 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.85rem; border-bottom:1px solid rgba(255,255,255,0.1);">
                     <div>
                         <h3 style="margin:0 0 0.25rem 0; color:#38bdf8; font-size:1.05rem; font-weight:800;">
-                            <i class="fa-solid fa-book-open" style="margin-right:0.45rem;"></i> ĐẶC TẢ LOGIC CHI TIẾT TỪNG CỘT & 53 HÀNG CHỈ SỐ (TAB FMCG)
+                            <i class="fa-solid fa-book-open" style="margin-right:0.45rem;"></i> ĐẶC TẢ LOGIC CHI TIẾT CỦA CẢ 2 BẢNG (MA TRẬN 53 CHỈ SỐ &amp; FLOW ĐIỂM CHẶN Đ0–Đ4)
                         </h3>
                         <p style="margin:0; font-size:0.78rem; color:#94a3b8;">
-                            Tài liệu kỹ thuật trực tiếp gắn liền với bộ máy tính toán CDC StarRocks + Google Sheet Seedlog — luôn sẵn sàng tra cứu, sao chép hoặc xuất Excel.
+                            Tài liệu kỹ thuật trực tiếp gắn liền với bộ máy tính toán CDC StarRocks (lọc chặt user hệ thống <code>TKE_WMS</code>) + Google Sheet Seedlog — đầy đủ cho cả 2 bảng.
                         </p>
                     </div>
                     <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
@@ -548,9 +548,9 @@
                     </div>
                 </div>
 
-                <!-- PHẦN B: LOGIC CHI TIẾT 53 HÀNG -->
+                <!-- PHẦN B: LOGIC CHI TIẾT BẢNG 1 (MA TRẬN 53 CHỈ SỐ) -->
                 <div style="font-size:0.82rem; font-weight:800; color:#34d399; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.65rem;">
-                    <i class="fa-solid fa-table-list" style="margin-right:0.4rem;"></i> PHẦN B: LOGIC CHI TIẾT TỪNG HÀNG CHỈ SỐ (53 HÀNG)
+                    <i class="fa-solid fa-table-list" style="margin-right:0.4rem;"></i> PHẦN B: LOGIC CHI TIẾT BẢNG 1 — MA TRẬN 53 CHỈ SỐ (CHỈ SỐ LOGISTICS FMCG)
                 </div>
                 <div style="overflow-x:auto; border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
                     <table style="width:100%; border-collapse:collapse; font-size:0.78rem; text-align:left;">
@@ -610,9 +610,72 @@
             });
         });
 
-        html += `</tbody></table></div></div>`;
+        html += `</tbody></table></div>`;
+
+        // PHẦN C: LOGIC CHI TIẾT BẢNG 2 (FLOW ĐIỂM CHẶN Đ0–Đ4 + B. TỒN ÂM)
+        const ft = currentData.flow_template;
+        let flowLogicCount = 0;
+        if (ft && ft.blocks && ft.blocks.length > 0) {
+            html += `
+                <div style="margin-top:1.75rem;">
+                    <div style="font-size:0.82rem; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.65rem;">
+                        <i class="fa-solid fa-diagram-project" style="margin-right:0.4rem;"></i> PHẦN C: LOGIC CHI TIẾT BẢNG 2 — FLOW ĐIỂM CHẶN (Đ0–Đ4 + B. TỒN ÂM)
+                    </div>
+                    <div style="overflow-x:auto; border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
+                        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; text-align:left;">
+                            <thead>
+                                <tr style="background:#0f172a; color:#38bdf8; border-bottom:2px solid rgba(56,189,248,0.3);">
+                                    <th style="padding:0.65rem 0.5rem; width:44px; text-align:center;">STT</th>
+                                    <th style="padding:0.65rem 0.6rem; width:56px; text-align:center;">ĐC</th>
+                                    <th style="padding:0.65rem 0.7rem; min-width:210px;">Tiêu Chí (Flow FMCG)</th>
+                                    <th style="padding:0.65rem 0.6rem; min-width:110px; text-align:center;">Đơn Vị</th>
+                                    <th style="padding:0.65rem 0.7rem; min-width:130px;">Nguồn Chính</th>
+                                    <th style="padding:0.65rem 0.7rem; min-width:380px;">Điều Kiện Lọc &amp; Công Thức Chi Tiết</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            let sttFlow = 0;
+            ft.blocks.forEach(blk => {
+                const matchedRows = blk.rows.map((r, i) => ({ r, stt: sttFlow + i + 1 })).filter(item => {
+                    if (!q) return true;
+                    const blob = `${item.r.diem_chan} ${item.r.tieu_chi} ${item.r.don_vi} ${item.r.nguon} ${item.r.cach_tinh}`.toLowerCase();
+                    return blob.includes(q);
+                });
+                sttFlow += blk.rows.length;
+                if (matchedRows.length === 0) return;
+
+                html += `
+                    <tr style="background:${blk.accent}1f; border-top:1px solid rgba(255,255,255,0.1);">
+                        <td colspan="6" style="padding:0.55rem 0.75rem; font-weight:800; color:${blk.accent}; font-size:0.8rem;">
+                            <i class="${blk.icon}" style="margin-right:0.45rem;"></i> ${blk.title}
+                        </td>
+                    </tr>
+                `;
+                matchedRows.forEach(({ r, stt }, idx) => {
+                    flowLogicCount++;
+                    const bg = r.is_empty_template ? '#0d1117' : (idx % 2 === 0 ? '#161b22' : '#11161d');
+                    const srcColor = (r.nguon || '').includes('CDC') ? '#38bdf8' : ((r.nguon || '').includes('Seedlog') ? '#34d399' : '#f59e0b');
+                    html += `
+                        <tr style="background:${bg}; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:top; opacity:${r.is_empty_template ? '0.68' : '1'};">
+                            <td style="padding:0.58rem 0.5rem; text-align:center; color:#64748b; font-weight:700;">${stt}</td>
+                            <td style="padding:0.58rem 0.5rem; text-align:center; color:${blk.accent}; font-weight:700;">${escapeHtml(r.diem_chan)}</td>
+                            <td style="padding:0.58rem 0.7rem; font-weight:700; color:#f1f5f9;">${escapeHtml(r.tieu_chi)}</td>
+                            <td style="padding:0.58rem 0.6rem; text-align:center; color:#cbd5e1;">${escapeHtml(r.don_vi)}</td>
+                            <td style="padding:0.58rem 0.7rem;">
+                                <span style="display:inline-block; font-size:0.7rem; font-weight:700; color:${srcColor}; background:${srcColor}1a; border:1px solid ${srcColor}44; padding:2px 7px; border-radius:6px;">${escapeHtml(r.nguon || '')}</span>
+                            </td>
+                            <td style="padding:0.58rem 0.7rem; color:#fde68a; line-height:1.45;">${formatInlineCode(r.cach_tinh || '')}</td>
+                        </tr>
+                    `;
+                });
+            });
+            html += `</tbody></table></div></div>`;
+        }
+
+        html += `</div>`;
         container.innerHTML = html;
-        updateStatusText(`Đang xem <strong>Đặc tả Logic chi tiết</strong> (${countRows} chỉ số) • Bấm "Copy Toàn Bộ Logic" hoặc "Tải Excel" để lấy tài liệu bất kỳ lúc nào.`);
+        updateStatusText(`Đang xem <strong>Đặc tả Logic chi tiết cả 2 bảng</strong> (Bảng 1: <strong>${countRows}</strong> chỉ số • Bảng 2: <strong>${flowLogicCount}</strong> dòng Flow Đ0–Đ4) • Bấm "Copy Toàn Bộ Logic" hoặc "Tải Excel".`);
     }
 
     // ==================== VIEW 3: ĐỐI CHIẾU CDC STARROCKS vs SEEDLOG ====================
@@ -754,6 +817,19 @@
             });
         });
 
+        if (currentData.flow_template && currentData.flow_template.blocks) {
+            md += `\n## PHẦN C: LOGIC CHI TIẾT BẢNG 2 — FLOW ĐIỂM CHẶN (Đ0–Đ4 + B. TỒN ÂM)\n`;
+            md += `| STT | Điểm Chặn | Tiêu Chí | Đơn Vị | Nguồn | Điều Kiện Lọc & Công Thức |\n|---:|---|---|---|---|---|\n`;
+            let sttF = 0;
+            currentData.flow_template.blocks.forEach(blk => {
+                blk.rows.forEach(r => {
+                    sttF++;
+                    const clean = (s) => String(s || '').replace(/\|/g, '/').replace(/\n/g, ' ');
+                    md += `| ${sttF} | ${clean(r.diem_chan)} | ${clean(r.tieu_chi)} | ${clean(r.don_vi)} | ${clean(r.nguon)} | ${clean(r.cach_tinh)} |\n`;
+                });
+            });
+        }
+
         navigator.clipboard.writeText(md).then(() => {
             alert('Đã sao chép toàn bộ đặc tả Logic (Phần A + 53 Hàng) dạng Markdown vào Clipboard!');
         }).catch(() => {
@@ -800,6 +876,18 @@
                     ws2Data.push([r.row_idx, lg.section || sec.title, r.name, lg.source || '', lg.table_col || '', lg.filter_rule || '', lg.formula || '', lg.total_rule || '', lg.note || '']);
                 });
             });
+            if (currentData.flow_template && currentData.flow_template.blocks) {
+                ws2Data.push([]);
+                ws2Data.push(['PHẦN C: LOGIC CHI TIẾT BẢNG 2 — FLOW ĐIỂM CHẶN (Đ0–Đ4 + B. TỒN ÂM)']);
+                ws2Data.push(['STT', 'Điểm Chặn', 'Tiêu Chí', 'Đơn Vị', 'Nguồn Chính', 'Điều Kiện Lọc & Công Thức Chi Tiết']);
+                let sttF = 0;
+                currentData.flow_template.blocks.forEach(blk => {
+                    blk.rows.forEach(r => {
+                        sttF++;
+                        ws2Data.push([sttF, r.diem_chan, r.tieu_chi, r.don_vi, r.nguon, r.cach_tinh]);
+                    });
+                });
+            }
             XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ws2Data), 'LOGIC_CHI_TIET');
 
             // Sheet 3: Đối Chiếu CDC vs Seedlog
