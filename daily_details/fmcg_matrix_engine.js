@@ -99,6 +99,9 @@
                     <button onclick="exportFmcgExcel()" style="background:rgba(16,185,129,0.18); color:#34d399; border:1px solid rgba(16,185,129,0.35); border-radius:6px; padding:0.34rem 0.75rem; font-size:0.76rem; font-weight:700; cursor:pointer;">
                         <i class="fa-solid fa-file-excel"></i> Xuất Excel
                     </button>
+                    <button onclick="exportFmcgPdf()" style="background:rgba(244,63,94,0.16); color:#fb7185; border:1px solid rgba(244,63,94,0.38); border-radius:6px; padding:0.34rem 0.75rem; font-size:0.76rem; font-weight:700; cursor:pointer;">
+                        <i class="fa-solid fa-file-pdf"></i> Tải PDF
+                    </button>
                     <button onclick="toggleFmcgFullscreen(false)" style="background:rgba(244,63,94,0.2); color:#fda4af; border:1px solid rgba(244,63,94,0.45); border-radius:6px; padding:0.34rem 0.85rem; font-size:0.76rem; font-weight:800; cursor:pointer;">
                         ✕ Thu Nhỏ (ESC)
                     </button>
@@ -521,6 +524,9 @@
                         <button onclick="exportFmcgExcel()" style="background:rgba(16,185,129,0.18); color:#34d399; border:1px solid rgba(16,185,129,0.4); border-radius:8px; padding:0.45rem 0.85rem; font-size:0.78rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
                             <i class="fa-solid fa-file-excel"></i> Tải Excel (Kèm Sheet Logic)
                         </button>
+                        <button onclick="exportFmcgPdf('logic')" style="background:rgba(244,63,94,0.18); color:#fb7185; border:1px solid rgba(244,63,94,0.4); border-radius:8px; padding:0.45rem 0.85rem; font-size:0.78rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
+                            <i class="fa-solid fa-file-pdf"></i> Tải PDF (Logic 2 Bảng)
+                        </button>
                     </div>
                 </div>
 
@@ -918,6 +924,255 @@
             console.error('Lỗi xuất Excel:', err);
             alert('Lỗi xuất file Excel: ' + err.message);
         }
+    };
+
+    // ==================== XUẤT PDF (CHUẨN A4 NGANG, FONT TIẾNG VIỆT VECTOR SẮC NÉT) ====================
+    window.exportFmcgPdf = function (overrideView) {
+        if (!currentData || !currentData.dates) {
+            alert('Chưa có dữ liệu Báo cáo Logistics FMCG để xuất PDF.');
+            return;
+        }
+        const targetView = overrideView || activeSubView || 'matrix';
+        const s = currentData.summary || {};
+        const viewTitles = {
+            matrix: 'BẢNG 1: MA TRẬN 53 CHỈ SỐ LOGISTICS KHO KHÔ FMCG',
+            flow: 'BẢNG 2: FLOW ĐIỂM CHẶN ĐỐI SOÁT FMCG (Đ0–Đ4 + B. TỒN ÂM)',
+            logic: 'ĐẶC TẢ LOGIC CHI TIẾT CẢ 2 BẢNG (MA TRẬN 53 CHỈ SỐ & FLOW Đ0–Đ4)',
+            reconcile: 'BẢNG ĐỐI CHIẾU KIỂM CHỨNG: CDC STARROCKS vs SEEDLOG'
+        };
+        const title = viewTitles[targetView] || viewTitles.matrix;
+        const dateStr = new Date().toISOString().slice(0, 10);
+        const docTitle = `Bao_Cao_FMCG_${targetView.toUpperCase()}_${dateStr}`;
+
+        let bodyHtml = '';
+
+        if (targetView === 'matrix') {
+            let dates = [...currentData.dates];
+            if (sortDescending) dates.reverse();
+            const sections = currentData.sections || [];
+            bodyHtml += `<table><thead><tr>
+                <th style="width:26px; text-align:center;">STT</th>
+                <th style="min-width:140px; text-align:left;">Chỉ Số Logistics FMCG</th>
+                <th style="min-width:74px; text-align:right; background:#fef3c7; color:#92400e;">TỔNG / LK</th>
+                ${dates.map(d => `<th style="text-align:right;">${escapeHtml(d.short || d.display)}</th>`).join('')}
+            </tr></thead><tbody>`;
+            sections.forEach(sec => {
+                if (filterSection !== 'all' && sec.id !== filterSection) return;
+                bodyHtml += `<tr class="sec-row"><td colspan="${dates.length + 3}">${escapeHtml(sec.title)}</td></tr>`;
+                sec.rows.forEach(r => {
+                    bodyHtml += `<tr>
+                        <td style="text-align:center; color:#64748b;">${r.row_idx}</td>
+                        <td style="text-align:left; font-weight:600;">${escapeHtml(r.name)}</td>
+                        <td style="text-align:right; font-weight:700; background:#fffbeb;">${escapeHtml(r.total || '-')}</td>
+                        ${dates.map(d => {
+                            const v = r.values[d.iso] || '-';
+                            const neg = String(v).startsWith('-');
+                            return `<td style="text-align:right;${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
+                        }).join('')}
+                    </tr>`;
+                });
+            });
+            bodyHtml += `</tbody></table>`;
+        } else if (targetView === 'flow' && currentData.flow_template && currentData.flow_template.blocks) {
+            const ft = currentData.flow_template;
+            const monthCol = ft.columns.find(c => c.type === 'month') || ft.columns[0];
+            let otherCols = ft.columns.filter(c => c.key !== monthCol.key);
+            if (flowSummaryOnly) otherCols = otherCols.filter(c => c.type === 'week');
+            if (sortDescending) otherCols = [...otherCols].reverse();
+            bodyHtml += `<table><thead><tr>
+                <th style="width:24px; text-align:center;">STT</th>
+                <th style="width:28px; text-align:center;">ĐC</th>
+                <th style="min-width:130px; text-align:left;">Tiêu Chí (Flow FMCG)</th>
+                <th style="width:58px; text-align:center;">Đơn Vị</th>
+                <th style="min-width:70px; text-align:right; background:#fef3c7; color:#92400e;">${escapeHtml(monthCol.label)}</th>
+                ${otherCols.map(c => `<th style="text-align:right;${c.type === 'week' ? ' background:#dbeafe; color:#1e3a8a;' : ''}">${escapeHtml(c.label)}</th>`).join('')}
+            </tr></thead><tbody>`;
+            let stt = 0;
+            ft.blocks.forEach(blk => {
+                if (flowBlockFilter !== 'all' && blk.id !== flowBlockFilter) return;
+                bodyHtml += `<tr class="sec-row"><td colspan="${otherCols.length + 5}">${escapeHtml(blk.title)}</td></tr>`;
+                blk.rows.forEach(r => {
+                    stt++;
+                    bodyHtml += `<tr${r.is_empty_template ? ' style="color:#94a3b8;"' : ''}>
+                        <td style="text-align:center; color:#64748b;">${stt}</td>
+                        <td style="text-align:center; font-weight:700;">${escapeHtml(r.diem_chan)}</td>
+                        <td style="text-align:left; font-weight:600;">${escapeHtml(r.tieu_chi)}</td>
+                        <td style="text-align:center;">${escapeHtml(r.don_vi)}</td>
+                        <td style="text-align:right; font-weight:700; background:#fffbeb;">${escapeHtml(r.values[monthCol.key] || '-')}</td>
+                        ${otherCols.map(c => {
+                            const v = r.values[c.key] || '-';
+                            const neg = String(v).startsWith('-');
+                            return `<td style="text-align:right;${c.type === 'week' ? ' background:#eff6ff; font-weight:700;' : ''}${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
+                        }).join('')}
+                    </tr>`;
+                });
+            });
+            bodyHtml += `</tbody></table>`;
+        } else if (targetView === 'logic') {
+            bodyHtml += `<h3>PHẦN A: LOGIC CẤU TRÚC CỘT &amp; QUY TẮC TRUY VẤN HỆ THỐNG</h3>`;
+            bodyHtml += `<table class="logic-tbl"><thead><tr>
+                <th style="width:26px; text-align:center;">#</th>
+                <th style="width:180px; text-align:left;">Thành Phần</th>
+                <th style="width:120px; text-align:left;">Nguồn</th>
+                <th style="text-align:left;">Quy Tắc Chi Tiết</th>
+            </tr></thead><tbody>`;
+            (currentData.col_logic || []).forEach((c, i) => {
+                bodyHtml += `<tr>
+                    <td style="text-align:center;">${i + 1}</td>
+                    <td style="font-weight:700;">${escapeHtml(c.title)}</td>
+                    <td>${escapeHtml(c.source)}</td>
+                    <td>${escapeHtml(c.detail).replace(/\*\*/g, '')}</td>
+                </tr>`;
+            });
+            bodyHtml += `</tbody></table>`;
+
+            bodyHtml += `<h3>PHẦN B: LOGIC CHI TIẾT BẢNG 1 — MA TRẬN 53 CHỈ SỐ</h3>`;
+            bodyHtml += `<table class="logic-tbl"><thead><tr>
+                <th style="width:24px; text-align:center;">STT</th>
+                <th style="width:120px; text-align:left;">Tên Chỉ Số</th>
+                <th style="width:82px; text-align:left;">Nguồn</th>
+                <th style="width:150px; text-align:left;">Bảng / Cột Đọc</th>
+                <th style="text-align:left;">Điều Kiện Lọc &amp; Quy Tắc Xử Lý</th>
+                <th style="width:130px; text-align:left;">Công Thức</th>
+                <th style="width:80px; text-align:left;">Cột TỔNG</th>
+            </tr></thead><tbody>`;
+            (currentData.sections || []).forEach(sec => {
+                bodyHtml += `<tr class="sec-row"><td colspan="7">${escapeHtml(sec.title)}</td></tr>`;
+                sec.rows.forEach(r => {
+                    const lg = r.logic || {};
+                    bodyHtml += `<tr>
+                        <td style="text-align:center;">${r.row_idx}</td>
+                        <td style="font-weight:700;">${escapeHtml(r.name)}</td>
+                        <td>${escapeHtml(lg.source || '')}</td>
+                        <td>${escapeHtml(lg.table_col || '')}</td>
+                        <td>${escapeHtml(lg.filter_rule || '')}</td>
+                        <td style="font-family:Consolas, monospace;">${escapeHtml(lg.formula || '')}</td>
+                        <td>${escapeHtml(lg.total_rule || '')}</td>
+                    </tr>`;
+                });
+            });
+            bodyHtml += `</tbody></table>`;
+
+            if (currentData.flow_template && currentData.flow_template.blocks) {
+                bodyHtml += `<h3 style="page-break-before:always;">PHẦN C: LOGIC CHI TIẾT BẢNG 2 — FLOW ĐIỂM CHẶN (Đ0–Đ4 + B. TỒN ÂM)</h3>`;
+                bodyHtml += `<table class="logic-tbl"><thead><tr>
+                    <th style="width:24px; text-align:center;">STT</th>
+                    <th style="width:32px; text-align:center;">ĐC</th>
+                    <th style="width:170px; text-align:left;">Tiêu Chí</th>
+                    <th style="width:76px; text-align:center;">Đơn Vị</th>
+                    <th style="width:92px; text-align:left;">Nguồn</th>
+                    <th style="text-align:left;">Điều Kiện Lọc &amp; Công Thức Chi Tiết</th>
+                </tr></thead><tbody>`;
+                let sttF = 0;
+                currentData.flow_template.blocks.forEach(blk => {
+                    bodyHtml += `<tr class="sec-row"><td colspan="6">${escapeHtml(blk.title)}</td></tr>`;
+                    blk.rows.forEach(r => {
+                        sttF++;
+                        bodyHtml += `<tr>
+                            <td style="text-align:center;">${sttF}</td>
+                            <td style="text-align:center; font-weight:700;">${escapeHtml(r.diem_chan)}</td>
+                            <td style="font-weight:700;">${escapeHtml(r.tieu_chi)}</td>
+                            <td style="text-align:center;">${escapeHtml(r.don_vi)}</td>
+                            <td>${escapeHtml(r.nguon)}</td>
+                            <td>${escapeHtml(r.cach_tinh)}</td>
+                        </tr>`;
+                    });
+                });
+                bodyHtml += `</tbody></table>`;
+            }
+        } else if (targetView === 'reconcile') {
+            let recs = [...(currentData.reconciliation || [])];
+            if (sortDescending) recs.reverse();
+            bodyHtml += `<table class="logic-tbl"><thead><tr>
+                <th style="text-align:center;">STT</th>
+                <th style="text-align:center;">Ngày</th>
+                <th style="text-align:right;">Phiếu PT</th>
+                <th style="text-align:right;">SL Chuyển</th>
+                <th style="text-align:right;">SL Nhận Capped</th>
+                <th style="text-align:right;">Lệch CDC (0)</th>
+                <th style="text-align:right;">Lệch CDC (-1)</th>
+                <th style="text-align:right;">Lệch Seedlog</th>
+                <th style="text-align:right;">SL Dư</th>
+                <th style="text-align:left;">Đánh Giá</th>
+            </tr></thead><tbody>`;
+            recs.forEach((r, idx) => {
+                bodyHtml += `<tr>
+                    <td style="text-align:center;">${idx + 1}</td>
+                    <td style="text-align:center; font-weight:700;">${escapeHtml(r.date)}</td>
+                    <td style="text-align:right;">${fmtNum(r.pt_cnt)}</td>
+                    <td style="text-align:right;">${fmtNum(r.sl_chuyen)}</td>
+                    <td style="text-align:right;">${fmtNum(r.sl_nhan)}</td>
+                    <td style="text-align:right;">${fmtNum(r.cdc_blank0)}</td>
+                    <td style="text-align:right;">${fmtNum(r.cdc_blank_m1)}</td>
+                    <td style="text-align:right;">${fmtNum(r.seedlog)}</td>
+                    <td style="text-align:right;">${fmtNum(r.sl_du)}</td>
+                    <td style="text-align:left;">${escapeHtml(r.status_txt)}</td>
+                </tr>`;
+            });
+            bodyHtml += `</tbody></table>`;
+        }
+
+        const win = window.open('', '_blank');
+        if (!win) {
+            alert('Trình duyệt đang chặn cửa sổ bật lên (Popup). Vui lòng cho phép Popup cho trang này rồi bấm Tải PDF lại.');
+            return;
+        }
+        const isWide = (targetView === 'matrix' || (targetView === 'flow' && !flowSummaryOnly));
+        win.document.write(`<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>${escapeHtml(docTitle)}</title>
+<style>
+    @page { size: A4 landscape; margin: 7mm; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; color: #0f172a; background: #fff; margin: 0; padding: 12px; font-size: ${isWide ? '7.2px' : '9px'}; }
+    .no-print { display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: #fff; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; }
+    .no-print button { background: #e11d48; color: #fff; border: none; border-radius: 6px; padding: 7px 14px; font-weight: 700; cursor: pointer; font-size: 13px; }
+    .hdr { border-bottom: 2px solid #1e3a8a; padding-bottom: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+    .hdr h1 { margin: 0; font-size: 14px; color: #1e3a8a; }
+    .hdr .sub { font-size: 9px; color: #475569; margin-top: 2px; }
+    .kpis { display: flex; gap: 10px; margin-bottom: 8px; }
+    .kpi { border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px 10px; background: #f8fafc; flex: 1; }
+    .kpi .kl { font-size: 8px; color: #64748b; text-transform: uppercase; font-weight: 700; }
+    .kpi .kv { font-size: 11px; font-weight: 800; color: #0f172a; margin-top: 2px; }
+    h3 { margin: 12px 0 5px 0; font-size: 11px; color: #1e3a8a; }
+    table { width: 100%; border-collapse: collapse; table-layout: auto; }
+    thead { display: table-header-group; }
+    tr { page-break-inside: avoid; break-inside: avoid; }
+    th, td { border: 1px solid #cbd5e1; padding: ${isWide ? '2.5px 3px' : '4px 5px'}; vertical-align: top; }
+    th { background: #1e293b; color: #fff; font-weight: 700; white-space: nowrap; }
+    .logic-tbl th, .logic-tbl td { white-space: normal; word-break: break-word; line-height: 1.35; }
+    tr.sec-row td { background: #dbeafe; color: #1e3a8a; font-weight: 800; text-align: left; padding: 4px 6px; }
+    tbody tr:nth-child(even) td { background: #f8fafc; }
+    @media print {
+        body { padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .no-print { display: none !important; }
+    }
+</style>
+</head>
+<body>
+    <div class="no-print">
+        <div><strong>Xuất PDF Báo Cáo FMCG</strong> — Trong hộp thoại In, chọn Đích (Destination): <strong>Save as PDF / Lưu dưới dạng PDF</strong> (khổ ngang Landscape).</div>
+        <button onclick="window.print()">Lưu thành PDF / In ngay</button>
+    </div>
+    <div class="hdr">
+        <div>
+            <h1>${escapeHtml(title)}</h1>
+            <div class="sub">Nguồn: CDC StarRocks (Kho FGA10101 • User hệ thống TKE_WMS • Chỉ Siêu thị KFM) + Google Sheet Seedlog • Cập nhật: ${escapeHtml(currentData.updated_at || '')}</div>
+        </div>
+        <div class="sub" style="text-align:right;">Kỳ dữ liệu: 01/11 → ${escapeHtml(s.latest_cdc_date || s.latest_date || '')}</div>
+    </div>
+    <div class="kpis">
+        <div class="kpi"><div class="kl">Tổng Chuyển Lũy Kế</div><div class="kv">${escapeHtml(fmtVndClean(s.tong_luy_ke))} VNĐ</div></div>
+        <div class="kpi"><div class="kl">Tồn Kho Chênh Lệch</div><div class="kv">${escapeHtml(fmtVndClean(s.ton_kho_chenh_lech))} VNĐ</div></div>
+        <div class="kpi"><div class="kl">Tỷ Lệ Lệch Chuyển Hàng</div><div class="kv">${escapeHtml(s.ty_le_chenh_lech || '0.00%')}</div></div>
+    </div>
+    ${bodyHtml}
+    <script>setTimeout(function(){ window.focus(); window.print(); }, 350);</script>
+</body>
+</html>`);
+        win.document.close();
     };
 
     // Helpers
