@@ -1291,8 +1291,8 @@ def export_web_js(all_dates, daily_metrics, df_cdc):
             ("Đ0", "Tổng thất thoát", "Giá trị (VND)", "Tổng giá trị thất thoát", "sum", "#,##0", "Công thức", "Link từ Đ4 - Tổng thất thoát"),
             ("Đ0", "DC chịu", "Giá trị (VND)", "Tổng giá trị DC chịu", "sum", "#,##0", "Công thức", "Link từ Đ4 - DC chịu"),
             ("Đ0", "KFM chịu", "Giá trị (VND)", "Tổng giá trị KFM chịu", "sum", "#,##0", "Công thức", "Link từ Đ4 - KFM chịu"),
-            ("Đ0", "Tổng giá trị đã net - off", "Giá trị (VND)", None, "empty", "#,##0", "Mở rộng", "Chưa phát sinh nguồn dữ liệu tự động"),
-            ("Đ0", "Tổng giá trị còn lại sau khi đã net - off", "Giá trị (VND)", None, "empty", "#,##0", "Mở rộng", "Chưa phát sinh nguồn dữ liệu tự động"),
+            ("Đ0", "Tổng giá trị đã net - off", "Giá trị (VND)", "Giá trị dư", "sum", "#,##0", "Công thức", "Bằng Giá trị dư (hàng #18 Ma trận FMCG)"),
+            ("Đ0", "Tổng giá trị còn lại sau khi đã net - off", "Giá trị (VND)", None, "net_off_rem", "#,##0", "Công thức", "Giá trị DC chịu - Tổng giá trị đã net - off"),
         ]),
         ("D1", "Đ1 · T1→T2 · DC CHUYỂN – SIÊU THỊ NHẬN", "#10b981", "fa-solid fa-truck-fast", [
             ("Đ1", "Chuyển", "SL (ĐVT kho)", "SL chuyển", "sum", "#,##0", "CDC StarRocks", "SUM(SL chuyển FGA10101 -> Siêu thị KFM)"),
@@ -1412,6 +1412,8 @@ def export_web_js(all_dates, daily_metrics, df_cdc):
             lk_tr = daily_metrics[last_d]["Tổng giá trị chuyển lũy kế"]
             lk_ton = daily_metrics[last_d]["Tồn kho chênh lệch"]
             return lk_ton / lk_tr if lk_tr else 0.0
+        if agg_mode == "net_off_rem":
+            return sum(daily_metrics[d]["Tổng giá trị DC chịu"] for d in d_list) - sum(daily_metrics[d]["Giá trị dư"] for d in d_list)
         return None
 
     flow_blocks_payload = []
@@ -1429,6 +1431,8 @@ def export_web_js(all_dates, daily_metrics, df_cdc):
                 elif agg_mode == "ratio_wo":
                     gt_tr_d = daily_metrics[d_iso]["Giá trị chuyển"]
                     vals[d_iso] = fmt_val(daily_metrics[d_iso]["Giá trị Write - OFF"] / gt_tr_d if gt_tr_d else 0.0, num_fmt)
+                elif agg_mode == "net_off_rem":
+                    vals[d_iso] = fmt_val(daily_metrics[d_iso]["Tổng giá trị DC chịu"] - daily_metrics[d_iso]["Giá trị dư"], num_fmt)
                 else:
                     vals[d_iso] = fmt_val(daily_metrics[d_iso][t8_key], num_fmt)
             # Từng tuần Σ Wxx
