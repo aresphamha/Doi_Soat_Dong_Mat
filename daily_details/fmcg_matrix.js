@@ -1,6 +1,6 @@
 // Dữ liệu Báo cáo Logistics FMCG (Tự động từ CDC StarRocks + Google Sheet Seedlog + Đặc tả Logic)
 window.FMCG_MATRIX_DATA = {
-  "updated_at": "25/11/2026 17:16:34",
+  "updated_at": "25/11/2026 17:27:03",
   "filter_scope": "Từ 01/11/2026 trở về sau • CDC StarRocks (FGA10101 -> Siêu thị KFM + Bảng TO) + Seedlog + Cost Stockcard",
   "dates": [
     {
@@ -222,7 +222,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 2,
           "name": "SL nhận",
           "section_id": "sec_san_luong",
-          "total": "6,757,626.64",
+          "total": "6,757,982.64",
           "values": {
             "2026-11-01": "2,508",
             "2026-11-02": "344,825",
@@ -247,8 +247,8 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-21": "382,024.94",
             "2026-11-22": "4,333",
             "2026-11-23": "362,056",
-            "2026-11-24": "251,827",
-            "2026-11-25": "87,607"
+            "2026-11-24": "251,853",
+            "2026-11-25": "87,937"
           },
           "logic": {
             "stt": 2,
@@ -626,7 +626,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 11,
           "name": "Giá trị nhận",
           "section_id": "sec_gia_tri",
-          "total": "116,534,346,728.19",
+          "total": "116,542,093,060.43",
           "values": {
             "2026-11-01": "48,492,798.07",
             "2026-11-02": "6,009,734,811.75",
@@ -651,8 +651,8 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-21": "6,899,875,272.76",
             "2026-11-22": "86,449,320.06",
             "2026-11-23": "6,703,080,441.73",
-            "2026-11-24": "4,951,375,864.13",
-            "2026-11-25": "1,561,935,223.37"
+            "2026-11-24": "4,951,664,393.97",
+            "2026-11-25": "1,569,393,025.77"
           },
           "logic": {
             "stt": 11,
@@ -2902,7 +2902,7 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-21",
       "pt_cnt": 161,
       "sl_chuyen": 383096.0,
-      "sl_nhan": 382024.94,
+      "sl_nhan": 382024.93999999994,
       "cdc_blank0": -1071.06,
       "cdc_blank_m1": -1071.06,
       "seedlog": -1071.0,
@@ -2950,12 +2950,12 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-24",
       "pt_cnt": 125,
       "sl_chuyen": 255860.0,
-      "sl_nhan": 251827.0,
-      "cdc_blank0": -4033.0,
-      "cdc_blank_m1": -4033.0,
+      "sl_nhan": 251853.0,
+      "cdc_blank0": -4007.0,
+      "cdc_blank_m1": -4007.0,
       "seedlog": 0.0,
-      "diff_0": -4033.0,
-      "diff_m1": -4033.0,
+      "diff_0": -4007.0,
+      "diff_m1": -4007.0,
       "sl_du": 10.0,
       "not_done": 433,
       "status_txt": "Đang giao / chưa nhận xong (433 dòng status!=5)",
@@ -2966,12 +2966,12 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-25",
       "pt_cnt": 33,
       "sl_chuyen": 91163.0,
-      "sl_nhan": 87607.0,
-      "cdc_blank0": -3556.0,
-      "cdc_blank_m1": -3557.0,
+      "sl_nhan": 87937.0,
+      "cdc_blank0": -3226.0,
+      "cdc_blank_m1": -3227.0,
       "seedlog": 0.0,
-      "diff_0": -3556.0,
-      "diff_m1": -3557.0,
+      "diff_0": -3226.0,
+      "diff_m1": -3227.0,
       "sl_du": 7.0,
       "not_done": 1614,
       "status_txt": "Đang giao / chưa nhận xong (1,614 dòng status!=5)",
@@ -3712,7 +3712,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "SUM(SL nhận Capped <= SL chuyển + bảng TO): Kho FGA10101; Người tạo: user hệ thống TKE_WMS; chỉ Siêu thị KFM",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "6,757,626.64",
+              "SIGMA_T11": "6,757,982.64",
               "2026-11-01": "2,508",
               "2026-11-02": "344,825",
               "2026-11-03": "342,482",
@@ -3736,13 +3736,13 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-21": "382,024.94",
               "2026-11-22": "4,333",
               "2026-11-23": "362,056",
-              "2026-11-24": "251,827",
-              "2026-11-25": "87,607",
+              "2026-11-24": "251,853",
+              "2026-11-25": "87,937",
               "SIGMA_W44": "2,508",
               "SIGMA_W45": "1,867,207",
               "SIGMA_W46": "2,133,088.70",
               "SIGMA_W47": "2,053,332.94",
-              "SIGMA_W48": "701,490"
+              "SIGMA_W48": "701,846"
             }
           },
           {
@@ -3753,7 +3753,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "SUM(SL nhận Capped * gia_cost Stockcard): Kho FGA10101; Người tạo: user hệ thống TKE_WMS; chỉ Siêu thị KFM",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "116,534,346,728.19",
+              "SIGMA_T11": "116,542,093,060.43",
               "2026-11-01": "48,492,798.07",
               "2026-11-02": "6,009,734,811.75",
               "2026-11-03": "6,165,838,093.97",
@@ -3777,13 +3777,13 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-21": "6,899,875,272.76",
               "2026-11-22": "86,449,320.06",
               "2026-11-23": "6,703,080,441.73",
-              "2026-11-24": "4,951,375,864.13",
-              "2026-11-25": "1,561,935,223.37",
+              "2026-11-24": "4,951,664,393.97",
+              "2026-11-25": "1,569,393,025.77",
               "SIGMA_W44": "48,492,798.07",
               "SIGMA_W45": "31,493,564,954.61",
               "SIGMA_W46": "35,414,537,038.19",
               "SIGMA_W47": "36,361,360,408.09",
-              "SIGMA_W48": "13,216,391,529.22"
+              "SIGMA_W48": "13,224,137,861.46"
             }
           },
           {
