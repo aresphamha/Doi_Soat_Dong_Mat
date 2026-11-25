@@ -1,0 +1,1 @@
+['Vị trí', 'STT', 'Siêu thị', 'Số Tem']

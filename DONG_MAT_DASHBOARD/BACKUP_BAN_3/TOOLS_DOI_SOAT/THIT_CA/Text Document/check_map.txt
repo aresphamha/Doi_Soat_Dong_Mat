@@ -1,0 +1,26 @@
+Line 88: # Nếu có nhiều dấu chấm (lỗi định dạng), chỉ giữ lại dấu chấm cuối cùng
+Line 1005: display_df_with_download(pivot_ngay_renamed.style.format(format_vn).map(color_red_for_chenhlech, subset=[c for c in pivot_ngay_renamed.columns if 'Chênh lệch' in c[1]]), "Tong_Hop_Theo_Ngay_So_Luong")
+Line 1017: display_df_with_download(pivot_clv4.style.format(format_vn).map(color_red_for_chenhlech, subset=['Chênh lệch']), "Top_5_CLV4")
+Line 1023: display_df_with_download(pivot_clv2_renamed.style.format(format_vn).map(color_red_for_chenhlech, subset=[c for c in pivot_clv2_renamed.columns if 'Chênh lệch' in c[1]]), "Tong_Hop_CLV2")
+Line 1075: display_df_with_download(filtered_qty_item_renamed.style.format(format_vn).map(color_red_for_chenhlech, subset=[c for c in filtered_qty_item_renamed.columns if 'Chênh lệch' in c[1]]), "Chi_Tiet_SL_CLV4", height=600)
+Line 1112: # 1. Fetch branch mapping
+Line 1145: df_mf01['Chi nhánh nhận'] = df_mf01['to_branch_id'].map(id_to_name)
+Line 1169: df_mf02['Chi nhánh nhận'] = df_mf02['to_branch_id'].map(id_to_name)
+Line 1234: sku_mapping = dict(zip(df_all['Mã hàng'].astype(str).str.strip(), df_all[ten_hang_col]))
+Line 1235: merged_internal['Tên hàng'] = merged_internal['Mã hàng'].astype(str).str.strip().map(sku_mapping).fillna(merged_internal['Tên hàng'])
+Line 1246: # Step 1: Khớp nội bộ 100%
+Line 1252: # Step 2: Khớp nội bộ một phần
+Line 1270: # Step 3: Khớp chéo liên siêu thị
+Line 1319: prob = "Rất cao (Vị trí kề nhau)" if best_dist <= 5 else ("Trung bình (Cùng khu)" if best_dist <= 15 else "Thấp (Trùng hợp số lượng)")
+Line 1397: <div style="font-size: 12px; color: #a3a8b4;">KHỚP NỘI BỘ 100%</div>
+Line 1404: <div style="font-size: 12px; color: #a3a8b4;">KHỚP NỘI BỘ MỘT PHẦN</div>
+Line 1411: <div style="font-size: 12px; color: #a3a8b4;">KHỚP CHÉO LIÊN ST 1-1</div>
+Line 1427: df_exact.to_excel(writer, sheet_name='1. Khớp nội bộ 100%', index=False)
+Line 1428: df_partial.to_excel(writer, sheet_name='2. Khớp nội bộ một phần', index=False)
+Line 1429: df_cross.to_excel(writer, sheet_name='3. Khớp chéo liên ST 1-1', index=False)
+Line 1443: "1. Khớp nội bộ 100%",
+Line 1444: "2. Khớp nội bộ một phần",
+Line 1445: "3. Khớp chéo liên ST 1-1",
+Line 1452: st.subheader("1. Danh sách Khớp nội bộ 100% (DC thao tác sai)")
+Line 1455: st.subheader("2. Danh sách Khớp nội bộ một phần")
+Line 1458: st.subheader("3. Danh sách Khớp chéo liên ST 1-1 (DC giao nhầm CH)")

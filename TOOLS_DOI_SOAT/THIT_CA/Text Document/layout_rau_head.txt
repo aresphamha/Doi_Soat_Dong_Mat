@@ -1,0 +1,6 @@
+        0    1                                                  2
+0  Vị trí  STT                                           Siêu thị
+1       1  CLD  KFM_HCM_TPH - S1.0.38 Block A5 Diamond Celadon...
+2       2  VGP           KFM_HCM_TDU - S06.06 Vinhomes Grand Park
+3       3  LVL                    KFM_HCM_NBE - 166E Lê Văn Lương
+4       4  TMY                            KFM_HCM_Q07 - 31 Tân Mỹ

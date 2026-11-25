@@ -1,0 +1,913 @@
+========== SIÊU THỊ: 9 Đường M, Khu Phố Nhị Đồng 2 ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1102729 | XƯƠNG GIÁ HEO | KG | 0,95
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: SH01 BCons Garden ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1102745 | CÁ HỒI CHILE CẮT KHOANH RĐ | KG | 0,50
+1101167 | BA RỌI HEO | KG | 4,06
+1101171 | THỊT HEO XAY | KG | 2,00
+1100890 | CÁ CHIM TRẮNG LÀM SẠCH | KG | 0,35
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: Block A Emerald Golf View ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1102745 | CÁ HỒI CHILE CẮT KHOANH RĐ | KG | 0,22
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 8 Valora Mizuki ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194970855 | JAPFA - PHI LÊ ỨC GÀ KHÔNG DA 500G | KHAY | 7,00
+1102868 | CỐT LẾT HEO CÓ MỠ | KG | 1,01
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: Block G Conic Skyway ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+10823 | CÁ HỒI NAUY PHI LÊ 200G | GÓI | 4,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 2.01A Westgate An Gia ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936190862000 | FRESHFOCO - SƯỜN BẸ NK CẮT NƯỚNG 400G | KHAY | 1,00
+11715 | LƯƠN LÀM SẠCH CẮT KHÚC VIETGAP 200G | VỈ | 3,00
+1101131 | THĂN BÒ | KG | 0,50
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 66/70 Bình Thành ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194972255 | JAPFA - PHI LÊ MÁ ĐÙI KHÔNG DA 500G | KHAY | 4,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 108 Ngô Tất Tố ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194972255 | JAPFA - PHI LÊ MÁ ĐÙI KHÔNG DA 500G | KHAY | 13,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 216 Phan Văn Hân ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1102935 | MEATCOOL - CỐT LẾT HEO | KG | 0,77
+1101171 | THỊT HEO XAY | KG | 3,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 484B Lê Quang Định ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+10823 | CÁ HỒI NAUY PHI LÊ 200G | GÓI | 5,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 54 Vũ Huy Tấn ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1101257 | CÁ THU ĐAO NC RĐ 8-10CON/KG | KG | 0,22
+8936194974815 | JAPFA - PHI LÊ ĐÙI KHÔNG DA 500G | KHAY | 2,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 15 Nguyên Hồng ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8935319721006 | CP - ĐÙI TỎI RÚT XƯƠNG 500G | KHAY | 3,00
+8936194970855 | JAPFA - PHI LÊ ỨC GÀ KHÔNG DA 500G | KHAY | 8,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 195 Thống Nhất ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1101285 | XƯƠNG ỐNG HEO | KG | 1,03
+1102868 | CỐT LẾT HEO CÓ MỠ | KG | 1,02
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 5/3D Huỳnh Tấn Phát ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194972255 | JAPFA - PHI LÊ MÁ ĐÙI KHÔNG DA 500G | KHAY | 12,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 15 Saigon South Residences ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936176870579 | TAM NÔNG - GÀ TA THẢ ĐỒI NỬA CON 590G-750G (KHÔNG ĐẦU, CỔ) | CÁI | 3,00
+8936194974822 | JAPFA - LƯỜN GÀ 300G | KHAY | 5,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 29 Đặng Văn Ngữ ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1101170 | SƯỜN NON | KG | 2,00
+8935058907532 | CP - CHÂN GÀ TƯƠI 500G | VỈ | 3,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 5 TMDV Orchard Garden ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194970855 | JAPFA - PHI LÊ ỨC GÀ KHÔNG DA 500G | KHAY | 6,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 98 Khánh Hội ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194972255 | JAPFA - PHI LÊ MÁ ĐÙI KHÔNG DA 500G | KHAY | 12,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 126 Chợ Lớn ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+11578 | ALO FISH - TÔM THẺ LỘT CÒN ĐUÔI 150G | VỈ | 1,00
+8936194970855 | JAPFA - PHI LÊ ỨC GÀ KHÔNG DA 500G | KHAY | 20,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: B1.00.01 Him Lam Chợ Lớn ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+10927 | CÁ BASA CẮT LÁT VIETGAP 2-2.5CM 300G | VỈ | 1,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 0105 B4 Era Town ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194970855 | JAPFA - PHI LÊ ỨC GÀ KHÔNG DA 500G | KHAY | 6,00
+8938542888478 | VT - CỐT LẾT HEO 400G | KHAY | 4,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 233 Phạm Hữu Lầu ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1102935 | MEATCOOL - CỐT LẾT HEO | KG | 0,81
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 31 Tân Mỹ ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8938542888348 | VT - THĂN CHUỘT HEO 300G | KHAY | 1,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 43 Bùi Văn Ba ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194970855 | JAPFA - PHI LÊ ỨC GÀ KHÔNG DA 500G | KHAY | 11,00
+8936194974754 | JAPFA - PHI LÊ ỨC GÀ KHÔNG DA 300G | KHAY | 12,00
+8935058907969 | CP - LÒNG GÀ VỈ 250G | VỈ | 4,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: Block A Himlam Riverside Q7 ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1101171 | THỊT HEO XAY | KG | 1,05
+8936194970848 | JAPFA - MÁ ĐÙI GÀ CẮT MIẾNG 500G | KHAY | 7,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: C0.01 Riverside Phú Mỹ Hưng ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194972255 | JAPFA - PHI LÊ MÁ ĐÙI KHÔNG DA 500G | KHAY | 6,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: E72 Phú Thuận ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936176870579 | TAM NÔNG - GÀ TA THẢ ĐỒI NỬA CON 590G-750G (KHÔNG ĐẦU, CỔ) | CÁI | 2,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 01.18 Pegasuite ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1101168 | BA RỌI HEO RÚT SƯỜN | KG | 1,00
+8936194970855 | JAPFA - PHI LÊ ỨC GÀ KHÔNG DA 500G | KHAY | 17,00
+8936194975003 | JAPFA - ỨC GÀ XAY 300G | KHAY | 2,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: Block C Diamond Riverside ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8938558530088 | ALO FISH - CÁ THU CẮT KHÚC 250G | VỈ | 1,00
+1101525 | CÁNH GIỮA | KG | 2,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 103 Hòa Hưng ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194970855 | JAPFA - PHI LÊ ỨC GÀ KHÔNG DA 500G | KHAY | 10,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 7/29 Thành Thái ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1100298 | TÔM THẺ LỚN 30-40 CON/KG | KG | 1,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: BB17 Trường Sơn ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1101430 | BẮP BÒ | KG | 1,97
+8938558530231 | ALO FISH - TÔM SÚ 20-25CON/KG 200G | VỈ | 1,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: Jasmine 1 Hà Đô Centrosa ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194972255 | JAPFA - PHI LÊ MÁ ĐÙI KHÔNG DA 500G | KHAY | 9,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: AS19 Block A Prosper Plaza ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936176870579 | TAM NÔNG - GÀ TA THẢ ĐỒI NỬA CON 590G-750G (KHÔNG ĐẦU, CỔ) | CÁI | 1,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 165 Hoàng Hoa Thám ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8935360203230 | MEATCOOL - THỊT HEO XAY 400G | KHAY | 10,00
+8938558530088 | ALO FISH - CÁ THU CẮT KHÚC 250G | VỈ | 1,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 236A Lê Văn Sỹ ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194970848 | JAPFA - MÁ ĐÙI GÀ CẮT MIẾNG 500G | KHAY | 11,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 64A Cửu Long ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1101133 | THỊT BÒ XAY | KG | 0,52
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 02 Nguyễn Thị Nhung ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194972255 | JAPFA - PHI LÊ MÁ ĐÙI KHÔNG DA 500G | KHAY | 3,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 136 Hiệp Bình ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1102749 | NẠC BÒ (ĐÙI/VAI) | KG | 0,58
+1102741 | NẠM CỔ BÒ | KG | 0,48
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 1426 Nguyễn Duy Trinh ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1101165 | THỊT ĐÙI HEO | KG | 1,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 222 Lê Văn Thịnh ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8935058907532 | CP - CHÂN GÀ TƯƠI 500G | VỈ | 2,00
+8938547922009 | WKF - HOÀNH THÁNH 300G | KHAY | 1,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 38E Cây Keo ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1102929 | MEATCOOL PREMIUM - BẮP GIÒ HEO CUỘN | KG | 0,57
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 539 Đỗ Xuân Hợp ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1102931 | MEATCOOL - NẠC DĂM HEO | KG | 1,36
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 560 Nguyễn Duy Trinh ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+10927 | CÁ BASA CẮT LÁT VIETGAP 2-2.5CM 300G | VỈ | 2,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 59 Quốc Hương ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8938542888492 | VT - SƯỜN GIÀ HEO 400G | KHAY | 2,00
+8936194970855 | JAPFA - PHI LÊ ỨC GÀ KHÔNG DA 500G | KHAY | 20,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 63 Đường Số 3 ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1101169 | CỐT LẾT HEO | KG | 2,03
+1101824 | 3F - CÁNH GÀ | KG | 0,55
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: A0.01 EHomeS Phú Hữu ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936194972255 | JAPFA - PHI LÊ MÁ ĐÙI KHÔNG DA 500G | KHAY | 1,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: S03 New City ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936176870579 | TAM NÔNG - GÀ TA THẢ ĐỒI NỬA CON 590G-750G (KHÔNG ĐẦU, CỔ) | CÁI | 2,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: S03.05 Vinhomes Grand Park ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8936190860341 | FRESHFOCO - DIỀM THĂN BÒ CẮT XÀO 250G | KHAY | 2,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: S10.02 Vinhomes Grand Park ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8938542888454 | VT - SƯỜN NON HEO 400G | KHAY | 16,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 00.03 The Sun Avenue ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+10927 | CÁ BASA CẮT LÁT VIETGAP 2-2.5CM 300G | VỈ | 1,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: TMDV Citihome Cát Lái ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+10983 | CÁ HỒI CHILE COHO PHI LÊ RĐ 200G | VỈ | 5,00
+8936194970855 | JAPFA - PHI LÊ ỨC GÀ KHÔNG DA 500G | KHAY | 22,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 379 Thạch Lam ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+11481 | BMLG - CÁ NỤC LÀM SẠCH 300G | VỈ | 2,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: 85 Cây Keo ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+1101131 | THĂN BÒ | KG | 1,43
+1101430 | BẮP BÒ | KG | 0,97
+8936194970855 | JAPFA - PHI LÊ ỨC GÀ KHÔNG DA 500G | KHAY | 14,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+
+========== SIÊU THỊ: S1.0.38 Block A5 Diamond Celadon City ==========
+[HÌNH 1: BẢNG DỮ LIỆU]
+MÃ HÀNG | TÊN HÀNG | ĐVT | SL CHUYỂN VỀ ST
+8938542888454 | VT - SƯỜN NON HEO 400G | KHAY | 25,00
+1102745 | CÁ HỒI CHILE CẮT KHOANH RĐ | KG | 0,95
+1101526 | CÁNH TỎI | KG | 1,02
+1101529 | ĐÙI GÀ RÚT XƯƠNG | KG | 1,00
+8936194970855 | JAPFA - PHI LÊ ỨC GÀ KHÔNG DA 500G | KHAY | 18,00
+
+[TIN NHẮN GỬI ST]
+29.07
+ST kiểm tra lại giúp Hà sáng nay có nhập sót SL các mã hàng trên do đếm sót/hàng không đạt chất lượng ST tự trừ thực nhận mà không nhập bên hàng hư hỏng
+
+- Với mã hàng nhận thiếu item(nếu có chụp hình QUÊN up trong phiếu) : cung cấp hình ảnh SL thực nhận
+
+*NOTE*:
+ Với hàng dư ST add trực tiếp trong phiếu HẬU KIỂM
+
+--------------------------------------------------
+

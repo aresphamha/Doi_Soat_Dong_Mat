@@ -1,0 +1,104 @@
+================================================================================
+TÀI LIỆU TOÀN DIỆN VỀ LOGIC & KIẾN TRÚC DASHBOARD ĐỐI SOÁT ĐÔNG - MÁT
+Hệ thống: Báo Cáo Đối Soát Hàng ĐÔNG - MÁT SCM (Kingfoodmart)
+Cập nhật lần cuối: 27/08/2026
+Đường dẫn thư mục: G:\My Drive\Đối soát SCM\LOGIC\
+================================================================================
+
+1. MỤC TIÊU NGHIỆP VỤ & PHẠM VI
+--------------------------------------------------------------------------------
+Hệ thống báo cáo đối soát ĐÔNG - MÁT giải quyết bài toán kiểm soát chênh lệch 
+hàng hóa giữa xuất kho SCM và nhận tại chuỗi siêu thị Kingfoodmart:
+1. Phân loại hàng hóa: Tách biệt rõ ràng Hàng MÁT (bảo quản mát, hạn ngắn, rủi ro 
+   hao hụt cao) và Hàng ĐÔNG (bảo quản đông lạnh).
+2. Kiểm soát trọng điểm theo Ngưỡng 100.000 VNĐ / Siêu Thị / Ngày: Nhận diện ngay 
+   các siêu thị có tổng mức lệch >= 100k để ưu tiên xử lý dứt điểm trước.
+3. Minh bạch Điểm Nhận Trách Nhiệm: Phân bổ chính xác nguyên nhân và trách nhiệm 
+   chênh lệch về cho Kho ĐÔNG MÁT, Siêu Thị hay Hao Hụt.
+4. Theo dõi Tiến Độ Xử Lý & Thu Hồi Tiền: Giám sát dòng tiền đã xử lý xong, 
+   đang xử lý, và các khoản tồn đọng chưa giải quyết.
+5. Theo dõi Đối Soát Trả DC & Phản Hồi DC: Giám sát tỷ lệ chấp thuận claim bồi hoàn, 
+   các dòng bị từ chối và nút thắt hàng chờ duyệt giữa Hàng Mát và Hàng Đông.
+
+
+2. QUY TẮC NGHIỆP VỤ (BUSINESS RULES & FORMULAS)
+--------------------------------------------------------------------------------
+2.1. Phân Loại Nhóm Hàng:
+- MÁT: Cột 'Nhóm hàng' chứa chữ "MÁT" (thịt mát, rau củ quả, sữa mát, kem...).
+- ĐÔNG: Cột 'Nhóm hàng' chứa chữ "ĐÔNG" (thực phẩm đông lạnh...).
+- TẤT CẢ: Hợp nhất toàn bộ dữ liệu ĐÔNG + MÁT.
+
+2.2. Quy Tắc Ngưỡng 100.000 VNĐ / Siêu Thị / Ngày (Store-Day Threshold):
+- Công thức: Ngưỡng được tính trên Tổng giá trị chênh lệch tuyệt đối của một 
+  siêu thị trong cùng một ngày (không tính riêng lẻ từng SKU):
+  
+  Store_Day_Val_Total = Tổng ( |Chênh lệch| * Đơn giá ) [cùng ST, cùng Ngày]
+
+- Phân loại:
+  + ST >= 100.000 VNĐ (Is_Store_Over_100k = True): Nhóm rủi ro cao, bắt buộc phải 
+    có biên bản giải trình hoặc xử lý bù trừ dứt điểm.
+  + ST < 100.000 VNĐ (Is_Store_Over_100k = False): Nhóm chênh lệch nhỏ/hao hụt tự 
+    nhiên, xử lý định kỳ theo dõi.
+
+2.3. Phân Bổ Điểm Nhận Trách Nhiệm:
+- Kho ĐÔNG MÁT: Các lỗi soạn thiếu, giao thiếu nguyên thùng/két, soạn nhầm mã tại kho.
+- Siêu Thị: Các lỗi kiểm đếm nhầm, nhận thiếu sót tại cửa hàng, mất mát tại quầy.
+- Hao Hụt: Hàng dập nát, hư hỏng trong quá trình vận chuyển, rò rỉ nhiệt độ.
+
+2.4. Quy Tắc Phân Loại 3 Trạng Thái Tiến Độ Xử Lý (Dựa vào Cột Z & Ngưỡng ST):
+- Đã Xử Lý: Dòng hàng đã xác định rõ Điểm nhận trách nhiệm tại Cột Z (Kho ĐÔNG MÁT, Siêu Thị, hoặc Hao Hụt).
+- Đang Xử Lý (ST >= 100k): Cột Z là "Chưa xác định" VÀ thuộc Siêu Thị trong ngày có tổng lệch >= 100.000 VNĐ (Is_Store_Over_100k = True). Cần ưu tiên xử lý bù trừ dứt điểm.
+- Không Xử Lý (ST < 100k): Cột Z là "Chưa xác định" NHƯNG thuộc Siêu Thị trong ngày có tổng lệch < 100.000 VNĐ (Is_Store_Over_100k = False). Khoản lệch nhỏ/hao hụt được miễn trừ xử lý.
+
+2.5. Phân Cấp 3 Mức Độ Ưu Tiên Xử Lý Siêu Thị:
+- Ưu tiên 1 (P1 - ĐANG XỬ LÝ: ST >= 100k): ST có tổng lệch >= 100.000 VNĐ và còn chênh lệch chưa xác định điểm nhận (Cần xử lý gấp nhất).
+- Ưu tiên 2 (P2 - KHÔNG XỬ LÝ: ST < 100k): ST có tổng lệch nhỏ < 100.000 VNĐ (Không cần can thiệp xử lý bù trừ).
+- Ưu tiên 3 (P3 - ĐÃ XONG 100%): Toàn bộ chênh lệch của ST trong ngày đã được xử lý dứt điểm 100%.
+
+2.6. Quy Tắc Đối Soát Trả Kho DC & Phản Hồi DC:
+- DC Đồng Ý Claim: Kho DC chấp thuận bồi hoàn công nợ chênh lệch cho Siêu Thị.
+- DC Từ Chối Claim: Kho DC từ chối bồi hoàn (Siêu Thị hoặc SCM chịu trách nhiệm / hạch toán hao hụt).
+- DC Kiểm Tra Lại / Chờ Duyệt: Các dòng hàng đang tra soát camera, phiếu giao nhận 3 bên.
+- Tỷ Lệ Phản Hồi DC (%) = (Đồng ý + Từ chối + Đang kiểm tra) / Tổng dòng gửi trả DC * 100%.
+
+
+3. ĐẶC TẢ GIAO DIỆN & TRẢI NGHIỆM DASHBOARD
+--------------------------------------------------------------------------------
+- Bộ 4 Thẻ KPI: Tổng tiền lệch, Nhóm ST >= 100k, Đã xử lý, Đang xử lý.
+- Bộ 8 Biểu Đồ Trực Quan Kèm Tính Năng Thu/Phóng Zoom Modal:
+  1. Biểu đồ 1: Số vụ việc & Tỷ lệ xử lý (% hoàn tất) phân khúc ST >= 100k vs ST < 100k
+  2. Biểu đồ 2: Giá trị tiền lệch (VNĐ) & Khối lượng hàng lệch (sp/kg) theo ngày
+  3. Biểu đồ 3: Tiến độ xử lý tiền lệch theo ngày (Đã XL, Đang XL, Không XL & % Xong)
+  4. Biểu đồ 4: Số lượng Siêu Thị phát sinh lệch theo ngày
+  5. Biểu đồ 5: Diễn biến tiền lệch nhóm ST >= 100k vs ST < 100k
+  6. Biểu đồ 6: Cơ cấu điểm nhận trách nhiệm (Kho DC, Siêu Thị, Hao Hụt, Đang XL)
+  7. Biểu đồ 7: Tiến độ trả DC & Tỷ lệ DC phản hồi theo ngày
+  8. Biểu đồ 8: So sánh kết quả DC phản hồi Mát vs Đông (Nhãn kép Count + Pct% và Bảng Ma Trận Đối Chiếu)
+- 4 Tab Báo Cáo:
+  + BẢNG TỔNG HỢP TIẾN ĐỘ (Lồng ghép 2-in-1: Số Lượng & Giá Trị VNĐ, kèm số lượng ST mờ nhạt)
+  + BẢNG GIÁ TRỊ (VNĐ)
+  + BẢNG SỐ LƯỢNG (PCS / KG)
+  + BẢNG TRẢ DC & PHẢN HỒI DC (Chuyên sâu số dòng, số tiền, tỷ lệ phản hồi của Kho DC)
+- Bảng Siêu Thị Ưu Tiên Nằm Riêng Độc Lập Ở Dưới:
+  + Tìm kiếm siêu thị tức thì, lọc ngày, lọc ưu tiên P1/P2/P3, xem chi tiết SKU, xuất Excel.
+
+
+4. NGUYÊN TẮC NHẬN XÉT VẬN HÀNH (OPERATIONAL SCM LANGUAGE)
+--------------------------------------------------------------------------------
+- Trực tiếp, chính xác, bám sát số liệu thực tế trên biểu đồ và bảng dữ liệu.
+- Sử dụng chuẩn thuật ngữ vận hành: Kho DC, Siêu Thị, Dòng hàng, Đồng ý claim bồi hoàn, 
+  Từ chối, Đang xử lý, Chưa hoàn tất, Tiền lệch, Hao hụt.
+- Tuyệt đối không dùng từ ngữ suông, chung chung hoặc từ ngữ thiếu tính chuẩn mực.
+
+
+5. DANH MỤC CÁC TỆP HỆ THỐNG
+--------------------------------------------------------------------------------
+1. generate_web_report.py : Script tạo báo cáo HTML, nhúng dữ liệu JSON và đồng bộ 3 vị trí
+2. threshold_analytics.py : Phân tích ngưỡng 100k, điểm nhận và trạng thái 3 cấp
+3. kpi_metrics.py         : Tính ma trận tổng hợp ngày/tháng và các chỉ số DC
+4. data_processor.py      : Chuẩn hóa dữ liệu thô từ bảng tính
+5. data_loader.py         : Nạp dữ liệu Google Sheets
+6. Mo_Bao_Cao.bat         : Phím tắt nhấp đúp để mở báo cáo trên Windows
+7. Bao_Cao_Doi_Soat_Dong_Mat_Hang_Ngay.html : Tệp dashboard báo cáo chính
+8. LOGIC/                 : Thư mục tài liệu nghiệp vụ, kiến trúc và bản mẫu dashboard
+================================================================================

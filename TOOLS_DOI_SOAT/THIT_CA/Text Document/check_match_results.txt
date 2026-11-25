@@ -1,0 +1,10 @@
+MF01 (Thieu) rows: 26585
+Shortage > 0 rows: 885
+MF02 (Thua) rows: 9
+Surplus > 0 rows: 5
+Diff grouped rows: 885
+Du grouped rows: 5
+Unique SKUs in shortage: 187
+Unique SKUs in surplus: 5
+Common SKUs: 5
+Potential 1-1 cross matches (same quantity): 1

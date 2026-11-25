@@ -1,0 +1,603 @@
+"""
+CÔNG CỤ TỰ ĐỘNG SPAM: PHIẾU CHI TIẾT KHO KHÔ (KHO FGA10101 _ BÌNH THẮNG)
+- Lọc theo Ngày Chuyển thực tế (transfer_date) từ ngày cũ nhất đến hết ngày D-1 (hôm qua)
+- Bỏ qua ngày hôm nay (chưa đến hạn)
+- Gửi ảnh bảng Gradient Xanh lá pastel sang Cam đào pastel vào nhóm DC tra từ Danh_Sach_Chat_ID_Nhom_DC.xlsx
+- Tự động tag @SM @TC @GSM và chống spam trùng lặp
+"""
+import os
+import sys
+import json
+import re
+import asyncio
+import argparse
+from datetime import datetime, timedelta
+import pytz
+import pymysql
+import openpyxl
+import requests
+
+if sys.stdout.encoding != 'utf-8':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(CURRENT_DIR) if os.path.basename(CURRENT_DIR) == 'TOOLS_DOI_SOAT' else CURRENT_DIR
+
+# Import hàm vẽ bảng Pastel Gradient
+sys.path.append(CURRENT_DIR)
+from table_image_generator import render_pastel_gradient_table
+
+from telethon import TelegramClient
+
+API_ID = '28938971'
+API_HASH = '5d392e21b03f0b2f0a1bfdc5ff840b3c'
+BOT_TOKEN = '8810108114:AAER-s5oEc3pAoggenGm0R5fjA3xMDdQswM'
+URL_SEND_PHOTO = f'https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto'
+
+SESSION_PATH = os.path.join(ROOT_DIR, 'user_session')
+if not os.path.exists(SESSION_PATH + '.session'):
+    SESSION_PATH = os.path.join(ROOT_DIR, 'DONG_MAT_DASHBOARD', 'user_session')
+
+FGA_BRANCHES = {
+    '6aabb0a2f426e20007f80123': 'FGA10101 _ Bình Thắng _ Lưu Hàng',
+    '6aabb0d73c46470007f935ce': 'FGA10103 _ Bình Thắng _ Khai Trương'
+}
+FGA_BRANCH_IDS = "('6aabb0a2f426e20007f80123', '6aabb0d73c46470007f935ce')"
+HIST_FILE = os.path.join(ROOT_DIR, 'CONFIG_DATA', 'sent_history.json')
+
+def get_db_connection():
+    return pymysql.connect(
+        host='103.140.248.250',
+        port=9030,
+        user='kfm_scm_tho_nguyen',
+        password='TnAM0WEsv4kmasw878wt',
+        database='kfm_scm',
+        connect_timeout=15,
+        read_timeout=30
+    )
+
+def load_sent_stores(tool_name, date_str):
+    if os.path.exists(HIST_FILE):
+        try:
+            with open(HIST_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                return set(data.get(date_str, {}).get(tool_name, []))
+        except Exception:
+            return set()
+    return set()
+
+def record_sent_store(tool_name, date_str, store_id):
+    data = {}
+    if os.path.exists(HIST_FILE):
+        try:
+            with open(HIST_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        except Exception:
+            data = {}
+    data.setdefault(date_str, {}).setdefault(tool_name, [])
+    if str(store_id) not in data[date_str][tool_name]:
+        data[date_str][tool_name].append(str(store_id))
+    try:
+        os.makedirs(os.path.dirname(os.path.abspath(HIST_FILE)), exist_ok=True)
+        with open(HIST_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+def load_store_and_dc_chat_mappings():
+    st_to_code = {}
+    dc_code_map = {}
+    dc_title_map = {}
+
+    # 1. Đọc ánh xạ từ Danh_Sach_Chat_ID_Nhom_DC.xlsx
+    excel_dc = os.path.join(ROOT_DIR, 'Danh_Sach_Chat_ID_Nhom_DC.xlsx')
+    if os.path.exists(excel_dc):
+        try:
+            wb = openpyxl.load_workbook(excel_dc, read_only=True)
+            ws = wb.active
+            header = [cell.value for cell in next(ws.iter_rows(max_row=1))]
+            code_idx = header.index("MÃ SIÊU THỊ") if "MÃ SIÊU THỊ" in header else 1
+            title_idx = header.index("TÊN NHÓM TELEGRAM") if "TÊN NHÓM TELEGRAM" in header else 2
+            cid_idx = header.index("CHAT ID (SỐ CHUẨN)") if "CHAT ID (SỐ CHUẨN)" in header else 3
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                c = str(row[code_idx]).strip().upper() if row[code_idx] is not None else ''
+                cid = str(row[cid_idx]).strip() if row[cid_idx] is not None else ''
+                title = str(row[title_idx]).strip().lower() if row[title_idx] is not None else ''
+                if c and c != '---' and cid:
+                    dc_code_map[c] = cid
+                if cid and title:
+                    dc_title_map[title] = cid
+            wb.close()
+        except Exception as e:
+            print(f"⚠️ Cảnh báo đọc file Excel DC: {e}")
+
+    # Nhóm DC được phát hiện bổ sung chuẩn từ Telegram
+    dc_code_map['OPS'] = '-4879460816'     # DC-OPS (Opal Skyline)
+    dc_code_map['THD'] = '-1002012247830'  # DC-THD (229A Tân Hòa Đông)
+    dc_code_map['A164'] = '-5114128163'    # DC - A164 (Opal Boulevard)
+    dc_code_map['A215'] = '-1004387715043' # DC - A215 (Thạnh Xuân 14)
+    dc_code_map['VH4'] = '-4806936749'     # VH4 - DC (S07.02 Vinhomes Grand Park)
+    dc_code_map['A161'] = '-5100652138'    # DC - A161 (The Park Residence)
+    dc_code_map['A254'] = '-1003932058795' # DC - A254 (Phú Cường Home)
+    dc_code_map['A265'] = '-1004390985524' # DC - A265 (Nguyễn Tư Giản)
+    dc_code_map['A269'] = '-1004330559619' # DC - A269 (Blue Sky Tower)
+    dc_code_map['A243'] = '-1003932619661' # DC - A243 (Diamond Lotus Riverside)
+    dc_code_map['HHM'] = '-1003822384320' # HHM - DC (165 Hoàng Hoa Thám)
+    dc_code_map['VGP'] = '-937608678'     # VGP - DC (S06.06 Vinhomes Grand Park)
+    dc_code_map['A260'] = '-1003986929642' # DC - A260 (Lê Thị Kỉnh)
+    dc_code_map['A248'] = '-1003906666364' # DC - A248 (Garden Plaza)
+    st_to_code['KFM_HCM_Q07 - CN2-2 Garden Plaza Phú Mỹ Hưng'] = 'A248'
+    st_to_code['CN2-2 Garden Plaza Phú Mỹ Hưng'] = 'A248'
+    st_to_code['Garden Plaza Phú Mỹ Hưng'] = 'A248'
+    st_to_code['Garden Plaza'] = 'A248'
+    st_to_code['KFM_HCM_NBE - 30 Lê Thị Kỉnh'] = 'A260'
+    st_to_code['30 Lê Thị Kỉnh'] = 'A260'
+    st_to_code['Lê Thị Kỉnh'] = 'A260'
+    st_to_code['KFM_HCM_TDU - S06.06 Vinhomes Grand Park - MINI'] = 'VGP'
+    st_to_code['KFM_HCM_TDU - S06.06 Vinhomes Grand Park'] = 'VGP'
+    st_to_code['S06.06 Vinhomes Grand Park'] = 'VGP'
+    st_to_code['S06.06 Vinhomes Grand Park - MINI'] = 'VGP'
+    st_to_code['KFM_HCM_Q12 - 310/10 Khu Phố 1 Thạnh Xuân 14'] = 'A215'
+    st_to_code['310/10 Khu Phố 1 Thạnh Xuân 14'] = 'A215'
+    st_to_code['Thạnh Xuân 14'] = 'A215'
+    st_to_code['KFM_HCM_TDU - S07.02 Vinhomes Grand Park'] = 'VH4'
+    st_to_code['S07.02 Vinhomes Grand Park'] = 'VH4'
+    st_to_code['KFM_HCM_NBE - A2.SH28-30 The Park Residence'] = 'A161'
+    st_to_code['A2.SH28-30 The Park Residence'] = 'A161'
+    st_to_code['KFM_HCM_Q12 - S.06 Chung Cư Phú Cường Home'] = 'A254'
+    st_to_code['S.06 Chung Cư Phú Cường Home'] = 'A254'
+    st_to_code['Phú Cường Home'] = 'A254'
+    st_to_code['KFM_HCM_GVA - 232 Nguyễn Tư Giản'] = 'A265'
+    st_to_code['232 Nguyễn Tư Giản'] = 'A265'
+    st_to_code['Nguyễn Tư Giản'] = 'A265'
+    st_to_code['KFM_HCM_TDU - TMDV B10-1 Chung Cư Blue Sky Tower'] = 'A269'
+    st_to_code['TMDV B10-1 Chung Cư Blue Sky Tower'] = 'A269'
+    st_to_code['Chung Cư Blue Sky Tower'] = 'A269'
+    st_to_code['Blue Sky Tower'] = 'A269'
+    st_to_code['KFM_HCM_Q08 - A6-7 Block A Diamond Lotus Riverside'] = 'A243'
+    st_to_code['A6-7 Block A Diamond Lotus Riverside'] = 'A243'
+    st_to_code['Diamond Lotus Riverside'] = 'A243'
+    st_to_code['Diamond Lotus'] = 'A243'
+    st_to_code['KFM_HCM_TBI - 165 Hoàng Hoa Thám'] = 'HHM'
+    st_to_code['165 Hoàng Hoa Thám'] = 'HHM'
+    dc_code_map['A216'] = '-1004361944433' # DC - A216 (KDC Phong Phú 4)
+    dc_code_map['A258'] = '-1004327654400' # DC - A258 (DS5 Bình Hưng Hòa)
+    st_to_code['KFM_HCM_BCH - CA.01 Đường 19 KDC Phong Phú 4'] = 'A216'
+    st_to_code['CA.01 Đường 19 KDC Phong Phú 4'] = 'A216'
+    st_to_code['KDC Phong Phú 4'] = 'A216'
+    st_to_code['KFM_HCM_BTA - 200 Đường Số 5 Bình Hưng Hòa'] = 'A258'
+    st_to_code['200 Đường Số 5 Bình Hưng Hòa'] = 'A258'
+    st_to_code['Đường Số 5 Bình Hưng Hòa'] = 'A258'
+
+    dc_code_map['A264'] = '-1004476519775' # DC - A264 (Sky Garden 3-R1-3)
+    dc_code_map['A227'] = '-1004381965932' # DC - A227 (Sunshine Diamond River)
+    dc_code_map['A117'] = '-4699467473'     # DC DRY - A117 (The Rivana)
+    dc_code_map['A277'] = '-1004438892013' # DC - A277 (Sunshine Sky City)
+    dc_code_map['A270'] = '-1004408149925' # DC - A270 (Nguyễn Xí)
+    dc_code_map['A278'] = '-1003971888276' # DC - A278 (C-Sky View)
+    dc_code_map['A206'] = '-1003939271297' # DC - A206 (Phú Hoàng Anh)
+    dc_code_map['A228'] = '-1004408424255' # DC - A228 (Masterise Lumiere Boulevard)
+
+    st_to_code['KFM_HCM_NBE - B.1.1 Phú Hoàng Anh'] = 'A206'
+    st_to_code['B.1.1 Phú Hoàng Anh'] = 'A206'
+    st_to_code['Phú Hoàng Anh'] = 'A206'
+
+    st_to_code['KFM_HCM_TDU - B7-C.TMDV.02 Masterise Lumiere Boulevard'] = 'A228'
+    st_to_code['B7-C.TMDV.02 Masterise Lumiere Boulevard'] = 'A228'
+    st_to_code['Masterise Lumiere Boulevard'] = 'A228'
+    st_to_code['Lumiere Boulevard'] = 'A228'
+
+    st_to_code['KFM_HCM_BTH - 184 Nguyễn Xí'] = 'A270'
+    st_to_code['184 Nguyễn Xí'] = 'A270'
+    st_to_code['Nguyễn Xí'] = 'A270'
+
+    st_to_code['KFM_BDU_TDM - BSH01 C-Sky View'] = 'A278'
+    st_to_code['BSH01 C-Sky View'] = 'A278'
+    st_to_code['C-Sky View'] = 'A278'
+    st_to_code['C-Sky'] = 'A278'
+
+    st_to_code['KFM_HCM_Q07 - S1.A1 Sunshine Sky City Phú Thuận'] = 'A277'
+    st_to_code['S1.A1 Sunshine Sky City Phú Thuận'] = 'A277'
+    st_to_code['Sunshine Sky City Phú Thuận'] = 'A277'
+    st_to_code['Sunshine Sky City'] = 'A277'
+
+    st_to_code['KFM_HCM_Q07 - 1016/41 Chung Cư Sky Garden 3-R1-3'] = 'A264'
+    st_to_code['1016/41 Chung Cư Sky Garden 3-R1-3'] = 'A264'
+    st_to_code['Sky Garden 3-R1-3'] = 'A264'
+    st_to_code['Sky Garden 3'] = 'A264'
+    st_to_code['1016/41'] = 'A264'
+
+    st_to_code['KFM_HCM_Q07 - Block C Sunshine Diamond River'] = 'A227'
+    st_to_code['Block C Sunshine Diamond River'] = 'A227'
+    st_to_code['Sunshine Diamond River'] = 'A227'
+    st_to_code['Sunshine Diamond'] = 'A227'
+
+    st_to_code['KFM_BDU_TAN - SH04 The Rivana'] = 'A117'
+    st_to_code['SH04 The Rivana'] = 'A117'
+    st_to_code['The Rivana'] = 'A117'
+
+    store_fallbacks = {}
+    # 2. Đọc mapping Siêu thị -> Mã ST & Chat ID DC từ CONFIG_DATA_STORES.json
+    stores_json = os.path.join(ROOT_DIR, 'CONFIG_DATA_STORES.json')
+    if os.path.exists(stores_json):
+        try:
+            with open(stores_json, 'r', encoding='utf-8') as f:
+                stores = json.load(f)
+                for s in stores:
+                    sid = s.get('id', '').strip().upper()
+                    sname = s.get('name', '').strip()
+                    cid_dc = str(s.get('chat_id_dc', '')).strip()
+                    cid_dm = str(s.get('chat_id_dm', '')).strip()
+
+                    if sid:
+                        store_fallbacks[sid] = {'chat_id_dc': cid_dc, 'chat_id_dm': cid_dm, 'name': sname}
+                        if sname:
+                            st_to_code[sname] = sid
+                            clean_sname = sname.replace(' - MINI', '').replace(' - WIN', '').replace(' - SUPER', '').strip()
+                            st_to_code[clean_sname] = sid
+                            parts = sname.split('-')
+                            if len(parts) > 1:
+                                st_to_code[parts[-1].strip()] = sid
+                        if cid_dc and sid not in dc_code_map:
+                            dc_code_map[sid] = cid_dc
+        except Exception:
+            pass
+
+    return st_to_code, dc_code_map, dc_title_map, store_fallbacks
+
+async def get_tags_for_group(client, chat_id):
+    tags = []
+    try:
+        participants = await client.get_participants(int(chat_id))
+        for p in participants:
+            name = (p.first_name or '') + (' ' + p.last_name if p.last_name else '')
+            name_upper = name.upper()
+            if any(role in name_upper for role in [' TC', '-TC', ' SM', '-SM', ' GSM', '-GSM']):
+                tags.append(f"[{name}](tg://user?id={p.id})")
+    except Exception:
+        pass
+    return " ".join(tags) if tags else "@SM @TC @GSM"
+
+async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None, force=False):
+    print("\n=======================================================")
+    print("📦 BẮT ĐẦU CHẠY TOOL: PHIẾU CHI TIẾT KHO KHÔ (FGA10101 & FGA10103)")
+    print("=======================================================")
+
+    st_to_code, dc_code_map, dc_title_map, store_fallbacks = load_store_and_dc_chat_mappings()
+    print(f"📋 Đã tải {len(dc_code_map)} Chat ID DC và {len(st_to_code)} mapping Siêu thị.")
+
+    vn_tz = pytz.timezone('Asia/Ho_Chi_Minh')
+    vn_now = datetime.now(vn_tz)
+    vn_today_date = vn_now.date()
+    today_str = vn_now.strftime('%d.%m')
+    date_iso = vn_now.strftime('%Y-%m-%d')
+
+    print(f"⏰ Thời điểm chạy (VN): {vn_now.strftime('%d/%m/%Y %H:%M:%S')}")
+    print(f"🎯 Lọc Ngày Chuyển (transfer_date): Từ ngày cũ nhất còn treo đến hết D-1 (< {vn_today_date.strftime('%d/%m/%Y')})")
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # Lấy tên siêu thị từ stockcard
+        cur.execute("""
+        SELECT branch_id, branch_name 
+        FROM __cdc_kfm_kf_inventories_kf_inventory_transaction_stockcard 
+        WHERE branch_name IS NOT NULL AND branch_name != ''
+        GROUP BY branch_id, branch_name
+        """)
+        id_to_name = {bid: bname for bid, bname in cur.fetchall() if bname}
+        id_to_name['6aa8a8d3e4930300071e47b2'] = 'KFM_HCM_Q07 - 1016/41 Chung Cư Sky Garden 3-R1-3'
+        id_to_name['6abb2390d77de90007295419'] = 'KFM_HCM_Q07 - Block C Sunshine Diamond River'
+        id_to_name['6abf6ab6c4c64e00072052aa'] = 'KFM_HCM_BTH - 184 Nguyễn Xí'
+        id_to_name['6ac5feb2a7dd480007062a7d'] = 'KFM_BDU_TDM - BSH01 C-Sky View'
+
+        # Query phiếu chuyển của kho FGA10101 & FGA10103
+        sql = f"""
+        SELECT 
+            t.code,
+            t.from_branch_id,
+            t.to_branch_id,
+            t.transfer_date,
+            t.created_at,
+            t.status
+        FROM __cdc_kfm_kf_inventories_kf_transfer_items t
+        WHERE t.from_branch_id IN {FGA_BRANCH_IDS}
+          AND t.status = 3
+        """
+        cur.execute(sql)
+        tickets = cur.fetchall()
+        conn.close()
+    except Exception as e:
+        print(f"❌ [LỖI KẾT NỐI DATABASE]: {e}")
+        return
+
+    # Lọc theo transfer_date < hôm nay
+    pending_tickets = []
+    for code, from_id, to_id, tdate_str, cat, stt in tickets:
+        td_date = None
+        if tdate_str:
+            try:
+                td_utc = datetime.fromisoformat(tdate_str.replace('Z', '+00:00'))
+                td_date = td_utc.astimezone(vn_tz).date()
+            except Exception:
+                pass
+
+        cat_date = pytz.UTC.localize(cat).astimezone(vn_tz).date() if cat else None
+        target_eval_date = td_date or cat_date
+
+        if target_eval_date and target_eval_date <= vn_today_date:
+            st_name = id_to_name.get(to_id, f"ST_{to_id}")
+            
+            # Trích xuất mã ST
+            st_code = st_to_code.get(st_name)
+            if not st_code:
+                parts = st_name.split('-')
+                st_code = st_to_code.get(parts[-1].strip())
+            if not st_code:
+                m = re.search(r'\b([AB]\d{3,4})\b', st_name, re.IGNORECASE)
+                st_code = m.group(1).upper() if m else ""
+            if not st_code:
+                for sname, sid in st_to_code.items():
+                    if len(sname) > 4 and (sname.lower() in st_name.lower() or st_name.lower() in sname.lower()):
+                        st_code = sid
+                        break
+
+            pending_tickets.append({
+                'code': code,
+                'from_branch_id': from_id,
+                'st_name': st_name,
+                'st_code': st_code,
+                'to_id': to_id,
+                'transfer_date': target_eval_date,
+                'transfer_date_str': target_eval_date.strftime('%d/%m/%Y'),
+                'transfer_date_short': target_eval_date.strftime('%d.%m')
+            })
+
+    # Lọc theo danh sách Siêu thị / Phiếu yêu cầu nếu có truyền vào
+    if stores and str(stores).strip() and str(stores).strip().upper() != 'ALL':
+        raw_list = [s.strip() for s in re.split(r'[,;\n\r\t]+', str(stores)) if s.strip()]
+        target_set = set(s.upper() for s in raw_list)
+        filtered_pending = []
+        for p in pending_tickets:
+            p_code = (p.get('st_code') or '').upper()
+            p_name = (p.get('st_name') or '').upper()
+            p_code_pt = (p.get('code') or '').upper()
+            p_addr = p_name.split('-')[-1].strip() if '-' in p_name else p_name
+            
+            matched = False
+            for t in target_set:
+                t_addr = t.split('-')[-1].strip() if '-' in t else t
+                if (t in [p_code, p_code_pt] or 
+                    t in p_name or p_name in t or 
+                    (len(t_addr) > 4 and (t_addr in p_name or t_addr in p_addr or p_addr in t_addr))):
+                    matched = True
+                    break
+            if matched:
+                filtered_pending.append(p)
+        print(f"🎯 Đã lọc theo danh sách yêu cầu ({stores}): Giữ lại {len(filtered_pending)}/{len(pending_tickets)} phiếu.")
+        pending_tickets = filtered_pending
+
+    print(f"📊 Tìm thấy {len(pending_tickets)} phiếu Chi Tiết Kho Khô tồn đọng cần xử lý.")
+    if len(pending_tickets) == 0:
+        print("✅ Tuyệt vời! Không có phiếu Chi Tiết Kho Khô nào bị tồn đọng.")
+        return
+
+    # Gom nhóm theo Siêu thị
+    grouped = {}
+    for p in pending_tickets:
+        grouped.setdefault(p['st_name'], []).append(p)
+
+    print(f"🏪 Tổng số Đích nhận có phiếu chuyển treo: {len(grouped)}")
+
+    # Khởi động Telegram client
+    import shutil
+    active_session = SESSION_PATH
+    temp_session_file = None
+    try:
+        src_file = SESSION_PATH + '.session'
+        if os.path.exists(src_file):
+            temp_session_file = os.path.join(ROOT_DIR, f'temp_session_ct_{os.getpid()}')
+            shutil.copy2(src_file, temp_session_file + '.session')
+            active_session = temp_session_file
+    except Exception:
+        active_session = SESSION_PATH
+
+    client = TelegramClient(active_session, API_ID, API_HASH)
+    await client.connect()
+    if not await client.is_user_authorized():
+        print("⚠️ Session Telegram chưa được xác thực. Vui lòng chạy Dang_Nhap_Telegram.py trước!")
+        await client.disconnect()
+        if temp_session_file and os.path.exists(temp_session_file + '.session'):
+            try:
+                os.remove(temp_session_file + '.session')
+            except Exception:
+                pass
+        return
+
+    sent_today = load_sent_stores('chi_tiet_kho_kho', date_iso)
+
+    success_count = 0
+    fail_count = 0
+
+    headers = ["Mã phiếu chuyển", "Ngày chuyển", "Nơi chuyển", "Nơi nhận", "Trạng thái"]
+
+    for st_name, group in grouped.items():
+        st_code = group[0]['st_code']
+        chat_id_raw = dc_code_map.get(st_code) if st_code else None
+        
+        # Nếu chưa có theo mã, thử tìm mờ theo tên nhóm DC
+        if not chat_id_raw:
+            parts = st_name.split('-')
+            addr = parts[-1].strip().lower() if len(parts) > 1 else st_name.lower()
+            addr_clean = re.sub(r'^(mini|win|super)\s*', '', addr).strip()
+            for t, cid in dc_title_map.items():
+                if len(addr_clean) > 4 and addr_clean in t:
+                    chat_id_raw = cid
+                    break
+
+        # Fallback tới cấu hình ST (nhóm DC hoặc nhóm ABA Đông Mát/Thịt Cá của ST đó)
+        if not chat_id_raw and st_code in store_fallbacks:
+            sinfo = store_fallbacks[st_code]
+            if sinfo.get('chat_id_dc'):
+                chat_id_raw = sinfo['chat_id_dc']
+            elif sinfo.get('chat_id_dm'):
+                chat_id_raw = sinfo['chat_id_dm']
+
+        if not chat_id_raw:
+            print(f"⚠️ [LOẠI BỎ - KHÔNG CÓ GROUP DC] Siêu thị: {st_name} (Mã: {st_code or 'N/A'}) - Bỏ qua vì không có nhóm DC.")
+            fail_count += 1
+            continue
+
+        try:
+            chat_id = int(str(chat_id_raw).strip())
+        except Exception:
+            fail_count += 1
+            continue
+
+        if not force and str(chat_id) in sent_today:
+            print(f"⏩ [ĐÃ GỬI TRƯỚC ĐÓ] Bỏ qua ST: {st_name} ({chat_id}) - Dùng --force nếu muốn gửi lại.")
+            continue
+
+        # Sắp xếp phiếu của ST theo ngày chuyển tăng dần (cũ nhất lên đầu)
+        group.sort(key=lambda x: x['transfer_date'])
+        oldest_d = group[0]['transfer_date_short']
+        newest_d = group[-1]['transfer_date_short']
+        total_p = len(group)
+
+        # Xây dựng cú pháp Caption chuẩn theo yêu cầu:
+        if total_p == 1:
+            ticket_clause = f"còn 1 phiếu chi tiết kho khô chưa nhận ngày {oldest_d}."
+        else:
+            if oldest_d == newest_d:
+                ticket_clause = f"còn {total_p} phiếu chi tiết kho khô chưa nhận ngày {oldest_d}."
+            else:
+                ticket_clause = f"còn {total_p} phiếu chi tiết kho khô chưa nhận từ ngày {oldest_d} đến {newest_d}."
+
+        tag_text = await get_tags_for_group(client, chat_id)
+        caption = (
+            f"**PHIẾU CHI TIẾT KHO KHÔ**\n"
+            f"{today_str}\n"
+            f"⚠️ Siêu thị {ticket_clause}\n"
+            f"Nhờ team kiểm tra và HOÀN THÀNH phiếu CHI TIẾT KHO KHÔ ngay sau khi nhận hàng.\n"
+            f"{tag_text}"
+        )
+
+        if dry_run:
+            print(f"🔍 [DRY-RUN] Sẽ gửi đến {st_name} (Mã: {st_code}, CID: {chat_id}): {total_p} phiếu [{ticket_clause}]")
+            continue
+
+        # Tạo ảnh bảng Gradient Pastel
+        rows = []
+        for item in group:
+            from_name = FGA_BRANCHES.get(item.get('from_branch_id'), 'FGA10101 _ Bình Thắng _ Lưu Hàng')
+            rows.append([
+                item['code'],
+                item['transfer_date_str'],
+                from_name,
+                item['st_name'],
+                "Đang chuyển"
+            ])
+
+        img_path = os.path.join(CURRENT_DIR, f"temp_ct_khokho_{abs(chat_id)}.png")
+        try:
+            render_pastel_gradient_table(headers, rows, img_path)
+            
+            sent_ok = False
+            # 1. Thử gửi qua Telegram Bot API
+            try:
+                with open(img_path, 'rb') as f:
+                    resp = requests.post(
+                        URL_SEND_PHOTO,
+                        data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
+                        files={'photo': f},
+                        timeout=25
+                    )
+                res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
+                
+                # Xử lý Supergroup migration
+                if resp.status_code == 400 and res_json.get('parameters', {}).get('migrate_to_chat_id'):
+                    new_cid = res_json['parameters']['migrate_to_chat_id']
+                    print(f"🔄 [CHUYỂN SUPERGROUP] ST {st_name} đổi sang Chat ID: {new_cid}. Đang gửi lại ngay...", flush=True)
+                    chat_id = new_cid
+                    with open(img_path, 'rb') as f_mig:
+                        resp = requests.post(
+                            URL_SEND_PHOTO,
+                            data={'chat_id': chat_id, 'caption': caption, 'parse_mode': 'Markdown'},
+                            files={'photo': f_mig},
+                            timeout=25
+                        )
+                    res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
+                
+                # Xử lý lỗi Markdown parse entities
+                if resp.status_code == 400 and "can't parse entities" in res_json.get('description', '').lower():
+                    print(f"⚠️ [MARKDOWN ERROR] Thử gửi lại dạng Plain Text cho ST {st_name}...", flush=True)
+                    plain_caption = caption.replace('**', '').replace('__', '')
+                    with open(img_path, 'rb') as f_plain:
+                        resp = requests.post(
+                            URL_SEND_PHOTO,
+                            data={'chat_id': chat_id, 'caption': plain_caption},
+                            files={'photo': f_plain},
+                            timeout=25
+                        )
+                    res_json = resp.json() if resp.status_code == 200 else (resp.json() if resp.text.startswith('{') else {})
+
+                if resp.status_code == 200 and res_json.get('ok'):
+                    sent_ok = True
+                else:
+                    err_desc = res_json.get('description', f'HTTP {resp.status_code}')
+                    print(f"⚠️ [BOT TELEGRAM BÁO LỖI] ST: {st_name} ({chat_id}): {err_desc}. Đang chuyển sang Telethon User Client...", flush=True)
+            except Exception as ex_bot:
+                print(f"⚠️ [LỖI KẾT NỐI BOT] {st_name}: {ex_bot}. Đang chuyển sang Telethon User Client...", flush=True)
+
+            # 2. Dự phòng: Gửi qua Telethon User Client nếu Bot API thất bại
+            if not sent_ok:
+                try:
+                    await client.send_file(int(chat_id), img_path, caption=caption)
+                    sent_ok = True
+                    print(f"✅ [GỬI THÀNH CÔNG QUA USER CLIENT] ST: {st_name} ({chat_id})", flush=True)
+                except Exception as ex_user:
+                    try:
+                        plain_caption = caption.replace('**', '').replace('__', '')
+                        await client.send_file(int(chat_id), img_path, caption=plain_caption)
+                        sent_ok = True
+                        print(f"✅ [GỬI THÀNH CÔNG QUA USER CLIENT (PLAIN TEXT)] ST: {st_name} ({chat_id})", flush=True)
+                    except Exception as ex_user2:
+                        print(f"❌ [LỖI USER CLIENT] ST: {st_name} ({chat_id}): {ex_user2}", flush=True)
+
+            if sent_ok:
+                record_sent_store('chi_tiet_kho_kho', date_iso, str(chat_id))
+                print(f"🚀 [ĐÃ GỬI THÀNH CÔNG] ST: {st_name} ({chat_id}) - {total_p} phiếu", flush=True)
+                success_count += 1
+            else:
+                fail_count += 1
+
+            if os.path.exists(img_path):
+                os.remove(img_path)
+
+            await asyncio.sleep(1)
+        except Exception as e:
+            print(f"❌ [LỖI XỬ LÝ] ST {st_name}: {e}", flush=True)
+            fail_count += 1
+            if os.path.exists(img_path): os.remove(img_path)
+
+    await client.disconnect()
+    if temp_session_file and os.path.exists(temp_session_file + '.session'):
+        try:
+            os.remove(temp_session_file + '.session')
+        except Exception:
+            pass
+    print("=======================================================")
+    print(f"🎉 HOÀN TẤT! Đã gửi: {success_count} ST. Lỗi/Bỏ qua: {fail_count} ST.")
+    print("=======================================================")
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dry-run', action='store_true', help='Chạy thử không gửi tin')
+    parser.add_argument('--force', action='store_true', help='Bỏ qua kiểm tra lịch sử đã gửi hôm nay, gửi lại toàn bộ')
+    parser.add_argument('--stores', type=str, default=None, help='Danh sách mã ST hoặc tên ST cần spam (cách nhau bởi dấu phẩy)')
+    args = parser.parse_args()
+    asyncio.run(run_spam_chi_tiet_kho_kho(dry_run=args.dry_run, stores=args.stores, force=args.force))

@@ -1,0 +1,10 @@
+  Mã chuyển hàng        Mã hàng                          Tên hàng  SL_du
+0      PT1557739  8938525767738       HỖN HỢP RAU OM, NGÒ GAI 50G    3.0
+1      PT1557736          11129              BÍ ĐAO MINI (1 TRÁI)    1.0
+2      PT1557735          10836                    ĐẬU COVE 250G     0.0
+3      PT1557741  8938505512044  SENTA - CỦ SEN TƯƠI CẮT LÁT 250G    0.0
+4      PT1557742  8936210960815    NẤM XANH- NẤM RƠM TƯƠI VN 200G    1.0
+5      PT1557734          11571         THANH LONG TÍM HỒNG (QUẢ)    2.0
+6      PT1557740  8935268201727  QUÝT ĐƯỜNG LÃO HIẾU LIÊM HỘP 1KG    1.0
+7      PT1557737          10312          MÍT GIỐNG THÁI CẮT MIÊNG    0.0
+8      PT1557737          10836                    ĐẬU COVE 250G     0.0
