@@ -1,3 +1,0 @@
-Empty DataFrame
-Columns: [branch_id, branch_code, branch_name]
-Index: []

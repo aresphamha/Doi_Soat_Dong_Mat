@@ -1,3 +1,0 @@
-"""
-Reconciliation matching engine package.
-"""
