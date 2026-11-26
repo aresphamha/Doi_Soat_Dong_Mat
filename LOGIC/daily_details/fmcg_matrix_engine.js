@@ -82,29 +82,29 @@
             { id: 'reconcile', label: '4. Đối Chiếu CDC', icon: 'fa-circle-check' },
         ];
         return `
-            <div id="fmcg-fs-topbar" style="position:sticky; top:0; left:0; z-index:40; background:#020617; border-bottom:2px solid rgba(56,189,248,0.35); padding:0.55rem 1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
+            <div id="fmcg-fs-topbar" style="position:sticky; top:0; left:0; z-index:40; background:#1a2436; border-bottom:1px solid rgba(56,189,248,0.25); padding:0.55rem 1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
                 <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
-                    <span style="color:#38bdf8; font-weight:800; font-size:0.84rem; margin-right:0.4rem;">
+                    <span style="color:#94a3b8; font-weight:500; font-size:0.78rem; margin-right:0.4rem;">
                         <i class="fa-solid fa-expand" style="margin-right:0.35rem;"></i> CHẾ ĐỘ XEM TOÀN MÀN HÌNH
                     </span>
                     ${views.map(v => {
                         const act = activeSubView === v.id;
-                        return `<button onclick="switchFmcgSubView('${v.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.32rem 0.7rem; font-size:0.76rem; font-weight:700; cursor:pointer;"><i class="fa-solid ${v.icon}" style="margin-right:0.3rem;"></i>${v.label}</button>`;
+                        return `<button onclick="switchFmcgSubView('${v.id}')" style="background:${act ? '#0369a1' : '#28354a'}; color:${act ? '#ffffff' : '#cbd5e1'}; border:1px solid ${act ? 'rgba(56,189,248,0.5)' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.32rem 0.7rem; font-size:0.76rem; font-weight:700; cursor:pointer;"><i class="fa-solid ${v.icon}" style="margin-right:0.3rem;"></i>${v.label}</button>`;
                     }).join('')}
                 </div>
                 <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
                     <div style="display:inline-flex; align-items:center; background:#1e293b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; overflow:hidden;">
                         <button onclick="adjustFmcgZoom(-10)" title="Thu nhỏ chữ" style="background:transparent; color:#e2e8f0; border:none; padding:0.3rem 0.6rem; cursor:pointer; font-weight:800;">−</button>
-                        <button onclick="adjustFmcgZoom(0)" title="Đặt lại 100%" id="fmcg-zoom-label" style="background:rgba(56,189,248,0.12); color:#38bdf8; border:none; border-left:1px solid rgba(255,255,255,0.08); border-right:1px solid rgba(255,255,255,0.08); padding:0.3rem 0.55rem; cursor:pointer; font-size:0.74rem; font-weight:700; font-family:'JetBrains Mono', monospace;">${tableZoom}%</button>
+                        <button onclick="adjustFmcgZoom(0)" title="Đặt lại 100%" id="fmcg-zoom-label" style="background:rgba(148,163,184,0.08); color:#cbd5e1; border:none; border-left:1px solid rgba(255,255,255,0.08); border-right:1px solid rgba(255,255,255,0.08); padding:0.3rem 0.55rem; cursor:pointer; font-size:0.74rem; font-weight:700; font-family:'JetBrains Mono', monospace;">${tableZoom}%</button>
                         <button onclick="adjustFmcgZoom(10)" title="Phóng to chữ" style="background:transparent; color:#e2e8f0; border:none; padding:0.3rem 0.6rem; cursor:pointer; font-weight:800;">+</button>
                     </div>
-                    <button onclick="exportFmcgExcel()" style="background:rgba(16,185,129,0.18); color:#34d399; border:1px solid rgba(16,185,129,0.35); border-radius:6px; padding:0.34rem 0.75rem; font-size:0.76rem; font-weight:700; cursor:pointer;">
+                    <button onclick="exportFmcgExcel()" style="background:#1c2433; color:#cbd5e1; border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:0.34rem 0.75rem; font-size:0.76rem; font-weight:700; cursor:pointer;">
                         <i class="fa-solid fa-file-excel"></i> Xuất Excel
                     </button>
-                    <button onclick="exportFmcgPdf()" style="background:rgba(244,63,94,0.16); color:#fb7185; border:1px solid rgba(244,63,94,0.38); border-radius:6px; padding:0.34rem 0.75rem; font-size:0.76rem; font-weight:700; cursor:pointer;">
+                    <button onclick="exportFmcgPdf()" style="background:#1c2433; color:#cbd5e1; border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:0.34rem 0.75rem; font-size:0.76rem; font-weight:700; cursor:pointer;">
                         <i class="fa-solid fa-file-pdf"></i> Tải PDF
                     </button>
-                    <button onclick="toggleFmcgFullscreen(false)" style="background:rgba(244,63,94,0.2); color:#fda4af; border:1px solid rgba(244,63,94,0.45); border-radius:6px; padding:0.34rem 0.85rem; font-size:0.76rem; font-weight:800; cursor:pointer;">
+                    <button onclick="toggleFmcgFullscreen(false)" style="background:#262f40; color:#e2e8f0; border:1px solid rgba(255,255,255,0.14); border-radius:6px; padding:0.34rem 0.85rem; font-size:0.76rem; font-weight:800; cursor:pointer;">
                         ✕ Thu Nhỏ (ESC)
                     </button>
                 </div>
@@ -277,7 +277,7 @@
                     <span style="font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-right:0.25rem;">Điểm chặn:</span>
                     ${blockPills.map(p => {
             const act = flowBlockFilter === p.id;
-            return `<button onclick="setFmcgFlowBlock('${p.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.08)'}; border-radius:6px; padding:0.28rem 0.62rem; font-size:0.75rem; font-weight:600; cursor:pointer;">${p.label}</button>`;
+            return `<button onclick="setFmcgFlowBlock('${p.id}')" style="background:${act ? '#0369a1' : '#28354a'}; color:${act ? '#ffffff' : '#cbd5e1'}; border:1px solid ${act ? 'rgba(56,189,248,0.5)' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.28rem 0.62rem; font-size:0.75rem; font-weight:600; cursor:pointer;">${p.label}</button>`;
         }).join('')}
                 </div>
                 <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
@@ -287,7 +287,7 @@
                     <button onclick="toggleFmcgFlowGH()" style="background:${flowShowGH ? 'rgba(16,185,129,0.16)' : '#1e293b'}; color:${flowShowGH ? '#34d399' : '#94a3b8'}; border:1px solid ${flowShowGH ? 'rgba(16,185,129,0.38)' : 'rgba(255,255,255,0.12)'}; border-radius:6px; padding:0.3rem 0.65rem; font-size:0.74rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.32rem;">
                         <i class="fa-solid fa-book"></i> Cột G–H (Nguồn &amp; Logic): ${flowShowGH ? 'Hiện' : 'Ẩn'}
                     </button>
-                    <button onclick="toggleFmcgFlowSummaryOnly()" style="background:${flowSummaryOnly ? 'rgba(245,158,11,0.2)' : '#1e293b'}; color:${flowSummaryOnly ? '#fbbf24' : '#cbd5e1'}; border:1px solid ${flowSummaryOnly ? '#f59e0b' : 'rgba(255,255,255,0.12)'}; border-radius:6px; padding:0.3rem 0.68rem; font-size:0.74rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.32rem;">
+                    <button onclick="toggleFmcgFlowSummaryOnly()" style="background:${flowSummaryOnly ? 'rgba(59,130,246,0.16)' : '#1c2433'}; color:${flowSummaryOnly ? '#e2e8f0' : '#cbd5e1'}; border:1px solid ${flowSummaryOnly ? 'rgba(147,197,253,0.35)' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.3rem 0.68rem; font-size:0.74rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.32rem;">
                         <i class="fa-solid ${flowSummaryOnly ? 'fa-calendar-days' : 'fa-compress'}"></i>
                         ${flowSummaryOnly ? 'Đang gọn: Σ T11 & Σ Tuần' : 'Thu gọn: Chỉ xem Σ T11 & Σ Tuần'}
                     </button>
@@ -296,7 +296,7 @@
 
             <table style="width:max-content; min-width:100%; border-collapse:collapse; font-size:0.79rem; text-align:right;">
                 <thead>
-                    <tr style="background:#0f172a; position:sticky; top:0; z-index:22; border-bottom:2px solid rgba(56,189,248,0.3);">
+                    <tr style="background:#0f172a; position:sticky; top:0; z-index:22; border-bottom:1px solid rgba(255,255,255,0.12);">
                         <th style="background:#0f172a; min-width:40px; text-align:center; padding:0.7rem 0.35rem; color:#64748b; font-weight:800; border-right:1px solid rgba(255,255,255,0.06);">STT</th>
                         ${flowShowMeta ? `
                             <th style="background:#0f172a; min-width:84px; text-align:left; padding:0.7rem 0.5rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">MIỀN (A)</th>
@@ -321,7 +321,7 @@
             html += `
                 <th style="min-width:${isWk ? '118px' : '102px'}; padding:0.65rem 0.55rem; text-align:right; color:${isWk ? '#38bdf8' : '#e2e8f0'}; font-weight:${isWk ? '800' : '600'}; background:${isWk ? '#0c2444' : '#0f172a'}; border-right:${isWk ? '2px solid rgba(56,189,248,0.3)' : '1px solid rgba(255,255,255,0.05)'};">
                     <div style="font-size:0.79rem; font-family:'JetBrains Mono', monospace;">${c.label}</div>
-                    <div style="font-size:0.65rem; color:${isWk ? '#7dd3fc' : '#64748b'}; font-weight:500;">${c.sub}</div>
+                    <div style="font-size:0.65rem; color:#64748b; font-weight:500;">${c.sub}</div>
                 </th>
             `;
         });
@@ -332,7 +332,7 @@
             if (flowBlockFilter !== 'all' && blk.id !== flowBlockFilter) return;
 
             html += `
-                <tr style="background:linear-gradient(90deg, ${blk.accent}24, rgba(15,23,42,0.95)); border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.08);">
+                <tr style="background:#182130; border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.08);">
                     <td colspan="${totalColSpan}" style="padding:0.56rem 0.85rem; text-align:left; font-weight:800; color:${blk.accent}; font-size:0.81rem; letter-spacing:0.35px;">
                         <span style="position:sticky; left:12px; display:inline-block;">
                             <i class="${blk.icon}" style="margin-right:0.45rem;"></i> ${blk.title}
@@ -345,7 +345,7 @@
             blk.rows.forEach((r, idx) => {
                 totalRowsShown++;
                 const isEven = idx % 2 === 0;
-                const rowBg = r.is_empty_template ? '#0d1117' : (isEven ? '#161b22' : '#11161d');
+                const rowBg = r.is_empty_template ? '#141c2b' : (isEven ? '#1d283a' : '#182232');
                 const dvColor = r.don_vi.includes('%') ? '#c084fc' : (r.don_vi.includes('VND') ? '#fbbf24' : (r.don_vi.includes('SKU') ? '#f472b6' : (r.don_vi.includes('ST') ? '#38bdf8' : '#34d399')));
                 const t1Badge = r.t1_idx ? `<span style="display:inline-block; margin-left:5px; padding:1px 6px; border-radius:10px; background:rgba(56,189,248,0.14); color:#38bdf8; border:1px solid rgba(56,189,248,0.35); font-size:0.67rem; font-weight:700; font-family:'JetBrains Mono', monospace;" title="Khớp Chỉ số #${r.t1_idx} ở Bảng 1 (53 Chỉ Số)">#${r.t1_idx}</span>` : '';
 
@@ -376,9 +376,9 @@
                 otherCols.forEach(c => {
                     const val = r.values[c.key] || '-';
                     const isWk = c.type === 'week';
-                    const wkBg = isWk ? (isEven ? '#0e223d' : '#0a1b33') : '';
+                    const wkBg = isWk ? (isEven ? '#1b2b42' : '#17253a') : '';
                     html += `
-                        <td style="padding:0.48rem 0.55rem; ${wkBg ? 'background:' + wkBg + ';' : ''} border-right:${isWk ? '2px solid rgba(56,189,248,0.22)' : '1px solid rgba(255,255,255,0.04)'}; font-family:'JetBrains Mono', monospace; font-size:0.77rem; white-space:nowrap; font-weight:${isWk ? '700' : '400'};">
+                        <td style="padding:0.48rem 0.55rem; ${wkBg ? 'background:' + wkBg + ';' : ''} border-right:${isWk ? '1px solid rgba(148,163,184,0.16)' : '1px solid rgba(255,255,255,0.04)'}; font-family:'JetBrains Mono', monospace; font-size:0.77rem; white-space:nowrap; font-weight:${isWk ? '700' : '400'};">
                             ${formatCellValue(val, r.tieu_chi)}
                         </td>
                     `;
@@ -418,19 +418,19 @@
 
         const cards = [
             {
-                icon: 'fa-solid fa-chart-line', color: '#06b6d4', valColor: '#38bdf8',
+                icon: 'fa-solid fa-chart-line', color: '#38bdf8', valColor: '#7dd3fc',
                 label: 'Tổng Chuyển Lũy Kế',
                 value: fmtVndClean(s.tong_luy_ke), unit: 'VNĐ',
                 sub: `≈ ${fmtVndShort(s.tong_luy_ke)} • Lũy kế 01/11 → ${s.latest_cdc_date || s.latest_date || ''}`
             },
             {
-                icon: 'fa-solid fa-scale-unbalanced', color: '#f59e0b', valColor: '#fbbf24',
+                icon: 'fa-solid fa-scale-unbalanced', color: '#f59e0b', valColor: '#fcd34d',
                 label: 'Tồn Kho Chênh Lệch',
                 value: fmtVndClean(s.ton_kho_chenh_lech), unit: 'VNĐ',
                 sub: `≈ ${fmtVndShort(s.ton_kho_chenh_lech)} • Lũy kế theo gia_cost CDC`
             },
             {
-                icon: 'fa-solid fa-percent', color: '#ec4899', valColor: '#f43f5e',
+                icon: 'fa-solid fa-percent', color: '#f43f5e', valColor: '#fda4af',
                 label: 'Tỷ Lệ Lệch Chuyển Hàng',
                 value: s.ty_le_chenh_lech || '0.00%', unit: '',
                 sub: 'Tồn kho chênh lệch / Tổng GT lũy kế'
@@ -438,8 +438,8 @@
         ];
 
         kpiContainer.innerHTML = cards.map(c => `
-            <div class="kpi-fmcg-card" style="background:linear-gradient(135deg, ${c.color}18, rgba(15,23,42,0.75)); border:1px solid ${c.color}44; border-radius:12px; padding:1rem 1.15rem; display:flex; align-items:center; gap:0.9rem; min-width:0; overflow:hidden;">
-                <div style="width:44px; height:44px; border-radius:10px; background:${c.color}24; color:${c.color}; display:flex; align-items:center; justify-content:center; font-size:1.25rem; flex-shrink:0;">
+            <div class="kpi-fmcg-card" style="background:#202b3d; border:1px solid rgba(255,255,255,0.09); border-left:3px solid ${c.color}; border-radius:10px; padding:0.9rem 1.1rem; display:flex; align-items:center; gap:0.9rem; min-width:0; overflow:hidden;">
+                <div style="width:44px; height:44px; border-radius:10px; background:${c.color}1a; color:${c.color}; border:1px solid ${c.color}33; display:flex; align-items:center; justify-content:center; font-size:1.25rem; flex-shrink:0;">
                     <i class="${c.icon}"></i>
                 </div>
                 <div style="min-width:0; flex:1;">
@@ -467,7 +467,7 @@
         let tableHtml = `
             <table class="fmcg-matrix-table" style="width:100%; border-collapse:collapse; font-size:0.83rem; text-align:right;">
                 <thead>
-                    <tr style="background:#0f172a; position:sticky; top:0; z-index:20; border-bottom:2px solid rgba(56,189,248,0.3);">
+                    <tr style="background:#0f172a; position:sticky; top:0; z-index:20; border-bottom:1px solid rgba(255,255,255,0.12);">
                         <th style="position:sticky; left:0; z-index:26; background:#0f172a; min-width:44px; max-width:44px; text-align:center; padding:0.8rem 0.3rem; color:#64748b; font-weight:800; border-right:1px solid rgba(255,255,255,0.08);">STT</th>
                         <th style="position:sticky; left:44px; z-index:26; background:#0f172a; min-width:260px; max-width:300px; text-align:left; padding:0.8rem 0.85rem; color:#38bdf8; font-weight:800; border-right:1px solid rgba(255,255,255,0.12);">
                             <div style="display:flex; align-items:center; justify-content:space-between;">
@@ -502,7 +502,7 @@
             visibleRowsCount += filteredRows.length;
 
             tableHtml += `
-                <tr style="background:linear-gradient(90deg, ${sec.accent}22, rgba(15,23,42,0.95)); border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.08);">
+                <tr style="background:#182130; border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.08);">
                     <td colspan="${dates.length + 3}" style="position:sticky; left:0; z-index:15; padding:0.6rem 0.9rem; text-align:left; font-weight:800; color:${sec.accent}; font-size:0.83rem; letter-spacing:0.4px;">
                         <i class="${sec.icon}" style="margin-right:0.55rem;"></i> ${sec.title}
                     </td>
@@ -511,7 +511,7 @@
 
             filteredRows.forEach((rowItem, rIdx) => {
                 const isEven = rIdx % 2 === 0;
-                const rowBg = isEven ? '#161b22' : '#11161d';
+                const rowBg = isEven ? '#1d283a' : '#182232';
                 const hasLogic = !!rowItem.logic;
                 tableHtml += `
                     <tr class="fmcg-data-row" style="background:${rowBg}; border-bottom:1px solid rgba(255,255,255,0.04);">
@@ -519,7 +519,7 @@
                         <td style="position:sticky; left:44px; z-index:13; background:${rowBg}; text-align:left; padding:0.58rem 0.85rem; font-weight:600; color:#cbd5e1; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">
                             <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
                                 <span>${formatMetricTitle(rowItem.name)}</span>
-                                ${hasLogic ? `<button onclick="showFmcgRowLogic(${rowItem.row_idx})" title="Xem logic & công thức lấy dữ liệu dòng này" style="background:rgba(56,189,248,0.12); color:#38bdf8; border:1px solid rgba(56,189,248,0.28); border-radius:50%; width:20px; height:20px; font-size:0.68rem; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">i</button>` : ''}
+                                ${hasLogic ? `<button onclick="showFmcgRowLogic(${rowItem.row_idx})" title="Xem logic & công thức lấy dữ liệu dòng này" style="background:rgba(148,163,184,0.08); color:#cbd5e1; border:1px solid rgba(56,189,248,0.28); border-radius:50%; width:20px; height:20px; font-size:0.68rem; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">i</button>` : ''}
                             </div>
                         </td>
                         <td style="position:sticky; left:304px; z-index:12; background:${isEven ? '#172033' : '#131b2b'}; padding:0.58rem 0.7rem; border-right:2px solid rgba(251,191,36,0.25); font-family:'JetBrains Mono', monospace; font-size:0.81rem; font-weight:700; color:#fde68a; white-space:nowrap; box-shadow: 2px 0 5px rgba(0,0,0,0.35);">
@@ -567,7 +567,7 @@
             <div style="padding:1.25rem; text-align:left;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.85rem; border-bottom:1px solid rgba(255,255,255,0.1);">
                     <div>
-                        <h3 style="margin:0 0 0.25rem 0; color:#38bdf8; font-size:1.05rem; font-weight:800;">
+                        <h3 style="margin:0 0 0.25rem 0; color:#e2e8f0; font-size:0.98rem; font-weight:600;">
                             <i class="fa-solid fa-book-open" style="margin-right:0.45rem;"></i> ĐẶC TẢ LOGIC CHI TIẾT CỦA CẢ 2 BẢNG (ĐỐI SOÁT FMCG 53 CHỈ SỐ &amp; 113 CHỈ SỐ)
                         </h3>
                         <p style="margin:0; font-size:0.78rem; color:#94a3b8;">
@@ -575,13 +575,13 @@
                         </p>
                     </div>
                     <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-                        <button onclick="copyFmcgLogicMarkdown()" style="background:rgba(139,92,246,0.18); color:#c4b5fd; border:1px solid rgba(139,92,246,0.4); border-radius:8px; padding:0.45rem 0.85rem; font-size:0.78rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
+                        <button onclick="copyFmcgLogicMarkdown()" style="background:#1c2433; color:#cbd5e1; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.45rem 0.85rem; font-size:0.78rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
                             <i class="fa-solid fa-copy"></i> Copy Toàn Bộ Logic (Markdown)
                         </button>
-                        <button onclick="exportFmcgExcel()" style="background:rgba(16,185,129,0.18); color:#34d399; border:1px solid rgba(16,185,129,0.4); border-radius:8px; padding:0.45rem 0.85rem; font-size:0.78rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
+                        <button onclick="exportFmcgExcel()" style="background:#1c2433; color:#cbd5e1; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.45rem 0.85rem; font-size:0.78rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
                             <i class="fa-solid fa-file-excel"></i> Tải Excel (Kèm Sheet Logic)
                         </button>
-                        <button onclick="exportFmcgPdf('logic')" style="background:rgba(244,63,94,0.18); color:#fb7185; border:1px solid rgba(244,63,94,0.4); border-radius:8px; padding:0.45rem 0.85rem; font-size:0.78rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
+                        <button onclick="exportFmcgPdf('logic')" style="background:#1c2433; color:#cbd5e1; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.45rem 0.85rem; font-size:0.78rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
                             <i class="fa-solid fa-file-pdf"></i> Tải PDF (Logic 2 Bảng)
                         </button>
                     </div>
@@ -589,7 +589,7 @@
 
                 <!-- PHẦN A: LOGIC CỘT & NGUYÊN TẮC HỆ THỐNG -->
                 <div style="margin-bottom:1.5rem;">
-                    <div style="font-size:0.84rem; font-weight:800; color:#fbbf24; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.75rem;">
+                    <div style="font-size:0.84rem; font-weight:800; color:#cbd5e1; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.75rem;">
                         <i class="fa-solid fa-layer-group" style="margin-right:0.4rem;"></i> PHẦN A: LOGIC CẤU TRÚC CỘT &amp; QUY TẮC TRUY VẤN HỆ THỐNG
                     </div>
                     <div style="display:flex; flex-direction:column; gap:0.65rem;">
@@ -597,7 +597,7 @@
 
         colLogic.forEach((item, idx) => {
             html += `
-                <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.22); border-left:3px solid #38bdf8; border-radius:10px; padding:0.9rem 1.15rem; width:100%; box-sizing:border-box;">
+                <div style="background:#0f172a; border:1px solid rgba(255,255,255,0.08); border-left:2px solid #64748b; border-radius:10px; padding:0.9rem 1.15rem; width:100%; box-sizing:border-box;">
                     <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.4rem;">
                         <div style="color:#f8fafc; font-size:0.88rem; font-weight:800; line-height:1.35;">${idx + 1}. ${escapeHtml(item.title)}</div>
                         <span style="display:inline-block; font-size:0.7rem; font-weight:700; color:#38bdf8; background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.25); padding:2px 8px; border-radius:6px;">${escapeHtml(item.source)}</span>
@@ -612,13 +612,13 @@
                 </div>
 
                 <!-- PHẦN B: LOGIC CHI TIẾT BẢNG 1 (MA TRẬN 53 CHỈ SỐ) -->
-                <div style="font-size:0.82rem; font-weight:800; color:#34d399; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.65rem;">
+                <div style="font-size:0.82rem; font-weight:800; color:#cbd5e1; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.65rem;">
                     <i class="fa-solid fa-table-list" style="margin-right:0.4rem;"></i> PHẦN B: LOGIC CHI TIẾT BẢNG 1 — ĐỐI SOÁT FMCG (53 CHỈ SỐ)
                 </div>
                 <div style="overflow-x:auto; border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
                     <table style="width:100%; border-collapse:collapse; font-size:0.78rem; text-align:left;">
                         <thead>
-                            <tr style="background:#0f172a; color:#38bdf8; border-bottom:2px solid rgba(56,189,248,0.3);">
+                            <tr style="background:#111827; color:#cbd5e1; border-bottom:1px solid rgba(255,255,255,0.12);">
                                 <th style="padding:0.65rem 0.6rem; width:42px; text-align:center;">STT</th>
                                 <th style="padding:0.65rem 0.7rem; min-width:190px;">Tên Chỉ Số</th>
                                 <th style="padding:0.65rem 0.7rem; min-width:130px;">Nguồn Chính</th>
@@ -644,8 +644,8 @@
             if (rows.length === 0) return;
 
             html += `
-                <tr style="background:${sec.accent}1f; border-top:1px solid rgba(255,255,255,0.1);">
-                    <td colspan="8" style="padding:0.5rem 0.75rem; font-weight:600; color:${sec.accent}; font-size:0.77rem;">
+                <tr style="background:#182130; border-top:1px solid rgba(255,255,255,0.1);">
+                    <td colspan="8" style="padding:0.5rem 0.75rem; font-weight:600; color:#cbd5e1; font-size:0.77rem;">
                         <i class="${sec.icon}" style="margin-right:0.45rem;"></i> ${sec.title}
                     </td>
                 </tr>
@@ -654,18 +654,18 @@
             rows.forEach((r, idx) => {
                 countRows++;
                 const lg = r.logic || {};
-                const bg = idx % 2 === 0 ? '#161b22' : '#11161d';
+                const bg = idx % 2 === 0 ? '#1d283a' : '#182232';
                 const srcBadgeColor = (lg.source || '').includes('CDC') ? '#38bdf8' : ((lg.source || '').includes('Seedlog') ? '#34d399' : '#f59e0b');
                 html += `
                     <tr style="background:${bg}; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:top; font-size:0.74rem; font-weight:300;">
                         <td style="padding:0.52rem 0.5rem; text-align:center; color:#64748b; font-weight:400;">${r.row_idx}</td>
                         <td style="padding:0.52rem 0.7rem; font-weight:400; color:#f1f5f9;">${escapeHtml(r.name)}</td>
                         <td style="padding:0.52rem 0.7rem;">
-                            <span style="display:inline-block; font-size:0.68rem; font-weight:400; color:${srcBadgeColor}; background:${srcBadgeColor}1a; border:1px solid ${srcBadgeColor}44; padding:2px 7px; border-radius:6px;">${escapeHtml(lg.source || '')}</span>
+                            <span style="display:inline-block; font-size:0.68rem; font-weight:400; color:#94a3b8; background:rgba(148,163,184,0.1); border:1px solid rgba(148,163,184,0.2); padding:2px 7px; border-radius:6px;">${escapeHtml(lg.source || '')}</span>
                         </td>
                         <td style="padding:0.52rem 0.7rem; color:#cbd5e1; line-height:1.45;">${formatInlineCode(lg.table_col || '')}</td>
                         <td style="padding:0.52rem 0.7rem; color:#cbd5e1; line-height:1.45;">${formatInlineCode(lg.filter_rule || '')}</td>
-                        <td style="padding:0.52rem 0.7rem; color:#fde68a; font-family:'JetBrains Mono', monospace; font-size:0.72rem; line-height:1.45;">${escapeHtml(lg.formula || '')}</td>
+                        <td style="padding:0.52rem 0.7rem; color:#cbd5e1; font-family:'JetBrains Mono', monospace; font-size:0.72rem; line-height:1.45;">${escapeHtml(lg.formula || '')}</td>
                         <td style="padding:0.52rem 0.7rem; color:#93c5fd;">${escapeHtml(lg.total_rule || '')}</td>
                         <td style="padding:0.52rem 0.7rem; color:#94a3b8; line-height:1.4;">${escapeHtml(lg.note || '')}</td>
                     </tr>
@@ -681,13 +681,13 @@
         if (ft && ft.blocks && ft.blocks.length > 0) {
             html += `
                 <div style="margin-top:1.75rem;">
-                    <div style="font-size:0.82rem; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.65rem;">
+                    <div style="font-size:0.82rem; font-weight:800; color:#cbd5e1; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.65rem;">
                         <i class="fa-solid fa-diagram-project" style="margin-right:0.4rem;"></i> PHẦN C: LOGIC CHI TIẾT BẢNG 2 — ĐỐI SOÁT FMCG (113 CHỈ SỐ • Đ0–Đ4 + B. TỒN ÂM)
                     </div>
                     <div style="overflow-x:auto; border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
                         <table style="width:100%; border-collapse:collapse; font-size:0.78rem; text-align:left;">
                             <thead>
-                                <tr style="background:#0f172a; color:#38bdf8; border-bottom:2px solid rgba(56,189,248,0.3);">
+                                <tr style="background:#111827; color:#cbd5e1; border-bottom:1px solid rgba(255,255,255,0.12);">
                                     <th style="padding:0.65rem 0.5rem; width:44px; text-align:center;">STT</th>
                                     <th style="padding:0.65rem 0.6rem; width:56px; text-align:center;">ĐC</th>
                                     <th style="padding:0.65rem 0.7rem; min-width:210px;">Tiêu Chí (Flow FMCG)</th>
@@ -709,15 +709,15 @@
                 if (matchedRows.length === 0) return;
 
                 html += `
-                    <tr style="background:${blk.accent}1f; border-top:1px solid rgba(255,255,255,0.1);">
-                        <td colspan="6" style="padding:0.5rem 0.75rem; font-weight:600; color:${blk.accent}; font-size:0.77rem;">
+                    <tr style="background:#182130; border-top:1px solid rgba(255,255,255,0.1);">
+                        <td colspan="6" style="padding:0.5rem 0.75rem; font-weight:600; color:#cbd5e1; font-size:0.77rem;">
                             <i class="${blk.icon}" style="margin-right:0.45rem;"></i> ${blk.title}
                         </td>
                     </tr>
                 `;
                 matchedRows.forEach(({ r, stt }, idx) => {
                     flowLogicCount++;
-                    const bg = r.is_empty_template ? '#0d1117' : (idx % 2 === 0 ? '#161b22' : '#11161d');
+                    const bg = r.is_empty_template ? '#141c2b' : (idx % 2 === 0 ? '#1d283a' : '#182232');
                     const srcColor = (r.nguon || '').includes('CDC') ? '#38bdf8' : ((r.nguon || '').includes('Seedlog') ? '#34d399' : '#f59e0b');
                     html += `
                         <tr style="background:${bg}; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:top; font-size:0.74rem; font-weight:300; opacity:${r.is_empty_template ? '0.68' : '1'};">
@@ -726,9 +726,9 @@
                             <td style="padding:0.5rem 0.7rem; font-weight:400; color:#f1f5f9;">${escapeHtml(r.tieu_chi)}</td>
                             <td style="padding:0.5rem 0.6rem; text-align:center; color:#cbd5e1;">${escapeHtml(r.don_vi)}</td>
                             <td style="padding:0.5rem 0.7rem;">
-                                <span style="display:inline-block; font-size:0.68rem; font-weight:400; color:${srcColor}; background:${srcColor}1a; border:1px solid ${srcColor}44; padding:2px 7px; border-radius:6px;">${escapeHtml(r.nguon || '')}</span>
+                                <span style="display:inline-block; font-size:0.68rem; font-weight:400; color:#94a3b8; background:rgba(148,163,184,0.1); border:1px solid rgba(148,163,184,0.2); padding:2px 7px; border-radius:6px;">${escapeHtml(r.nguon || '')}</span>
                             </td>
-                            <td style="padding:0.5rem 0.7rem; color:#fde68a; line-height:1.45;">${formatInlineCode(r.cach_tinh || '')}</td>
+                            <td style="padding:0.5rem 0.7rem; color:#cbd5e1; line-height:1.45;">${formatInlineCode(r.cach_tinh || '')}</td>
                         </tr>
                     `;
                 });
@@ -752,7 +752,7 @@
         let html = `
             <div style="padding:1.15rem; text-align:left;">
                 <div style="margin-bottom:0.85rem;">
-                    <h3 style="margin:0 0 0.25rem 0; color:#34d399; font-size:1rem; font-weight:800;">
+                    <h3 style="margin:0 0 0.25rem 0; color:#e2e8f0; font-size:0.96rem; font-weight:600;">
                         <i class="fa-solid fa-circle-check" style="margin-right:0.45rem;"></i> BẢNG ĐỐI CHIẾU KIỂM CHỨNG: CDC STARROCKS (FGA10101 → CHỈ SIÊU THỊ KFM + BẢNG TO) vs SEEDLOG
                     </h3>
                     <p style="margin:0; font-size:0.78rem; color:#94a3b8;">
@@ -762,7 +762,7 @@
                 <div style="overflow-x:auto; border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
                     <table style="width:100%; border-collapse:collapse; font-size:0.8rem; text-align:right;">
                         <thead>
-                            <tr style="background:#0f172a; color:#38bdf8; border-bottom:2px solid rgba(56,189,248,0.3);">
+                            <tr style="background:#111827; color:#cbd5e1; border-bottom:1px solid rgba(255,255,255,0.12);">
                                 <th style="padding:0.65rem 0.45rem; text-align:center; color:#64748b;">STT</th>
                                 <th style="padding:0.65rem; text-align:center;">Ngày</th>
                                 <th style="padding:0.65rem;">Phiếu PT</th>
@@ -781,7 +781,7 @@
         `;
 
         recs.forEach((r, idx) => {
-            const bg = idx % 2 === 0 ? '#161b22' : '#11161d';
+            const bg = idx % 2 === 0 ? '#1d283a' : '#182232';
             const badgeStyle = r.status_code === 'ok'
                 ? 'color:#34d399; background:rgba(16,185,129,0.14); border:1px solid rgba(16,185,129,0.35);'
                 : (r.status_code === 'pending'
@@ -845,7 +845,7 @@
                     <div><strong style="color:#94a3b8;">Nguồn dữ liệu chính:</strong> <span style="color:#38bdf8; font-weight:700;">${escapeHtml(lg.source)}</span></div>
                     <div><strong style="color:#94a3b8;">Bảng DB / Sheet & Cột đọc:</strong><div style="background:#1e293b; padding:0.5rem 0.7rem; border-radius:6px; margin-top:0.25rem; color:#e2e8f0;">${formatInlineCode(lg.table_col)}</div></div>
                     <div><strong style="color:#94a3b8;">Điều kiện lọc & Quy tắc xử lý:</strong><div style="background:#1e293b; padding:0.5rem 0.7rem; border-radius:6px; margin-top:0.25rem; color:#e2e8f0;">${formatInlineCode(lg.filter_rule)}</div></div>
-                    <div><strong style="color:#94a3b8;">Công thức tính:</strong><div style="background:#172554; padding:0.5rem 0.7rem; border-radius:6px; margin-top:0.25rem; color:#fde68a; font-family:'JetBrains Mono', monospace;">${escapeHtml(lg.formula)}</div></div>
+                    <div><strong style="color:#94a3b8;">Công thức tính:</strong><div style="background:#172554; padding:0.5rem 0.7rem; border-radius:6px; margin-top:0.25rem; color:#cbd5e1; font-family:'JetBrains Mono', monospace;">${escapeHtml(lg.formula)}</div></div>
                     <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
                         <div><strong style="color:#94a3b8;">Cột TỔNG kỳ:</strong> <span style="color:#93c5fd;">${escapeHtml(lg.total_rule)}</span></div>
                         <div><strong style="color:#94a3b8;">Tổng hiện tại:</strong> <strong style="color:#fbbf24; font-family:'JetBrains Mono', monospace;">${escapeHtml(found.total || '-')}</strong></div>
@@ -1255,8 +1255,8 @@
     }
 
     function formatMetricTitle(name) {
-        if (name.includes('chênh lệch') || name.includes('thất thoát')) return `<span style="color:#fb7185;">${name}</span>`;
-        if (name.includes('trả DC') || name.includes('xác nhận') || name.includes('DC chịu')) return `<span style="color:#38bdf8;">${name}</span>`;
+        if (name.includes('chênh lệch') || name.includes('thất thoát')) return `<span style="color:#fca5a5;">${name}</span>`;
+        if (name.includes('trả DC') || name.includes('xác nhận') || name.includes('DC chịu')) return `<span style="color:#7dd3fc;">${name}</span>`;
         if (name.includes('lũy kế') || name.includes('Tồn kho')) return `<strong style="color:#34d399;">${name}</strong>`;
         return name;
     }
@@ -1303,13 +1303,13 @@
         filterSection = secId;
         document.querySelectorAll('.fmcg-sec-pill').forEach(b => {
             if (b.getAttribute('data-sec') === secId) {
-                b.style.background = '#0284c7';
-                b.style.borderColor = '#38bdf8';
-                b.style.color = '#fff';
+                b.style.background = '#0369a1';
+                b.style.borderColor = 'rgba(56,189,248,0.5)';
+                b.style.color = '#ffffff';
             } else {
-                b.style.background = '#1e293b';
-                b.style.borderColor = 'rgba(255,255,255,0.08)';
-                b.style.color = '#94a3b8';
+                b.style.background = '#28354a';
+                b.style.borderColor = 'rgba(255,255,255,0.1)';
+                b.style.color = '#cbd5e1';
             }
         });
         renderActiveSubView();
