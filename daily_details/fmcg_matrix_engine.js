@@ -13,6 +13,8 @@
     let activeSubView = 'matrix'; // 'matrix' | 'flow' | 'logic' | 'reconcile'
     let flowBlockFilter = 'all';  // 'all' | 'D0' | 'D1' | 'D2' | 'D3' | 'D4' | 'B1'
     let flowSummaryOnly = false;  // false = Ngày + Σ Tuần + Σ T11, true = Chỉ Σ T11 + Σ Tuần
+    let flowShowMeta = true;      // true = Hiện 3 cột Miền (A), Kho (B), Nhóm (C) ở đầu bảng
+    let flowShowGH = true;        // true = Hiện 2 cột Nguồn (G), Cách tính & Logic (H)
     let isFullscreen = false;
     let tableZoom = 100;          // 70 .. 130 (%)
 
@@ -75,7 +77,7 @@
         if (!isFullscreen) return '';
         const views = [
             { id: 'matrix', label: '1. Đối Soát FMCG (53 Chỉ Số)', icon: 'fa-table' },
-            { id: 'flow', label: '2. Đối Soát FMCG (78 Chỉ Số)', icon: 'fa-diagram-project' },
+            { id: 'flow', label: '2. Đối Soát FMCG (113 Chỉ Số)', icon: 'fa-diagram-project' },
             { id: 'logic', label: '3. Logic Chi Tiết', icon: 'fa-book-open' },
             { id: 'reconcile', label: '4. Đối Chiếu CDC', icon: 'fa-circle-check' },
         ];
@@ -86,9 +88,9 @@
                         <i class="fa-solid fa-expand" style="margin-right:0.35rem;"></i> CHẾ ĐỘ XEM TOÀN MÀN HÌNH
                     </span>
                     ${views.map(v => {
-            const act = activeSubView === v.id;
-            return `<button onclick="switchFmcgSubView('${v.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.32rem 0.7rem; font-size:0.76rem; font-weight:700; cursor:pointer;"><i class="fa-solid ${v.icon}" style="margin-right:0.3rem;"></i>${v.label}</button>`;
-        }).join('')}
+                        const act = activeSubView === v.id;
+                        return `<button onclick="switchFmcgSubView('${v.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.32rem 0.7rem; font-size:0.76rem; font-weight:700; cursor:pointer;"><i class="fa-solid ${v.icon}" style="margin-right:0.3rem;"></i>${v.label}</button>`;
+                    }).join('')}
                 </div>
                 <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
                     <div style="display:inline-flex; align-items:center; background:#1e293b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; overflow:hidden;">
@@ -151,11 +153,10 @@
         activeSubView = viewName;
         document.querySelectorAll('.fmcg-subview-btn').forEach(btn => {
             const isAct = btn.getAttribute('data-view') === viewName;
-            btn.style.background = isAct ? 'rgba(59,130,246,0.16)' : '#1c2433';
-            btn.style.color = isAct ? '#e2e8f0' : '#94a3b8';
-            btn.style.borderColor = isAct ? 'rgba(147,197,253,0.35)' : 'rgba(255,255,255,0.08)';
-            btn.style.fontWeight = isAct ? '500' : '400';
-            btn.style.boxShadow = 'none';
+            btn.style.background = isAct ? 'linear-gradient(135deg, #0284c7, #0ea5e9)' : '#1e293b';
+            btn.style.color = isAct ? '#fff' : '#94a3b8';
+            btn.style.borderColor = isAct ? '#38bdf8' : 'rgba(255,255,255,0.1)';
+            btn.style.boxShadow = isAct ? '0 0 12px rgba(56,189,248,0.3)' : 'none';
         });
 
         const secBar = document.getElementById('fmcg-filter-bar');
@@ -199,25 +200,33 @@
         renderActiveSubView();
     };
 
-    // ==================== VIEW NEW: TEMPLATE FLOW ĐIỂM CHẶN (Đ0 -> Đ4 + B. TỒN ÂM) ====================
+    window.toggleFmcgFlowMeta = function () {
+        flowShowMeta = !flowShowMeta;
+        renderFlowTemplateView();
+    };
+
+    window.toggleFmcgFlowGH = function () {
+        flowShowGH = !flowShowGH;
+        renderFlowTemplateView();
+    };
+
+    // ==================== VIEW NEW: ĐỐI SOÁT FMCG (113 CHỈ SỐ · Đ0 -> Đ4 + B. TỒN ÂM) ====================
     function renderFlowTemplateView() {
         const container = document.getElementById('fmcg-table-container');
         if (!container) return;
 
         const ft = currentData.flow_template;
         if (!ft || !ft.blocks || !ft.columns) {
-            container.innerHTML = `<div style="padding:2.5rem; text-align:center; color:#94a3b8;">Chưa có dữ liệu Template Flow Điểm Chặn. Hãy bấm <strong>Cập Nhật Realtime (CDC &amp; Seedlog)</strong> để nạp mới nhất!</div>`;
+            container.innerHTML = `<div style="padding:2.5rem; text-align:center; color:#94a3b8;">Chưa có dữ liệu Đối Soát FMCG (113 Chỉ Số). Hãy bấm <strong>Cập Nhật Realtime (CDC &amp; Seedlog)</strong> để nạp mới nhất!</div>`;
             return;
         }
 
-        // Lọc cột: Σ T11 luôn đứng đầu cố định; các cột còn lại lọc theo flowSummaryOnly và sortDescending
         const monthCol = ft.columns.find(c => c.type === 'month') || ft.columns[0];
         let otherCols = ft.columns.filter(c => c.type !== 'month');
         if (flowSummaryOnly) {
             otherCols = otherCols.filter(c => c.type === 'week');
         }
         if (sortDescending) {
-            // Đảo thứ tự tuần (W48 -> W44) nhưng giữ Σ Wxx đứng ngay đầu mỗi tuần cho dễ đọc
             const weeks = [];
             const byWeek = {};
             otherCols.forEach(c => {
@@ -235,15 +244,32 @@
             });
         }
 
+        const totalAll = ft.blocks.reduce((s, b) => s + (b.rows ? b.rows.length : 0), 0);
+        const countOf = (id) => {
+            const b = ft.blocks.find(x => x.id === id);
+            return b && b.rows ? b.rows.length : 0;
+        };
+
         const blockPills = [
-            { id: 'all', label: 'Tất cả (Đ0–Đ4 + B)' },
-            { id: 'D0', label: 'Đ0 · Tổng quan' },
-            { id: 'D1', label: 'Đ1 · Chuyển–Nhận' },
-            { id: 'D2', label: 'Đ2 · SCM Phân loại' },
-            { id: 'D3', label: 'Đ3 · DC Phản hồi' },
-            { id: 'D4', label: 'Đ4 · Chốt KQ' },
-            { id: 'B1', label: 'B. Tồn âm' },
+            { id: 'all', label: `Tất cả (${totalAll})` },
+            { id: 'D0', label: `Đ0 · Tổng quan (${countOf('D0')})` },
+            { id: 'D1', label: `Đ1 · Chuyển–Nhận (${countOf('D1')})` },
+            { id: 'D2', label: `Đ2 · SCM Phân loại (${countOf('D2')})` },
+            { id: 'D3', label: `Đ3 · DC Phản hồi (${countOf('D3')})` },
+            { id: 'D4', label: `Đ4 · Chốt KQ (${countOf('D4')})` },
+            { id: 'B1', label: `B. Tồn âm (${countOf('B1')})` },
         ];
+
+        const srcBadgeStyle = (s) => {
+            const low = String(s || '').toLowerCase();
+            if (low.includes('cdc')) return 'background:rgba(14,165,233,0.16); color:#38bdf8; border:1px solid rgba(56,189,248,0.35);';
+            if (low.includes('seedlog')) return 'background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.35);';
+            if (low.includes('công thức') || low.includes('lũy kế')) return 'background:rgba(139,92,246,0.16); color:#c4b5fd; border:1px solid rgba(139,92,246,0.35);';
+            if (low.includes('chờ') || low.includes('chưa') || low.includes('mở rộng')) return 'background:rgba(244,63,94,0.14); color:#fda4af; border:1px solid rgba(244,63,94,0.3);';
+            return 'background:rgba(30,41,59,0.95); color:#cbd5e1; border:1px solid rgba(255,255,255,0.12);';
+        };
+
+        const totalColSpan = 4 + (flowShowMeta ? 3 : 0) + (flowShowGH ? 2 : 0) + 1 + otherCols.length;
 
         let html = `
             <div style="padding:0.85rem 1rem; background:#0f172a; border-bottom:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.65rem; position:sticky; left:0; z-index:28;">
@@ -254,24 +280,39 @@
             return `<button onclick="setFmcgFlowBlock('${p.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.08)'}; border-radius:6px; padding:0.28rem 0.62rem; font-size:0.75rem; font-weight:600; cursor:pointer;">${p.label}</button>`;
         }).join('')}
                 </div>
-                <div style="display:flex; align-items:center; gap:0.5rem;">
-                    <button onclick="toggleFmcgFlowSummaryOnly()" style="background:${flowSummaryOnly ? 'rgba(245,158,11,0.2)' : '#1e293b'}; color:${flowSummaryOnly ? '#fbbf24' : '#cbd5e1'}; border:1px solid ${flowSummaryOnly ? '#f59e0b' : 'rgba(255,255,255,0.12)'}; border-radius:6px; padding:0.32rem 0.72rem; font-size:0.76rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.35rem;">
+                <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
+                    <button onclick="toggleFmcgFlowMeta()" style="background:${flowShowMeta ? 'rgba(16,185,129,0.16)' : '#1e293b'}; color:${flowShowMeta ? '#34d399' : '#94a3b8'}; border:1px solid ${flowShowMeta ? 'rgba(16,185,129,0.38)' : 'rgba(255,255,255,0.12)'}; border-radius:6px; padding:0.3rem 0.65rem; font-size:0.74rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.32rem;">
+                        <i class="fa-solid fa-table-columns"></i> Miền/Kho/Nhóm: ${flowShowMeta ? 'Hiện' : 'Ẩn'}
+                    </button>
+                    <button onclick="toggleFmcgFlowGH()" style="background:${flowShowGH ? 'rgba(16,185,129,0.16)' : '#1e293b'}; color:${flowShowGH ? '#34d399' : '#94a3b8'}; border:1px solid ${flowShowGH ? 'rgba(16,185,129,0.38)' : 'rgba(255,255,255,0.12)'}; border-radius:6px; padding:0.3rem 0.65rem; font-size:0.74rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.32rem;">
+                        <i class="fa-solid fa-book"></i> Cột G–H (Nguồn &amp; Logic): ${flowShowGH ? 'Hiện' : 'Ẩn'}
+                    </button>
+                    <button onclick="toggleFmcgFlowSummaryOnly()" style="background:${flowSummaryOnly ? 'rgba(245,158,11,0.2)' : '#1e293b'}; color:${flowSummaryOnly ? '#fbbf24' : '#cbd5e1'}; border:1px solid ${flowSummaryOnly ? '#f59e0b' : 'rgba(255,255,255,0.12)'}; border-radius:6px; padding:0.3rem 0.68rem; font-size:0.74rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.32rem;">
                         <i class="fa-solid ${flowSummaryOnly ? 'fa-calendar-days' : 'fa-compress'}"></i>
-                        ${flowSummaryOnly ? 'Đang xem: Chỉ Σ T11 & Σ Tuần' : 'Thu gọn: Chỉ xem Σ T11 & Σ Tuần'}
+                        ${flowSummaryOnly ? 'Đang gọn: Σ T11 & Σ Tuần' : 'Thu gọn: Chỉ xem Σ T11 & Σ Tuần'}
                     </button>
                 </div>
             </div>
 
-            <table style="width:100%; border-collapse:collapse; font-size:0.81rem; text-align:right;">
+            <table style="width:max-content; min-width:100%; border-collapse:collapse; font-size:0.79rem; text-align:right;">
                 <thead>
                     <tr style="background:#0f172a; position:sticky; top:0; z-index:22; border-bottom:2px solid rgba(56,189,248,0.3);">
-                        <th style="position:sticky; left:0; z-index:26; background:#0f172a; min-width:44px; max-width:44px; text-align:center; padding:0.72rem 0.3rem; color:#64748b; font-weight:800; border-right:1px solid rgba(255,255,255,0.08);">STT</th>
-                        <th style="position:sticky; left:44px; z-index:26; background:#0f172a; min-width:52px; max-width:52px; text-align:center; padding:0.72rem 0.4rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08);">ĐC</th>
-                        <th style="position:sticky; left:96px; z-index:26; background:#0f172a; min-width:225px; max-width:250px; text-align:left; padding:0.72rem 0.75rem; color:#38bdf8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08);">TIÊU CHÍ (FLOW FMCG)</th>
-                        <th style="position:sticky; left:321px; z-index:26; background:#0f172a; min-width:98px; max-width:98px; text-align:center; padding:0.72rem 0.45rem; color:#94a3b8; font-weight:700; border-right:1px solid rgba(255,255,255,0.12);">ĐƠN VỊ</th>
-                        <th style="position:sticky; left:419px; z-index:25; background:#172554; min-width:128px; text-align:right; padding:0.72rem 0.65rem; color:#fbbf24; font-weight:800; border-right:2px solid rgba(251,191,36,0.35); box-shadow:2px 0 6px rgba(0,0,0,0.45);">
-                            <div style="font-size:0.82rem;">${monthCol.label}</div>
-                            <div style="font-size:0.66rem; color:#93c5fd; font-weight:500;">${monthCol.sub}</div>
+                        <th style="background:#0f172a; min-width:40px; text-align:center; padding:0.7rem 0.35rem; color:#64748b; font-weight:800; border-right:1px solid rgba(255,255,255,0.06);">STT</th>
+                        ${flowShowMeta ? `
+                            <th style="background:#0f172a; min-width:84px; text-align:left; padding:0.7rem 0.5rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">MIỀN (A)</th>
+                            <th style="background:#0f172a; min-width:64px; text-align:left; padding:0.7rem 0.5rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">KHO (B)</th>
+                            <th style="background:#0f172a; min-width:94px; text-align:left; padding:0.7rem 0.5rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">NHÓM (C)</th>
+                        ` : ''}
+                        <th style="background:#0f172a; min-width:50px; text-align:center; padding:0.7rem 0.4rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">ĐC (D)</th>
+                        <th style="position:sticky; left:0; z-index:26; background:#0b1325; min-width:245px; max-width:280px; text-align:left; padding:0.7rem 0.75rem; color:#38bdf8; font-weight:800; border-right:2px solid rgba(56,189,248,0.32); box-shadow:2px 0 6px rgba(0,0,0,0.45); white-space:nowrap;">TIÊU CHÍ (E · MAP BẢNG 1)</th>
+                        <th style="background:#0f172a; min-width:118px; text-align:center; padding:0.7rem 0.45rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">ĐƠN VỊ (F)</th>
+                        ${flowShowGH ? `
+                            <th style="background:#0f172a; min-width:142px; text-align:left; padding:0.7rem 0.55rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">NGUỒN DỮ LIỆU (G)</th>
+                            <th style="background:#0f172a; min-width:280px; max-width:380px; text-align:left; padding:0.7rem 0.6rem; color:#94a3b8; font-weight:800; border-right:2px solid rgba(56,189,248,0.22); white-space:nowrap;">CÁCH TÍNH &amp; LOGIC (H)</th>
+                        ` : ''}
+                        <th style="background:#172554; min-width:128px; text-align:right; padding:0.7rem 0.65rem; color:#fbbf24; font-weight:800; border-right:2px solid rgba(251,191,36,0.35);">
+                            <div style="font-size:0.8rem;">${monthCol.label}</div>
+                            <div style="font-size:0.65rem; color:#93c5fd; font-weight:500;">${monthCol.sub}</div>
                         </th>
         `;
 
@@ -279,8 +320,8 @@
             const isWk = c.type === 'week';
             html += `
                 <th style="min-width:${isWk ? '118px' : '102px'}; padding:0.65rem 0.55rem; text-align:right; color:${isWk ? '#38bdf8' : '#e2e8f0'}; font-weight:${isWk ? '800' : '600'}; background:${isWk ? '#0c2444' : '#0f172a'}; border-right:${isWk ? '2px solid rgba(56,189,248,0.3)' : '1px solid rgba(255,255,255,0.05)'};">
-                    <div style="font-size:0.8rem; font-family:'JetBrains Mono', monospace;">${c.label}</div>
-                    <div style="font-size:0.66rem; color:${isWk ? '#7dd3fc' : '#64748b'}; font-weight:500;">${c.sub}</div>
+                    <div style="font-size:0.79rem; font-family:'JetBrains Mono', monospace;">${c.label}</div>
+                    <div style="font-size:0.65rem; color:${isWk ? '#7dd3fc' : '#64748b'}; font-weight:500;">${c.sub}</div>
                 </th>
             `;
         });
@@ -292,8 +333,11 @@
 
             html += `
                 <tr style="background:linear-gradient(90deg, ${blk.accent}24, rgba(15,23,42,0.95)); border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.08);">
-                    <td colspan="${otherCols.length + 5}" style="position:sticky; left:0; z-index:15; padding:0.58rem 0.85rem; text-align:left; font-weight:800; color:${blk.accent}; font-size:0.82rem; letter-spacing:0.35px;">
-                        <i class="${blk.icon}" style="margin-right:0.5rem;"></i> ${blk.title}
+                    <td colspan="${totalColSpan}" style="padding:0.56rem 0.85rem; text-align:left; font-weight:800; color:${blk.accent}; font-size:0.81rem; letter-spacing:0.35px;">
+                        <span style="position:sticky; left:12px; display:inline-block;">
+                            <i class="${blk.icon}" style="margin-right:0.45rem;"></i> ${blk.title}
+                            <span style="font-size:0.72rem; color:#94a3b8; font-weight:600; margin-left:6px;">(${blk.rows.length} chỉ số)</span>
+                        </span>
                     </td>
                 </tr>
             `;
@@ -302,17 +346,29 @@
                 totalRowsShown++;
                 const isEven = idx % 2 === 0;
                 const rowBg = r.is_empty_template ? '#0d1117' : (isEven ? '#161b22' : '#11161d');
-                const dvColor = r.don_vi.includes('%') ? '#ec4899' : (r.don_vi.includes('VND') ? '#fbbf24' : (r.don_vi.includes('ST') ? '#34d399' : '#38bdf8'));
+                const dvColor = r.don_vi.includes('%') ? '#c084fc' : (r.don_vi.includes('VND') ? '#fbbf24' : (r.don_vi.includes('SKU') ? '#f472b6' : (r.don_vi.includes('ST') ? '#38bdf8' : '#34d399')));
+                const t1Badge = r.t1_idx ? `<span style="display:inline-block; margin-left:5px; padding:1px 6px; border-radius:10px; background:rgba(56,189,248,0.14); color:#38bdf8; border:1px solid rgba(56,189,248,0.35); font-size:0.67rem; font-weight:700; font-family:'JetBrains Mono', monospace;" title="Khớp Chỉ số #${r.t1_idx} ở Bảng 1 (53 Chỉ Số)">#${r.t1_idx}</span>` : '';
 
                 html += `
-                    <tr style="background:${rowBg}; border-bottom:1px solid rgba(255,255,255,0.04); opacity:${r.is_empty_template ? '0.62' : '1'};">
-                        <td style="position:sticky; left:0; z-index:13; background:${rowBg}; text-align:center; padding:0.52rem 0.3rem; font-weight:700; color:#64748b; font-size:0.74rem; font-family:'JetBrains Mono', monospace; border-right:1px solid rgba(255,255,255,0.06);">${totalRowsShown}</td>
-                        <td style="position:sticky; left:44px; z-index:13; background:${rowBg}; text-align:center; padding:0.52rem 0.35rem; font-weight:700; color:${blk.accent}; font-size:0.74rem; border-right:1px solid rgba(255,255,255,0.06);">${r.diem_chan}</td>
-                        <td style="position:sticky; left:96px; z-index:13; background:${rowBg}; text-align:left; padding:0.52rem 0.7rem; font-weight:600; color:#e2e8f0; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;" title="${escapeHtml(r.nguon + ' — ' + r.cach_tinh)}">${escapeHtml(r.tieu_chi)}</td>
-                        <td style="position:sticky; left:321px; z-index:13; background:${rowBg}; text-align:center; padding:0.52rem 0.4rem; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">
-                            <span style="font-size:0.68rem; font-weight:700; color:${dvColor}; background:${dvColor}18; padding:2px 6px; border-radius:4px;">${escapeHtml(r.don_vi)}</span>
+                    <tr style="background:${rowBg}; border-bottom:1px solid rgba(255,255,255,0.04); opacity:${r.is_empty_template ? '0.72' : '1'};">
+                        <td style="text-align:center; padding:0.48rem 0.35rem; font-weight:700; color:#64748b; font-size:0.73rem; font-family:'JetBrains Mono', monospace; border-right:1px solid rgba(255,255,255,0.05);">${totalRowsShown}</td>
+                        ${flowShowMeta ? `
+                            <td style="text-align:left; padding:0.48rem 0.5rem; color:#94a3b8; font-size:0.74rem; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.05);">${escapeHtml(r.mien || 'Miền Nam')}</td>
+                            <td style="text-align:left; padding:0.48rem 0.5rem; color:#38bdf8; font-weight:700; font-size:0.74rem; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.05);">${escapeHtml(r.kho || 'FMCG')}</td>
+                            <td style="text-align:left; padding:0.48rem 0.5rem; color:#cbd5e1; font-size:0.74rem; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.05);">${escapeHtml(r.nhom || (blk.id === 'B1' ? 'B. Tồn âm' : 'A. Đối soát'))}</td>
+                        ` : ''}
+                        <td style="text-align:center; padding:0.48rem 0.35rem; font-weight:800; color:${blk.accent}; font-size:0.74rem; border-right:1px solid rgba(255,255,255,0.06);">${r.diem_chan}</td>
+                        <td style="position:sticky; left:0; z-index:13; background:${rowBg}; text-align:left; padding:0.48rem 0.7rem; font-weight:700; color:${r.is_empty_template ? '#94a3b8' : '#f1f5f9'}; border-right:2px solid rgba(56,189,248,0.28); box-shadow:2px 0 5px rgba(0,0,0,0.32); white-space:nowrap;" title="${escapeHtml(r.nguon + ' — ' + r.cach_tinh)}">${escapeHtml(r.tieu_chi)}${t1Badge}</td>
+                        <td style="text-align:center; padding:0.48rem 0.45rem; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">
+                            <span style="font-size:0.69rem; font-weight:700; color:${dvColor}; background:${dvColor}1a; padding:2px 6px; border-radius:4px;">${escapeHtml(r.don_vi)}</span>
                         </td>
-                        <td style="position:sticky; left:419px; z-index:12; background:${isEven ? '#172033' : '#131b2b'}; padding:0.52rem 0.65rem; border-right:2px solid rgba(251,191,36,0.25); font-family:'JetBrains Mono', monospace; font-size:0.79rem; font-weight:700; color:#fde68a; white-space:nowrap; box-shadow:2px 0 5px rgba(0,0,0,0.35);">
+                        ${flowShowGH ? `
+                            <td style="text-align:left; padding:0.48rem 0.55rem; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">
+                                <span style="display:inline-block; padding:2px 7px; border-radius:5px; font-size:0.7rem; font-weight:700; ${srcBadgeStyle(r.nguon)}">${escapeHtml(r.nguon || '')}</span>
+                            </td>
+                            <td style="text-align:left; padding:0.48rem 0.6rem; color:#94a3b8; font-size:0.73rem; line-height:1.38; min-width:280px; max-width:380px; white-space:normal; border-right:2px solid rgba(56,189,248,0.18);">${escapeHtml(r.cach_tinh || '')}</td>
+                        ` : ''}
+                        <td style="background:${isEven ? '#172033' : '#131b2b'}; padding:0.48rem 0.65rem; border-right:2px solid rgba(251,191,36,0.25); font-family:'JetBrains Mono', monospace; font-size:0.78rem; font-weight:800; color:#fde68a; white-space:nowrap;">
                             ${r.values[monthCol.key] || '-'}
                         </td>
                 `;
@@ -322,7 +378,7 @@
                     const isWk = c.type === 'week';
                     const wkBg = isWk ? (isEven ? '#0e223d' : '#0a1b33') : '';
                     html += `
-                        <td style="padding:0.52rem 0.55rem; ${wkBg ? 'background:' + wkBg + ';' : ''} border-right:${isWk ? '2px solid rgba(56,189,248,0.22)' : '1px solid rgba(255,255,255,0.04)'}; font-family:'JetBrains Mono', monospace; font-size:0.78rem; white-space:nowrap; font-weight:${isWk ? '700' : '400'};">
+                        <td style="padding:0.48rem 0.55rem; ${wkBg ? 'background:' + wkBg + ';' : ''} border-right:${isWk ? '2px solid rgba(56,189,248,0.22)' : '1px solid rgba(255,255,255,0.04)'}; font-family:'JetBrains Mono', monospace; font-size:0.77rem; white-space:nowrap; font-weight:${isWk ? '700' : '400'};">
                             ${formatCellValue(val, r.tieu_chi)}
                         </td>
                     `;
@@ -334,7 +390,7 @@
 
         html += `</tbody></table>`;
         container.innerHTML = html;
-        updateStatusText(`<strong>Đối Soát FMCG (78 Chỉ Số • Đ0–Đ4 + B. Tồn âm)</strong> • <strong>${totalRowsShown}</strong> dòng • Tự động gộp <strong>Σ T11 &amp; Σ Tuần</strong> từ CDC StarRocks + Seedlog • Cập nhật: <strong>${currentData.updated_at || ''}</strong>`);
+        updateStatusText(`<strong>Đối Soát FMCG (${totalAll} Chỉ Số • Đ0–Đ4 + B. Tồn âm)</strong> • Đang hiện <strong>${totalRowsShown}</strong> dòng • Tự động gộp <strong>Σ T11 &amp; Σ Tuần</strong> từ CDC StarRocks + Seedlog • Cập nhật: <strong>${currentData.updated_at || ''}</strong>`);
     }
 
     function fmtVndClean(strVal) {
@@ -512,7 +568,7 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.85rem; border-bottom:1px solid rgba(255,255,255,0.1);">
                     <div>
                         <h3 style="margin:0 0 0.25rem 0; color:#38bdf8; font-size:1.05rem; font-weight:800;">
-                            <i class="fa-solid fa-book-open" style="margin-right:0.45rem;"></i> ĐẶC TẢ LOGIC CHI TIẾT CỦA CẢ 2 BẢNG (ĐỐI SOÁT FMCG 53 CHỈ SỐ &amp; 78 CHỈ SỐ)
+                            <i class="fa-solid fa-book-open" style="margin-right:0.45rem;"></i> ĐẶC TẢ LOGIC CHI TIẾT CỦA CẢ 2 BẢNG (ĐỐI SOÁT FMCG 53 CHỈ SỐ &amp; 113 CHỈ SỐ)
                         </h3>
                         <p style="margin:0; font-size:0.78rem; color:#94a3b8;">
                             Tài liệu kỹ thuật trực tiếp gắn liền với bộ máy tính toán CDC StarRocks (lọc chặt user hệ thống <code>TKE_WMS</code>) + Google Sheet Seedlog — đầy đủ cho cả 2 bảng.
@@ -626,7 +682,7 @@
             html += `
                 <div style="margin-top:1.75rem;">
                     <div style="font-size:0.82rem; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.65rem;">
-                        <i class="fa-solid fa-diagram-project" style="margin-right:0.4rem;"></i> PHẦN C: LOGIC CHI TIẾT BẢNG 2 — ĐỐI SOÁT FMCG (78 CHỈ SỐ • Đ0–Đ4 + B. TỒN ÂM)
+                        <i class="fa-solid fa-diagram-project" style="margin-right:0.4rem;"></i> PHẦN C: LOGIC CHI TIẾT BẢNG 2 — ĐỐI SOÁT FMCG (113 CHỈ SỐ • Đ0–Đ4 + B. TỒN ÂM)
                     </div>
                     <div style="overflow-x:auto; border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
                         <table style="width:100%; border-collapse:collapse; font-size:0.78rem; text-align:left;">
@@ -937,8 +993,8 @@
         const s = currentData.summary || {};
         const viewTitles = {
             matrix: 'BẢNG 1: ĐỐI SOÁT FMCG (53 CHỈ SỐ)',
-            flow: 'BẢNG 2: ĐỐI SOÁT FMCG (78 CHỈ SỐ • Đ0–Đ4 + B. TỒN ÂM)',
-            logic: 'ĐẶC TẢ LOGIC CHI TIẾT CẢ 2 BẢNG (ĐỐI SOÁT FMCG 53 CHỈ SỐ & 78 CHỈ SỐ)',
+            flow: 'BẢNG 2: ĐỐI SOÁT FMCG (113 CHỈ SỐ • Đ0–Đ4 + B. TỒN ÂM)',
+            logic: 'ĐẶC TẢ LOGIC CHI TIẾT CẢ 2 BẢNG (ĐỐI SOÁT FMCG 53 CHỈ SỐ & 113 CHỈ SỐ)',
             reconcile: 'BẢNG ĐỐI CHIẾU KIỂM CHỨNG: CDC STARROCKS vs SEEDLOG'
         };
         const title = viewTitles[targetView] || viewTitles.matrix;
@@ -966,10 +1022,10 @@
                         <td style="text-align:left; font-weight:600;">${escapeHtml(r.name)}</td>
                         <td style="text-align:right; font-weight:700; background:#fffbeb;">${escapeHtml(r.total || '-')}</td>
                         ${dates.map(d => {
-                        const v = r.values[d.iso] || '-';
-                        const neg = String(v).startsWith('-');
-                        return `<td style="text-align:right;${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
-                    }).join('')}
+                            const v = r.values[d.iso] || '-';
+                            const neg = String(v).startsWith('-');
+                            return `<td style="text-align:right;${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
+                        }).join('')}
                     </tr>`;
                 });
             });
@@ -1001,10 +1057,10 @@
                         <td style="text-align:center;">${escapeHtml(r.don_vi)}</td>
                         <td style="text-align:right; font-weight:700; background:#fffbeb;">${escapeHtml(r.values[monthCol.key] || '-')}</td>
                         ${otherCols.map(c => {
-                        const v = r.values[c.key] || '-';
-                        const neg = String(v).startsWith('-');
-                        return `<td style="text-align:right;${c.type === 'week' ? ' background:#eff6ff; font-weight:700;' : ''}${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
-                    }).join('')}
+                            const v = r.values[c.key] || '-';
+                            const neg = String(v).startsWith('-');
+                            return `<td style="text-align:right;${c.type === 'week' ? ' background:#eff6ff; font-weight:700;' : ''}${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
+                        }).join('')}
                     </tr>`;
                 });
             });
