@@ -1200,6 +1200,14 @@
     "chat_id_dc": "-1005801894183"
   },
   {
+    "id": "A281",
+    "name": "KFM_BDU_TDM - B.107 Chung Cư Phú Mỹ C2",
+    "short": "A281",
+    "chat_id_dm": "-1005637312030",
+    "chat_id_rc": "-1005637312030",
+    "chat_id_dc": "-1005637312030"
+  },
+  {
     "id": "ACU",
     "name": "KFM_HCM_TDU - 0.01 Chung cư An Cư An Phú",
     "short": "ACU",
