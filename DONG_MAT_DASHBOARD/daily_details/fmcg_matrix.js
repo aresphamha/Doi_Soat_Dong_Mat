@@ -1,6 +1,6 @@
 // Dữ liệu Báo cáo Logistics FMCG (Tự động từ CDC StarRocks + Google Sheet Seedlog + Đặc tả Logic)
 window.FMCG_MATRIX_DATA = {
-  "updated_at": "26/11/2026 22:59:13",
+  "updated_at": "26/11/2026 23:01:30",
   "filter_scope": "Từ 01/11/2026 trở về sau • CDC StarRocks (FGA10101 -> Siêu thị KFM + Bảng TO) + Seedlog + Cost Stockcard",
   "dates": [
     {
@@ -2961,7 +2961,7 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-21",
       "pt_cnt": 161,
       "sl_chuyen": 383096.0,
-      "sl_nhan": 382024.94,
+      "sl_nhan": 382024.93999999994,
       "cdc_blank0": -1071.06,
       "cdc_blank_m1": -1071.06,
       "seedlog": -1071.0,
@@ -3048,8 +3048,8 @@ window.FMCG_MATRIX_DATA = {
       "diff_0": -273493.0,
       "diff_m1": -273493.0,
       "sl_du": 19.0,
-      "not_done": 24749,
-      "status_txt": "Đang giao / chưa nhận xong (24,749 dòng status!=5)",
+      "not_done": 24425,
+      "status_txt": "Đang giao / chưa nhận xong (24,425 dòng status!=5)",
       "status_code": "pending"
     }
   ],
