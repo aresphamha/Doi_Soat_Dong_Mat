@@ -74,8 +74,8 @@
     function getFullscreenTopBarHtml() {
         if (!isFullscreen) return '';
         const views = [
-            { id: 'matrix', label: '1. Ma Trận (53 Chỉ Số)', icon: 'fa-table' },
-            { id: 'flow', label: '2. Flow Điểm Chặn (Đ0–Đ4)', icon: 'fa-diagram-project' },
+            { id: 'matrix', label: '1. Đối Soát FMCG (53 Chỉ Số)', icon: 'fa-table' },
+            { id: 'flow', label: '2. Đối Soát FMCG (78 Chỉ Số)', icon: 'fa-diagram-project' },
             { id: 'logic', label: '3. Logic Chi Tiết', icon: 'fa-book-open' },
             { id: 'reconcile', label: '4. Đối Chiếu CDC', icon: 'fa-circle-check' },
         ];
@@ -86,9 +86,9 @@
                         <i class="fa-solid fa-expand" style="margin-right:0.35rem;"></i> CHẾ ĐỘ XEM TOÀN MÀN HÌNH
                     </span>
                     ${views.map(v => {
-                        const act = activeSubView === v.id;
-                        return `<button onclick="switchFmcgSubView('${v.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.32rem 0.7rem; font-size:0.76rem; font-weight:700; cursor:pointer;"><i class="fa-solid ${v.icon}" style="margin-right:0.3rem;"></i>${v.label}</button>`;
-                    }).join('')}
+            const act = activeSubView === v.id;
+            return `<button onclick="switchFmcgSubView('${v.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.32rem 0.7rem; font-size:0.76rem; font-weight:700; cursor:pointer;"><i class="fa-solid ${v.icon}" style="margin-right:0.3rem;"></i>${v.label}</button>`;
+        }).join('')}
                 </div>
                 <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
                     <div style="display:inline-flex; align-items:center; background:#1e293b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; overflow:hidden;">
@@ -249,9 +249,9 @@
                 <div style="display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap;">
                     <span style="font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-right:0.25rem;">Điểm chặn:</span>
                     ${blockPills.map(p => {
-                        const act = flowBlockFilter === p.id;
-                        return `<button onclick="setFmcgFlowBlock('${p.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.08)'}; border-radius:6px; padding:0.28rem 0.62rem; font-size:0.75rem; font-weight:600; cursor:pointer;">${p.label}</button>`;
-                    }).join('')}
+            const act = flowBlockFilter === p.id;
+            return `<button onclick="setFmcgFlowBlock('${p.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.08)'}; border-radius:6px; padding:0.28rem 0.62rem; font-size:0.75rem; font-weight:600; cursor:pointer;">${p.label}</button>`;
+        }).join('')}
                 </div>
                 <div style="display:flex; align-items:center; gap:0.5rem;">
                     <button onclick="toggleFmcgFlowSummaryOnly()" style="background:${flowSummaryOnly ? 'rgba(245,158,11,0.2)' : '#1e293b'}; color:${flowSummaryOnly ? '#fbbf24' : '#cbd5e1'}; border:1px solid ${flowSummaryOnly ? '#f59e0b' : 'rgba(255,255,255,0.12)'}; border-radius:6px; padding:0.32rem 0.72rem; font-size:0.76rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.35rem;">
@@ -333,7 +333,7 @@
 
         html += `</tbody></table>`;
         container.innerHTML = html;
-        updateStatusText(`Template <strong>Flow Điểm Chặn (Đ0–Đ4 + B. Tồn âm)</strong> • <strong>${totalRowsShown}</strong> dòng • Tự động gộp <strong>Σ T11 &amp; Σ Tuần</strong> từ CDC StarRocks + Seedlog • Cập nhật: <strong>${currentData.updated_at || ''}</strong>`);
+        updateStatusText(`<strong>Đối Soát FMCG (78 Chỉ Số • Đ0–Đ4 + B. Tồn âm)</strong> • <strong>${totalRowsShown}</strong> dòng • Tự động gộp <strong>Σ T11 &amp; Σ Tuần</strong> từ CDC StarRocks + Seedlog • Cập nhật: <strong>${currentData.updated_at || ''}</strong>`);
     }
 
     function fmtVndClean(strVal) {
@@ -511,7 +511,7 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.85rem; border-bottom:1px solid rgba(255,255,255,0.1);">
                     <div>
                         <h3 style="margin:0 0 0.25rem 0; color:#38bdf8; font-size:1.05rem; font-weight:800;">
-                            <i class="fa-solid fa-book-open" style="margin-right:0.45rem;"></i> ĐẶC TẢ LOGIC CHI TIẾT CỦA CẢ 2 BẢNG (MA TRẬN 53 CHỈ SỐ &amp; FLOW ĐIỂM CHẶN Đ0–Đ4)
+                            <i class="fa-solid fa-book-open" style="margin-right:0.45rem;"></i> ĐẶC TẢ LOGIC CHI TIẾT CỦA CẢ 2 BẢNG (ĐỐI SOÁT FMCG 53 CHỈ SỐ &amp; 78 CHỈ SỐ)
                         </h3>
                         <p style="margin:0; font-size:0.78rem; color:#94a3b8;">
                             Tài liệu kỹ thuật trực tiếp gắn liền với bộ máy tính toán CDC StarRocks (lọc chặt user hệ thống <code>TKE_WMS</code>) + Google Sheet Seedlog — đầy đủ cho cả 2 bảng.
@@ -556,7 +556,7 @@
 
                 <!-- PHẦN B: LOGIC CHI TIẾT BẢNG 1 (MA TRẬN 53 CHỈ SỐ) -->
                 <div style="font-size:0.82rem; font-weight:800; color:#34d399; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.65rem;">
-                    <i class="fa-solid fa-table-list" style="margin-right:0.4rem;"></i> PHẦN B: LOGIC CHI TIẾT BẢNG 1 — MA TRẬN 53 CHỈ SỐ (CHỈ SỐ LOGISTICS FMCG)
+                    <i class="fa-solid fa-table-list" style="margin-right:0.4rem;"></i> PHẦN B: LOGIC CHI TIẾT BẢNG 1 — ĐỐI SOÁT FMCG (53 CHỈ SỐ)
                 </div>
                 <div style="overflow-x:auto; border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
                     <table style="width:100%; border-collapse:collapse; font-size:0.78rem; text-align:left;">
@@ -588,7 +588,7 @@
 
             html += `
                 <tr style="background:${sec.accent}1f; border-top:1px solid rgba(255,255,255,0.1);">
-                    <td colspan="8" style="padding:0.55rem 0.75rem; font-weight:800; color:${sec.accent}; font-size:0.8rem;">
+                    <td colspan="8" style="padding:0.5rem 0.75rem; font-weight:600; color:${sec.accent}; font-size:0.77rem;">
                         <i class="${sec.icon}" style="margin-right:0.45rem;"></i> ${sec.title}
                     </td>
                 </tr>
@@ -600,17 +600,17 @@
                 const bg = idx % 2 === 0 ? '#161b22' : '#11161d';
                 const srcBadgeColor = (lg.source || '').includes('CDC') ? '#38bdf8' : ((lg.source || '').includes('Seedlog') ? '#34d399' : '#f59e0b');
                 html += `
-                    <tr style="background:${bg}; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:top;">
-                        <td style="padding:0.6rem 0.5rem; text-align:center; color:#64748b; font-weight:700;">${r.row_idx}</td>
-                        <td style="padding:0.6rem 0.7rem; font-weight:700; color:#f1f5f9;">${escapeHtml(r.name)}</td>
-                        <td style="padding:0.6rem 0.7rem;">
-                            <span style="display:inline-block; font-size:0.7rem; font-weight:700; color:${srcBadgeColor}; background:${srcBadgeColor}1a; border:1px solid ${srcBadgeColor}44; padding:2px 7px; border-radius:6px;">${escapeHtml(lg.source || '')}</span>
+                    <tr style="background:${bg}; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:top; font-size:0.74rem; font-weight:300;">
+                        <td style="padding:0.52rem 0.5rem; text-align:center; color:#64748b; font-weight:400;">${r.row_idx}</td>
+                        <td style="padding:0.52rem 0.7rem; font-weight:400; color:#f1f5f9;">${escapeHtml(r.name)}</td>
+                        <td style="padding:0.52rem 0.7rem;">
+                            <span style="display:inline-block; font-size:0.68rem; font-weight:400; color:${srcBadgeColor}; background:${srcBadgeColor}1a; border:1px solid ${srcBadgeColor}44; padding:2px 7px; border-radius:6px;">${escapeHtml(lg.source || '')}</span>
                         </td>
-                        <td style="padding:0.6rem 0.7rem; color:#cbd5e1; line-height:1.45;">${formatInlineCode(lg.table_col || '')}</td>
-                        <td style="padding:0.6rem 0.7rem; color:#cbd5e1; line-height:1.45;">${formatInlineCode(lg.filter_rule || '')}</td>
-                        <td style="padding:0.6rem 0.7rem; color:#fde68a; font-family:'JetBrains Mono', monospace; font-size:0.74rem; line-height:1.45;">${escapeHtml(lg.formula || '')}</td>
-                        <td style="padding:0.6rem 0.7rem; color:#93c5fd;">${escapeHtml(lg.total_rule || '')}</td>
-                        <td style="padding:0.6rem 0.7rem; color:#94a3b8; line-height:1.4;">${escapeHtml(lg.note || '')}</td>
+                        <td style="padding:0.52rem 0.7rem; color:#cbd5e1; line-height:1.45;">${formatInlineCode(lg.table_col || '')}</td>
+                        <td style="padding:0.52rem 0.7rem; color:#cbd5e1; line-height:1.45;">${formatInlineCode(lg.filter_rule || '')}</td>
+                        <td style="padding:0.52rem 0.7rem; color:#fde68a; font-family:'JetBrains Mono', monospace; font-size:0.72rem; line-height:1.45;">${escapeHtml(lg.formula || '')}</td>
+                        <td style="padding:0.52rem 0.7rem; color:#93c5fd;">${escapeHtml(lg.total_rule || '')}</td>
+                        <td style="padding:0.52rem 0.7rem; color:#94a3b8; line-height:1.4;">${escapeHtml(lg.note || '')}</td>
                     </tr>
                 `;
             });
@@ -625,7 +625,7 @@
             html += `
                 <div style="margin-top:1.75rem;">
                     <div style="font-size:0.82rem; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.65rem;">
-                        <i class="fa-solid fa-diagram-project" style="margin-right:0.4rem;"></i> PHẦN C: LOGIC CHI TIẾT BẢNG 2 — FLOW ĐIỂM CHẶN (Đ0–Đ4 + B. TỒN ÂM)
+                        <i class="fa-solid fa-diagram-project" style="margin-right:0.4rem;"></i> PHẦN C: LOGIC CHI TIẾT BẢNG 2 — ĐỐI SOÁT FMCG (78 CHỈ SỐ • Đ0–Đ4 + B. TỒN ÂM)
                     </div>
                     <div style="overflow-x:auto; border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
                         <table style="width:100%; border-collapse:collapse; font-size:0.78rem; text-align:left;">
@@ -653,7 +653,7 @@
 
                 html += `
                     <tr style="background:${blk.accent}1f; border-top:1px solid rgba(255,255,255,0.1);">
-                        <td colspan="6" style="padding:0.55rem 0.75rem; font-weight:800; color:${blk.accent}; font-size:0.8rem;">
+                        <td colspan="6" style="padding:0.5rem 0.75rem; font-weight:600; color:${blk.accent}; font-size:0.77rem;">
                             <i class="${blk.icon}" style="margin-right:0.45rem;"></i> ${blk.title}
                         </td>
                     </tr>
@@ -663,15 +663,15 @@
                     const bg = r.is_empty_template ? '#0d1117' : (idx % 2 === 0 ? '#161b22' : '#11161d');
                     const srcColor = (r.nguon || '').includes('CDC') ? '#38bdf8' : ((r.nguon || '').includes('Seedlog') ? '#34d399' : '#f59e0b');
                     html += `
-                        <tr style="background:${bg}; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:top; opacity:${r.is_empty_template ? '0.68' : '1'};">
-                            <td style="padding:0.58rem 0.5rem; text-align:center; color:#64748b; font-weight:700;">${stt}</td>
-                            <td style="padding:0.58rem 0.5rem; text-align:center; color:${blk.accent}; font-weight:700;">${escapeHtml(r.diem_chan)}</td>
-                            <td style="padding:0.58rem 0.7rem; font-weight:700; color:#f1f5f9;">${escapeHtml(r.tieu_chi)}</td>
-                            <td style="padding:0.58rem 0.6rem; text-align:center; color:#cbd5e1;">${escapeHtml(r.don_vi)}</td>
-                            <td style="padding:0.58rem 0.7rem;">
-                                <span style="display:inline-block; font-size:0.7rem; font-weight:700; color:${srcColor}; background:${srcColor}1a; border:1px solid ${srcColor}44; padding:2px 7px; border-radius:6px;">${escapeHtml(r.nguon || '')}</span>
+                        <tr style="background:${bg}; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:top; font-size:0.74rem; font-weight:300; opacity:${r.is_empty_template ? '0.68' : '1'};">
+                            <td style="padding:0.5rem 0.5rem; text-align:center; color:#64748b; font-weight:400;">${stt}</td>
+                            <td style="padding:0.5rem 0.5rem; text-align:center; color:${blk.accent}; font-weight:500;">${escapeHtml(r.diem_chan)}</td>
+                            <td style="padding:0.5rem 0.7rem; font-weight:400; color:#f1f5f9;">${escapeHtml(r.tieu_chi)}</td>
+                            <td style="padding:0.5rem 0.6rem; text-align:center; color:#cbd5e1;">${escapeHtml(r.don_vi)}</td>
+                            <td style="padding:0.5rem 0.7rem;">
+                                <span style="display:inline-block; font-size:0.68rem; font-weight:400; color:${srcColor}; background:${srcColor}1a; border:1px solid ${srcColor}44; padding:2px 7px; border-radius:6px;">${escapeHtml(r.nguon || '')}</span>
                             </td>
-                            <td style="padding:0.58rem 0.7rem; color:#fde68a; line-height:1.45;">${formatInlineCode(r.cach_tinh || '')}</td>
+                            <td style="padding:0.5rem 0.7rem; color:#fde68a; line-height:1.45;">${formatInlineCode(r.cach_tinh || '')}</td>
                         </tr>
                     `;
                 });
@@ -732,20 +732,20 @@
                     : 'color:#f87171; background:rgba(248,113,113,0.14); border:1px solid rgba(248,113,113,0.35);');
 
             html += `
-                <tr style="background:${bg}; border-bottom:1px solid rgba(255,255,255,0.04); font-family:'JetBrains Mono', monospace;">
-                    <td style="padding:0.55rem 0.45rem; text-align:center; color:#64748b; font-weight:700;">${idx + 1}</td>
-                    <td style="padding:0.55rem 0.65rem; text-align:center; font-weight:700; color:#e2e8f0;">${r.date}</td>
-                    <td style="padding:0.55rem 0.65rem; color:#94a3b8;">${fmtNum(r.pt_cnt)}</td>
-                    <td style="padding:0.55rem 0.65rem; color:#f1f5f9;">${fmtNum(r.sl_chuyen)}</td>
-                    <td style="padding:0.55rem 0.65rem; color:#cbd5e1;">${fmtNum(r.sl_nhan)}</td>
-                    <td style="padding:0.55rem 0.65rem; color:#f87171;">${fmtNum(r.cdc_blank0)}</td>
-                    <td style="padding:0.55rem 0.65rem; color:#fb7185;">${fmtNum(r.cdc_blank_m1)}</td>
-                    <td style="padding:0.55rem 0.65rem; color:#38bdf8; font-weight:700;">${fmtNum(r.seedlog)}</td>
-                    <td style="padding:0.55rem 0.65rem; color:${Math.abs(r.diff_0) < 0.1 ? '#34d399' : '#fbbf24'}; font-weight:700;">${fmtNum(r.diff_0)}</td>
-                    <td style="padding:0.55rem 0.65rem; color:${Math.abs(r.diff_m1) < 0.1 ? '#34d399' : '#fbbf24'}; font-weight:700;">${fmtNum(r.diff_m1)}</td>
-                    <td style="padding:0.55rem 0.65rem; color:#a78bfa;">${fmtNum(r.sl_du)}</td>
-                    <td style="padding:0.55rem 0.65rem; text-align:left; font-family:inherit;">
-                        <span style="display:inline-block; padding:2px 8px; border-radius:6px; font-size:0.73rem; font-weight:600; ${badgeStyle}">${escapeHtml(r.status_txt)}</span>
+                <tr style="background:${bg}; border-bottom:1px solid rgba(255,255,255,0.04); font-family:'JetBrains Mono', monospace; font-size:0.74rem; font-weight:300;">
+                    <td style="padding:0.48rem 0.45rem; text-align:center; color:#64748b; font-weight:400;">${idx + 1}</td>
+                    <td style="padding:0.48rem 0.65rem; text-align:center; font-weight:500; color:#e2e8f0;">${r.date}</td>
+                    <td style="padding:0.48rem 0.65rem; color:#94a3b8;">${fmtNum(r.pt_cnt)}</td>
+                    <td style="padding:0.48rem 0.65rem; color:#f1f5f9;">${fmtNum(r.sl_chuyen)}</td>
+                    <td style="padding:0.48rem 0.65rem; color:#cbd5e1;">${fmtNum(r.sl_nhan)}</td>
+                    <td style="padding:0.48rem 0.65rem; color:#f87171;">${fmtNum(r.cdc_blank0)}</td>
+                    <td style="padding:0.48rem 0.65rem; color:#fb7185;">${fmtNum(r.cdc_blank_m1)}</td>
+                    <td style="padding:0.48rem 0.65rem; color:#38bdf8; font-weight:500;">${fmtNum(r.seedlog)}</td>
+                    <td style="padding:0.48rem 0.65rem; color:${Math.abs(r.diff_0) < 0.1 ? '#34d399' : '#fbbf24'}; font-weight:500;">${fmtNum(r.diff_0)}</td>
+                    <td style="padding:0.48rem 0.65rem; color:${Math.abs(r.diff_m1) < 0.1 ? '#34d399' : '#fbbf24'}; font-weight:500;">${fmtNum(r.diff_m1)}</td>
+                    <td style="padding:0.48rem 0.65rem; color:#a78bfa;">${fmtNum(r.sl_du)}</td>
+                    <td style="padding:0.48rem 0.65rem; text-align:left; font-family:inherit;">
+                        <span style="display:inline-block; padding:2px 8px; border-radius:6px; font-size:0.7rem; font-weight:400; ${badgeStyle}">${escapeHtml(r.status_txt)}</span>
                     </td>
                 </tr>
             `;
@@ -935,9 +935,9 @@
         const targetView = overrideView || activeSubView || 'matrix';
         const s = currentData.summary || {};
         const viewTitles = {
-            matrix: 'BẢNG 1: MA TRẬN 53 CHỈ SỐ LOGISTICS KHO KHÔ FMCG',
-            flow: 'BẢNG 2: FLOW ĐIỂM CHẶN ĐỐI SOÁT FMCG (Đ0–Đ4 + B. TỒN ÂM)',
-            logic: 'ĐẶC TẢ LOGIC CHI TIẾT CẢ 2 BẢNG (MA TRẬN 53 CHỈ SỐ & FLOW Đ0–Đ4)',
+            matrix: 'BẢNG 1: ĐỐI SOÁT FMCG (53 CHỈ SỐ)',
+            flow: 'BẢNG 2: ĐỐI SOÁT FMCG (78 CHỈ SỐ • Đ0–Đ4 + B. TỒN ÂM)',
+            logic: 'ĐẶC TẢ LOGIC CHI TIẾT CẢ 2 BẢNG (ĐỐI SOÁT FMCG 53 CHỈ SỐ & 78 CHỈ SỐ)',
             reconcile: 'BẢNG ĐỐI CHIẾU KIỂM CHỨNG: CDC STARROCKS vs SEEDLOG'
         };
         const title = viewTitles[targetView] || viewTitles.matrix;
@@ -965,10 +965,10 @@
                         <td style="text-align:left; font-weight:600;">${escapeHtml(r.name)}</td>
                         <td style="text-align:right; font-weight:700; background:#fffbeb;">${escapeHtml(r.total || '-')}</td>
                         ${dates.map(d => {
-                            const v = r.values[d.iso] || '-';
-                            const neg = String(v).startsWith('-');
-                            return `<td style="text-align:right;${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
-                        }).join('')}
+                        const v = r.values[d.iso] || '-';
+                        const neg = String(v).startsWith('-');
+                        return `<td style="text-align:right;${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
+                    }).join('')}
                     </tr>`;
                 });
             });
@@ -1000,10 +1000,10 @@
                         <td style="text-align:center;">${escapeHtml(r.don_vi)}</td>
                         <td style="text-align:right; font-weight:700; background:#fffbeb;">${escapeHtml(r.values[monthCol.key] || '-')}</td>
                         ${otherCols.map(c => {
-                            const v = r.values[c.key] || '-';
-                            const neg = String(v).startsWith('-');
-                            return `<td style="text-align:right;${c.type === 'week' ? ' background:#eff6ff; font-weight:700;' : ''}${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
-                        }).join('')}
+                        const v = r.values[c.key] || '-';
+                        const neg = String(v).startsWith('-');
+                        return `<td style="text-align:right;${c.type === 'week' ? ' background:#eff6ff; font-weight:700;' : ''}${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
+                    }).join('')}
                     </tr>`;
                 });
             });
