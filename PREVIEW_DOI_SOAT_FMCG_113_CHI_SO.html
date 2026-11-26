@@ -8,11 +8,11 @@
 <style>
   * { box-sizing: border-box; }
   body {
-    margin: 0; padding: 16px; background: #0b1120; color: #e2e8f0;
+    margin: 0; padding: 16px; background: #161f2e; color: #e2e8f0;
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   }
   .banner {
-    background: #161d2b;
+    background: #202b3d;
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px; padding: 12px 16px; margin-bottom: 14px;
     display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
@@ -20,7 +20,7 @@
   .banner h1 { margin: 0; font-size: 1rem; color: #e2e8f0; display:flex; align-items:center; gap:8px; }
   .banner p { margin: 4px 0 0 0; font-size: 0.8rem; color: #cbd5e1; }
   .card-header {
-    background: #111827; border: 1px solid rgba(255,255,255,0.08);
+    background: #202b3d; border: 1px solid rgba(255,255,255,0.08);
     border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
   }
   .subview-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.08); }
@@ -29,11 +29,11 @@
     border-radius:8px; padding:7px 13px; font-size:0.8rem; font-weight:700; cursor:pointer;
   }
   .btn-tab.active {
-    background:rgba(59,130,246,0.16); color:#e2e8f0; border-color:rgba(147,197,253,0.35);
+    background:#0369a1; color:#ffffff; border-color:rgba(56,189,248,0.5);
     box-shadow: none;
   }
   .toolbar {
-    background: #111827; border: 1px solid rgba(255,255,255,0.08);
+    background: #202b3d; border: 1px solid rgba(255,255,255,0.08);
     border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;
     display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
   }
@@ -41,23 +41,23 @@
     background: #1e293b; color: #94a3b8; border: 1px solid rgba(255,255,255,0.1);
     border-radius: 6px; padding: 5px 10px; font-size: 0.76rem; font-weight: 700; cursor: pointer;
   }
-  .pill.active { background: rgba(59,130,246,0.16); color: #e2e8f0; border-color: rgba(147,197,253,0.35); }
+  .pill.active { background: #0369a1; color: #ffffff; border-color: rgba(56,189,248,0.5); }
   .toggle-btn {
     background: rgba(59,130,246,0.14); color: #cbd5e1; border: 1px solid rgba(147,197,253,0.28);
     border-radius: 6px; padding: 5px 10px; font-size: 0.76rem; font-weight: 700; cursor: pointer;
   }
   .toggle-btn.off { background: #1e293b; color: #94a3b8; border-color: rgba(255,255,255,0.12); }
   .search-inp {
-    background: #0f172a; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.15);
+    background: #1a2436; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.15);
     border-radius: 7px; padding: 6px 10px; font-size: 0.78rem; width: 250px;
   }
   .table-wrap {
-    background: #0f172a; border: 1px solid rgba(255,255,255,0.1);
+    background: #1a2436; border: 1px solid rgba(255,255,255,0.1);
     border-radius: 10px; overflow: auto; max-height: 74vh;
   }
   table { border-collapse: collapse; width: max-content; min-width: 100%; font-size: 0.77rem; }
   thead th {
-    position: sticky; top: 0; z-index: 20; background: #0b1325; color: #94a3b8;
+    position: sticky; top: 0; z-index: 20; background: #162032; color: #94a3b8;
     padding: 9px 8px; border-bottom: 1px solid rgba(255,255,255,0.12);
     border-right: 1px solid rgba(255,255,255,0.06); white-space: nowrap; text-align: left;
   }
@@ -68,8 +68,8 @@
   tbody tr:hover td { background: rgba(56,189,248,0.07); }
   .col-stt { text-align: center; width: 40px; color: #64748b; }
   .col-dc { text-align: center; width: 48px; font-weight: 800; }
-  .sticky-tc { position: sticky; left: 0; z-index: 15; background: #0f172a; min-width: 245px; max-width: 280px; border-right: 1px solid rgba(148,163,184,0.2) !important; }
-  thead .sticky-tc { z-index: 30; background: #0b1325; }
+  .sticky-tc { position: sticky; left: 0; z-index: 15; background: #1a2436; min-width: 245px; max-width: 280px; border-right: 1px solid rgba(148,163,184,0.2) !important; }
+  thead .sticky-tc { z-index: 30; background: #162032; }
   .badge-t1 {
     display: inline-block; margin-left: 5px; padding: 1px 6px; border-radius: 10px;
     background: rgba(148,163,184,0.12); color: #94a3b8; border: 1px solid rgba(148,163,184,0.22);
@@ -78,17 +78,17 @@
   .badge-unit {
     display: inline-block; padding: 2px 6px; border-radius: 5px; font-size: 0.71rem; font-weight: 700; white-space: nowrap;
   }
-  .u-vnd { background: rgba(148,163,184,0.1); color: #94a3b8; }
-  .u-pct { background: rgba(148,163,184,0.1); color: #94a3b8; }
-  .u-sl  { background: rgba(148,163,184,0.1); color: #94a3b8; }
-  .u-st  { background: rgba(148,163,184,0.1); color: #94a3b8; }
-  .u-sku { background: rgba(148,163,184,0.1); color: #94a3b8; }
+  .u-vnd { background: rgba(245,158,11,0.12); color: #fcd34d; }
+  .u-pct { background: rgba(168,85,247,0.12); color: #d8b4fe; }
+  .u-sl  { background: rgba(16,185,129,0.12); color: #6ee7b7; }
+  .u-st  { background: rgba(56,189,248,0.12); color: #7dd3fc; }
+  .u-sku { background: rgba(244,114,182,0.12); color: #f9a8d4; }
   .badge-src {
     display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 0.71rem; font-weight: 700; white-space: nowrap;
     background: rgba(30,41,59,0.95); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.12);
   }
-  .src-cdc { background: rgba(148,163,184,0.1); color: #cbd5e1; border-color: rgba(148,163,184,0.22); }
-  .src-seed { background: rgba(148,163,184,0.1); color: #cbd5e1; border-color: rgba(148,163,184,0.22); }
+  .src-cdc { background: rgba(56,189,248,0.12); color: #7dd3fc; border-color: rgba(56,189,248,0.26); }
+  .src-seed { background: rgba(16,185,129,0.12); color: #6ee7b7; border-color: rgba(16,185,129,0.26); }
   .src-f { background: rgba(148,163,184,0.08); color: #94a3b8; border-color: rgba(148,163,184,0.18); }
   .src-wait { background: rgba(148,163,184,0.06); color: #64748b; border-color: rgba(148,163,184,0.14); }
   .col-logic { min-width: 280px; max-width: 380px; color: #94a3b8; font-size: 0.74rem; line-height: 1.38; }
@@ -99,7 +99,7 @@
     background: rgba(15,23,42,0.98) !important; font-weight: 800; font-size: 0.8rem;
     padding: 8px 10px; border-top: 1px solid rgba(255,255,255,0.12);
   }
-  .neg { color: #e58a8a; }
+  .neg { color: #fca5a5; }
   .empty-val { color: #475569; }
   .hide-col { display: none !important; }
 </style>

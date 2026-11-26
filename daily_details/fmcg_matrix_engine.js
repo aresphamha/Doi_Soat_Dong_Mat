@@ -82,14 +82,14 @@
             { id: 'reconcile', label: '4. Đối Chiếu CDC', icon: 'fa-circle-check' },
         ];
         return `
-            <div id="fmcg-fs-topbar" style="position:sticky; top:0; left:0; z-index:40; background:#0f172a; border-bottom:1px solid rgba(255,255,255,0.1); padding:0.55rem 1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
+            <div id="fmcg-fs-topbar" style="position:sticky; top:0; left:0; z-index:40; background:#1a2436; border-bottom:1px solid rgba(56,189,248,0.25); padding:0.55rem 1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
                 <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
                     <span style="color:#94a3b8; font-weight:500; font-size:0.78rem; margin-right:0.4rem;">
                         <i class="fa-solid fa-expand" style="margin-right:0.35rem;"></i> CHẾ ĐỘ XEM TOÀN MÀN HÌNH
                     </span>
                     ${views.map(v => {
                         const act = activeSubView === v.id;
-                        return `<button onclick="switchFmcgSubView('${v.id}')" style="background:${act ? 'rgba(59,130,246,0.16)' : '#1c2433'}; color:${act ? '#e2e8f0' : '#94a3b8'}; border:1px solid ${act ? 'rgba(147,197,253,0.35)' : 'rgba(255,255,255,0.08)'}; border-radius:6px; padding:0.32rem 0.7rem; font-size:0.76rem; font-weight:700; cursor:pointer;"><i class="fa-solid ${v.icon}" style="margin-right:0.3rem;"></i>${v.label}</button>`;
+                        return `<button onclick="switchFmcgSubView('${v.id}')" style="background:${act ? '#0369a1' : '#28354a'}; color:${act ? '#ffffff' : '#cbd5e1'}; border:1px solid ${act ? 'rgba(56,189,248,0.5)' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.32rem 0.7rem; font-size:0.76rem; font-weight:700; cursor:pointer;"><i class="fa-solid ${v.icon}" style="margin-right:0.3rem;"></i>${v.label}</button>`;
                     }).join('')}
                 </div>
                 <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
@@ -277,7 +277,7 @@
                     <span style="font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-right:0.25rem;">Điểm chặn:</span>
                     ${blockPills.map(p => {
             const act = flowBlockFilter === p.id;
-            return `<button onclick="setFmcgFlowBlock('${p.id}')" style="background:${act ? 'rgba(59,130,246,0.16)' : '#1c2433'}; color:${act ? '#e2e8f0' : '#94a3b8'}; border:1px solid ${act ? 'rgba(147,197,253,0.35)' : 'rgba(255,255,255,0.07)'}; border-radius:6px; padding:0.28rem 0.62rem; font-size:0.75rem; font-weight:600; cursor:pointer;">${p.label}</button>`;
+            return `<button onclick="setFmcgFlowBlock('${p.id}')" style="background:${act ? '#0369a1' : '#28354a'}; color:${act ? '#ffffff' : '#cbd5e1'}; border:1px solid ${act ? 'rgba(56,189,248,0.5)' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.28rem 0.62rem; font-size:0.75rem; font-weight:600; cursor:pointer;">${p.label}</button>`;
         }).join('')}
                 </div>
                 <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
@@ -345,7 +345,7 @@
             blk.rows.forEach((r, idx) => {
                 totalRowsShown++;
                 const isEven = idx % 2 === 0;
-                const rowBg = r.is_empty_template ? '#0d1117' : (isEven ? '#161b22' : '#11161d');
+                const rowBg = r.is_empty_template ? '#141c2b' : (isEven ? '#1d283a' : '#182232');
                 const dvColor = r.don_vi.includes('%') ? '#c084fc' : (r.don_vi.includes('VND') ? '#fbbf24' : (r.don_vi.includes('SKU') ? '#f472b6' : (r.don_vi.includes('ST') ? '#38bdf8' : '#34d399')));
                 const t1Badge = r.t1_idx ? `<span style="display:inline-block; margin-left:5px; padding:1px 6px; border-radius:10px; background:rgba(56,189,248,0.14); color:#38bdf8; border:1px solid rgba(56,189,248,0.35); font-size:0.67rem; font-weight:700; font-family:'JetBrains Mono', monospace;" title="Khớp Chỉ số #${r.t1_idx} ở Bảng 1 (53 Chỉ Số)">#${r.t1_idx}</span>` : '';
 
@@ -376,7 +376,7 @@
                 otherCols.forEach(c => {
                     const val = r.values[c.key] || '-';
                     const isWk = c.type === 'week';
-                    const wkBg = isWk ? (isEven ? '#151f2f' : '#121b29') : '';
+                    const wkBg = isWk ? (isEven ? '#1b2b42' : '#17253a') : '';
                     html += `
                         <td style="padding:0.48rem 0.55rem; ${wkBg ? 'background:' + wkBg + ';' : ''} border-right:${isWk ? '1px solid rgba(148,163,184,0.16)' : '1px solid rgba(255,255,255,0.04)'}; font-family:'JetBrains Mono', monospace; font-size:0.77rem; white-space:nowrap; font-weight:${isWk ? '700' : '400'};">
                             ${formatCellValue(val, r.tieu_chi)}
@@ -418,19 +418,19 @@
 
         const cards = [
             {
-                icon: 'fa-solid fa-chart-line', color: '#94a3b8', valColor: '#e2e8f0',
+                icon: 'fa-solid fa-chart-line', color: '#38bdf8', valColor: '#7dd3fc',
                 label: 'Tổng Chuyển Lũy Kế',
                 value: fmtVndClean(s.tong_luy_ke), unit: 'VNĐ',
                 sub: `≈ ${fmtVndShort(s.tong_luy_ke)} • Lũy kế 01/11 → ${s.latest_cdc_date || s.latest_date || ''}`
             },
             {
-                icon: 'fa-solid fa-scale-unbalanced', color: '#94a3b8', valColor: '#e2e8f0',
+                icon: 'fa-solid fa-scale-unbalanced', color: '#f59e0b', valColor: '#fcd34d',
                 label: 'Tồn Kho Chênh Lệch',
                 value: fmtVndClean(s.ton_kho_chenh_lech), unit: 'VNĐ',
                 sub: `≈ ${fmtVndShort(s.ton_kho_chenh_lech)} • Lũy kế theo gia_cost CDC`
             },
             {
-                icon: 'fa-solid fa-percent', color: '#94a3b8', valColor: '#e5989b',
+                icon: 'fa-solid fa-percent', color: '#f43f5e', valColor: '#fda4af',
                 label: 'Tỷ Lệ Lệch Chuyển Hàng',
                 value: s.ty_le_chenh_lech || '0.00%', unit: '',
                 sub: 'Tồn kho chênh lệch / Tổng GT lũy kế'
@@ -438,8 +438,8 @@
         ];
 
         kpiContainer.innerHTML = cards.map(c => `
-            <div class="kpi-fmcg-card" style="background:#161d2b; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:0.9rem 1.1rem; display:flex; align-items:center; gap:0.9rem; min-width:0; overflow:hidden;">
-                <div style="width:44px; height:44px; border-radius:10px; background:rgba(148,163,184,0.09); color:${c.color}; border:1px solid rgba(148,163,184,0.16); display:flex; align-items:center; justify-content:center; font-size:1.25rem; flex-shrink:0;">
+            <div class="kpi-fmcg-card" style="background:#202b3d; border:1px solid rgba(255,255,255,0.09); border-left:3px solid ${c.color}; border-radius:10px; padding:0.9rem 1.1rem; display:flex; align-items:center; gap:0.9rem; min-width:0; overflow:hidden;">
+                <div style="width:44px; height:44px; border-radius:10px; background:${c.color}1a; color:${c.color}; border:1px solid ${c.color}33; display:flex; align-items:center; justify-content:center; font-size:1.25rem; flex-shrink:0;">
                     <i class="${c.icon}"></i>
                 </div>
                 <div style="min-width:0; flex:1;">
@@ -511,7 +511,7 @@
 
             filteredRows.forEach((rowItem, rIdx) => {
                 const isEven = rIdx % 2 === 0;
-                const rowBg = isEven ? '#161b22' : '#11161d';
+                const rowBg = isEven ? '#1d283a' : '#182232';
                 const hasLogic = !!rowItem.logic;
                 tableHtml += `
                     <tr class="fmcg-data-row" style="background:${rowBg}; border-bottom:1px solid rgba(255,255,255,0.04);">
@@ -654,7 +654,7 @@
             rows.forEach((r, idx) => {
                 countRows++;
                 const lg = r.logic || {};
-                const bg = idx % 2 === 0 ? '#161b22' : '#11161d';
+                const bg = idx % 2 === 0 ? '#1d283a' : '#182232';
                 const srcBadgeColor = (lg.source || '').includes('CDC') ? '#38bdf8' : ((lg.source || '').includes('Seedlog') ? '#34d399' : '#f59e0b');
                 html += `
                     <tr style="background:${bg}; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:top; font-size:0.74rem; font-weight:300;">
@@ -717,7 +717,7 @@
                 `;
                 matchedRows.forEach(({ r, stt }, idx) => {
                     flowLogicCount++;
-                    const bg = r.is_empty_template ? '#0d1117' : (idx % 2 === 0 ? '#161b22' : '#11161d');
+                    const bg = r.is_empty_template ? '#141c2b' : (idx % 2 === 0 ? '#1d283a' : '#182232');
                     const srcColor = (r.nguon || '').includes('CDC') ? '#38bdf8' : ((r.nguon || '').includes('Seedlog') ? '#34d399' : '#f59e0b');
                     html += `
                         <tr style="background:${bg}; border-bottom:1px solid rgba(255,255,255,0.05); vertical-align:top; font-size:0.74rem; font-weight:300; opacity:${r.is_empty_template ? '0.68' : '1'};">
@@ -781,7 +781,7 @@
         `;
 
         recs.forEach((r, idx) => {
-            const bg = idx % 2 === 0 ? '#161b22' : '#11161d';
+            const bg = idx % 2 === 0 ? '#1d283a' : '#182232';
             const badgeStyle = r.status_code === 'ok'
                 ? 'color:#34d399; background:rgba(16,185,129,0.14); border:1px solid rgba(16,185,129,0.35);'
                 : (r.status_code === 'pending'
@@ -1255,8 +1255,8 @@
     }
 
     function formatMetricTitle(name) {
-        if (name.includes('chênh lệch') || name.includes('thất thoát')) return `<span style="color:#e2c2c6;">${name}</span>`;
-        if (name.includes('trả DC') || name.includes('xác nhận') || name.includes('DC chịu')) return `<span style="color:#cbd5e1;">${name}</span>`;
+        if (name.includes('chênh lệch') || name.includes('thất thoát')) return `<span style="color:#fca5a5;">${name}</span>`;
+        if (name.includes('trả DC') || name.includes('xác nhận') || name.includes('DC chịu')) return `<span style="color:#7dd3fc;">${name}</span>`;
         if (name.includes('lũy kế') || name.includes('Tồn kho')) return `<strong style="color:#34d399;">${name}</strong>`;
         return name;
     }
@@ -1303,13 +1303,13 @@
         filterSection = secId;
         document.querySelectorAll('.fmcg-sec-pill').forEach(b => {
             if (b.getAttribute('data-sec') === secId) {
-                b.style.background = 'rgba(59,130,246,0.16)';
-                b.style.borderColor = 'rgba(147,197,253,0.35)';
-                b.style.color = '#e2e8f0';
+                b.style.background = '#0369a1';
+                b.style.borderColor = 'rgba(56,189,248,0.5)';
+                b.style.color = '#ffffff';
             } else {
-                b.style.background = '#1e293b';
-                b.style.borderColor = 'rgba(255,255,255,0.08)';
-                b.style.color = '#94a3b8';
+                b.style.background = '#28354a';
+                b.style.borderColor = 'rgba(255,255,255,0.1)';
+                b.style.color = '#cbd5e1';
             }
         });
         renderActiveSubView();
