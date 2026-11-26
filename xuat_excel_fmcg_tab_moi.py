@@ -1366,14 +1366,35 @@ def export_web_js(all_dates, daily_metrics, df_cdc):
             ("Đ4", "Tồn kho chênh lệch", "Giá trị (VND)", "Tồn kho chênh lệch", "last", "#,##0", "Lũy kế", "Tồn(D-1) - GT chênh lệch(D)"),
             ("Đ4", "Tỷ lệ chênh lệch chuyển hàng", "% giá trị", "Tỷ lệ chênh lệch chuyển hàng", "ratio_luy_ke", "0.00%", "Công thức", "Tồn kho CL / Tổng GT chuyển lũy kế"),
         ]),
-        ("B1", "B. TỒN ÂM · 6 NHÓM LÝ DO (MỞ RỘNG)", "#ec4899", "fa-solid fa-layer-group", [
-            ("B1", "NCC giao dư / bù hao hụt", "Giá trị (VND)", None, "empty", "#,##0", "Chưa có nguồn", "Sẵn sàng tích hợp khi có dữ liệu tồn âm"),
-            ("B1", "ST add dư / hệ thống auto add dư", "Giá trị (VND)", None, "empty", "#,##0", "Chưa có nguồn", "Sẵn sàng tích hợp khi có dữ liệu tồn âm"),
-            ("B1", "Chia sai / giao nhầm ST", "Giá trị (VND)", None, "empty", "#,##0", "Chưa có nguồn", "Sẵn sàng tích hợp khi có dữ liệu tồn âm"),
-            ("B1", "Lệch PO / Nhập Sai Chứng Từ", "Giá trị (VND)", None, "empty", "#,##0", "Chưa có nguồn", "Sẵn sàng tích hợp khi có dữ liệu tồn âm"),
-            ("B1", "Lệch cân mã KG / free-weight", "Giá trị (VND)", None, "empty", "#,##0", "Chưa có nguồn", "Sẵn sàng tích hợp khi có dữ liệu tồn âm"),
-            ("B1", "Khác", "Giá trị (VND)", None, "empty", "#,##0", "Chưa có nguồn", "Sẵn sàng tích hợp khi có dữ liệu tồn âm"),
-            ("B1", "Tổng cộng 6 nhóm lý do", "Giá trị (VND)", None, "empty", "#,##0", "Công thức", "SUM 6 nhóm lý do tồn âm"),
+        ("B1", "B. TỒN ÂM · 6 NHÓM LÝ DO + TỔNG CỘNG (42 CHỈ SỐ)", "#ec4899", "fa-solid fa-layer-group", [
+            row
+            for grp_name, is_total in [
+                ("NCC giao dư / bù hao hụt", False),
+                ("ST add dư / hệ thống auto add dư", False),
+                ("Chia sai / giao nhầm ST", False),
+                ("Lệch PO / Nhập Sai Chứng Từ", False),
+                ("Lệch cân mã KG / free-weight", False),
+                ("Khác", False),
+                ("Tổng cộng 6 nhóm lý do", True),
+            ]
+            for row in [
+                ("B1", grp_name, "Tổng SKU âm (SKU)", None, "empty", "#,##0",
+                 "Công thức" if is_total else "File tồn âm FMCG (chờ nguồn)",
+                 "Tổng 6 nhóm lý do" if is_total else "Số SKU đang âm thuộc nhóm lý do"),
+                ("B1", grp_name, "SL âm phát sinh", None, "empty", "#,##0",
+                 "Công thức" if is_total else "File tồn âm FMCG (chờ nguồn)",
+                 "Tổng 6 nhóm lý do" if is_total else "SL âm phát sinh trong ngày"),
+                ("B1", grp_name, "SL đã bù trừ (net-off)", None, "empty", "#,##0",
+                 "Công thức" if is_total else "File tồn âm FMCG (chờ nguồn)",
+                 "Tổng 6 nhóm lý do" if is_total else "SL đã xử lý bù trừ"),
+                ("B1", grp_name, "SL còn lại chưa xử lý", None, "empty", "#,##0",
+                 "Công thức", "SL âm phát sinh − SL đã bù trừ"),
+                ("B1", grp_name, "Tổng giá trị còn lại (VND)", None, "empty", "#,##0",
+                 "Công thức" if is_total else "File tồn âm FMCG (chờ nguồn)",
+                 "Tổng 6 nhóm lý do" if is_total else "Giá trị phần còn lại chưa xử lý"),
+                ("B1", grp_name, "Tỷ lệ xử lý (%)", None, "empty", "0.00%",
+                 "Công thức", "SL đã bù trừ / SL âm phát sinh"),
+            ]
         ]),
     ]
 
@@ -1418,9 +1439,15 @@ def export_web_js(all_dates, daily_metrics, df_cdc):
             return sum(daily_metrics[d]["Tổng giá trị DC chịu"] for d in d_list) - sum(daily_metrics[d]["Giá trị dư"] for d in d_list)
         return None
 
+    t1_idx_by_name = {}
+    for sec_obj in sections_dict.values():
+        for r_obj in sec_obj.get("rows", []):
+            t1_idx_by_name[r_obj["name"]] = r_obj["row_idx"]
+
     flow_blocks_payload = []
     for b_id, b_title, b_accent, b_icon, b_rows in FLOW_BLOCKS_DEF:
         out_rows = []
+        nhom_label = "B. Tồn âm" if b_id == "B1" else "A. Đối soát"
         for dc, tc, dv, t8_key, agg_mode, num_fmt, nguon, cach_tinh in b_rows:
             vals = {}
             # Σ T11
@@ -1443,8 +1470,12 @@ def export_web_js(all_dates, daily_metrics, df_cdc):
                 vals[f"SIGMA_{wk_key}"] = fmt_val(v_wk, num_fmt) if v_wk is not None else "-"
 
             out_rows.append({
+                "mien": "Miền Nam",
+                "kho": "FMCG",
+                "nhom": nhom_label,
                 "diem_chan": dc,
                 "tieu_chi": tc,
+                "t1_idx": t1_idx_by_name.get(t8_key) if t8_key else None,
                 "don_vi": dv,
                 "nguon": nguon,
                 "cach_tinh": cach_tinh,

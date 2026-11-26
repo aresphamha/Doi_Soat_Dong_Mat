@@ -74,8 +74,8 @@
     function getFullscreenTopBarHtml() {
         if (!isFullscreen) return '';
         const views = [
-            { id: 'matrix', label: '1. Ma Trận (53 Chỉ Số)', icon: 'fa-table' },
-            { id: 'flow', label: '2. Flow Điểm Chặn (Đ0–Đ4)', icon: 'fa-diagram-project' },
+            { id: 'matrix', label: '1. Đối Soát FMCG (53 Chỉ Số)', icon: 'fa-table' },
+            { id: 'flow', label: '2. Đối Soát FMCG (78 Chỉ Số)', icon: 'fa-diagram-project' },
             { id: 'logic', label: '3. Logic Chi Tiết', icon: 'fa-book-open' },
             { id: 'reconcile', label: '4. Đối Chiếu CDC', icon: 'fa-circle-check' },
         ];
@@ -333,7 +333,7 @@
 
         html += `</tbody></table>`;
         container.innerHTML = html;
-        updateStatusText(`Template <strong>Flow Điểm Chặn (Đ0–Đ4 + B. Tồn âm)</strong> • <strong>${totalRowsShown}</strong> dòng • Tự động gộp <strong>Σ T11 &amp; Σ Tuần</strong> từ CDC StarRocks + Seedlog • Cập nhật: <strong>${currentData.updated_at || ''}</strong>`);
+        updateStatusText(`<strong>Đối Soát FMCG (78 Chỉ Số • Đ0–Đ4 + B. Tồn âm)</strong> • <strong>${totalRowsShown}</strong> dòng • Tự động gộp <strong>Σ T11 &amp; Σ Tuần</strong> từ CDC StarRocks + Seedlog • Cập nhật: <strong>${currentData.updated_at || ''}</strong>`);
     }
 
     function fmtVndClean(strVal) {
@@ -511,7 +511,7 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem; padding-bottom:0.85rem; border-bottom:1px solid rgba(255,255,255,0.1);">
                     <div>
                         <h3 style="margin:0 0 0.25rem 0; color:#38bdf8; font-size:1.05rem; font-weight:800;">
-                            <i class="fa-solid fa-book-open" style="margin-right:0.45rem;"></i> ĐẶC TẢ LOGIC CHI TIẾT CỦA CẢ 2 BẢNG (MA TRẬN 53 CHỈ SỐ &amp; FLOW ĐIỂM CHẶN Đ0–Đ4)
+                            <i class="fa-solid fa-book-open" style="margin-right:0.45rem;"></i> ĐẶC TẢ LOGIC CHI TIẾT CỦA CẢ 2 BẢNG (ĐỐI SOÁT FMCG 53 CHỈ SỐ &amp; 78 CHỈ SỐ)
                         </h3>
                         <p style="margin:0; font-size:0.78rem; color:#94a3b8;">
                             Tài liệu kỹ thuật trực tiếp gắn liền với bộ máy tính toán CDC StarRocks (lọc chặt user hệ thống <code>TKE_WMS</code>) + Google Sheet Seedlog — đầy đủ cho cả 2 bảng.
@@ -556,7 +556,7 @@
 
                 <!-- PHẦN B: LOGIC CHI TIẾT BẢNG 1 (MA TRẬN 53 CHỈ SỐ) -->
                 <div style="font-size:0.82rem; font-weight:800; color:#34d399; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.65rem;">
-                    <i class="fa-solid fa-table-list" style="margin-right:0.4rem;"></i> PHẦN B: LOGIC CHI TIẾT BẢNG 1 — MA TRẬN 53 CHỈ SỐ (CHỈ SỐ LOGISTICS FMCG)
+                    <i class="fa-solid fa-table-list" style="margin-right:0.4rem;"></i> PHẦN B: LOGIC CHI TIẾT BẢNG 1 — ĐỐI SOÁT FMCG (53 CHỈ SỐ)
                 </div>
                 <div style="overflow-x:auto; border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
                     <table style="width:100%; border-collapse:collapse; font-size:0.78rem; text-align:left;">
@@ -625,7 +625,7 @@
             html += `
                 <div style="margin-top:1.75rem;">
                     <div style="font-size:0.82rem; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.65rem;">
-                        <i class="fa-solid fa-diagram-project" style="margin-right:0.4rem;"></i> PHẦN C: LOGIC CHI TIẾT BẢNG 2 — FLOW ĐIỂM CHẶN (Đ0–Đ4 + B. TỒN ÂM)
+                        <i class="fa-solid fa-diagram-project" style="margin-right:0.4rem;"></i> PHẦN C: LOGIC CHI TIẾT BẢNG 2 — ĐỐI SOÁT FMCG (78 CHỈ SỐ • Đ0–Đ4 + B. TỒN ÂM)
                     </div>
                     <div style="overflow-x:auto; border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
                         <table style="width:100%; border-collapse:collapse; font-size:0.78rem; text-align:left;">
@@ -935,9 +935,9 @@
         const targetView = overrideView || activeSubView || 'matrix';
         const s = currentData.summary || {};
         const viewTitles = {
-            matrix: 'BẢNG 1: MA TRẬN 53 CHỈ SỐ LOGISTICS KHO KHÔ FMCG',
-            flow: 'BẢNG 2: FLOW ĐIỂM CHẶN ĐỐI SOÁT FMCG (Đ0–Đ4 + B. TỒN ÂM)',
-            logic: 'ĐẶC TẢ LOGIC CHI TIẾT CẢ 2 BẢNG (MA TRẬN 53 CHỈ SỐ & FLOW Đ0–Đ4)',
+            matrix: 'BẢNG 1: ĐỐI SOÁT FMCG (53 CHỈ SỐ)',
+            flow: 'BẢNG 2: ĐỐI SOÁT FMCG (78 CHỈ SỐ • Đ0–Đ4 + B. TỒN ÂM)',
+            logic: 'ĐẶC TẢ LOGIC CHI TIẾT CẢ 2 BẢNG (ĐỐI SOÁT FMCG 53 CHỈ SỐ & 78 CHỈ SỐ)',
             reconcile: 'BẢNG ĐỐI CHIẾU KIỂM CHỨNG: CDC STARROCKS vs SEEDLOG'
         };
         const title = viewTitles[targetView] || viewTitles.matrix;
