@@ -12,12 +12,12 @@
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   }
   .banner {
-    background: linear-gradient(135deg, rgba(245,158,11,0.16), rgba(14,165,233,0.14));
-    border: 1px solid rgba(245,158,11,0.45);
+    background: #161d2b;
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px; padding: 12px 16px; margin-bottom: 14px;
     display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
   }
-  .banner h1 { margin: 0; font-size: 1rem; color: #fbbf24; display:flex; align-items:center; gap:8px; }
+  .banner h1 { margin: 0; font-size: 1rem; color: #e2e8f0; display:flex; align-items:center; gap:8px; }
   .banner p { margin: 4px 0 0 0; font-size: 0.8rem; color: #cbd5e1; }
   .card-header {
     background: #111827; border: 1px solid rgba(255,255,255,0.08);
@@ -29,8 +29,8 @@
     border-radius:8px; padding:7px 13px; font-size:0.8rem; font-weight:700; cursor:pointer;
   }
   .btn-tab.active {
-    background:linear-gradient(135deg, #0284c7, #0ea5e9); color:#fff; border-color:#38bdf8;
-    box-shadow: 0 0 12px rgba(56,189,248,0.3);
+    background:rgba(59,130,246,0.16); color:#e2e8f0; border-color:rgba(147,197,253,0.35);
+    box-shadow: none;
   }
   .toolbar {
     background: #111827; border: 1px solid rgba(255,255,255,0.08);
@@ -41,9 +41,9 @@
     background: #1e293b; color: #94a3b8; border: 1px solid rgba(255,255,255,0.1);
     border-radius: 6px; padding: 5px 10px; font-size: 0.76rem; font-weight: 700; cursor: pointer;
   }
-  .pill.active { background: #0284c7; color: #fff; border-color: #38bdf8; }
+  .pill.active { background: rgba(59,130,246,0.16); color: #e2e8f0; border-color: rgba(147,197,253,0.35); }
   .toggle-btn {
-    background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.35);
+    background: rgba(59,130,246,0.14); color: #cbd5e1; border: 1px solid rgba(147,197,253,0.28);
     border-radius: 6px; padding: 5px 10px; font-size: 0.76rem; font-weight: 700; cursor: pointer;
   }
   .toggle-btn.off { background: #1e293b; color: #94a3b8; border-color: rgba(255,255,255,0.12); }
@@ -58,7 +58,7 @@
   table { border-collapse: collapse; width: max-content; min-width: 100%; font-size: 0.77rem; }
   thead th {
     position: sticky; top: 0; z-index: 20; background: #0b1325; color: #94a3b8;
-    padding: 9px 8px; border-bottom: 2px solid rgba(56,189,248,0.35);
+    padding: 9px 8px; border-bottom: 1px solid rgba(255,255,255,0.12);
     border-right: 1px solid rgba(255,255,255,0.06); white-space: nowrap; text-align: left;
   }
   tbody td {
@@ -68,38 +68,38 @@
   tbody tr:hover td { background: rgba(56,189,248,0.07); }
   .col-stt { text-align: center; width: 40px; color: #64748b; }
   .col-dc { text-align: center; width: 48px; font-weight: 800; }
-  .sticky-tc { position: sticky; left: 0; z-index: 15; background: #0f172a; min-width: 245px; max-width: 280px; border-right: 2px solid rgba(56,189,248,0.28) !important; }
+  .sticky-tc { position: sticky; left: 0; z-index: 15; background: #0f172a; min-width: 245px; max-width: 280px; border-right: 1px solid rgba(148,163,184,0.2) !important; }
   thead .sticky-tc { z-index: 30; background: #0b1325; }
   .badge-t1 {
     display: inline-block; margin-left: 5px; padding: 1px 6px; border-radius: 10px;
-    background: rgba(56,189,248,0.14); color: #38bdf8; border: 1px solid rgba(56,189,248,0.35);
+    background: rgba(148,163,184,0.12); color: #94a3b8; border: 1px solid rgba(148,163,184,0.22);
     font-size: 0.68rem; font-weight: 700; font-family: Consolas, monospace;
   }
   .badge-unit {
     display: inline-block; padding: 2px 6px; border-radius: 5px; font-size: 0.71rem; font-weight: 700; white-space: nowrap;
   }
-  .u-vnd { background: rgba(245,158,11,0.14); color: #fbbf24; }
-  .u-pct { background: rgba(168,85,247,0.16); color: #c084fc; }
-  .u-sl  { background: rgba(16,185,129,0.14); color: #34d399; }
-  .u-st  { background: rgba(56,189,248,0.14); color: #38bdf8; }
-  .u-sku { background: rgba(236,72,153,0.14); color: #f472b6; }
+  .u-vnd { background: rgba(148,163,184,0.1); color: #94a3b8; }
+  .u-pct { background: rgba(148,163,184,0.1); color: #94a3b8; }
+  .u-sl  { background: rgba(148,163,184,0.1); color: #94a3b8; }
+  .u-st  { background: rgba(148,163,184,0.1); color: #94a3b8; }
+  .u-sku { background: rgba(148,163,184,0.1); color: #94a3b8; }
   .badge-src {
     display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 0.71rem; font-weight: 700; white-space: nowrap;
     background: rgba(30,41,59,0.95); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.12);
   }
-  .src-cdc { background: rgba(14,165,233,0.16); color: #38bdf8; border-color: rgba(56,189,248,0.35); }
-  .src-seed { background: rgba(16,185,129,0.15); color: #34d399; border-color: rgba(16,185,129,0.35); }
-  .src-f { background: rgba(139,92,246,0.16); color: #c4b5fd; border-color: rgba(139,92,246,0.35); }
-  .src-wait { background: rgba(244,63,94,0.14); color: #fda4af; border-color: rgba(244,63,94,0.3); }
+  .src-cdc { background: rgba(148,163,184,0.1); color: #cbd5e1; border-color: rgba(148,163,184,0.22); }
+  .src-seed { background: rgba(148,163,184,0.1); color: #cbd5e1; border-color: rgba(148,163,184,0.22); }
+  .src-f { background: rgba(148,163,184,0.08); color: #94a3b8; border-color: rgba(148,163,184,0.18); }
+  .src-wait { background: rgba(148,163,184,0.06); color: #64748b; border-color: rgba(148,163,184,0.14); }
   .col-logic { min-width: 280px; max-width: 380px; color: #94a3b8; font-size: 0.74rem; line-height: 1.38; }
   .num-cell { text-align: right; font-family: 'JetBrains Mono', Consolas, monospace; white-space: nowrap; }
   .col-sigma-m { background: rgba(37,99,235,0.14) !important; color: #f8fafc; font-weight: 800; }
   .col-sigma-w { background: rgba(14,165,233,0.09) !important; color: #7dd3fc; font-weight: 700; }
   .blk-row td {
     background: rgba(15,23,42,0.98) !important; font-weight: 800; font-size: 0.8rem;
-    padding: 8px 10px; border-top: 2px solid rgba(56,189,248,0.3);
+    padding: 8px 10px; border-top: 1px solid rgba(255,255,255,0.12);
   }
-  .neg { color: #fb7185; }
+  .neg { color: #e58a8a; }
   .empty-val { color: #475569; }
   .hide-col { display: none !important; }
 </style>

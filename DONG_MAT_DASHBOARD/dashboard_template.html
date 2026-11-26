@@ -3019,8 +3019,8 @@
     <!-- Dữ liệu BUNDLES siêu nhẹ cho Tab 1 & 2 (~300 KB) -->
     <script src="daily_details/data_bundles.js"></script>
     <script src="daily_details/pending_tickets.js"></script>
-    <script src="daily_details/fmcg_matrix.js?v=20261126_2"></script>
-    <script src="daily_details/fmcg_matrix_engine.js?v=20261126_2"></script>
+    <script src="daily_details/fmcg_matrix.js?v=20261125_3"></script>
+    <script src="daily_details/fmcg_matrix_engine.js?v=20261126_calm2"></script>
 </head>
 <body>
 
@@ -6368,17 +6368,17 @@
             <!-- ========================================================================= -->
             <div class="big-tab-panel" id="big-panel-8">
                 <!-- HERO HEADER -->
-                <div class="tele-hero-card" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1rem 1.25rem; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.8rem;">
+                <div class="tele-hero-card" style="background:#161d2b; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1rem 1.25rem; margin-bottom:1rem; display:flex; flex-direction:column; gap:0.8rem;">
                     <!-- Row 1: Title (left) + 3 Action Buttons (right, cùng 1 hàng) -->
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
                         <div style="display:flex; align-items:center; gap:0.8rem; min-width:0;">
-                            <div style="width:42px; height:42px; border-radius:10px; background:rgba(6,182,212,0.15); color:#06b6d4; display:flex; align-items:center; justify-content:center; font-size:1.3rem; border:1px solid rgba(6,182,212,0.3); flex-shrink:0;">
+                            <div style="width:42px; height:42px; border-radius:10px; background:rgba(148,163,184,0.1); color:#94a3b8; display:flex; align-items:center; justify-content:center; font-size:1.15rem; border:1px solid rgba(148,163,184,0.18); flex-shrink:0;">
                                 <i class="fa-solid fa-boxes-stacked"></i>
                             </div>
                             <div style="min-width:0;">
                                 <h2 style="font-size:1.18rem; font-weight:800; color:#f1f5f9; margin:0 0 0.18rem 0; display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap;">
                                     BÁO CÁO LOGISTICS FMCG
-                                    <span style="font-size:0.68rem; font-weight:700; color:#06b6d4; background:rgba(6,182,212,0.15); border:1px solid rgba(6,182,212,0.3); padding:2px 8px; border-radius:12px; letter-spacing:0.4px;">CDC STARROCKS + SEEDLOG • T11/2026 TRỞ ĐI</span>
+                                    <span style="font-size:0.68rem; font-weight:700; color:#94a3b8; background:rgba(148,163,184,0.1); border:1px solid rgba(148,163,184,0.2); padding:2px 8px; border-radius:12px; letter-spacing:0.4px;">CDC STARROCKS + SEEDLOG • T11/2026 TRỞ ĐI</span>
                                 </h2>
                                 <p style="font-size:0.78rem; color:#94a3b8; margin:0;" id="fmcg-status-text">
                                     Đối soát FMCG (53 chỉ số) luân chuyển kho khô FGA10101 (chỉ Siêu thị KFM + bảng TO) • Giá vốn Stockcard CDC
@@ -6387,15 +6387,15 @@
                         </div>
 
                         <div style="display:flex; gap:0.45rem; flex-wrap:wrap; align-items:center; flex-shrink:0;">
-                            <button id="btn-fmcg-realtime" onclick="syncFmcgRealtime()" style="background:linear-gradient(135deg, #0284c7, #2563eb); color:#fff; border:1px solid #38bdf8; border-radius:8px; padding:0.42rem 0.8rem; font-size:0.78rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.38rem; box-shadow:0 0 12px rgba(56,189,248,0.35); white-space:nowrap;">
+                            <button id="btn-fmcg-realtime" onclick="syncFmcgRealtime()" style="background:#1e3a5f; color:#e2e8f0; border:1px solid rgba(147,197,253,0.3); border-radius:8px; padding:0.42rem 0.8rem; font-size:0.76rem; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:0.38rem; white-space:nowrap;">
                                 <i class="fa-solid fa-bolt-lightning"></i> Cập Nhật Realtime (CDC &amp; Seedlog)
                             </button>
 
-                            <button onclick="exportFmcgExcel()" style="background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); border-radius:8px; padding:0.42rem 0.8rem; font-size:0.78rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.38rem; white-space:nowrap;">
+                            <button onclick="exportFmcgExcel()" style="background:#1c2433; color:#cbd5e1; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.42rem 0.8rem; font-size:0.78rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.38rem; white-space:nowrap;">
                                 <i class="fa-solid fa-file-excel"></i> Xuất Excel (Kèm Logic)
                             </button>
 
-                            <button onclick="exportFmcgPdf()" style="background:rgba(244,63,94,0.15); color:#fb7185; border:1px solid rgba(244,63,94,0.35); border-radius:8px; padding:0.42rem 0.8rem; font-size:0.78rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.38rem; white-space:nowrap;">
+                            <button onclick="exportFmcgPdf()" style="background:#1c2433; color:#cbd5e1; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.42rem 0.8rem; font-size:0.78rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:0.38rem; white-space:nowrap;">
                                 <i class="fa-solid fa-file-pdf"></i> Tải PDF
                             </button>
 
@@ -6412,24 +6412,24 @@
                                 <i class="fa-solid fa-arrow-down-wide-short"></i> Ngày Mới Nhất Trước
                             </button>
 
-                            <button id="btn-fmcg-fullscreen" onclick="toggleFmcgFullscreen()" style="background:rgba(245,158,11,0.16); color:#fbbf24; border:1px solid rgba(245,158,11,0.4); border-radius:8px; padding:0.44rem 0.85rem; font-size:0.79rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
+                            <button id="btn-fmcg-fullscreen" onclick="toggleFmcgFullscreen()" style="background:#1c2433; color:#cbd5e1; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.44rem 0.85rem; font-size:0.79rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.4rem;">
                                 <i class="fa-solid fa-expand"></i> Mở Rộng Bảng
                             </button>
 
                             <div style="display:inline-flex; align-items:center; background:#1e293b; border:1px solid rgba(255,255,255,0.12); border-radius:8px; overflow:hidden;">
                                 <button onclick="adjustFmcgZoom(-10)" title="Thu nhỏ bảng" style="background:transparent; color:#e2e8f0; border:none; padding:0.42rem 0.6rem; cursor:pointer; font-weight:800;">−</button>
-                                <button onclick="adjustFmcgZoom(0)" title="Đặt lại 100%" id="fmcg-zoom-label-out" style="background:rgba(56,189,248,0.1); color:#38bdf8; border:none; border-left:1px solid rgba(255,255,255,0.08); border-right:1px solid rgba(255,255,255,0.08); padding:0.42rem 0.5rem; cursor:pointer; font-size:0.75rem; font-weight:700; font-family:'JetBrains Mono', monospace;">100%</button>
+                                <button onclick="adjustFmcgZoom(0)" title="Đặt lại 100%" id="fmcg-zoom-label-out" style="background:rgba(148,163,184,0.08); color:#cbd5e1; border:none; border-left:1px solid rgba(255,255,255,0.08); border-right:1px solid rgba(255,255,255,0.08); padding:0.42rem 0.5rem; cursor:pointer; font-size:0.75rem; font-weight:700; font-family:'JetBrains Mono', monospace;">100%</button>
                                 <button onclick="adjustFmcgZoom(10)" title="Phóng to bảng" style="background:transparent; color:#e2e8f0; border:none; padding:0.42rem 0.6rem; cursor:pointer; font-weight:800;">+</button>
                             </div>
                         </div>
 
                         <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
-                            <button class="fmcg-subview-btn" data-view="matrix" onclick="switchFmcgSubView('matrix')" style="background:linear-gradient(135deg, #0284c7, #0ea5e9); color:#fff; border:1px solid #38bdf8; border-radius:8px; padding:0.46rem 0.95rem; font-size:0.81rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.45rem; box-shadow:0 0 12px rgba(56,189,248,0.3);">
+                            <button class="fmcg-subview-btn" data-view="matrix" onclick="switchFmcgSubView('matrix')" style="background:rgba(59,130,246,0.16); color:#e2e8f0; border:1px solid rgba(147,197,253,0.35); border-radius:8px; padding:0.44rem 0.88rem; font-size:0.77rem; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:0.42rem;">
                                 <i class="fa-solid fa-table"></i> 1. Đối Soát FMCG (53 Chỉ Số)
                             </button>
 
                             <button class="fmcg-subview-btn" data-view="flow" onclick="switchFmcgSubView('flow')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.46rem 0.95rem; font-size:0.81rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.45rem;">
-                                <i class="fa-solid fa-diagram-project"></i> 2. Đối Soát FMCG (113 Chỉ Số)
+                                <i class="fa-solid fa-diagram-project"></i> 2. Đối Soát FMCG (78 Chỉ Số)
                             </button>
 
                             <button class="fmcg-subview-btn" data-view="logic" onclick="switchFmcgSubView('logic')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.46rem 0.95rem; font-size:0.81rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.45rem;">
@@ -6452,7 +6452,7 @@
                 <div id="fmcg-filter-bar" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:0.85rem 1.15rem; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem;">
                     <div style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap;">
                         <span style="font-size:0.75rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-right:0.3rem;">Khối chỉ số:</span>
-                        <button class="fmcg-sec-pill" data-sec="all" onclick="filterFmcgSection('all')" style="background:#0284c7; color:#fff; border:1px solid #38bdf8; border-radius:6px; padding:0.3rem 0.65rem; font-size:0.76rem; font-weight:600; cursor:pointer;">Tất cả (6 Khối)</button>
+                        <button class="fmcg-sec-pill" data-sec="all" onclick="filterFmcgSection('all')" style="background:rgba(59,130,246,0.16); color:#e2e8f0; border:1px solid rgba(147,197,253,0.35); border-radius:6px; padding:0.3rem 0.65rem; font-size:0.76rem; font-weight:600; cursor:pointer;">Tất cả (6 Khối)</button>
                         <button class="fmcg-sec-pill" data-sec="sec_san_luong" onclick="filterFmcgSection('sec_san_luong')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:0.3rem 0.65rem; font-size:0.76rem; font-weight:600; cursor:pointer;">1. Sản lượng</button>
                         <button class="fmcg-sec-pill" data-sec="sec_gia_tri" onclick="filterFmcgSection('sec_gia_tri')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:0.3rem 0.65rem; font-size:0.76rem; font-weight:600; cursor:pointer;">2. Giá trị</button>
                         <button class="fmcg-sec-pill" data-sec="sec_ty_le" onclick="filterFmcgSection('sec_ty_le')" style="background:#1e293b; color:#94a3b8; border:1px solid rgba(255,255,255,0.08); border-radius:6px; padding:0.3rem 0.65rem; font-size:0.76rem; font-weight:600; cursor:pointer;">3. Tỷ lệ %</button>
@@ -6468,7 +6468,7 @@
                 </div>
 
                 <!-- MATRIX TABLE CONTAINER -->
-                <div id="fmcg-table-container" style="background:#161b22; border:1px solid rgba(255,255,255,0.08); border-radius:12px; overflow-x:auto; max-height:75vh; box-shadow:0 8px 24px rgba(0,0,0,0.3);">
+                <div id="fmcg-table-container" style="background:#131924; border:1px solid rgba(255,255,255,0.08); border-radius:12px; overflow-x:auto; max-height:75vh; box-shadow:0 4px 16px rgba(0,0,0,0.22);">
                     <!-- Dynamic Table generated by renderMatrixTable() -->
                 </div>
             </div>
