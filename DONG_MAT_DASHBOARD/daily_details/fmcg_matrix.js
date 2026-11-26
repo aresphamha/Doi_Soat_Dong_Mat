@@ -1,6 +1,6 @@
 // Dữ liệu Báo cáo Logistics FMCG (Tự động từ CDC StarRocks + Google Sheet Seedlog + Đặc tả Logic)
 window.FMCG_MATRIX_DATA = {
-  "updated_at": "26/11/2026 13:34:35",
+  "updated_at": "26/11/2026 13:45:30",
   "filter_scope": "Từ 01/11/2026 trở về sau • CDC StarRocks (FGA10101 -> Siêu thị KFM + Bảng TO) + Seedlog + Cost Stockcard",
   "dates": [
     {
@@ -229,7 +229,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 2,
           "name": "SL nhận",
           "section_id": "sec_san_luong",
-          "total": "7,019,733.64",
+          "total": "7,022,627.64",
           "values": {
             "2026-11-01": "2,508",
             "2026-11-02": "344,825",
@@ -255,8 +255,8 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-22": "4,333",
             "2026-11-23": "362,056",
             "2026-11-24": "252,479",
-            "2026-11-25": "320,537",
-            "2026-11-26": "28,525"
+            "2026-11-25": "321,487",
+            "2026-11-26": "30,469"
           },
           "logic": {
             "stt": 2,
@@ -642,7 +642,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 11,
           "name": "Giá trị nhận",
           "section_id": "sec_gia_tri",
-          "total": "121,227,999,555.53",
+          "total": "121,289,572,071.51",
           "values": {
             "2026-11-01": "48,492,798.07",
             "2026-11-02": "6,009,734,811.75",
@@ -668,8 +668,8 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-22": "86,449,320.06",
             "2026-11-23": "6,703,080,441.73",
             "2026-11-24": "4,968,867,565.84",
-            "2026-11-25": "5,783,278,281.79",
-            "2026-11-26": "454,818,067.21"
+            "2026-11-25": "5,805,305,548.57",
+            "2026-11-26": "494,363,316.41"
           },
           "logic": {
             "stt": 11,
@@ -1405,7 +1405,7 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-23": "134",
             "2026-11-24": "115",
             "2026-11-25": "127",
-            "2026-11-26": "21"
+            "2026-11-26": "24"
           },
           "logic": {
             "stt": 27,
@@ -2786,8 +2786,8 @@ window.FMCG_MATRIX_DATA = {
       "pt_cnt": 224,
       "sl_chuyen": 327345.0,
       "sl_nhan": 326875.92,
-      "cdc_blank0": -469.08,
-      "cdc_blank_m1": -469.08,
+      "cdc_blank0": -469.08000000000004,
+      "cdc_blank_m1": -469.08000000000004,
       "seedlog": -469.1,
       "diff_0": 0.02,
       "diff_m1": 0.02,
@@ -3025,15 +3025,15 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-25",
       "pt_cnt": 141,
       "sl_chuyen": 329282.0,
-      "sl_nhan": 320537.0,
-      "cdc_blank0": -8745.0,
-      "cdc_blank_m1": -8746.0,
+      "sl_nhan": 321487.0,
+      "cdc_blank0": -7795.0,
+      "cdc_blank_m1": -7796.0,
       "seedlog": 0.0,
-      "diff_0": -8745.0,
-      "diff_m1": -8746.0,
+      "diff_0": -7795.0,
+      "diff_m1": -7796.0,
       "sl_du": 35.0,
-      "not_done": 954,
-      "status_txt": "Đang giao / chưa nhận xong (954 dòng status!=5)",
+      "not_done": 594,
+      "status_txt": "Đang giao / chưa nhận xong (594 dòng status!=5)",
       "status_code": "pending"
     },
     {
@@ -3041,15 +3041,15 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-26",
       "pt_cnt": 55,
       "sl_chuyen": 81405.0,
-      "sl_nhan": 28525.0,
-      "cdc_blank0": -52880.0,
-      "cdc_blank_m1": -52880.0,
+      "sl_nhan": 30469.0,
+      "cdc_blank0": -50936.0,
+      "cdc_blank_m1": -50936.0,
       "seedlog": 0.0,
-      "diff_0": -52880.0,
-      "diff_m1": -52880.0,
+      "diff_0": -50936.0,
+      "diff_m1": -50936.0,
       "sl_du": 1.0,
-      "not_done": 5531,
-      "status_txt": "Đang giao / chưa nhận xong (5,531 dòng status!=5)",
+      "not_done": 5006,
+      "status_txt": "Đang giao / chưa nhận xong (5,006 dòng status!=5)",
       "status_code": "pending"
     }
   ],
@@ -3806,7 +3806,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "SUM(SL nhận Capped <= SL chuyển + bảng TO): Kho FGA10101; Người tạo: user hệ thống TKE_WMS; chỉ Siêu thị KFM",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "7,019,733.64",
+              "SIGMA_T11": "7,022,627.64",
               "2026-11-01": "2,508",
               "2026-11-02": "344,825",
               "2026-11-03": "342,482",
@@ -3831,13 +3831,13 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-22": "4,333",
               "2026-11-23": "362,056",
               "2026-11-24": "252,479",
-              "2026-11-25": "320,537",
-              "2026-11-26": "28,525",
+              "2026-11-25": "321,487",
+              "2026-11-26": "30,469",
               "SIGMA_W44": "2,508",
               "SIGMA_W45": "1,867,207",
               "SIGMA_W46": "2,133,088.70",
               "SIGMA_W47": "2,053,332.94",
-              "SIGMA_W48": "963,597"
+              "SIGMA_W48": "966,491"
             }
           },
           {
@@ -3848,7 +3848,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "SUM(SL nhận Capped * gia_cost Stockcard): Kho FGA10101; Người tạo: user hệ thống TKE_WMS; chỉ Siêu thị KFM",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "121,227,999,555.53",
+              "SIGMA_T11": "121,289,572,071.51",
               "2026-11-01": "48,492,798.07",
               "2026-11-02": "6,009,734,811.75",
               "2026-11-03": "6,165,838,093.97",
@@ -3873,13 +3873,13 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-22": "86,449,320.06",
               "2026-11-23": "6,703,080,441.73",
               "2026-11-24": "4,968,867,565.84",
-              "2026-11-25": "5,783,278,281.79",
-              "2026-11-26": "454,818,067.21",
+              "2026-11-25": "5,805,305,548.57",
+              "2026-11-26": "494,363,316.41",
               "SIGMA_W44": "48,492,798.07",
               "SIGMA_W45": "31,493,564,954.61",
               "SIGMA_W46": "35,414,537,038.19",
               "SIGMA_W47": "36,361,360,408.09",
-              "SIGMA_W48": "17,910,044,356.56"
+              "SIGMA_W48": "17,971,616,872.55"
             }
           },
           {
@@ -3890,7 +3890,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "COUNT(DISTINCT to_branch_id có nhận > 0): Kho FGA10101; Người tạo: user hệ thống TKE_WMS; chỉ Siêu thị KFM",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "2,799",
+              "SIGMA_T11": "2,802",
               "2026-11-01": "4",
               "2026-11-02": "126",
               "2026-11-03": "130",
@@ -3916,12 +3916,12 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-23": "134",
               "2026-11-24": "115",
               "2026-11-25": "127",
-              "2026-11-26": "21",
+              "2026-11-26": "24",
               "SIGMA_W44": "4",
               "SIGMA_W45": "789",
               "SIGMA_W46": "805",
               "SIGMA_W47": "804",
-              "SIGMA_W48": "397"
+              "SIGMA_W48": "400"
             }
           },
           {
