@@ -13,8 +13,13 @@
     let activeSubView = 'matrix'; // 'matrix' | 'flow' | 'logic' | 'reconcile'
     let flowBlockFilter = 'all';  // 'all' | 'D0' | 'D1' | 'D2' | 'D3' | 'D4' | 'B1'
     let flowSummaryOnly = false;  // false = Ngày + Σ Tuần + Σ T11, true = Chỉ Σ T11 + Σ Tuần
-    let flowShowMeta = true;      // true = Hiện 3 cột Miền (A), Kho (B), Nhóm (C) ở đầu bảng
-    let flowShowGH = true;        // true = Hiện 2 cột Nguồn (G), Cách tính & Logic (H)
+    // Chế độ Ẩn/Hiện từng cột (Hide/Show Columns) cho Bảng 2 (113 Chỉ Số)
+    let flowColsVis = {
+        meta: false,  // A, B, C (Miền, Kho, Nhóm) — mặc định ẩn để thấy ngay cột số liệu
+        unit: true,   // F (Đơn vị)
+        src: true,    // G (Nguồn dữ liệu)
+        logic: false, // H (Cách tính & Logic) — mặc định ẩn để thấy ngay Σ T11 & các ngày
+    };
     let isFullscreen = false;
     let tableZoom = 100;          // 70 .. 130 (%)
 
@@ -200,13 +205,23 @@
         renderActiveSubView();
     };
 
-    window.toggleFmcgFlowMeta = function () {
-        flowShowMeta = !flowShowMeta;
+    window.toggleFmcgFlowCol = function (colKey) {
+        if (colKey === 'all_on') {
+            flowColsVis = { meta: true, unit: true, src: true, logic: true };
+        } else if (colKey === 'compact') {
+            flowColsVis = { meta: false, unit: true, src: false, logic: false };
+        } else if (Object.prototype.hasOwnProperty.call(flowColsVis, colKey)) {
+            flowColsVis[colKey] = !flowColsVis[colKey];
+        }
         renderFlowTemplateView();
     };
 
+    // Giữ tương thích ngược nếu có nơi nào gọi cũ
+    window.toggleFmcgFlowMeta = function () { window.toggleFmcgFlowCol('meta'); };
     window.toggleFmcgFlowGH = function () {
-        flowShowGH = !flowShowGH;
+        const next = !(flowColsVis.src && flowColsVis.logic);
+        flowColsVis.src = next;
+        flowColsVis.logic = next;
         renderFlowTemplateView();
     };
 
@@ -252,11 +267,11 @@
 
         const blockPills = [
             { id: 'all', label: `Tất cả (${totalAll})` },
-            { id: 'D0', label: `Đ0 · Tổng quan (${countOf('D0')})` },
-            { id: 'D1', label: `Đ1 · Chuyển–Nhận (${countOf('D1')})` },
-            { id: 'D2', label: `Đ2 · SCM Phân loại (${countOf('D2')})` },
-            { id: 'D3', label: `Đ3 · DC Phản hồi (${countOf('D3')})` },
-            { id: 'D4', label: `Đ4 · Chốt KQ (${countOf('D4')})` },
+            { id: 'D0', label: `Đ0 (${countOf('D0')})` },
+            { id: 'D1', label: `Đ1 (${countOf('D1')})` },
+            { id: 'D2', label: `Đ2 (${countOf('D2')})` },
+            { id: 'D3', label: `Đ3 (${countOf('D3')})` },
+            { id: 'D4', label: `Đ4 (${countOf('D4')})` },
             { id: 'B1', label: `B. Tồn âm (${countOf('B1')})` },
         ];
 
@@ -269,59 +284,86 @@
             return 'background:rgba(30,41,59,0.95); color:#cbd5e1; border:1px solid rgba(255,255,255,0.12);';
         };
 
-        const totalColSpan = 4 + (flowShowMeta ? 3 : 0) + (flowShowGH ? 2 : 0) + 1 + otherCols.length;
+        const showMeta = flowColsVis.meta;
+        const showUnit = flowColsVis.unit;
+        const showSrc = flowColsVis.src;
+        const showLogic = flowColsVis.logic;
+        const allVisible = showMeta && showUnit && showSrc && showLogic;
+
+        const colBtn = (key, label, active) => `
+            <button onclick="toggleFmcgFlowCol('${key}')" title="${active ? 'Bấm để ẨN cột này' : 'Bấm để HIỆN cột này'}"
+                style="background:${active ? 'rgba(16,185,129,0.16)' : '#1e293b'}; color:${active ? '#34d399' : '#64748b'}; border:1px solid ${active ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.24rem 0.55rem; font-size:0.72rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:0.28rem;">
+                <i class="fa-solid ${active ? 'fa-eye' : 'fa-eye-slash'}" style="font-size:0.68rem;"></i> ${label}
+            </button>`;
+
+        const hideX = (key, title) => `<span onclick="event.stopPropagation(); toggleFmcgFlowCol('${key}')" title="Ẩn cột ${title}" style="margin-left:5px; cursor:pointer; color:#64748b; font-weight:800; padding:0 3px; border-radius:3px; background:rgba(255,255,255,0.06);">×</span>`;
+
+        const totalColSpan = 3 + (showMeta ? 3 : 0) + (showUnit ? 1 : 0) + (showSrc ? 1 : 0) + (showLogic ? 1 : 0) + 1 + otherCols.length;
 
         let html = `
-            <div style="padding:0.85rem 1rem; background:#0f172a; border-bottom:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.65rem; position:sticky; left:0; z-index:28;">
-                <div style="display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap;">
-                    <span style="font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-right:0.25rem;">Điểm chặn:</span>
-                    ${blockPills.map(p => {
+            <div style="padding:0.65rem 0.9rem; background:#0f172a; border-bottom:1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; gap:0.5rem; position:sticky; left:0; z-index:28;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                    <div style="display:flex; align-items:center; gap:0.32rem; flex-wrap:wrap;">
+                        <span style="font-size:0.7rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-right:0.2rem;">Điểm chặn:</span>
+                        ${blockPills.map(p => {
             const act = flowBlockFilter === p.id;
-            return `<button onclick="setFmcgFlowBlock('${p.id}')" style="background:${act ? '#0369a1' : '#28354a'}; color:${act ? '#ffffff' : '#cbd5e1'}; border:1px solid ${act ? 'rgba(56,189,248,0.5)' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.28rem 0.62rem; font-size:0.75rem; font-weight:600; cursor:pointer;">${p.label}</button>`;
+            return `<button onclick="setFmcgFlowBlock('${p.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.08)'}; border-radius:6px; padding:0.25rem 0.56rem; font-size:0.73rem; font-weight:600; cursor:pointer;">${p.label}</button>`;
         }).join('')}
-                </div>
-                <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
-                    <button onclick="toggleFmcgFlowMeta()" style="background:${flowShowMeta ? 'rgba(16,185,129,0.16)' : '#1e293b'}; color:${flowShowMeta ? '#34d399' : '#94a3b8'}; border:1px solid ${flowShowMeta ? 'rgba(16,185,129,0.38)' : 'rgba(255,255,255,0.12)'}; border-radius:6px; padding:0.3rem 0.65rem; font-size:0.74rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.32rem;">
-                        <i class="fa-solid fa-table-columns"></i> Miền/Kho/Nhóm: ${flowShowMeta ? 'Hiện' : 'Ẩn'}
-                    </button>
-                    <button onclick="toggleFmcgFlowGH()" style="background:${flowShowGH ? 'rgba(16,185,129,0.16)' : '#1e293b'}; color:${flowShowGH ? '#34d399' : '#94a3b8'}; border:1px solid ${flowShowGH ? 'rgba(16,185,129,0.38)' : 'rgba(255,255,255,0.12)'}; border-radius:6px; padding:0.3rem 0.65rem; font-size:0.74rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.32rem;">
-                        <i class="fa-solid fa-book"></i> Cột G–H (Nguồn &amp; Logic): ${flowShowGH ? 'Hiện' : 'Ẩn'}
-                    </button>
-                    <button onclick="toggleFmcgFlowSummaryOnly()" style="background:${flowSummaryOnly ? 'rgba(59,130,246,0.16)' : '#1c2433'}; color:${flowSummaryOnly ? '#e2e8f0' : '#cbd5e1'}; border:1px solid ${flowSummaryOnly ? 'rgba(147,197,253,0.35)' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.3rem 0.68rem; font-size:0.74rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.32rem;">
+                    </div>
+                    <button onclick="toggleFmcgFlowSummaryOnly()" style="background:${flowSummaryOnly ? 'rgba(245,158,11,0.2)' : '#1e293b'}; color:${flowSummaryOnly ? '#fbbf24' : '#cbd5e1'}; border:1px solid ${flowSummaryOnly ? '#f59e0b' : 'rgba(255,255,255,0.12)'}; border-radius:6px; padding:0.26rem 0.65rem; font-size:0.73rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.3rem;">
                         <i class="fa-solid ${flowSummaryOnly ? 'fa-calendar-days' : 'fa-compress'}"></i>
                         ${flowSummaryOnly ? 'Đang gọn: Σ T11 & Σ Tuần' : 'Thu gọn: Chỉ xem Σ T11 & Σ Tuần'}
                     </button>
                 </div>
+
+                <div style="display:flex; align-items:center; gap:0.38rem; flex-wrap:wrap; padding-top:0.42rem; border-top:1px dashed rgba(255,255,255,0.08);">
+                    <span style="font-size:0.7rem; font-weight:700; color:#94a3b8; text-transform:uppercase; margin-right:0.15rem;"><i class="fa-solid fa-sliders" style="margin-right:3px; color:#38bdf8;"></i>Ẩn / Hiện Cột:</span>
+                    ${colBtn('meta', 'A–C: Miền/Kho/Nhóm', showMeta)}
+                    ${colBtn('unit', 'F: Đơn vị', showUnit)}
+                    ${colBtn('src', 'G: Nguồn', showSrc)}
+                    ${colBtn('logic', 'H: Cách tính & Logic', showLogic)}
+                    <span style="color:#334155; margin:0 2px;">|</span>
+                    <button onclick="toggleFmcgFlowCol('compact')" style="background:rgba(56,189,248,0.14); color:#38bdf8; border:1px solid rgba(56,189,248,0.35); border-radius:6px; padding:0.24rem 0.58rem; font-size:0.72rem; font-weight:700; cursor:pointer;">
+                        <i class="fa-solid fa-bolt"></i> Gọn Xem Số Liệu
+                    </button>
+                    <button onclick="toggleFmcgFlowCol('all_on')" style="background:${allVisible ? 'rgba(139,92,246,0.22)' : '#1e293b'}; color:${allVisible ? '#c4b5fd' : '#94a3b8'}; border:1px solid ${allVisible ? 'rgba(139,92,246,0.45)' : 'rgba(255,255,255,0.12)'}; border-radius:6px; padding:0.24rem 0.58rem; font-size:0.72rem; font-weight:700; cursor:pointer;">
+                        <i class="fa-solid fa-table-columns"></i> Hiện Đủ A–H
+                    </button>
+                </div>
             </div>
 
-            <table style="width:max-content; min-width:100%; border-collapse:collapse; font-size:0.79rem; text-align:right;">
+            <table style="width:max-content; min-width:100%; border-collapse:collapse; font-size:0.76rem; text-align:right;">
                 <thead>
-                    <tr style="background:#0f172a; position:sticky; top:0; z-index:22; border-bottom:1px solid rgba(255,255,255,0.12);">
-                        <th style="background:#0f172a; min-width:40px; text-align:center; padding:0.7rem 0.35rem; color:#64748b; font-weight:800; border-right:1px solid rgba(255,255,255,0.06);">STT</th>
-                        ${flowShowMeta ? `
-                            <th style="background:#0f172a; min-width:84px; text-align:left; padding:0.7rem 0.5rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">MIỀN (A)</th>
-                            <th style="background:#0f172a; min-width:64px; text-align:left; padding:0.7rem 0.5rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">KHO (B)</th>
-                            <th style="background:#0f172a; min-width:94px; text-align:left; padding:0.7rem 0.5rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">NHÓM (C)</th>
+                    <tr style="background:#0f172a; position:sticky; top:0; z-index:22; border-bottom:2px solid rgba(56,189,248,0.3);">
+                        <th style="background:#0f172a; width:34px; min-width:34px; text-align:center; padding:0.55rem 0.25rem; color:#64748b; font-weight:800; border-right:1px solid rgba(255,255,255,0.06);">STT</th>
+                        ${showMeta ? `
+                            <th style="background:#0f172a; min-width:68px; text-align:left; padding:0.55rem 0.4rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">MIỀN (A)${hideX('meta', 'Miền/Kho/Nhóm')}</th>
+                            <th style="background:#0f172a; min-width:50px; text-align:left; padding:0.55rem 0.4rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">KHO (B)</th>
+                            <th style="background:#0f172a; min-width:74px; text-align:left; padding:0.55rem 0.4rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">NHÓM (C)</th>
                         ` : ''}
-                        <th style="background:#0f172a; min-width:50px; text-align:center; padding:0.7rem 0.4rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">ĐC (D)</th>
-                        <th style="position:sticky; left:0; z-index:26; background:#0b1325; min-width:245px; max-width:280px; text-align:left; padding:0.7rem 0.75rem; color:#38bdf8; font-weight:800; border-right:2px solid rgba(56,189,248,0.32); box-shadow:2px 0 6px rgba(0,0,0,0.45); white-space:nowrap;">TIÊU CHÍ (E · MAP BẢNG 1)</th>
-                        <th style="background:#0f172a; min-width:118px; text-align:center; padding:0.7rem 0.45rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">ĐƠN VỊ (F)</th>
-                        ${flowShowGH ? `
-                            <th style="background:#0f172a; min-width:142px; text-align:left; padding:0.7rem 0.55rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">NGUỒN DỮ LIỆU (G)</th>
-                            <th style="background:#0f172a; min-width:280px; max-width:380px; text-align:left; padding:0.7rem 0.6rem; color:#94a3b8; font-weight:800; border-right:2px solid rgba(56,189,248,0.22); white-space:nowrap;">CÁCH TÍNH &amp; LOGIC (H)</th>
+                        <th style="background:#0f172a; width:42px; min-width:42px; text-align:center; padding:0.55rem 0.28rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">ĐC</th>
+                        <th style="position:sticky; left:0; z-index:26; background:#0b1325; min-width:195px; max-width:230px; text-align:left; padding:0.55rem 0.6rem; color:#38bdf8; font-weight:800; border-right:2px solid rgba(56,189,248,0.32); box-shadow:2px 0 6px rgba(0,0,0,0.45); white-space:nowrap;">TIÊU CHÍ (E · MAP BẢNG 1)</th>
+                        ${showUnit ? `
+                            <th style="background:#0f172a; min-width:96px; text-align:center; padding:0.55rem 0.35rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">ĐƠN VỊ (F)${hideX('unit', 'Đơn vị')}</th>
                         ` : ''}
-                        <th style="background:#172554; min-width:128px; text-align:right; padding:0.7rem 0.65rem; color:#fbbf24; font-weight:800; border-right:2px solid rgba(251,191,36,0.35);">
-                            <div style="font-size:0.8rem;">${monthCol.label}</div>
-                            <div style="font-size:0.65rem; color:#93c5fd; font-weight:500;">${monthCol.sub}</div>
+                        ${showSrc ? `
+                            <th style="background:#0f172a; min-width:112px; text-align:left; padding:0.55rem 0.42rem; color:#94a3b8; font-weight:800; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">NGUỒN (G)${hideX('src', 'Nguồn')}</th>
+                        ` : ''}
+                        ${showLogic ? `
+                            <th style="background:#0f172a; min-width:190px; max-width:240px; text-align:left; padding:0.55rem 0.45rem; color:#94a3b8; font-weight:800; border-right:2px solid rgba(56,189,248,0.22); white-space:nowrap;">CÁCH TÍNH &amp; LOGIC (H)${hideX('logic', 'Cách tính')}</th>
+                        ` : ''}
+                        <th style="background:#172554; min-width:114px; text-align:right; padding:0.55rem 0.5rem; color:#fbbf24; font-weight:800; border-right:2px solid rgba(251,191,36,0.35);">
+                            <div style="font-size:0.78rem;">${monthCol.label}</div>
+                            <div style="font-size:0.63rem; color:#93c5fd; font-weight:500;">${monthCol.sub}</div>
                         </th>
         `;
 
         otherCols.forEach(c => {
             const isWk = c.type === 'week';
             html += `
-                <th style="min-width:${isWk ? '118px' : '102px'}; padding:0.65rem 0.55rem; text-align:right; color:${isWk ? '#38bdf8' : '#e2e8f0'}; font-weight:${isWk ? '800' : '600'}; background:${isWk ? '#0c2444' : '#0f172a'}; border-right:${isWk ? '2px solid rgba(56,189,248,0.3)' : '1px solid rgba(255,255,255,0.05)'};">
-                    <div style="font-size:0.79rem; font-family:'JetBrains Mono', monospace;">${c.label}</div>
-                    <div style="font-size:0.65rem; color:#64748b; font-weight:500;">${c.sub}</div>
+                <th style="min-width:${isWk ? '106px' : '90px'}; padding:0.52rem 0.42rem; text-align:right; color:${isWk ? '#38bdf8' : '#e2e8f0'}; font-weight:${isWk ? '800' : '600'}; background:${isWk ? '#0c2444' : '#0f172a'}; border-right:${isWk ? '2px solid rgba(56,189,248,0.3)' : '1px solid rgba(255,255,255,0.05)'};">
+                    <div style="font-size:0.76rem; font-family:'JetBrains Mono', monospace;">${c.label}</div>
+                    <div style="font-size:0.62rem; color:${isWk ? '#7dd3fc' : '#64748b'}; font-weight:500;">${c.sub}</div>
                 </th>
             `;
         });
@@ -332,11 +374,11 @@
             if (flowBlockFilter !== 'all' && blk.id !== flowBlockFilter) return;
 
             html += `
-                <tr style="background:#182130; border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.08);">
-                    <td colspan="${totalColSpan}" style="padding:0.56rem 0.85rem; text-align:left; font-weight:800; color:${blk.accent}; font-size:0.81rem; letter-spacing:0.35px;">
+                <tr style="background:linear-gradient(90deg, ${blk.accent}24, rgba(15,23,42,0.95)); border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.08);">
+                    <td colspan="${totalColSpan}" style="padding:0.48rem 0.75rem; text-align:left; font-weight:800; color:${blk.accent}; font-size:0.78rem; letter-spacing:0.3px;">
                         <span style="position:sticky; left:12px; display:inline-block;">
-                            <i class="${blk.icon}" style="margin-right:0.45rem;"></i> ${blk.title}
-                            <span style="font-size:0.72rem; color:#94a3b8; font-weight:600; margin-left:6px;">(${blk.rows.length} chỉ số)</span>
+                            <i class="${blk.icon}" style="margin-right:0.4rem;"></i> ${blk.title}
+                            <span style="font-size:0.7rem; color:#94a3b8; font-weight:600; margin-left:6px;">(${blk.rows.length} chỉ số)</span>
                         </span>
                     </td>
                 </tr>
@@ -345,30 +387,34 @@
             blk.rows.forEach((r, idx) => {
                 totalRowsShown++;
                 const isEven = idx % 2 === 0;
-                const rowBg = r.is_empty_template ? '#141c2b' : (isEven ? '#1d283a' : '#182232');
+                const rowBg = r.is_empty_template ? '#0d1117' : (isEven ? '#161b22' : '#11161d');
                 const dvColor = r.don_vi.includes('%') ? '#c084fc' : (r.don_vi.includes('VND') ? '#fbbf24' : (r.don_vi.includes('SKU') ? '#f472b6' : (r.don_vi.includes('ST') ? '#38bdf8' : '#34d399')));
-                const t1Badge = r.t1_idx ? `<span style="display:inline-block; margin-left:5px; padding:1px 6px; border-radius:10px; background:rgba(56,189,248,0.14); color:#38bdf8; border:1px solid rgba(56,189,248,0.35); font-size:0.67rem; font-weight:700; font-family:'JetBrains Mono', monospace;" title="Khớp Chỉ số #${r.t1_idx} ở Bảng 1 (53 Chỉ Số)">#${r.t1_idx}</span>` : '';
+                const t1Badge = r.t1_idx ? `<span style="display:inline-block; margin-left:4px; padding:0 5px; border-radius:8px; background:rgba(56,189,248,0.14); color:#38bdf8; border:1px solid rgba(56,189,248,0.35); font-size:0.65rem; font-weight:700; font-family:'JetBrains Mono', monospace;" title="Khớp Chỉ số #${r.t1_idx} ở Bảng 1 (53 Chỉ Số)">#${r.t1_idx}</span>` : '';
 
                 html += `
                     <tr style="background:${rowBg}; border-bottom:1px solid rgba(255,255,255,0.04); opacity:${r.is_empty_template ? '0.72' : '1'};">
-                        <td style="text-align:center; padding:0.48rem 0.35rem; font-weight:700; color:#64748b; font-size:0.73rem; font-family:'JetBrains Mono', monospace; border-right:1px solid rgba(255,255,255,0.05);">${totalRowsShown}</td>
-                        ${flowShowMeta ? `
-                            <td style="text-align:left; padding:0.48rem 0.5rem; color:#94a3b8; font-size:0.74rem; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.05);">${escapeHtml(r.mien || 'Miền Nam')}</td>
-                            <td style="text-align:left; padding:0.48rem 0.5rem; color:#38bdf8; font-weight:700; font-size:0.74rem; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.05);">${escapeHtml(r.kho || 'FMCG')}</td>
-                            <td style="text-align:left; padding:0.48rem 0.5rem; color:#cbd5e1; font-size:0.74rem; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.05);">${escapeHtml(r.nhom || (blk.id === 'B1' ? 'B. Tồn âm' : 'A. Đối soát'))}</td>
+                        <td style="text-align:center; padding:0.42rem 0.25rem; font-weight:700; color:#64748b; font-size:0.71rem; font-family:'JetBrains Mono', monospace; border-right:1px solid rgba(255,255,255,0.05);">${totalRowsShown}</td>
+                        ${showMeta ? `
+                            <td style="text-align:left; padding:0.42rem 0.4rem; color:#94a3b8; font-size:0.72rem; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.05);">${escapeHtml(r.mien || 'Miền Nam')}</td>
+                            <td style="text-align:left; padding:0.42rem 0.4rem; color:#38bdf8; font-weight:700; font-size:0.72rem; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.05);">${escapeHtml(r.kho || 'FMCG')}</td>
+                            <td style="text-align:left; padding:0.42rem 0.4rem; color:#cbd5e1; font-size:0.72rem; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.05);">${escapeHtml(r.nhom || (blk.id === 'B1' ? 'B. Tồn âm' : 'A. Đối soát'))}</td>
                         ` : ''}
-                        <td style="text-align:center; padding:0.48rem 0.35rem; font-weight:800; color:${blk.accent}; font-size:0.74rem; border-right:1px solid rgba(255,255,255,0.06);">${r.diem_chan}</td>
-                        <td style="position:sticky; left:0; z-index:13; background:${rowBg}; text-align:left; padding:0.48rem 0.7rem; font-weight:700; color:${r.is_empty_template ? '#94a3b8' : '#f1f5f9'}; border-right:2px solid rgba(56,189,248,0.28); box-shadow:2px 0 5px rgba(0,0,0,0.32); white-space:nowrap;" title="${escapeHtml(r.nguon + ' — ' + r.cach_tinh)}">${escapeHtml(r.tieu_chi)}${t1Badge}</td>
-                        <td style="text-align:center; padding:0.48rem 0.45rem; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">
-                            <span style="font-size:0.69rem; font-weight:700; color:${dvColor}; background:${dvColor}1a; padding:2px 6px; border-radius:4px;">${escapeHtml(r.don_vi)}</span>
-                        </td>
-                        ${flowShowGH ? `
-                            <td style="text-align:left; padding:0.48rem 0.55rem; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">
-                                <span style="display:inline-block; padding:2px 7px; border-radius:5px; font-size:0.7rem; font-weight:700; ${srcBadgeStyle(r.nguon)}">${escapeHtml(r.nguon || '')}</span>
+                        <td style="text-align:center; padding:0.42rem 0.28rem; font-weight:800; color:${blk.accent}; font-size:0.72rem; border-right:1px solid rgba(255,255,255,0.06);">${r.diem_chan}</td>
+                        <td style="position:sticky; left:0; z-index:13; background:${rowBg}; text-align:left; padding:0.42rem 0.55rem; font-weight:700; color:${r.is_empty_template ? '#94a3b8' : '#f1f5f9'}; border-right:2px solid rgba(56,189,248,0.28); box-shadow:2px 0 5px rgba(0,0,0,0.32); min-width:195px; max-width:230px; white-space:normal; line-height:1.28;" title="${escapeHtml((r.nguon || '') + ' — ' + (r.cach_tinh || ''))}">${escapeHtml(r.tieu_chi)}${t1Badge}</td>
+                        ${showUnit ? `
+                            <td style="text-align:center; padding:0.42rem 0.35rem; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">
+                                <span style="font-size:0.67rem; font-weight:700; color:${dvColor}; background:${dvColor}1a; padding:2px 5px; border-radius:4px;">${escapeHtml(r.don_vi)}</span>
                             </td>
-                            <td style="text-align:left; padding:0.48rem 0.6rem; color:#94a3b8; font-size:0.73rem; line-height:1.38; min-width:280px; max-width:380px; white-space:normal; border-right:2px solid rgba(56,189,248,0.18);">${escapeHtml(r.cach_tinh || '')}</td>
                         ` : ''}
-                        <td style="background:${isEven ? '#172033' : '#131b2b'}; padding:0.48rem 0.65rem; border-right:2px solid rgba(251,191,36,0.25); font-family:'JetBrains Mono', monospace; font-size:0.78rem; font-weight:800; color:#fde68a; white-space:nowrap;">
+                        ${showSrc ? `
+                            <td style="text-align:left; padding:0.42rem 0.4rem; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">
+                                <span style="display:inline-block; padding:2px 6px; border-radius:4px; font-size:0.67rem; font-weight:700; ${srcBadgeStyle(r.nguon)}">${escapeHtml(r.nguon || '')}</span>
+                            </td>
+                        ` : ''}
+                        ${showLogic ? `
+                            <td style="text-align:left; padding:0.42rem 0.45rem; color:#94a3b8; font-size:0.7rem; line-height:1.32; min-width:190px; max-width:240px; white-space:normal; border-right:2px solid rgba(56,189,248,0.18);">${escapeHtml(r.cach_tinh || '')}</td>
+                        ` : ''}
+                        <td style="background:${isEven ? '#172033' : '#131b2b'}; padding:0.42rem 0.5rem; border-right:2px solid rgba(251,191,36,0.25); font-family:'JetBrains Mono', monospace; font-size:0.75rem; font-weight:800; color:#fde68a; white-space:nowrap;">
                             ${r.values[monthCol.key] || '-'}
                         </td>
                 `;
@@ -376,9 +422,9 @@
                 otherCols.forEach(c => {
                     const val = r.values[c.key] || '-';
                     const isWk = c.type === 'week';
-                    const wkBg = isWk ? (isEven ? '#1b2b42' : '#17253a') : '';
+                    const wkBg = isWk ? (isEven ? '#0e223d' : '#0a1b33') : '';
                     html += `
-                        <td style="padding:0.48rem 0.55rem; ${wkBg ? 'background:' + wkBg + ';' : ''} border-right:${isWk ? '1px solid rgba(148,163,184,0.16)' : '1px solid rgba(255,255,255,0.04)'}; font-family:'JetBrains Mono', monospace; font-size:0.77rem; white-space:nowrap; font-weight:${isWk ? '700' : '400'};">
+                        <td style="padding:0.42rem 0.42rem; ${wkBg ? 'background:' + wkBg + ';' : ''} border-right:${isWk ? '2px solid rgba(56,189,248,0.22)' : '1px solid rgba(255,255,255,0.04)'}; font-family:'JetBrains Mono', monospace; font-size:0.74rem; white-space:nowrap; font-weight:${isWk ? '700' : '400'};">
                             ${formatCellValue(val, r.tieu_chi)}
                         </td>
                     `;
