@@ -1,6 +1,6 @@
 // Dữ liệu Báo cáo Logistics FMCG (Tự động từ CDC StarRocks + Google Sheet Seedlog + Đặc tả Logic)
 window.FMCG_MATRIX_DATA = {
-  "updated_at": "26/11/2026 13:45:30",
+  "updated_at": "26/11/2026 13:56:24",
   "filter_scope": "Từ 01/11/2026 trở về sau • CDC StarRocks (FGA10101 -> Siêu thị KFM + Bảng TO) + Seedlog + Cost Stockcard",
   "dates": [
     {
@@ -229,7 +229,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 2,
           "name": "SL nhận",
           "section_id": "sec_san_luong",
-          "total": "7,022,627.64",
+          "total": "7,024,854.64",
           "values": {
             "2026-11-01": "2,508",
             "2026-11-02": "344,825",
@@ -255,8 +255,8 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-22": "4,333",
             "2026-11-23": "362,056",
             "2026-11-24": "252,479",
-            "2026-11-25": "321,487",
-            "2026-11-26": "30,469"
+            "2026-11-25": "322,349",
+            "2026-11-26": "31,834"
           },
           "logic": {
             "stt": 2,
@@ -544,7 +544,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 9,
           "name": "SL dư",
           "section_id": "sec_san_luong",
-          "total": "706",
+          "total": "707",
           "values": {
             "2026-11-01": "0",
             "2026-11-02": "47",
@@ -571,7 +571,7 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-23": "52",
             "2026-11-24": "10",
             "2026-11-25": "35",
-            "2026-11-26": "1"
+            "2026-11-26": "2"
           },
           "logic": {
             "stt": 9,
@@ -642,7 +642,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 11,
           "name": "Giá trị nhận",
           "section_id": "sec_gia_tri",
-          "total": "121,289,572,071.51",
+          "total": "121,343,796,214.71",
           "values": {
             "2026-11-01": "48,492,798.07",
             "2026-11-02": "6,009,734,811.75",
@@ -668,8 +668,8 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-22": "86,449,320.06",
             "2026-11-23": "6,703,080,441.73",
             "2026-11-24": "4,968,867,565.84",
-            "2026-11-25": "5,805,305,548.57",
-            "2026-11-26": "494,363,316.41"
+            "2026-11-25": "5,829,502,311.06",
+            "2026-11-26": "524,390,697.12"
           },
           "logic": {
             "stt": 11,
@@ -957,7 +957,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 18,
           "name": "Giá trị dư",
           "section_id": "sec_gia_tri",
-          "total": "16,893,664.27",
+          "total": "16,904,630.76",
           "values": {
             "2026-11-01": "0",
             "2026-11-02": "1,110,074.58",
@@ -984,7 +984,7 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-23": "853,417.90",
             "2026-11-24": "287,702.51",
             "2026-11-25": "1,116,310.07",
-            "2026-11-26": "43,926.96"
+            "2026-11-26": "54,893.45"
           },
           "logic": {
             "stt": 18,
@@ -1603,7 +1603,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 32,
           "name": "SL ST nhận dư",
           "section_id": "sec_sieu_thi",
-          "total": "220",
+          "total": "221",
           "values": {
             "2026-11-01": "0",
             "2026-11-02": "19",
@@ -1630,7 +1630,7 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-23": "14",
             "2026-11-24": "5",
             "2026-11-25": "10",
-            "2026-11-26": "1"
+            "2026-11-26": "2"
           },
           "logic": {
             "stt": 32,
@@ -2786,8 +2786,8 @@ window.FMCG_MATRIX_DATA = {
       "pt_cnt": 224,
       "sl_chuyen": 327345.0,
       "sl_nhan": 326875.92,
-      "cdc_blank0": -469.08000000000004,
-      "cdc_blank_m1": -469.08000000000004,
+      "cdc_blank0": -469.08,
+      "cdc_blank_m1": -469.08,
       "seedlog": -469.1,
       "diff_0": 0.02,
       "diff_m1": 0.02,
@@ -3025,12 +3025,12 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-25",
       "pt_cnt": 141,
       "sl_chuyen": 329282.0,
-      "sl_nhan": 321487.0,
-      "cdc_blank0": -7795.0,
-      "cdc_blank_m1": -7796.0,
+      "sl_nhan": 322349.0,
+      "cdc_blank0": -6933.0,
+      "cdc_blank_m1": -6934.0,
       "seedlog": 0.0,
-      "diff_0": -7795.0,
-      "diff_m1": -7796.0,
+      "diff_0": -6933.0,
+      "diff_m1": -6934.0,
       "sl_du": 35.0,
       "not_done": 594,
       "status_txt": "Đang giao / chưa nhận xong (594 dòng status!=5)",
@@ -3041,15 +3041,15 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-26",
       "pt_cnt": 55,
       "sl_chuyen": 81405.0,
-      "sl_nhan": 30469.0,
-      "cdc_blank0": -50936.0,
-      "cdc_blank_m1": -50936.0,
+      "sl_nhan": 31834.0,
+      "cdc_blank0": -49571.0,
+      "cdc_blank_m1": -49571.0,
       "seedlog": 0.0,
-      "diff_0": -50936.0,
-      "diff_m1": -50936.0,
-      "sl_du": 1.0,
-      "not_done": 5006,
-      "status_txt": "Đang giao / chưa nhận xong (5,006 dòng status!=5)",
+      "diff_0": -49571.0,
+      "diff_m1": -49571.0,
+      "sl_du": 2.0,
+      "not_done": 4427,
+      "status_txt": "Đang giao / chưa nhận xong (4,427 dòng status!=5)",
       "status_code": "pending"
     }
   ],
@@ -3588,7 +3588,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "Bằng Giá trị dư (hàng #18 Ma trận FMCG; CDC kho FGA10101, user hệ thống TKE_WMS, chỉ Siêu thị KFM)",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "16,893,664.27",
+              "SIGMA_T11": "16,904,630.76",
               "2026-11-01": "0",
               "2026-11-02": "1,110,074.58",
               "2026-11-03": "679,899.35",
@@ -3614,12 +3614,12 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-23": "853,417.90",
               "2026-11-24": "287,702.51",
               "2026-11-25": "1,116,310.07",
-              "2026-11-26": "43,926.96",
+              "2026-11-26": "54,893.45",
               "SIGMA_W44": "0",
               "SIGMA_W45": "3,978,812.76",
               "SIGMA_W46": "2,813,212.30",
               "SIGMA_W47": "7,800,281.77",
-              "SIGMA_W48": "2,301,357.43"
+              "SIGMA_W48": "2,312,323.92"
             }
           },
           {
@@ -3630,7 +3630,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "Giá trị DC chịu - Tổng giá trị đã net - off (= DC chịu - Giá trị dư)",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "171,666,638.59",
+              "SIGMA_T11": "171,655,672.10",
               "2026-11-01": "0",
               "2026-11-02": "19,979,242.57",
               "2026-11-03": "9,966,665.35",
@@ -3656,12 +3656,12 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-23": "326,113.42",
               "2026-11-24": "-287,702.51",
               "2026-11-25": "-1,116,310.07",
-              "2026-11-26": "-43,926.96",
+              "2026-11-26": "-54,893.45",
               "SIGMA_W44": "0",
               "SIGMA_W45": "60,880,492.77",
               "SIGMA_W46": "54,412,172.20",
               "SIGMA_W47": "57,495,799.74",
-              "SIGMA_W48": "-1,121,826.11"
+              "SIGMA_W48": "-1,132,792.60"
             }
           }
         ]
@@ -3806,7 +3806,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "SUM(SL nhận Capped <= SL chuyển + bảng TO): Kho FGA10101; Người tạo: user hệ thống TKE_WMS; chỉ Siêu thị KFM",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "7,022,627.64",
+              "SIGMA_T11": "7,024,854.64",
               "2026-11-01": "2,508",
               "2026-11-02": "344,825",
               "2026-11-03": "342,482",
@@ -3831,13 +3831,13 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-22": "4,333",
               "2026-11-23": "362,056",
               "2026-11-24": "252,479",
-              "2026-11-25": "321,487",
-              "2026-11-26": "30,469",
+              "2026-11-25": "322,349",
+              "2026-11-26": "31,834",
               "SIGMA_W44": "2,508",
               "SIGMA_W45": "1,867,207",
               "SIGMA_W46": "2,133,088.70",
               "SIGMA_W47": "2,053,332.94",
-              "SIGMA_W48": "966,491"
+              "SIGMA_W48": "968,718"
             }
           },
           {
@@ -3848,7 +3848,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "SUM(SL nhận Capped * gia_cost Stockcard): Kho FGA10101; Người tạo: user hệ thống TKE_WMS; chỉ Siêu thị KFM",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "121,289,572,071.51",
+              "SIGMA_T11": "121,343,796,214.71",
               "2026-11-01": "48,492,798.07",
               "2026-11-02": "6,009,734,811.75",
               "2026-11-03": "6,165,838,093.97",
@@ -3873,13 +3873,13 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-22": "86,449,320.06",
               "2026-11-23": "6,703,080,441.73",
               "2026-11-24": "4,968,867,565.84",
-              "2026-11-25": "5,805,305,548.57",
-              "2026-11-26": "494,363,316.41",
+              "2026-11-25": "5,829,502,311.06",
+              "2026-11-26": "524,390,697.12",
               "SIGMA_W44": "48,492,798.07",
               "SIGMA_W45": "31,493,564,954.61",
               "SIGMA_W46": "35,414,537,038.19",
               "SIGMA_W47": "36,361,360,408.09",
-              "SIGMA_W48": "17,971,616,872.55"
+              "SIGMA_W48": "18,025,841,015.75"
             }
           },
           {
@@ -4738,7 +4738,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "SUM(nhận - chuyển) với cl_st > 0 & nhận > chuyển: Kho FGA10101; Người tạo: user hệ thống TKE_WMS (62261627e227c1000743b1d8); chỉ Siêu thị KFM",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "706",
+              "SIGMA_T11": "707",
               "2026-11-01": "0",
               "2026-11-02": "47",
               "2026-11-03": "27",
@@ -4764,12 +4764,12 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-23": "52",
               "2026-11-24": "10",
               "2026-11-25": "35",
-              "2026-11-26": "1",
+              "2026-11-26": "2",
               "SIGMA_W44": "0",
               "SIGMA_W45": "217",
               "SIGMA_W46": "129",
               "SIGMA_W47": "262",
-              "SIGMA_W48": "98"
+              "SIGMA_W48": "99"
             }
           },
           {
@@ -4780,7 +4780,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "SUM(SL dư * gia_cost CDC): Kho FGA10101; Người tạo: user hệ thống TKE_WMS; chỉ Siêu thị KFM",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "16,893,664.27",
+              "SIGMA_T11": "16,904,630.76",
               "2026-11-01": "0",
               "2026-11-02": "1,110,074.58",
               "2026-11-03": "679,899.35",
@@ -4806,12 +4806,12 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-23": "853,417.90",
               "2026-11-24": "287,702.51",
               "2026-11-25": "1,116,310.07",
-              "2026-11-26": "43,926.96",
+              "2026-11-26": "54,893.45",
               "SIGMA_W44": "0",
               "SIGMA_W45": "3,978,812.76",
               "SIGMA_W46": "2,813,212.30",
               "SIGMA_W47": "7,800,281.77",
-              "SIGMA_W48": "2,301,357.43"
+              "SIGMA_W48": "2,312,323.92"
             }
           },
           {
@@ -5074,7 +5074,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "COUNT(DISTINCT ST nhận dư): Kho FGA10101; Người tạo: user hệ thống TKE_WMS; chỉ Siêu thị KFM",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "220",
+              "SIGMA_T11": "221",
               "2026-11-01": "0",
               "2026-11-02": "19",
               "2026-11-03": "12",
@@ -5100,12 +5100,12 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-23": "14",
               "2026-11-24": "5",
               "2026-11-25": "10",
-              "2026-11-26": "1",
+              "2026-11-26": "2",
               "SIGMA_W44": "0",
               "SIGMA_W45": "71",
               "SIGMA_W46": "51",
               "SIGMA_W47": "68",
-              "SIGMA_W48": "30"
+              "SIGMA_W48": "31"
             }
           }
         ]
