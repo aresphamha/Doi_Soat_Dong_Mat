@@ -86,9 +86,9 @@
                         <i class="fa-solid fa-expand" style="margin-right:0.35rem;"></i> CHẾ ĐỘ XEM TOÀN MÀN HÌNH
                     </span>
                     ${views.map(v => {
-            const act = activeSubView === v.id;
-            return `<button onclick="switchFmcgSubView('${v.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.32rem 0.7rem; font-size:0.76rem; font-weight:700; cursor:pointer;"><i class="fa-solid ${v.icon}" style="margin-right:0.3rem;"></i>${v.label}</button>`;
-        }).join('')}
+                        const act = activeSubView === v.id;
+                        return `<button onclick="switchFmcgSubView('${v.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.32rem 0.7rem; font-size:0.76rem; font-weight:700; cursor:pointer;"><i class="fa-solid ${v.icon}" style="margin-right:0.3rem;"></i>${v.label}</button>`;
+                    }).join('')}
                 </div>
                 <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
                     <div style="display:inline-flex; align-items:center; background:#1e293b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; overflow:hidden;">
@@ -249,9 +249,9 @@
                 <div style="display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap;">
                     <span style="font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-right:0.25rem;">Điểm chặn:</span>
                     ${blockPills.map(p => {
-            const act = flowBlockFilter === p.id;
-            return `<button onclick="setFmcgFlowBlock('${p.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.08)'}; border-radius:6px; padding:0.28rem 0.62rem; font-size:0.75rem; font-weight:600; cursor:pointer;">${p.label}</button>`;
-        }).join('')}
+                        const act = flowBlockFilter === p.id;
+                        return `<button onclick="setFmcgFlowBlock('${p.id}')" style="background:${act ? '#0284c7' : '#1e293b'}; color:${act ? '#fff' : '#94a3b8'}; border:1px solid ${act ? '#38bdf8' : 'rgba(255,255,255,0.08)'}; border-radius:6px; padding:0.28rem 0.62rem; font-size:0.75rem; font-weight:600; cursor:pointer;">${p.label}</button>`;
+                    }).join('')}
                 </div>
                 <div style="display:flex; align-items:center; gap:0.5rem;">
                     <button onclick="toggleFmcgFlowSummaryOnly()" style="background:${flowSummaryOnly ? 'rgba(245,158,11,0.2)' : '#1e293b'}; color:${flowSummaryOnly ? '#fbbf24' : '#cbd5e1'}; border:1px solid ${flowSummaryOnly ? '#f59e0b' : 'rgba(255,255,255,0.12)'}; border-radius:6px; padding:0.32rem 0.72rem; font-size:0.76rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:0.35rem;">
@@ -965,10 +965,10 @@
                         <td style="text-align:left; font-weight:600;">${escapeHtml(r.name)}</td>
                         <td style="text-align:right; font-weight:700; background:#fffbeb;">${escapeHtml(r.total || '-')}</td>
                         ${dates.map(d => {
-                        const v = r.values[d.iso] || '-';
-                        const neg = String(v).startsWith('-');
-                        return `<td style="text-align:right;${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
-                    }).join('')}
+                            const v = r.values[d.iso] || '-';
+                            const neg = String(v).startsWith('-');
+                            return `<td style="text-align:right;${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
+                        }).join('')}
                     </tr>`;
                 });
             });
@@ -1000,10 +1000,10 @@
                         <td style="text-align:center;">${escapeHtml(r.don_vi)}</td>
                         <td style="text-align:right; font-weight:700; background:#fffbeb;">${escapeHtml(r.values[monthCol.key] || '-')}</td>
                         ${otherCols.map(c => {
-                        const v = r.values[c.key] || '-';
-                        const neg = String(v).startsWith('-');
-                        return `<td style="text-align:right;${c.type === 'week' ? ' background:#eff6ff; font-weight:700;' : ''}${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
-                    }).join('')}
+                            const v = r.values[c.key] || '-';
+                            const neg = String(v).startsWith('-');
+                            return `<td style="text-align:right;${c.type === 'week' ? ' background:#eff6ff; font-weight:700;' : ''}${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
+                        }).join('')}
                     </tr>`;
                 });
             });
