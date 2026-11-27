@@ -1,6 +1,6 @@
 // Dữ liệu Báo cáo Logistics FMCG (Tự động từ CDC StarRocks + Google Sheet Seedlog + Đặc tả Logic)
 window.FMCG_MATRIX_DATA = {
-  "updated_at": "27/11/2026 19:36:42",
+  "updated_at": "27/11/2026 19:47:20",
   "filter_scope": "Từ 01/11/2026 trở về sau • CDC StarRocks (FGA10101 -> Siêu thị KFM + Bảng TO) + Seedlog + Cost Stockcard",
   "dates": [
     {
@@ -236,7 +236,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 2,
           "name": "SL nhận",
           "section_id": "sec_san_luong",
-          "total": "7,459,822.64",
+          "total": "7,459,925.64",
           "values": {
             "2026-11-01": "2,508",
             "2026-11-02": "344,825",
@@ -264,7 +264,7 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-24": "255,631",
             "2026-11-25": "328,414",
             "2026-11-26": "353,197",
-            "2026-11-27": "104,388"
+            "2026-11-27": "104,491"
           },
           "logic": {
             "stt": 2,
@@ -658,7 +658,7 @@ window.FMCG_MATRIX_DATA = {
           "row_idx": 11,
           "name": "Giá trị nhận",
           "section_id": "sec_gia_tri",
-          "total": "129,387,280,511.04",
+          "total": "129,390,635,029.12",
           "values": {
             "2026-11-01": "48,492,798.07",
             "2026-11-02": "6,009,734,811.75",
@@ -686,7 +686,7 @@ window.FMCG_MATRIX_DATA = {
             "2026-11-24": "5,031,633,514",
             "2026-11-25": "5,963,676,624.36",
             "2026-11-26": "6,506,462,502.98",
-            "2026-11-27": "1,859,674,703.17"
+            "2026-11-27": "1,863,029,221.25"
           },
           "logic": {
             "stt": 11,
@@ -3020,7 +3020,7 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-21",
       "pt_cnt": 161,
       "sl_chuyen": 383096.0,
-      "sl_nhan": 382024.93999999994,
+      "sl_nhan": 382024.94,
       "cdc_blank0": -1071.06,
       "cdc_blank_m1": -1071.06,
       "seedlog": -1071.0,
@@ -3116,12 +3116,12 @@ window.FMCG_MATRIX_DATA = {
       "iso": "2026-11-27",
       "pt_cnt": 49,
       "sl_chuyen": 107083.0,
-      "sl_nhan": 104388.0,
-      "cdc_blank0": -2695.0,
-      "cdc_blank_m1": -2695.0,
+      "sl_nhan": 104491.0,
+      "cdc_blank0": -2592.0,
+      "cdc_blank_m1": -2592.0,
       "seedlog": 0.0,
-      "diff_0": -2695.0,
-      "diff_m1": -2695.0,
+      "diff_0": -2592.0,
+      "diff_m1": -2592.0,
       "sl_du": 9.0,
       "not_done": 2591,
       "status_txt": "Đang giao / chưa nhận xong (2,591 dòng status!=5)",
@@ -3952,7 +3952,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "SUM(SL nhận Capped <= SL chuyển + bảng TO): Kho FGA10101; Người tạo: user hệ thống TKE_WMS; chỉ Siêu thị KFM",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "7,459,822.64",
+              "SIGMA_T11": "7,459,925.64",
               "2026-11-01": "2,508",
               "2026-11-02": "344,825",
               "2026-11-03": "342,482",
@@ -3979,12 +3979,12 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-24": "255,631",
               "2026-11-25": "328,414",
               "2026-11-26": "353,197",
-              "2026-11-27": "104,388",
+              "2026-11-27": "104,491",
               "SIGMA_W44": "2,508",
               "SIGMA_W45": "1,867,207",
               "SIGMA_W46": "2,133,088.70",
               "SIGMA_W47": "2,053,332.94",
-              "SIGMA_W48": "1,403,686"
+              "SIGMA_W48": "1,403,789"
             }
           },
           {
@@ -3999,7 +3999,7 @@ window.FMCG_MATRIX_DATA = {
             "cach_tinh": "SUM(SL nhận Capped * gia_cost Stockcard): Kho FGA10101; Người tạo: user hệ thống TKE_WMS; chỉ Siêu thị KFM",
             "is_empty_template": false,
             "values": {
-              "SIGMA_T11": "129,387,280,511.04",
+              "SIGMA_T11": "129,390,635,029.12",
               "2026-11-01": "48,492,798.07",
               "2026-11-02": "6,009,734,811.75",
               "2026-11-03": "6,165,838,093.97",
@@ -4026,12 +4026,12 @@ window.FMCG_MATRIX_DATA = {
               "2026-11-24": "5,031,633,514",
               "2026-11-25": "5,963,676,624.36",
               "2026-11-26": "6,506,462,502.98",
-              "2026-11-27": "1,859,674,703.17",
+              "2026-11-27": "1,863,029,221.25",
               "SIGMA_W44": "48,492,798.07",
               "SIGMA_W45": "31,493,564,954.61",
               "SIGMA_W46": "35,414,539,754.61",
               "SIGMA_W47": "36,365,572,754.01",
-              "SIGMA_W48": "26,065,110,249.74"
+              "SIGMA_W48": "26,068,464,767.82"
             }
           },
           {
