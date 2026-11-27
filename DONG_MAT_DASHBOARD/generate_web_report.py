@@ -606,12 +606,15 @@ def build_and_export_web_report():
     # 7.0. Tự động bơm danh sách Chat ID mới nhất từ CONFIG_DATA_STORES.json để không bao giờ bị ghi đè bản cũ
     try:
         import re as _re_stores
+        import hashlib as _hashlib_stores
         stores_cfg_path = os.path.join(os.path.dirname(current_dir), "CONFIG_DATA_STORES.json")
         if os.path.exists(stores_cfg_path):
             with open(stores_cfg_path, "r", encoding="utf-8") as f_st:
                 _stores_list = json.load(f_st)
             if isinstance(_stores_list, list) and len(_stores_list) >= 100:
                 _stores_json = json.dumps(_stores_list, ensure_ascii=False)
+                _stores_hash = _hashlib_stores.md5(_stores_json.encode("utf-8")).hexdigest()[:10]
+                _dynamic_ver = f"AUTO_SYNC_{len(_stores_list)}ST_{_stores_hash}"
                 html_content = _re_stores.sub(
                     r"window\.GLOBAL_STORE_CHAT_IDS\s*=\s*\[.*?\];",
                     lambda m: f"window.GLOBAL_STORE_CHAT_IDS = {_stores_json};",
@@ -624,7 +627,13 @@ def build_and_export_web_report():
                     html_content,
                     count=1
                 )
-                print(f"✅ Đã tự động đồng bộ {len(_stores_list)} siêu thị từ CONFIG_DATA_STORES.json vào HTML.")
+                html_content = _re_stores.sub(
+                    r'const\s+SCM_CURRENT_CONFIG_VERSION\s*=\s*"[^"]*";',
+                    f'const SCM_CURRENT_CONFIG_VERSION = "{_dynamic_ver}";',
+                    html_content,
+                    count=1
+                )
+                print(f"✅ Đã tự động đồng bộ {len(_stores_list)} siêu thị từ CONFIG_DATA_STORES.json vào HTML (ver={_dynamic_ver}).")
     except Exception as e_st:
         print(f"⚠️ [Stores Config Auto-Inject Warning]: {e_st}")
 
@@ -681,13 +690,17 @@ def build_and_export_web_report():
     required_engine_functions = [
         "renderAll", "renderCharts", "renderMasterTable", "renderStorePriorityTable",
         "renderDCTable", "changeGroup", "populateMonthOptions", "initCloudRunnerUI",
-        "initCustomSpamStudio", "renderTelegramTab", "getFilteredBundleData"
+        "initCustomSpamStudio", "renderTelegramTab", "getFilteredBundleData",
+        "getStudioChannelMeta", "applyUpdatedStoreChatIds"
     ]
     missing_funcs = [fn for fn in required_engine_functions if f"function {fn}" not in html_content and f"{fn} =" not in html_content]
     if missing_funcs:
         err_msg = f"❌ [CẢNH BÁO TỐI KHẨN] Template bị thiếu các hàm dựng Web cốt lõi: {missing_funcs}! Đã dừng xuất bản để tránh làm hỏng Dashboard."
         print(err_msg)
         raise RuntimeError(err_msg)
+
+    if "(currentStudioChatChannel === 'rau_cu') ? 'KRC' : 'Đông Mát'" in html_content:
+        raise RuntimeError("❌ [TEMPLATE GUARD] Phát hiện code ternary 2 nhánh cũ làm lệch nhãn kênh Kho Khô -> Đông Mát!")
 
     if html_content.count("const CUSTOM_SPAM_PRESETS") > 1:
         print("⚠️ Phát hiện trùng lặp const CUSTOM_SPAM_PRESETS! Đang tự động chuẩn hóa...")

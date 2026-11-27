@@ -245,13 +245,33 @@ def get_all_chat_ids():
     if os.path.exists(json_path):
         try:
             with open(json_path, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                raw_stores = json.load(f)
+            cleaned = []
+            for item in raw_stores:
+                if not isinstance(item, dict) or not item.get('id'):
+                    continue
+                def _clean(val):
+                    s = str(val if val is not None else '').strip()
+                    return '' if s.lower() in ('nan', 'none') else s
+                sid = _clean(item.get('id')).upper()
+                if not sid:
+                    continue
+                cleaned.append({
+                    'id': sid,
+                    'name': _clean(item.get('name')) or sid,
+                    'short': _clean(item.get('short')) or sid,
+                    'chat_id_dm': _clean(item.get('chat_id_dm')),
+                    'chat_id_rc': _clean(item.get('chat_id_rc')),
+                    'chat_id_dc': _clean(item.get('chat_id_dc')),
+                })
+            return cleaned
         except Exception:
             pass
     stores = get_stores_list()
     for s in stores:
         s['chat_id_dm'] = s.get('chat_id', '')
         s['chat_id_rc'] = ''
+        s['chat_id_dc'] = ''
     return stores
 
 def get_latest_pending_tickets_data():
@@ -310,19 +330,30 @@ def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name
     ]
     
     import pandas as pd
-    if chat_id_dm is not None or store_name is not None:
+    def _clean_cid(val):
+        if val is None:
+            return None
+        s = str(val).strip()
+        return '' if s.lower() in ('nan', 'none') else s
+
+    dm_val = _clean_cid(chat_id_dm)
+    rc_val = _clean_cid(chat_id_rc)
+    dc_val = _clean_cid(chat_id_dc)
+    name_val = _clean_cid(store_name)
+
+    if dm_val is not None or name_val:
         for f in dm_files:
             if os.path.exists(f):
                 try:
                     df = pd.read_excel(f, dtype=str)
                     mask = (df['ID ST'].astype(str).str.strip().str.upper() == store_id)
                     if mask.any():
-                        if chat_id_dm is not None:
-                            df.loc[mask, 'CHAT ID'] = str(chat_id_dm).strip()
-                        if store_name is not None and 'Tên Siêu thị' in df.columns:
-                            df.loc[mask, 'Tên Siêu thị'] = str(store_name).strip()
-                    else:
-                        new_row = {'ID ST': store_id, 'Tên Siêu thị': store_name or store_id, 'Tên viết tắt': store_id, 'CHAT ID': str(chat_id_dm or '')}
+                        if dm_val is not None:
+                            df.loc[mask, 'CHAT ID'] = dm_val
+                        if name_val and 'Tên Siêu thị' in df.columns:
+                            df.loc[mask, 'Tên Siêu thị'] = name_val
+                    elif dm_val:
+                        new_row = {'ID ST': store_id, 'Tên Siêu thị': name_val or store_id, 'Tên viết tắt': store_id, 'CHAT ID': dm_val}
                         df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
                     df.to_excel(f, index=False)
                 except Exception as e:
@@ -335,7 +366,7 @@ def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name
         os.path.join(ROOT_DIR, 'SPAM_PHIEU_CHUYEN', 'HẬU KIỂM RAU', 'Danh sách Siêu thị.xlsx')
     ]
     
-    if chat_id_rc is not None or store_name is not None:
+    if rc_val is not None or name_val:
         for f in rc_files:
             if os.path.exists(f):
                 try:
@@ -343,26 +374,38 @@ def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name
                     id_col = 'ID ST TƯƠNG ỨNG' if 'ID ST TƯƠNG ỨNG' in df.columns else 'ID ST'
                     mask = (df[id_col].astype(str).str.strip().str.upper() == store_id)
                     if mask.any():
-                        if chat_id_rc is not None:
-                            df.loc[mask, 'CHAT ID'] = str(chat_id_rc).strip()
-                        if store_name is not None and 'Tên Siêu thị' in df.columns:
-                            df.loc[mask, 'Tên Siêu thị'] = str(store_name).strip()
-                    else:
-                        new_row = {'THÔNG TIN KHO': 'KRC', id_col: store_id, 'CHAT ID': str(chat_id_rc or ''), 'Tên Siêu thị': store_name or store_id}
+                        if rc_val is not None:
+                            df.loc[mask, 'CHAT ID'] = rc_val
+                        if name_val and 'Tên Siêu thị' in df.columns:
+                            df.loc[mask, 'Tên Siêu thị'] = name_val
+                    elif rc_val:
+                        new_row = {'THÔNG TIN KHO': 'KRC', id_col: store_id, 'CHAT ID': rc_val, 'Tên Siêu thị': name_val or store_id}
                         df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
                     df.to_excel(f, index=False)
                 except Exception as e:
                     print(f"Error updating {f}: {e}")
 
-    # 3. Update DC Excel file
+    # 3. Update DC Excel file (hỗ trợ cả cập nhật lẫn thêm mới ST)
     dc_file = os.path.join(ROOT_DIR, 'Danh_Sach_Chat_ID_Nhom_DC.xlsx')
-    if chat_id_dc is not None and os.path.exists(dc_file):
+    if dc_val is not None and os.path.exists(dc_file):
         try:
             df = pd.read_excel(dc_file, dtype=str)
             if 'MÃ SIÊU THỊ' in df.columns and 'CHAT ID (SỐ CHUẨN)' in df.columns:
                 mask = (df['MÃ SIÊU THỊ'].astype(str).str.strip().str.upper() == store_id)
                 if mask.any():
-                    df.loc[mask, 'CHAT ID (SỐ CHUẨN)'] = str(chat_id_dc).strip()
+                    df.loc[mask, 'CHAT ID (SỐ CHUẨN)'] = dc_val
+                    if name_val and 'TÊN NHÓM TELEGRAM' in df.columns:
+                        pass
+                    df.to_excel(dc_file, index=False)
+                elif dc_val:
+                    new_row = {col: '' for col in df.columns}
+                    if 'STT' in df.columns:
+                        new_row['STT'] = str(len(df) + 1)
+                    new_row['MÃ SIÊU THỊ'] = store_id
+                    if 'TÊN NHÓM TELEGRAM' in df.columns:
+                        new_row['TÊN NHÓM TELEGRAM'] = f"DC - {store_id} ({name_val or store_id})"
+                    new_row['CHAT ID (SỐ CHUẨN)'] = dc_val
+                    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
                     df.to_excel(dc_file, index=False)
         except Exception as e:
             print(f"Error updating {dc_file}: {e}")
@@ -377,20 +420,20 @@ def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name
         found = False
         for item in data:
             if item.get('id', '').strip().upper() == store_id:
-                if chat_id_dm is not None: item['chat_id_dm'] = str(chat_id_dm).strip()
-                if chat_id_rc is not None: item['chat_id_rc'] = str(chat_id_rc).strip()
-                if chat_id_dc is not None: item['chat_id_dc'] = str(chat_id_dc).strip()
-                if store_name is not None: item['name'] = str(store_name).strip()
+                if dm_val is not None: item['chat_id_dm'] = dm_val
+                if rc_val is not None: item['chat_id_rc'] = rc_val
+                if dc_val is not None: item['chat_id_dc'] = dc_val
+                if name_val: item['name'] = name_val
                 found = True
                 break
         if not found:
             data.append({
                 'id': store_id,
-                'name': store_name or store_id,
+                'name': name_val or store_id,
                 'short': store_id,
-                'chat_id_dm': str(chat_id_dm or ''),
-                'chat_id_rc': str(chat_id_rc or ''),
-                'chat_id_dc': str(chat_id_dc or '')
+                'chat_id_dm': dm_val or '',
+                'chat_id_rc': rc_val or '',
+                'chat_id_dc': dc_val or ''
             })
         data = sorted(data, key=lambda x: x.get('id', ''))
         with open(json_path, 'w', encoding='utf-8') as jf:
@@ -398,7 +441,7 @@ def update_store_chat_ids(store_id, chat_id_dm=None, chat_id_rc=None, store_name
     except Exception as e:
         print(f"Error updating JSON: {e}")
 
-    return True, f"✅ Đã cập nhật Chat ID cho Siêu thị {store_id} thành công vào toàn bộ file Excel!"
+    return True, f"✅ Đã cập nhật Chat ID cho Siêu thị {store_id} thành công vào toàn bộ file Excel & JSON!"
 
 import ctypes
 
