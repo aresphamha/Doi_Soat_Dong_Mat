@@ -134,6 +134,7 @@
             { id: 'flow', label: '2. Đối Soát FMCG (113 Chỉ Số)', icon: 'fa-diagram-project' },
             { id: 'logic', label: '3. Logic Chi Tiết', icon: 'fa-book-open' },
             { id: 'reconcile', label: '4. Đối Chiếu CDC', icon: 'fa-circle-check' },
+            { id: 'progress', label: '5. Tiến Độ & Xếp Hạng ST', icon: 'fa-ranking-star' },
         ];
         return `
             <div id="fmcg-fs-topbar" style="position:sticky; top:0; left:0; z-index:40; background:#1a2436; border-bottom:1px solid rgba(56,189,248,0.25); padding:0.55rem 1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
@@ -142,9 +143,9 @@
                         <i class="fa-solid fa-expand" style="margin-right:0.35rem;"></i> CHẾ ĐỘ XEM TOÀN MÀN HÌNH
                     </span>
                     ${views.map(v => {
-            const act = activeSubView === v.id;
-            return `<button onclick="switchFmcgSubView('${v.id}')" style="background:${act ? '#0369a1' : '#28354a'}; color:${act ? '#ffffff' : '#cbd5e1'}; border:1px solid ${act ? 'rgba(56,189,248,0.5)' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.32rem 0.7rem; font-size:0.76rem; font-weight:700; cursor:pointer;"><i class="fa-solid ${v.icon}" style="margin-right:0.3rem;"></i>${v.label}</button>`;
-        }).join('')}
+                        const act = activeSubView === v.id;
+                        return `<button onclick="switchFmcgSubView('${v.id}')" style="background:${act ? '#0369a1' : '#28354a'}; color:${act ? '#ffffff' : '#cbd5e1'}; border:1px solid ${act ? 'rgba(56,189,248,0.5)' : 'rgba(255,255,255,0.1)'}; border-radius:6px; padding:0.32rem 0.7rem; font-size:0.76rem; font-weight:700; cursor:pointer;"><i class="fa-solid ${v.icon}" style="margin-right:0.3rem;"></i>${v.label}</button>`;
+                    }).join('')}
                 </div>
                 <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
                     <div style="display:inline-flex; align-items:center; background:#1e293b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; overflow:hidden;">
@@ -215,12 +216,10 @@
 
         const secBar = document.getElementById('fmcg-filter-bar');
         if (secBar) {
-            secBar.style.display = (viewName === 'reconcile' || viewName === 'flow') ? 'none' : 'flex';
             secBar.style.display = (viewName === 'reconcile' || viewName === 'flow' || viewName === 'progress') ? 'none' : 'flex';
         }
         const tblWrap = document.getElementById('fmcg-table-container');
         if (tblWrap && !isFullscreen) {
-            tblWrap.style.maxHeight = (viewName === 'matrix' || viewName === 'flow') ? '74vh' : 'none';
             const isProg = viewName === 'progress';
             tblWrap.style.maxHeight = (viewName === 'matrix' || viewName === 'flow') ? '74vh' : 'none';
             tblWrap.style.overflowX = (viewName === 'logic' || isProg) ? 'visible' : 'auto';
@@ -390,7 +389,7 @@
                 </div>
             </div>
 
-            <table style="width:max-content; min-width:100%; border-collapse:collapse; font-size:0.76rem; text-align:right;">
+            <table class="fmcg-readable-tbl" style="width:max-content; min-width:100%; font-size:0.78rem; text-align:right;">
                 <thead>
                     <tr style="background:#0f172a; position:sticky; top:0; z-index:22; border-bottom:2px solid rgba(56,189,248,0.3);">
                         <th style="background:#0f172a; width:34px; min-width:34px; text-align:center; padding:0.55rem 0.25rem; color:#64748b; font-weight:800; border-right:1px solid rgba(255,255,255,0.06);">STT</th>
@@ -416,12 +415,13 @@
                         </th>
         `;
 
-        otherCols.forEach(c => {
+        otherCols.forEach((c, cIdx) => {
             const isWk = c.type === 'week';
+            const oddCls = (!isWk && cIdx % 2 === 1) ? ' fmcg-day-odd' : '';
             html += `
-                <th style="min-width:${isWk ? '106px' : '90px'}; padding:0.52rem 0.42rem; text-align:right; color:${isWk ? '#38bdf8' : '#e2e8f0'}; font-weight:${isWk ? '800' : '600'}; background:${isWk ? '#0c2444' : '#0f172a'}; border-right:${isWk ? '2px solid rgba(56,189,248,0.3)' : '1px solid rgba(255,255,255,0.05)'};">
-                    <div style="font-size:0.76rem; font-family:'JetBrains Mono', monospace;">${c.label}</div>
-                    <div style="font-size:0.62rem; color:${isWk ? '#7dd3fc' : '#64748b'}; font-weight:500;">${c.sub}</div>
+                <th class="fmcg-day-th${oddCls}" style="min-width:${isWk ? '118px' : '108px'}; text-align:right; color:${isWk ? '#38bdf8' : '#e2e8f0'}; font-weight:${isWk ? '800' : '600'}; background:${isWk ? '#0c2444' : '#0f172a'}; border-right:${isWk ? '2px solid rgba(56,189,248,0.42)' : '1px solid rgba(148,163,184,0.22)'};">
+                    <div style="font-size:0.77rem; font-family:'JetBrains Mono', monospace;">${c.label}</div>
+                    <div style="font-size:0.63rem; color:${isWk ? '#7dd3fc' : '#94a3b8'}; font-weight:500;">${c.sub}</div>
                 </th>
             `;
         });
@@ -450,7 +450,7 @@
                 const t1Badge = r.t1_idx ? `<span style="display:inline-block; margin-left:4px; padding:0 5px; border-radius:8px; background:rgba(56,189,248,0.14); color:#38bdf8; border:1px solid rgba(56,189,248,0.35); font-size:0.65rem; font-weight:700; font-family:'JetBrains Mono', monospace;" title="Khớp Chỉ số #${r.t1_idx} ở Bảng 1 (53 Chỉ Số)">#${r.t1_idx}</span>` : '';
 
                 html += `
-                    <tr style="background:${rowBg}; border-bottom:1px solid rgba(255,255,255,0.04); opacity:${r.is_empty_template ? '0.72' : '1'};">
+                    <tr class="fmcg-data-row" style="background:${rowBg}; border-bottom:1px solid rgba(148,163,184,0.12); opacity:${r.is_empty_template ? '0.72' : '1'};">
                         <td style="text-align:center; padding:0.42rem 0.25rem; font-weight:700; color:#64748b; font-size:0.71rem; font-family:'JetBrains Mono', monospace; border-right:1px solid rgba(255,255,255,0.05);">${totalRowsShown}</td>
                         ${showMeta ? `
                             <td style="text-align:left; padding:0.42rem 0.4rem; color:#94a3b8; font-size:0.72rem; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.05);">${escapeHtml(r.mien || 'Miền Nam')}</td>
@@ -458,7 +458,7 @@
                             <td style="text-align:left; padding:0.42rem 0.4rem; color:#cbd5e1; font-size:0.72rem; white-space:nowrap; border-right:1px solid rgba(255,255,255,0.05);">${escapeHtml(r.nhom || (blk.id === 'B1' ? 'B. Tồn âm' : 'A. Đối soát'))}</td>
                         ` : ''}
                         <td style="text-align:center; padding:0.42rem 0.28rem; font-weight:800; color:${blk.accent}; font-size:0.72rem; border-right:1px solid rgba(255,255,255,0.06);">${r.diem_chan}</td>
-                        <td style="position:sticky; left:0; z-index:13; background:${rowBg}; text-align:left; padding:0.42rem 0.55rem; font-weight:700; color:${r.is_empty_template ? '#94a3b8' : '#f1f5f9'}; border-right:2px solid rgba(56,189,248,0.28); box-shadow:2px 0 5px rgba(0,0,0,0.32); min-width:195px; max-width:230px; white-space:normal; line-height:1.28;" title="${escapeHtml((r.nguon || '') + ' — ' + (r.cach_tinh || ''))}">${escapeHtml(r.tieu_chi)}${t1Badge}</td>
+                        <td class="fmcg-sticky-col" style="position:sticky; left:0; z-index:13; background:${rowBg}; text-align:left; padding:0.48rem 0.65rem; font-weight:700; color:${r.is_empty_template ? '#94a3b8' : '#f1f5f9'}; border-right:2px solid rgba(56,189,248,0.28); box-shadow:2px 0 5px rgba(0,0,0,0.32); min-width:195px; max-width:230px; white-space:normal; line-height:1.28;" title="${escapeHtml((r.nguon || '') + ' — ' + (r.cach_tinh || ''))}">${escapeHtml(r.tieu_chi)}${t1Badge}</td>
                         ${showUnit ? `
                             <td style="text-align:center; padding:0.42rem 0.35rem; border-right:1px solid rgba(255,255,255,0.06); white-space:nowrap;">
                                 <span style="font-size:0.67rem; font-weight:700; color:${dvColor}; background:${dvColor}1a; padding:2px 5px; border-radius:4px;">${escapeHtml(r.don_vi)}</span>
@@ -477,13 +477,14 @@
                         </td>
                 `;
 
-                otherCols.forEach(c => {
+                otherCols.forEach((c, cIdx) => {
                     const val = r.values[c.key] || '-';
                     const isWk = c.type === 'week';
+                    const oddCls = (!isWk && cIdx % 2 === 1) ? ' fmcg-day-odd' : '';
                     const wkBg = isWk ? (isEven ? '#0e223d' : '#0a1b33') : '';
                     html += `
-                        <td style="padding:0.42rem 0.42rem; ${wkBg ? 'background:' + wkBg + ';' : ''} border-right:${isWk ? '2px solid rgba(56,189,248,0.22)' : '1px solid rgba(255,255,255,0.04)'}; font-family:'JetBrains Mono', monospace; font-size:0.74rem; white-space:nowrap; font-weight:${isWk ? '700' : '400'};">
-                            ${formatCellValue(val, r.tieu_chi)}
+                        <td class="fmcg-num-td${oddCls}" title="${escapeHtml(c.label + ': ' + val)}" style="${wkBg ? 'background:' + wkBg + ';' : ''} border-right:${isWk ? '2px solid rgba(56,189,248,0.38)' : '1px solid rgba(148,163,184,0.17)'}; font-family:'JetBrains Mono', monospace; font-size:0.76rem; white-space:nowrap; font-weight:${isWk ? '700' : '400'};">
+                            ${formatCellValue(val, r.tieu_chi, r.don_vi)}
                         </td>
                     `;
                 });
@@ -569,7 +570,7 @@
         const q = searchQuery.trim().toLowerCase();
 
         let tableHtml = `
-            <table class="fmcg-matrix-table" style="width:100%; border-collapse:collapse; font-size:0.83rem; text-align:right;">
+            <table class="fmcg-matrix-table fmcg-readable-tbl" style="width:max-content; min-width:100%; font-size:0.82rem; text-align:right;">
                 <thead>
                     <tr style="background:#0f172a; position:sticky; top:0; z-index:20; border-bottom:1px solid rgba(255,255,255,0.12);">
                         <th style="position:sticky; left:0; z-index:26; background:#0f172a; min-width:44px; max-width:44px; text-align:center; padding:0.8rem 0.3rem; color:#64748b; font-weight:800; border-right:1px solid rgba(255,255,255,0.08);">STT</th>
@@ -585,12 +586,13 @@
                         </th>
         `;
 
-        dates.forEach(d => {
+        dates.forEach((d, dIdx) => {
             const isToday = isDateCurrent(d.iso);
+            const oddCls = (!isToday && dIdx % 2 === 1) ? ' fmcg-day-odd' : '';
             tableHtml += `
-                <th style="min-width:112px; padding:0.72rem 0.6rem; text-align:right; color:${isToday ? '#38bdf8' : '#e2e8f0'}; font-weight:700; border-right:1px solid rgba(255,255,255,0.06); background:${isToday ? 'rgba(56,189,248,0.12)' : '#0f172a'};">
-                    <div style="font-size:0.82rem; font-family:'JetBrains Mono', monospace;">${d.display}</div>
-                    <div style="font-size:0.68rem; color:#64748b; font-weight:500;">${getDayOfWeek(d.iso)}</div>
+                <th class="fmcg-day-th${oddCls}" style="min-width:124px; text-align:right; color:${isToday ? '#38bdf8' : '#e2e8f0'}; font-weight:700; background:${isToday ? 'rgba(56,189,248,0.14)' : '#0f172a'};">
+                    <div style="font-size:0.81rem; font-family:'JetBrains Mono', monospace;">${d.display}</div>
+                    <div style="font-size:0.68rem; color:#94a3b8; font-weight:500;">${getDayOfWeek(d.iso)}</div>
                 </th>
             `;
         });
@@ -619,8 +621,8 @@
                 const hasLogic = !!rowItem.logic;
                 tableHtml += `
                     <tr class="fmcg-data-row" style="background:${rowBg}; border-bottom:1px solid rgba(255,255,255,0.04);">
-                        <td style="position:sticky; left:0; z-index:13; background:${rowBg}; text-align:center; padding:0.58rem 0.3rem; font-weight:700; color:#64748b; font-size:0.75rem; font-family:'JetBrains Mono', monospace; border-right:1px solid rgba(255,255,255,0.06);">${rowItem.row_idx}</td>
-                        <td style="position:sticky; left:44px; z-index:13; background:${rowBg}; text-align:left; padding:0.58rem 0.85rem; font-weight:600; color:#cbd5e1; border-right:1px solid rgba(255,255,255,0.08); white-space:nowrap;">
+                        <td class="fmcg-sticky-col" style="position:sticky; left:0; z-index:13; background:${rowBg}; text-align:center; padding:0.56rem 0.3rem; font-weight:700; color:#64748b; font-size:0.75rem; font-family:'JetBrains Mono', monospace; border-right:1px solid rgba(148,163,184,0.18); border-bottom:1px solid rgba(148,163,184,0.12);">${rowItem.row_idx}</td>
+                        <td class="fmcg-sticky-col" style="position:sticky; left:44px; z-index:13; background:${rowBg}; text-align:left; padding:0.56rem 0.85rem; font-weight:600; color:#e2e8f0; border-right:1px solid rgba(148,163,184,0.22); border-bottom:1px solid rgba(148,163,184,0.12); white-space:nowrap;">
                             <div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
                                 <span>${formatMetricTitle(rowItem.name)}</span>
                                 ${hasLogic ? `<button onclick="showFmcgRowLogic(${rowItem.row_idx})" title="Xem logic & công thức lấy dữ liệu dòng này" style="background:rgba(148,163,184,0.08); color:#cbd5e1; border:1px solid rgba(56,189,248,0.28); border-radius:50%; width:20px; height:20px; font-size:0.68rem; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">i</button>` : ''}
@@ -631,10 +633,11 @@
                         </td>
                 `;
 
-                dates.forEach(d => {
+                dates.forEach((d, dIdx) => {
                     const val = rowItem.values[d.iso] || '';
+                    const oddCls = (dIdx % 2 === 1) ? ' fmcg-day-odd' : '';
                     tableHtml += `
-                        <td style="padding:0.58rem 0.6rem; border-right:1px solid rgba(255,255,255,0.04); font-family:'JetBrains Mono', monospace; font-size:0.8rem; white-space:nowrap;">
+                        <td class="fmcg-num-td${oddCls}" title="${escapeHtml(d.display + ': ' + val)}" style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; white-space:nowrap;">
                             ${formatCellValue(val, rowItem.name)}
                         </td>
                     `;
@@ -1127,10 +1130,10 @@
                         <td style="text-align:left; font-weight:600;">${escapeHtml(r.name)}</td>
                         <td style="text-align:right; font-weight:700; background:#fffbeb;">${escapeHtml(r.total || '-')}</td>
                         ${dates.map(d => {
-                        const v = r.values[d.iso] || '-';
-                        const neg = String(v).startsWith('-');
-                        return `<td style="text-align:right;${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
-                    }).join('')}
+                            const v = r.values[d.iso] || '-';
+                            const neg = String(v).startsWith('-');
+                            return `<td style="text-align:right;${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
+                        }).join('')}
                     </tr>`;
                 });
             });
@@ -1162,10 +1165,10 @@
                         <td style="text-align:center;">${escapeHtml(r.don_vi)}</td>
                         <td style="text-align:right; font-weight:700; background:#fffbeb;">${escapeHtml(r.values[monthCol.key] || '-')}</td>
                         ${otherCols.map(c => {
-                        const v = r.values[c.key] || '-';
-                        const neg = String(v).startsWith('-');
-                        return `<td style="text-align:right;${c.type === 'week' ? ' background:#eff6ff; font-weight:700;' : ''}${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
-                    }).join('')}
+                            const v = r.values[c.key] || '-';
+                            const neg = String(v).startsWith('-');
+                            return `<td style="text-align:right;${c.type === 'week' ? ' background:#eff6ff; font-weight:700;' : ''}${neg ? ' color:#b91c1c; font-weight:700;' : ''}">${escapeHtml(v)}</td>`;
+                        }).join('')}
                     </tr>`;
                 });
             });
@@ -1399,20 +1402,32 @@
         return name;
     }
 
-    function formatCellValue(val, metricName) {
-        if (!val || val === '#DIV/0!' || val === '#N/A' || val === '-') return `<span style="color:#475569;">-</span>`;
-        const isPercent = val.includes('%');
-        const isNegative = val.startsWith('-');
+    function formatCellValue(val, metricName, donVi) {
+        if (!val || val === '#DIV/0!' || val === '#N/A' || val === '-') return `<span style="color:#475569;">—</span>`;
+        const rawStr = String(val).trim();
+        const isPercent = rawStr.includes('%');
+        const isNegative = rawStr.startsWith('-');
         if (isPercent) {
-            if (val === '0.00%' || val === '0%') return `<span style="color:#64748b;">0.00%</span>`;
+            if (rawStr === '0.00%' || rawStr === '0%') return `<span style="color:#64748b;">0.00%</span>`;
             return isNegative
-                ? `<span style="color:#f87171; font-weight:700;">${val}</span>`
-                : `<span style="color:#38bdf8; font-weight:600;">${val}</span>`;
+                ? `<span style="color:#fb7185; font-weight:700;">${rawStr}</span>`
+                : `<span style="color:#38bdf8; font-weight:600;">${rawStr}</span>`;
         }
-        if (isNegative) return `<span style="color:#f87171; font-weight:700; background:rgba(244,63,94,0.12); padding:1px 5px; border-radius:4px;">${val}</span>`;
-        if (val === '0') return `<span style="color:#475569;">0</span>`;
-        if (metricName.includes('Tổng giá trị') || metricName.includes('Tồn kho')) return `<strong style="color:#34d399;">${val}</strong>`;
-        return `<span style="color:#f1f5f9;">${val}</span>`;
+        // Làm tròn bỏ phần lẻ .xx cho các số tiền VNĐ / số lớn (>= 1,000) giúp cột ngắn gọn & dễ so sánh hơn (rê chuột vẫn thấy số lẻ đầy đủ)
+        let disp = rawStr;
+        const mName = String(metricName || '').toLowerCase();
+        const uName = String(donVi || '').toLowerCase();
+        const isMoney = uName.includes('vnd') || mName.includes('giá trị') || mName.includes('tồn kho') || mName.includes('thất thoát') || mName.includes('chịu') || mName.includes('net - off');
+        if (rawStr.includes('.')) {
+            const num = parseFloat(rawStr.replace(/,/g, ''));
+            if (!isNaN(num) && (isMoney || Math.abs(num) >= 1000)) {
+                disp = Math.round(num).toLocaleString('en-US');
+            }
+        }
+        if (disp === '0' || disp === '-0') return `<span style="color:#64748b; opacity:0.65;">0</span>`;
+        if (isNegative) return `<span style="color:#fb7185; font-weight:700; background:rgba(244,63,94,0.14); padding:1px 6px; border-radius:4px;">${disp}</span>`;
+        if (metricName && (metricName.includes('Tổng giá trị') || metricName.includes('Tồn kho'))) return `<strong style="color:#34d399;">${disp}</strong>`;
+        return `<span style="color:#f1f5f9;">${disp}</span>`;
     }
 
     function getDayOfWeek(isoDate) {
