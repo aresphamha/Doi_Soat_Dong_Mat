@@ -183,6 +183,17 @@ def load_store_and_dc_chat_mappings():
     dc_code_map['A146'] = '-5151971860'    # DC Dry - A146 (108 Bùi Thị Xuân)
     dc_code_map['A280'] = '-1005801894183' # DC - A280 (112 Lê Văn Thọ)
     dc_code_map['A281'] = '-1005637312030' # DC - A281 (Phú Mỹ C2)
+    dc_code_map['A276'] = '-1005959895477' # DC - A276 (La Astoria)
+    dc_code_map['A284'] = '-1005638313741' # DC - A284 (Star Hill)
+
+    st_to_code['KFM_HCM_TDU - LA1-V1 La Astoria'] = 'A276'
+    st_to_code['LA1-V1 La Astoria'] = 'A276'
+    st_to_code['La Astoria'] = 'A276'
+
+    st_to_code['KFM_HCM_Q07 - C14B Star Hill 34 Đường Raymondienne'] = 'A284'
+    st_to_code['C14B Star Hill 34 Đường Raymondienne'] = 'A284'
+    st_to_code['Star Hill 34 Đường Raymondienne'] = 'A284'
+    st_to_code['Star Hill'] = 'A284'
 
     st_to_code['KFM_HCM_TBI - 108 Bùi Thị Xuân'] = 'A146'
     st_to_code['108 Bùi Thị Xuân'] = 'A146'
@@ -306,6 +317,8 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
         id_to_name['6abb2390d77de90007295419'] = 'KFM_HCM_Q07 - Block C Sunshine Diamond River'
         id_to_name['6abf6ab6c4c64e00072052aa'] = 'KFM_HCM_BTH - 184 Nguyễn Xí'
         id_to_name['6ac5feb2a7dd480007062a7d'] = 'KFM_BDU_TDM - BSH01 C-Sky View'
+        id_to_name['6ad70accb1cd1c0007e1fa66'] = 'KFM_HCM_TDU - LA1-V1 La Astoria'
+        id_to_name['6ae2ebc6bc87f10007f086f6'] = 'KFM_HCM_Q07 - C14B Star Hill 34 Đường Raymondienne'
         id_to_name['6ad718d27cfd210007b3cb48'] = 'KFM_HCM_GVA - 112 Lê Văn Thọ'
         id_to_name['6ae012de9d6f520007689dc2'] = 'KFM_BDU_TDM - B.107 Chung Cư Phú Mỹ C2'
 

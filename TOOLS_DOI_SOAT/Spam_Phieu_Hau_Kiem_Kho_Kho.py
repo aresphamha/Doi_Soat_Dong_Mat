@@ -185,6 +185,17 @@ def load_store_and_dc_chat_mappings():
     dc_code_map['A278'] = '-1003971888276' # DC - A278 (C-Sky View)
     dc_code_map['A206'] = '-1003939271297' # DC - A206 (Phú Hoàng Anh)
     dc_code_map['A228'] = '-1004408424255' # DC - A228 (Masterise Lumiere Boulevard)
+    dc_code_map['A276'] = '-1005959895477' # DC - A276 (La Astoria)
+    dc_code_map['A284'] = '-1005638313741' # DC - A284 (Star Hill)
+
+    st_to_code['KFM_HCM_TDU - LA1-V1 La Astoria'] = 'A276'
+    st_to_code['LA1-V1 La Astoria'] = 'A276'
+    st_to_code['La Astoria'] = 'A276'
+
+    st_to_code['KFM_HCM_Q07 - C14B Star Hill 34 Đường Raymondienne'] = 'A284'
+    st_to_code['C14B Star Hill 34 Đường Raymondienne'] = 'A284'
+    st_to_code['Star Hill 34 Đường Raymondienne'] = 'A284'
+    st_to_code['Star Hill'] = 'A284'
 
     st_to_code['KFM_HCM_NBE - B.1.1 Phú Hoàng Anh'] = 'A206'
     st_to_code['B.1.1 Phú Hoàng Anh'] = 'A206'
@@ -312,6 +323,8 @@ async def run_spam_hau_kiem_kho_kho(target_date=None, dry_run=False, stores=None
         id_to_name['6abb2390d77de90007295419'] = 'KFM_HCM_Q07 - Block C Sunshine Diamond River'
         id_to_name['6abf6ab6c4c64e00072052aa'] = 'KFM_HCM_BTH - 184 Nguyễn Xí'
         id_to_name['6ac5feb2a7dd480007062a7d'] = 'KFM_BDU_TDM - BSH01 C-Sky View'
+        id_to_name['6ad70accb1cd1c0007e1fa66'] = 'KFM_HCM_TDU - LA1-V1 La Astoria'
+        id_to_name['6ae2ebc6bc87f10007f086f6'] = 'KFM_HCM_Q07 - C14B Star Hill 34 Đường Raymondienne'
 
         # QUERY CHUẨN 100% VỚI TAB "CẦN HẬU KIỂM" TRÊN WMS:
         # Lọc các phiếu Hậu kiểm kho khô FGA chưa quét xong (double_checked_status = 1) và đang trong trạng thái xử lý (status = 3 hoặc 5)
