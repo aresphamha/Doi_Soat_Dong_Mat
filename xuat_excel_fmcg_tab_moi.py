@@ -1527,11 +1527,22 @@ def export_fmcg_store_details_js(df_seed):
         try:
             with open(cfg_path, "r", encoding="utf-8") as cf:
                 cfg = json.load(cf)
-            stores_map = cfg.get("stores", cfg) if isinstance(cfg, dict) else {}
-            if isinstance(stores_map, dict):
-                for code, info in stores_map.items():
-                    if isinstance(info, dict):
-                        store_names[str(code).strip().upper()] = str(info.get("name") or info.get("store_name") or "").strip()
+            if isinstance(cfg, list):
+                for item in cfg:
+                    if isinstance(item, dict):
+                        st_id = str(item.get("id") or item.get("short") or "").strip().upper()
+                        st_nm = str(item.get("name") or item.get("store_name") or "").strip()
+                        if st_id and st_nm:
+                            store_names[st_id] = st_nm
+                        st_sh = str(item.get("short") or "").strip().upper()
+                        if st_sh and st_nm:
+                            store_names[st_sh] = st_nm
+            elif isinstance(cfg, dict):
+                stores_map = cfg.get("stores", cfg)
+                if isinstance(stores_map, dict):
+                    for code, info in stores_map.items():
+                        if isinstance(info, dict):
+                            store_names[str(code).strip().upper()] = str(info.get("name") or info.get("store_name") or "").strip()
         except Exception:
             pass
 

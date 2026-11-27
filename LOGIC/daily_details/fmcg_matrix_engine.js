@@ -50,6 +50,21 @@
                 border-right: 1px solid rgba(148, 163, 184, 0.22) !important;
                 border-bottom: 2px solid rgba(56, 189, 248, 0.35) !important;
             }
+            /* Đồng bộ màu badge & text của 4 nút sub-tab chuẩn Tab 2 cho Bảng 5 FMCG */
+            .fmcg-prog-wrap .sub-tab-btn.active-sub-1 .tab-badge-num { background: #38bdf8; color: #0f172a; font-weight: 900; }
+            .fmcg-prog-wrap .sub-tab-btn.active-sub-1 .tab-btn-text { color: #38bdf8; }
+            .fmcg-prog-wrap .sub-tab-btn.active-sub-2 .tab-badge-num { background: #34d399; color: #064e3b; font-weight: 900; }
+            .fmcg-prog-wrap .sub-tab-btn.active-sub-2 .tab-btn-text { color: #34d399; }
+            .fmcg-prog-wrap .sub-tab-btn.active-sub-3 .tab-badge-num { background: #fbbf24; color: #78350f; font-weight: 900; }
+            .fmcg-prog-wrap .sub-tab-btn.active-sub-3 .tab-btn-text { color: #fbbf24; }
+            .fmcg-prog-wrap .sub-tab-btn.active-sub-4 .tab-badge-num { background: #f87171; color: #450a0a; font-weight: 900; }
+            .fmcg-prog-wrap .sub-tab-btn.active-sub-4 .tab-btn-text { color: #f87171; }
+            .fmcg-prog-wrap .fmcg-st-toolbar input,
+            .fmcg-prog-wrap .fmcg-st-toolbar select {
+                background: var(--bg-card);
+                color: var(--text-primary);
+                border: 1px solid var(--border-card);
+            }
         `;
         document.head.appendChild(st);
     })();
@@ -79,16 +94,19 @@
             wrap.style.background = '#0b1120';
             document.body.style.overflow = 'hidden';
         } else {
+            const isProg = activeSubView === 'progress';
             wrap.style.position = '';
             wrap.style.inset = '';
             wrap.style.width = '';
             wrap.style.height = '';
             wrap.style.maxHeight = (activeSubView === 'matrix' || activeSubView === 'flow') ? '74vh' : 'none';
             wrap.style.zIndex = '';
-            wrap.style.borderRadius = '12px';
+            wrap.style.borderRadius = isProg ? '0' : '12px';
+            wrap.style.border = isProg ? 'none' : '1px solid rgba(255,255,255,0.1)';
+            wrap.style.boxShadow = isProg ? 'none' : '0 4px 16px rgba(0,0,0,0.22)';
             wrap.style.overflow = '';
-            wrap.style.overflowX = (activeSubView === 'logic') ? 'visible' : 'auto';
-            wrap.style.background = '#161b22';
+            wrap.style.overflowX = (activeSubView === 'logic' || isProg) ? 'visible' : 'auto';
+            wrap.style.background = isProg ? 'transparent' : '#1a2436';
             document.body.style.overflow = '';
         }
 
@@ -116,6 +134,7 @@
             { id: 'flow', label: '2. Đối Soát FMCG (113 Chỉ Số)', icon: 'fa-diagram-project' },
             { id: 'logic', label: '3. Logic Chi Tiết', icon: 'fa-book-open' },
             { id: 'reconcile', label: '4. Đối Chiếu CDC', icon: 'fa-circle-check' },
+            { id: 'progress', label: '5. Tiến Độ & Xếp Hạng ST', icon: 'fa-ranking-star' },
         ];
         return `
             <div id="fmcg-fs-topbar" style="position:sticky; top:0; left:0; z-index:40; background:#1a2436; border-bottom:1px solid rgba(56,189,248,0.25); padding:0.55rem 1rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem;">
@@ -201,8 +220,13 @@
         }
         const tblWrap = document.getElementById('fmcg-table-container');
         if (tblWrap && !isFullscreen) {
-            tblWrap.style.maxHeight = (viewName === 'matrix' || viewName === 'flow' || viewName === 'progress') ? '74vh' : 'none';
-            tblWrap.style.overflowX = (viewName === 'logic') ? 'visible' : 'auto';
+            const isProg = viewName === 'progress';
+            tblWrap.style.maxHeight = (viewName === 'matrix' || viewName === 'flow') ? '74vh' : 'none';
+            tblWrap.style.overflowX = (viewName === 'logic' || isProg) ? 'visible' : 'auto';
+            tblWrap.style.background = isProg ? 'transparent' : '#1a2436';
+            tblWrap.style.border = isProg ? 'none' : '1px solid rgba(255,255,255,0.1)';
+            tblWrap.style.boxShadow = isProg ? 'none' : '0 4px 16px rgba(0,0,0,0.22)';
+            tblWrap.style.borderRadius = isProg ? '0' : '12px';
         }
         renderActiveSubView();
     };
@@ -1078,7 +1102,8 @@
             matrix: 'BẢNG 1: ĐỐI SOÁT FMCG (53 CHỈ SỐ)',
             flow: 'BẢNG 2: ĐỐI SOÁT FMCG (113 CHỈ SỐ • Đ0–Đ4 + B. TỒN ÂM)',
             logic: 'ĐẶC TẢ LOGIC CHI TIẾT CẢ 2 BẢNG (ĐỐI SOÁT FMCG 53 CHỈ SỐ & 113 CHỈ SỐ)',
-            reconcile: 'BẢNG ĐỐI CHIẾU KIỂM CHỨNG: CDC STARROCKS vs SEEDLOG'
+            reconcile: 'BẢNG ĐỐI CHIẾU KIỂM CHỨNG: CDC STARROCKS vs SEEDLOG',
+            progress: 'BẢNG 5: THEO DÕI TIẾN ĐỘ & XẾP HẠNG SIÊU THỊ FMCG (CHUẨN TAB 2 • KHÔNG NGƯỠNG 100K)'
         };
         const title = viewTitles[targetView] || viewTitles.matrix;
         const dateStr = new Date().toISOString().slice(0, 10);
@@ -1250,6 +1275,39 @@
                 </tr>`;
             });
             bodyHtml += `</tbody></table>`;
+        } else if (targetView === 'progress') {
+            const pRows = getProgDailyRows();
+            bodyHtml += `<table class="logic-tbl"><thead><tr>
+                <th style="text-align:left;">Thời Gian</th>
+                <th style="text-align:right;">SL Chuyển</th>
+                <th style="text-align:right;">SL Nhận</th>
+                <th style="text-align:right;">SL Lệch</th>
+                <th style="text-align:right;">Tổng Tiền Lệch</th>
+                <th style="text-align:center;">ST Lệch</th>
+                <th style="text-align:right;">Trả DC (VNĐ)</th>
+                <th style="text-align:right;">Trả ST (VNĐ)</th>
+                <th style="text-align:right;">Write-OFF (VNĐ)</th>
+                <th style="text-align:right;">Đã XL (VNĐ)</th>
+                <th style="text-align:right;">Chưa XL (VNĐ)</th>
+                <th style="text-align:center;">Tiến Độ</th>
+            </tr></thead><tbody>`;
+            pRows.forEach(r => {
+                bodyHtml += `<tr>
+                    <td style="font-weight:700;">${escapeHtml(r.date)}</td>
+                    <td style="text-align:right;">${progFmtN(r.qty_chuyen)}</td>
+                    <td style="text-align:right;">${progFmtN(r.qty_nhan)}</td>
+                    <td style="text-align:right; color:#b91c1c; font-weight:700;">${progFmtN(r.qty_lech)}</td>
+                    <td style="text-align:right; font-weight:700;">${progFmtVND(r.val_total)}</td>
+                    <td style="text-align:center;">${progFmtN(r.st_lech)} ST</td>
+                    <td style="text-align:right;">${progFmtVND(r.val_dc)}</td>
+                    <td style="text-align:right;">${progFmtVND(r.val_st)}</td>
+                    <td style="text-align:right;">${progFmtVND(r.val_wo)}</td>
+                    <td style="text-align:right; color:#047857; font-weight:700;">${progFmtVND(r.val_da_xl)}</td>
+                    <td style="text-align:right; color:#c2410c; font-weight:700;">${progFmtVND(r.val_cc)}</td>
+                    <td style="text-align:center; font-weight:700;">${r.pct_val.toFixed(1)}%</td>
+                </tr>`;
+            });
+            bodyHtml += `</tbody></table>`;
         }
 
         const win = window.open('', '_blank');
@@ -1415,6 +1473,584 @@
         renderActiveSubView();
     };
 
+    // =========================================================================
+    // VIEW 5: THEO DÕI TIẾN ĐỘ & XẾP HẠNG SIÊU THỊ (CHUẨN GIAO DIỆN TAB 2 — KHÔNG NGƯỠNG 100K, KHÔNG HAO HỤT)
+    // =========================================================================
+    let progSubTab = 1;
+    let progPeriod = 'daily';
+
+    function getProgDailyRows() {
+        if (!currentData || !currentData.dates || !currentData.sections) return [];
+        const metricMap = {};
+        currentData.sections.forEach(sec => {
+            (sec.rows || []).forEach(r => { metricMap[(r.name || '').trim()] = r.values || {}; });
+        });
+        // Tính số ST Đã XL / Chưa XL từng ngày từ window.FMCG_STORE_DETAILS (khớp chuẩn logic đếm ST của Tab 2)
+        const stStatsByIso = {};
+        const det = window.FMCG_STORE_DETAILS || { store_ranking: [] };
+        (det.store_ranking || []).forEach(s => {
+            const iso = s.iso_date || '';
+            if (!iso) return;
+            if (!stStatsByIso[iso]) stStatsByIso[iso] = { st_da_xl: 0, st_chua_xl: 0 };
+            if ((s.val_da_xl || 0) > 0) stStatsByIso[iso].st_da_xl++;
+            if ((s.val_chua_xl || 0) > 0) stStatsByIso[iso].st_chua_xl++;
+        });
+
+        const num = (name, iso) => {
+            const v = metricMap[name] ? metricMap[name][iso] : 0;
+            if (v === null || v === undefined || v === '') return 0;
+            const n = parseFloat(String(v).replace(/,/g, '').replace(/%/g, '').trim());
+            return isNaN(n) ? 0 : n;
+        };
+        const getIso = d => (d && (d.iso || d.iso_date)) ? String(d.iso || d.iso_date) : '';
+        const getDisp = d => (d && (d.display || d.display_date || d.iso || d.iso_date)) ? String(d.display || d.display_date || d.iso || d.iso_date) : '';
+        const dates = [...currentData.dates].sort((a, b) => sortDescending ? getIso(b).localeCompare(getIso(a)) : getIso(a).localeCompare(getIso(b)));
+        return dates.map(d => {
+            const iso = getIso(d);
+            const parts = iso.split('-');
+            const month = parts.length === 3 ? `Tháng ${parseInt(parts[1], 10)}/${parts[0]}` : '';
+            const qty_chuyen = num('SL chuyển', iso), qty_nhan = num('SL nhận', iso);
+            const qty_lech = Math.abs(num('SL chênh lệch', iso)), val_total = Math.abs(num('Giá trị chênh lệch', iso));
+            const st_lech = num('SL ST chênh lệch', iso);
+            const sl_dc = Math.abs(num('SL trả DC', iso)), val_dc = Math.abs(num('Giá trị trả DC', iso));
+            const sl_st = Math.abs(num('SL trả ST', iso)), val_st = Math.abs(num('Giá trị trả ST', iso));
+            const sl_wo = Math.abs(num('SL Write - OFF', iso)), val_wo = Math.abs(num('Giá trị Write - OFF', iso));
+            const sl_cc = Math.abs(num('SL SCM chưa check', iso)), val_cc = Math.abs(num('Giá trị SCM chưa check', iso));
+            const sl_da_xl = sl_dc + sl_st + sl_wo, val_da_xl = val_dc + val_st + val_wo;
+            const pct_val = val_total > 0 ? +(Math.min(val_da_xl / val_total, 1) * 100).toFixed(1) : (qty_lech === 0 ? 100 : 0);
+            const pct_sl = qty_lech > 0 ? +(Math.min(sl_da_xl / qty_lech, 1) * 100).toFixed(1) : (qty_lech === 0 ? 100 : 0);
+            const stInfo = stStatsByIso[iso] || { st_da_xl: 0, st_chua_xl: 0 };
+            return {
+                iso, date: getDisp(d), month,
+                qty_chuyen, qty_nhan, qty_lech, val_total, st_lech,
+                st_da_xl: stInfo.st_da_xl, st_chua_xl: stInfo.st_chua_xl,
+                sl_dc, val_dc, sl_st, val_st, sl_wo, val_wo, sl_cc, val_cc,
+                sl_da_xl, val_da_xl, pct_val, pct_sl
+            };
+        });
+    }
+
+    function progFmtN(n) { return new Intl.NumberFormat('vi-VN').format(Math.round((n || 0) * 100) / 100); }
+    function progFmtVND(n) { return new Intl.NumberFormat('vi-VN').format(Math.round(n || 0)) + ' đ'; }
+    function progBadgePct(pct) {
+        if (typeof window.renderProgressBadge === 'function') {
+            return window.renderProgressBadge(pct);
+        }
+        const num = parseFloat(pct) || 0;
+        let color = '#34d399', bg = 'linear-gradient(90deg,#059669,#34d399)';
+        if (num < 70) { color = '#f87171'; bg = 'linear-gradient(90deg,#b91c1c,#f87171)'; }
+        else if (num < 90) { color = '#fbbf24'; bg = 'linear-gradient(90deg,#d97706,#fbbf24)'; }
+        return `<div style="display:flex;align-items:center;gap:6px;justify-content:center;"><div style="width:62px;height:6px;background:rgba(255,255,255,0.1);border-radius:999px;overflow:hidden;"><div style="width:${Math.min(num,100)}%;height:100%;background:${bg};border-radius:999px;"></div></div><span style="color:${color};font-weight:700;font-size:0.78rem;min-width:44px;text-align:right;">${num.toFixed(1)}%</span></div>`;
+    }
+
+    function renderProgressView() {
+        const container = document.getElementById('fmcg-table-container');
+        if (!container) return;
+        const dailyRows = getProgDailyRows();
+        const sumKeys = ['qty_chuyen','qty_nhan','qty_lech','val_total','st_lech','st_da_xl','st_chua_xl','sl_dc','val_dc','sl_st','val_st','sl_wo','val_wo','sl_cc','val_cc','sl_da_xl','val_da_xl'];
+        let rows = dailyRows;
+        if (progPeriod === 'monthly') {
+            const map = {};
+            dailyRows.forEach(r => {
+                if (!map[r.month]) {
+                    map[r.month] = { iso: r.month, date: r.month };
+                    sumKeys.forEach(k => map[r.month][k] = 0);
+                }
+                const m = map[r.month];
+                sumKeys.forEach(k => m[k] += (r[k] || 0));
+            });
+            rows = Object.values(map).map(m => ({
+                ...m,
+                pct_val: m.val_total > 0 ? +(Math.min(m.val_da_xl / m.val_total, 1) * 100).toFixed(1) : 100,
+                pct_sl: m.qty_lech > 0 ? +(Math.min(m.sl_da_xl / m.qty_lech, 1) * 100).toFixed(1) : 100
+            }));
+        }
+        const tot = rows.reduce((a, r) => { sumKeys.forEach(k => a[k] = (a[k] || 0) + (r[k] || 0)); return a; }, {});
+        tot.pct_val = tot.val_total > 0 ? +(Math.min(tot.val_da_xl / tot.val_total, 1) * 100).toFixed(1) : 100;
+        tot.pct_sl = tot.qty_lech > 0 ? +(Math.min(tot.sl_da_xl / tot.qty_lech, 1) * 100).toFixed(1) : 100;
+
+        const subDefs = [
+            { id: 1, icon: 'fa-layer-group', title: 'BẢNG TỔNG HỢP TIẾN ĐỘ', sub: 'Hợp nhất SL & Giá trị theo ngày/tháng' },
+            { id: 2, icon: 'fa-money-bill-trend-up', title: 'BẢNG GIÁ TRỊ (VNĐ)', sub: 'Bóc tách dòng tiền Trả DC / ST / Write-OFF' },
+            { id: 3, icon: 'fa-boxes-stacked', title: 'BẢNG SỐ LƯỢNG (PCS)', sub: 'Số lượng giao nhận & Điểm nhận' },
+            { id: 4, icon: 'fa-triangle-exclamation', title: 'DS SIÊU THỊ CHÊNH LỆCH (CAO → THẤP)', sub: 'Xếp hạng ưu tiên xử lý & Xem từng SKU' }
+        ];
+        const subBtns = subDefs.map(b => {
+            const act = progSubTab === b.id;
+            return `<button class="sub-tab-btn${act ? ' active active-sub-' + b.id : ''}" onclick="switchFmcgProgTab(${b.id})">
+                <span class="tab-badge-num">${b.id}</span>
+                <span class="tab-btn-text"><i class="fa-solid ${b.icon}"></i> ${b.title}</span>
+                <span class="tab-btn-sub">${b.sub}</span>
+            </button>`;
+        }).join('');
+
+        const periodSwitch = `<div class="seg-pill">
+            <button class="seg-btn${progPeriod === 'daily' ? ' active' : ''}" onclick="setFmcgProgPeriod('daily')">Theo Ngày</button>
+            <button class="seg-btn${progPeriod === 'monthly' ? ' active' : ''}" onclick="setFmcgProgPeriod('monthly')">Theo Tháng</button>
+        </div>`;
+
+        const btnViewDay = (iso, dVn) => `<button class="btn-view-detail" onclick="openFmcgDetailModal('${iso}','${dVn}','')"><i class="fa-solid fa-list-ul"></i> Xem</button>`;
+        const footUnitLabel = progPeriod === 'daily' ? `${rows.length} Ngày` : `${rows.length} Tháng`;
+
+        let cardHtml = '';
+        if (progSubTab === 1) {
+            // BẢNG 1: BẢNG TỔNG HỢP TIẾN ĐỘ (GIỐNG TAB 2.1 — KHÔNG NGƯỠNG 100K, KHÔNG HAO HỤT)
+            cardHtml = `
+            <div class="table-card">
+                <div class="table-header-row">
+                    <div class="table-title">
+                        <i class="fa-solid fa-layer-group" style="color:#38bdf8;"></i> BẢNG TỔNG HỢP TIẾN ĐỘ (FMCG)
+                    </div>
+                    ${periodSwitch}
+                </div>
+                <div class="table-responsive">
+                    <table class="sc-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="th-master-bg" style="width:105px;">Thời Gian</th>
+                                <th colspan="2" class="th-master-bg">Giao Nhận</th>
+                                <th rowspan="2" class="th-master-bg" style="background:#0369a1 !important; color:#fff;">Chênh Lệch<br><span style="font-size:0.7rem; font-weight:400; opacity:0.9;">(SL &amp; Tiền VNĐ)</span></th>
+                                <th rowspan="2" class="th-master-bg">Số ST Lệch</th>
+                                <th colspan="3" class="th-master-bg">Điểm Nhận Trách Nhiệm</th>
+                                <th colspan="3" class="th-master-bg">Tiến Độ Xử Lý</th>
+                                <th rowspan="2" class="th-master-bg" style="width:75px;">Chi Tiết</th>
+                            </tr>
+                            <tr>
+                                <th class="th-master-sub">SL Chuyển</th>
+                                <th class="th-master-sub">SL Nhận</th>
+                                <th class="th-master-sub">Kho DC (Trả DC)</th>
+                                <th class="th-master-sub">Siêu Thị (Trả ST)</th>
+                                <th class="th-master-sub">Write - OFF</th>
+                                <th class="th-master-sub">🟢 Đã XL</th>
+                                <th class="th-master-sub" style="color:#fed7aa;">🟡 Chưa XL</th>
+                                <th class="th-master-sub" style="width:130px; text-align:center;">Tiến Độ (% Xong)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.map(r => `<tr>
+                                <td class="text-left" style="font-weight:600; color:var(--primary);">${r.date}</td>
+                                <td>${progFmtN(r.qty_chuyen)}</td>
+                                <td>${progFmtN(r.qty_nhan)}</td>
+                                <td>
+                                    <div class="c-red" style="font-weight:700;">${progFmtN(r.qty_lech)}</div>
+                                    <div class="c-blue" style="font-size:0.75rem;">${progFmtVND(r.val_total)}</div>
+                                </td>
+                                <td class="text-center"><strong>${progFmtN(r.st_lech)} ST</strong></td>
+                                <td>
+                                    <div>${progFmtN(r.sl_dc)}</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted);">${progFmtVND(r.val_dc)}</div>
+                                </td>
+                                <td>
+                                    <div>${progFmtN(r.sl_st)}</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted);">${progFmtVND(r.val_st)}</div>
+                                </td>
+                                <td>
+                                    <div>${progFmtN(r.sl_wo)}</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted);">${progFmtVND(r.val_wo)}</div>
+                                </td>
+                                <td>
+                                    <div class="c-green" style="font-weight:700;">${progFmtN(r.sl_da_xl)}</div>
+                                    <div style="font-size:0.75rem; color:#34d399;">${progFmtVND(r.val_da_xl)} <span style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(${progFmtN(r.st_da_xl)} ST)</span></div>
+                                </td>
+                                <td>
+                                    <div class="c-orange" style="font-weight:700;">${progFmtN(r.sl_cc)} <span style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(${progFmtN(r.st_chua_xl)} ST)</span></div>
+                                    <div style="font-size:0.75rem; color:#fb923c;">${progFmtVND(r.val_cc)}</div>
+                                </td>
+                                <td class="text-center">${progBadgePct(r.pct_val)}</td>
+                                <td class="text-center">${progPeriod === 'daily' && r.qty_lech > 0 ? btnViewDay(r.iso, r.date) : '-'}</td>
+                            </tr>`).join('')}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="text-left">TỔNG CỘNG</td>
+                                <td>${progFmtN(tot.qty_chuyen)}</td>
+                                <td>${progFmtN(tot.qty_nhan)}</td>
+                                <td>
+                                    <div class="c-red" style="font-weight:700;">${progFmtN(tot.qty_lech)}</div>
+                                    <div class="c-blue" style="font-size:0.75rem;">${progFmtVND(tot.val_total)}</div>
+                                </td>
+                                <td class="text-center"><strong>${progFmtN(tot.st_lech)} ST</strong></td>
+                                <td>
+                                    <div>${progFmtN(tot.sl_dc)}</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted);">${progFmtVND(tot.val_dc)}</div>
+                                </td>
+                                <td>
+                                    <div>${progFmtN(tot.sl_st)}</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted);">${progFmtVND(tot.val_st)}</div>
+                                </td>
+                                <td>
+                                    <div>${progFmtN(tot.sl_wo)}</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted);">${progFmtVND(tot.val_wo)}</div>
+                                </td>
+                                <td>
+                                    <div class="c-green"><strong>${progFmtN(tot.sl_da_xl)}</strong></div>
+                                    <div style="font-size:0.75rem; color:#34d399;">${progFmtVND(tot.val_da_xl)} <span style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(${progFmtN(tot.st_da_xl)} lần giao)</span></div>
+                                </td>
+                                <td>
+                                    <div class="c-orange"><strong>${progFmtN(tot.sl_cc)}</strong> <span style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(${progFmtN(tot.st_chua_xl)} lần giao)</span></div>
+                                    <div style="font-size:0.75rem; color:#fb923c;">${progFmtVND(tot.val_cc)}</div>
+                                </td>
+                                <td class="text-center">${progBadgePct(tot.pct_val)}</td>
+                                <td class="text-center">${footUnitLabel}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>`;
+        } else if (progSubTab === 2) {
+            // BẢNG 2: BẢNG GIÁ TRỊ (VNĐ) (GIỐNG TAB 2.2)
+            cardHtml = `
+            <div class="table-card">
+                <div class="table-header-row">
+                    <div class="table-title">
+                        <i class="fa-solid fa-money-bill-wave" style="color:#38bdf8;"></i> BẢNG GIÁ TRỊ (VNĐ)
+                    </div>
+                    ${periodSwitch}
+                </div>
+                <div class="table-responsive">
+                    <table class="sc-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="th-val-bg" style="width:110px;">Thời Gian</th>
+                                <th rowspan="2" class="th-val-bg">Tổng Tiền Lệch</th>
+                                <th colspan="3" class="th-val-bg">Điểm Nhận Trách Nhiệm (VNĐ)</th>
+                                <th colspan="3" class="th-val-bg">Tiến Độ Xử Lý (VNĐ)</th>
+                                <th rowspan="2" class="th-val-bg" style="width:80px;">Chi Tiết</th>
+                            </tr>
+                            <tr>
+                                <th class="th-val-sub">Kho DC (Trả DC)</th>
+                                <th class="th-val-sub">Siêu Thị (Trả ST)</th>
+                                <th class="th-val-sub">Write - OFF</th>
+                                <th class="th-val-sub">🟢 Đã Xử Lý</th>
+                                <th class="th-val-sub" style="color:#fed7aa;">🟡 Chưa Xử Lý</th>
+                                <th class="th-master-sub" style="width:130px; text-align:center;">Tiến Độ (% Xong)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.map(r => `<tr>
+                                <td class="text-left" style="font-weight:600; color:var(--primary);">${r.date}</td>
+                                <td class="c-blue"><strong>${progFmtVND(r.val_total)}</strong></td>
+                                <td>${progFmtVND(r.val_dc)}</td>
+                                <td>${progFmtVND(r.val_st)}</td>
+                                <td>${progFmtVND(r.val_wo)}</td>
+                                <td>
+                                    <div class="c-green">${progFmtVND(r.val_da_xl)}</div>
+                                    <div style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(${progFmtN(r.st_da_xl)} ST)</div>
+                                </td>
+                                <td>
+                                    <div class="c-orange">${progFmtVND(r.val_cc)}</div>
+                                    <div style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(${progFmtN(r.st_chua_xl)} ST)</div>
+                                </td>
+                                <td class="text-center">${progBadgePct(r.pct_val)}</td>
+                                <td class="text-center">${progPeriod === 'daily' && r.qty_lech > 0 ? btnViewDay(r.iso, r.date) : '-'}</td>
+                            </tr>`).join('')}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="text-left">TỔNG CỘNG</td>
+                                <td class="c-blue"><strong>${progFmtVND(tot.val_total)}</strong></td>
+                                <td>${progFmtVND(tot.val_dc)}</td>
+                                <td>${progFmtVND(tot.val_st)}</td>
+                                <td>${progFmtVND(tot.val_wo)}</td>
+                                <td>
+                                    <div class="c-green"><strong>${progFmtVND(tot.val_da_xl)}</strong></div>
+                                    <div style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(${progFmtN(tot.st_da_xl)} lần giao)</div>
+                                </td>
+                                <td>
+                                    <div class="c-orange"><strong>${progFmtVND(tot.val_cc)}</strong></div>
+                                    <div style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(${progFmtN(tot.st_chua_xl)} lần giao)</div>
+                                </td>
+                                <td class="text-center">${progBadgePct(tot.pct_val)}</td>
+                                <td class="text-center">${footUnitLabel}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>`;
+        } else if (progSubTab === 3) {
+            // BẢNG 3: BẢNG SỐ LƯỢNG (PCS) (GIỐNG TAB 2.3)
+            cardHtml = `
+            <div class="table-card">
+                <div class="table-header-row">
+                    <div class="table-title">
+                        <i class="fa-solid fa-boxes-packing" style="color:#818cf8;"></i> BẢNG SỐ LƯỢNG (PCS)
+                    </div>
+                    ${periodSwitch}
+                </div>
+                <div class="table-responsive">
+                    <table class="sc-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="th-qty-bg" style="width:110px;">Thời Gian</th>
+                                <th colspan="3" class="th-qty-bg">Giao Nhận (SL Hàng)</th>
+                                <th colspan="3" class="th-qty-bg">Số Siêu Thị Lệch (ST)</th>
+                                <th colspan="3" class="th-qty-bg">Điểm Nhận (SL Hàng)</th>
+                                <th colspan="3" class="th-qty-bg">Tiến Độ Xử Lý (SL Hàng)</th>
+                                <th rowspan="2" class="th-qty-bg" style="width:80px;">Chi Tiết</th>
+                            </tr>
+                            <tr>
+                                <th class="th-qty-sub">SL Chuyển</th>
+                                <th class="th-qty-sub">SL Nhận</th>
+                                <th class="th-qty-sub">SL Lệch</th>
+                                <th class="th-qty-sub">Tổng ST</th>
+                                <th class="th-qty-sub">🟢 ST Đã XL</th>
+                                <th class="th-qty-sub">🟡 ST Chưa XL</th>
+                                <th class="th-qty-sub">Kho DC (Trả DC)</th>
+                                <th class="th-qty-sub">Siêu Thị (Trả ST)</th>
+                                <th class="th-qty-sub">Write - OFF</th>
+                                <th class="th-qty-sub">🟢 Đã Xử Lý</th>
+                                <th class="th-qty-sub" style="color:#fed7aa;">🟡 Chưa Xử Lý</th>
+                                <th class="th-master-sub" style="width:130px; text-align:center;">Tiến Độ (% Xong)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.map(r => `<tr>
+                                <td class="text-left" style="font-weight:600; color:var(--primary);">${r.date}</td>
+                                <td>${progFmtN(r.qty_chuyen)}</td>
+                                <td>${progFmtN(r.qty_nhan)}</td>
+                                <td class="c-red"><strong>${progFmtN(r.qty_lech)}</strong></td>
+                                <td>${progFmtN(r.st_lech)} ST</td>
+                                <td class="c-green">${progFmtN(r.st_da_xl)} ST</td>
+                                <td class="c-orange">${progFmtN(r.st_chua_xl)} ST</td>
+                                <td>${progFmtN(r.sl_dc)}</td>
+                                <td>${progFmtN(r.sl_st)}</td>
+                                <td>${progFmtN(r.sl_wo)}</td>
+                                <td>
+                                    <div class="c-green">${progFmtN(r.sl_da_xl)}</div>
+                                    <div style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(${progFmtN(r.st_da_xl)} ST)</div>
+                                </td>
+                                <td>
+                                    <div class="c-orange">${progFmtN(r.sl_cc)}</div>
+                                    <div style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(${progFmtN(r.st_chua_xl)} ST)</div>
+                                </td>
+                                <td class="text-center">${progBadgePct(r.pct_sl)}</td>
+                                <td class="text-center">${progPeriod === 'daily' && r.qty_lech > 0 ? btnViewDay(r.iso, r.date) : '-'}</td>
+                            </tr>`).join('')}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="text-left">TỔNG CỘNG</td>
+                                <td>${progFmtN(tot.qty_chuyen)}</td>
+                                <td>${progFmtN(tot.qty_nhan)}</td>
+                                <td class="c-red"><strong>${progFmtN(tot.qty_lech)}</strong></td>
+                                <td>${progFmtN(tot.st_lech)} ST</td>
+                                <td class="c-green"><strong>${progFmtN(tot.st_da_xl)} ST</strong></td>
+                                <td class="c-orange"><strong>${progFmtN(tot.st_chua_xl)} ST</strong></td>
+                                <td>${progFmtN(tot.sl_dc)}</td>
+                                <td>${progFmtN(tot.sl_st)}</td>
+                                <td>${progFmtN(tot.sl_wo)}</td>
+                                <td>
+                                    <div class="c-green"><strong>${progFmtN(tot.sl_da_xl)}</strong></div>
+                                    <div style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(${progFmtN(tot.st_da_xl)} lần giao)</div>
+                                </td>
+                                <td>
+                                    <div class="c-orange"><strong>${progFmtN(tot.sl_cc)}</strong></div>
+                                    <div style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(${progFmtN(tot.st_chua_xl)} lần giao)</div>
+                                </td>
+                                <td class="text-center">${progBadgePct(tot.pct_sl)}</td>
+                                <td class="text-center">${footUnitLabel}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>`;
+        } else {
+            // BẢNG 4: DANH SÁCH SIÊU THỊ CẦN XỬ LÝ FMCG (GIỐNG TAB 2.4 — XẾP HẠNG CAO -> THẤP, KHÔNG NGƯỠNG 100K)
+            const det = window.FMCG_STORE_DETAILS || { store_ranking: [] };
+            const allSt = det.store_ranking || [];
+            const datesOpt = [...new Set(allSt.map(s => s.date))].sort((a, b) => {
+                const pa = a.split('/').reverse().join('');
+                const pb = b.split('/').reverse().join('');
+                return pb.localeCompare(pa);
+            });
+            cardHtml = `
+            <div class="table-card" style="border-top: 3px solid #ef4444;">
+                <div class="table-header-row">
+                    <div class="table-title" style="color:#f87171; font-size:1.1rem;">
+                        <i class="fa-solid fa-triangle-exclamation" style="color:#f87171;"></i> DANH SÁCH SIÊU THỊ CẦN XỬ LÝ FMCG (ƯU TIÊN THEO CHƯA XL / NGÀY)
+                    </div>
+                    <button class="btn-view-detail" style="background:#10b981; color:#fff; border-color:#059669; padding:0.35rem 0.85rem;" onclick="exportFmcgStoreRankingExcel()">
+                        <i class="fa-solid fa-file-excel"></i> Xuất Excel DS Siêu Thị
+                    </button>
+                </div>
+                <div class="fmcg-st-toolbar" style="padding:0.65rem 0.85rem; background:var(--bg-card-alt); border-radius:10px; margin-bottom:0.85rem; border:1px solid var(--border-card); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.65rem;">
+                    <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+                        <input id="fmcg-st-search" type="text" placeholder="🔍 Tìm mã ST, tên siêu thị..." oninput="filterFmcgStoreRanking()" style="padding:0.4rem 0.75rem; border-radius:6px; font-size:0.82rem; width:260px; outline:none;">
+                        <select id="fmcg-st-date" onchange="filterFmcgStoreRanking()" style="padding:0.4rem 0.65rem; border-radius:6px; font-size:0.82rem; font-weight:600;">
+                            <option value="all">📅 Tất cả các ngày (${datesOpt.length} ngày)</option>
+                            ${datesOpt.map(d => `<option value="${d}">${d}</option>`).join('')}
+                        </select>
+                        <select id="fmcg-st-status" onchange="filterFmcgStoreRanking()" style="padding:0.4rem 0.65rem; border-radius:6px; font-size:0.82rem; font-weight:600;">
+                            <option value="all">🎯 Tất cả trạng thái</option>
+                            <option value="pending">🚨 Cần xử lý (Còn Chưa XL)</option>
+                            <option value="done">🟢 Đã xử lý hoàn tất (100%)</option>
+                        </select>
+                        <select id="fmcg-st-sort" onchange="filterFmcgStoreRanking()" style="padding:0.4rem 0.65rem; border-radius:6px; font-size:0.82rem; font-weight:600;">
+                            <option value="chua_xl_desc">🟡 Tiền Chưa XL giảm dần (Ưu tiên)</option>
+                            <option value="val_desc">💰 Tổng tiền lệch ST giảm dần</option>
+                            <option value="sku_desc">📦 Số lượng SKU lệch nhiều nhất</option>
+                        </select>
+                    </div>
+                    <div id="fmcg-st-summary" style="font-size:0.82rem; font-weight:600; color:var(--text-secondary);"></div>
+                </div>
+                <div class="table-responsive">
+                    <table class="sc-table" id="fmcgStorePriorityTable">
+                        <thead>
+                            <tr>
+                                <th class="th-store-bg text-center" style="width:45px;">STT</th>
+                                <th class="th-store-bg text-center" style="width:90px;">Ngày</th>
+                                <th class="th-store-bg text-left" style="width:27%;">Siêu Thị Cần Xử Lý</th>
+                                <th class="th-store-bg text-center" style="width:14%;">Trạng Thái</th>
+                                <th class="th-store-bg" style="width:12%;">Tổng Tiền Lệch / ST</th>
+                                <th class="th-store-bg text-center" style="width:7%;">Số SKU</th>
+                                <th class="th-store-bg" style="width:12%; color:#fed7aa;">🟡 Chưa XL (Ưu tiên)</th>
+                                <th class="th-store-bg" style="width:11%; color:#bbf7d0;">🟢 Đã XL</th>
+                                <th class="th-store-bg text-center" style="width:130px;">Tiến Độ (% Xong)</th>
+                                <th class="th-store-bg text-center" style="width:85px;">Chi Tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fmcg-st-tbody"></tbody>
+                        <tfoot id="fmcg-st-tfoot"></tfoot>
+                    </table>
+                </div>
+            </div>`;
+        }
+
+        container.innerHTML = `
+        <div class="fmcg-prog-wrap">
+            <div class="section-panel-header">
+                <div class="section-panel-title">
+                    <i class="fa-solid fa-scale-unbalanced-flip" style="color:#238636;"></i> ĐỐI SOÁT CHÊNH LỆCH &amp; TIẾN ĐỘ XỬ LÝ FMCG
+                    <span style="font-size:0.74rem; font-weight:600; color:var(--text-secondary); margin-left:6px;">(Chuẩn Tab 2 • Không ngưỡng 100K • Không hao hụt)</span>
+                </div>
+            </div>
+            <div class="sub-tabs-bar">
+                <div class="sub-tabs-header-label">
+                    <i class="fa-solid fa-folder-tree"></i> CHỌN BẢNG DỮ LIỆU ĐỐI SOÁT FMCG XEM CHI TIẾT:
+                </div>
+                <div class="sub-tabs-list">
+                    ${subBtns}
+                </div>
+            </div>
+            ${cardHtml}
+        </div>`;
+
+        updateStatusText(`<strong>Bảng 5: Theo Dõi Tiến Độ &amp; Xếp Hạng ST (Chuẩn Tab 2 • FMCG)</strong> • Không ngưỡng 100K, không hao hụt • <strong>${dailyRows.length}</strong> ngày (01/11 → ${currentData.dates[currentData.dates.length - 1].display}) • Cập nhật: <strong>${currentData.updated_at || ''}</strong>`);
+        if (progSubTab === 4) { window.filterFmcgStoreRanking(); }
+    }
+
+    window.switchFmcgProgTab = function (id) { progSubTab = id; renderActiveSubView(); };
+    window.setFmcgProgPeriod = function (p) { progPeriod = p; renderActiveSubView(); };
+
+    window.exportFmcgStoreRankingExcel = function () {
+        if (!window.XLSX) { alert('Thư viện Excel chưa tải xong.'); return; }
+        const tbl = document.getElementById('fmcgStorePriorityTable');
+        if (!tbl) return;
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.table_to_sheet(tbl);
+        XLSX.utils.book_append_sheet(wb, ws, 'DS_Sieu_Thi_FMCG');
+        XLSX.writeFile(wb, `DS_Sieu_Thi_Can_Xu_Ly_FMCG_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    };
+
+    window.filterFmcgStoreRanking = function () {
+        const det = window.FMCG_STORE_DETAILS || { store_ranking: [] };
+        const q = (document.getElementById('fmcg-st-search')?.value || '').trim().toLowerCase();
+        const d = document.getElementById('fmcg-st-date')?.value || 'all';
+        const st = document.getElementById('fmcg-st-status')?.value || 'all';
+        const sortBy = document.getElementById('fmcg-st-sort')?.value || 'chua_xl_desc';
+        let list = (det.store_ranking || []).filter(s => {
+            if (d !== 'all' && s.date !== d) return false;
+            if (st === 'pending' && s.val_chua_xl <= 0) return false;
+            if (st === 'done' && s.val_chua_xl > 0) return false;
+            if (q && !(s.st.toLowerCase().includes(q) || (s.store_name || '').toLowerCase().includes(q))) return false;
+            return true;
+        });
+        list.sort((a, b) => {
+            if (sortBy === 'val_desc') return b.val_total - a.val_total;
+            if (sortBy === 'sku_desc') return b.sku_count - a.sku_count;
+            if (b.val_chua_xl !== a.val_chua_xl) return b.val_chua_xl - a.val_chua_xl;
+            return b.val_total - a.val_total;
+        });
+        const tbody = document.getElementById('fmcg-st-tbody');
+        const tfoot = document.getElementById('fmcg-st-tfoot');
+        const sumEl = document.getElementById('fmcg-st-summary');
+        if (!tbody || !tfoot) return;
+
+        const pendingList = list.filter(s => s.val_chua_xl > 0);
+        const doneCount = list.length - pendingList.length;
+        const tVal = list.reduce((a, s) => a + (s.val_total || 0), 0);
+        const tSku = list.reduce((a, s) => a + (s.sku_count || 0), 0);
+        const tChua = list.reduce((a, s) => a + (s.val_chua_xl || 0), 0);
+        const tDa = list.reduce((a, s) => a + (s.val_da_xl || 0), 0);
+
+        tbody.innerHTML = list.slice(0, 500).map((s, idx) => {
+            const badge = s.val_chua_xl > 0
+                ? '<span class="p-badge p-badge-p1">🚨 CẦN XỬ LÝ</span>'
+                : '<span class="p-badge p-badge-p4">🟢 ĐÃ XONG 100%</span>';
+            const tagFmcg = '<span class="tag-pill" style="background:rgba(56,189,248,0.16); color:#38bdf8; border:1px solid rgba(56,189,248,0.35);">FMCG</span>';
+            return `<tr>
+                <td class="text-center" style="color:var(--text-muted); font-weight:700;">#${idx + 1}</td>
+                <td class="text-center" style="font-weight:600; color:var(--text-secondary);">${s.date}</td>
+                <td class="text-left">
+                    <strong style="color:var(--text-primary); font-size:0.85rem;">${s.st}</strong>${s.store_name ? ' - <span style="color:var(--text-secondary);">' + escapeHtml(s.store_name) + '</span>' : ''}
+                    <div style="margin-top:2px; display:flex; gap:5px;">${tagFmcg}</div>
+                </td>
+                <td class="text-center">${badge}</td>
+                <td><strong class="c-blue" style="font-size:0.88rem;">${progFmtVND(s.val_total)}</strong></td>
+                <td class="text-center"><strong>${s.sku_count}</strong></td>
+                <td><strong class="c-orange" style="font-size:0.85rem;">${s.val_chua_xl > 0 ? progFmtVND(s.val_chua_xl) : '-'}</strong></td>
+                <td><strong class="c-green">${s.val_da_xl > 0 ? progFmtVND(s.val_da_xl) : '-'}</strong></td>
+                <td class="text-center">${progBadgePct(s.pct_done)}</td>
+                <td class="text-center">
+                    <button class="btn-view-detail" onclick="openFmcgDetailModal('${s.iso_date}','${s.date}','${s.st}')">
+                        <i class="fa-solid fa-magnifying-glass"></i> Xem SKU
+                    </button>
+                </td>
+            </tr>`;
+        }).join('') || `<tr><td colspan="10" class="text-center" style="padding:2rem;">Không tìm thấy siêu thị nào phù hợp bộ lọc</td></tr>`;
+
+        const pctTot = tVal > 0 ? (tDa / tVal * 100) : 100;
+        tfoot.innerHTML = `<tr>
+            <td colspan="4" class="text-left"><strong>TỔNG CỘNG (${list.length} lượt ST${list.length > 500 ? ', đang hiện top 500' : ''})</strong></td>
+            <td><strong class="c-blue">${progFmtVND(tVal)}</strong></td>
+            <td class="text-center"><strong>${progFmtN(tSku)}</strong></td>
+            <td><strong class="c-orange">${progFmtVND(tChua)}</strong></td>
+            <td><strong class="c-green">${progFmtVND(tDa)}</strong></td>
+            <td class="text-center">${progBadgePct(pctTot)}</td>
+            <td class="text-center">-</td>
+        </tr>`;
+        if (sumEl) {
+            sumEl.innerHTML = `<span>Hiển thị: <strong>${list.length}</strong> Siêu Thị • <span style="color:#fb923c; font-weight:700;">🟡 Cần XL: ${pendingList.length} ST (${progFmtVND(tChua)})</span> • 🟢 Xong: ${doneCount} ST</span>`;
+        }
+    };
+
+    window.openFmcgDetailModal=function(isoDate,dateVn,stCode){
+        const det=window.FMCG_STORE_DETAILS||{sku_by_date:{}};
+        const items=(det.sku_by_date&&det.sku_by_date[isoDate])?det.sku_by_date[isoDate]:[];
+        let modal=document.getElementById('fmcg-detail-modal');
+        if(!modal){modal=document.createElement('div');modal.id='fmcg-detail-modal';modal.style.cssText='position:fixed;inset:0;background:rgba(2,6,23,0.8);z-index:99999;display:flex;align-items:center;justify-content:center;padding:18px;';modal.onclick=function(e){if(e.target===modal)modal.style.display='none';};document.body.appendChild(modal);}
+        modal.style.display='flex';
+        window._fmcgModalItems=stCode?items.filter(r=>r.st===stCode):items;
+        modal.innerHTML=`<div style="background:#111827;border:1px solid rgba(56,189,248,0.35);border-radius:14px;width:100%;max-width:1280px;max-height:86vh;display:flex;flex-direction:column;overflow:hidden;color:#f1f5f9;"><div style="padding:13px 18px;background:#0f172a;border-bottom:1px solid rgba(148,163,184,0.16);display:flex;justify-content:space-between;align-items:center;"><div style="font-weight:800;font-size:0.95rem;"><i class="fa-solid fa-list-check" style="color:#38bdf8;"></i> Chi Tiết SKU Chênh Lệch FMCG — Ngày ${dateVn}${stCode?' • ST '+stCode:''}</div><button onclick="document.getElementById('fmcg-detail-modal').style.display='none'" style="background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.35);border-radius:7px;padding:4px 10px;cursor:pointer;font-weight:700;">Đóng</button></div><div style="padding:10px 18px;background:#0f172a;border-bottom:1px solid rgba(148,163,184,0.14);display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;"><div style="display:flex;flex-wrap:wrap;gap:8px;"><input id="fmcg-m-search" type="text" value="${stCode||''}" placeholder="Tìm ST, Mã PT, Barcode, Ghi chú..." oninput="renderFmcgModalRows()" style="background:#1e293b;border:1px solid rgba(148,163,184,0.25);color:#f1f5f9;padding:5px 10px;border-radius:7px;font-size:0.79rem;width:280px;"><select id="fmcg-m-status" onchange="renderFmcgModalRows()" style="background:#1e293b;border:1px solid rgba(148,163,184,0.25);color:#f1f5f9;padding:5px 10px;border-radius:7px;font-size:0.79rem;"><option value="all">Tất cả trạng thái</option><option value="Chưa XL">🟡 Chưa XL (SCM chưa check)</option><option value="Đã XL">🟢 Đã XL</option></select></div><div id="fmcg-m-sum" style="font-size:0.78rem;color:#94a3b8;"></div></div><div style="overflow:auto;flex:1;"><table style="width:100%;border-collapse:collapse;font-size:0.79rem;"><thead><tr style="background:#172338;position:sticky;top:0;"><th style="padding:8px;border:1px solid rgba(148,163,184,0.15);">#</th><th style="padding:8px;border:1px solid rgba(148,163,184,0.15);text-align:left;">Siêu Thị</th><th style="padding:8px;border:1px solid rgba(148,163,184,0.15);text-align:left;">Mã PT</th><th style="padding:8px;border:1px solid rgba(148,163,184,0.15);text-align:left;">Barcode / Kiện</th><th style="padding:8px;border:1px solid rgba(148,163,184,0.15);">WMS</th><th style="padding:8px;border:1px solid rgba(148,163,184,0.15);">KDB</th><th style="padding:8px;border:1px solid rgba(148,163,184,0.15);">Lệch</th><th style="padding:8px;border:1px solid rgba(148,163,184,0.15);">Giá Vốn</th><th style="padding:8px;border:1px solid rgba(148,163,184,0.15);">Thành Tiền</th><th style="padding:8px;border:1px solid rgba(148,163,184,0.15);">Kết Quả</th><th style="padding:8px;border:1px solid rgba(148,163,184,0.15);text-align:left;">Ghi Chú</th></tr></thead><tbody id="fmcg-m-tbody"></tbody></table></div></div>`;
+        window.renderFmcgModalRows();
+    };
+
+    window.renderFmcgModalRows=function(){
+        const items=window._fmcgModalItems||[];
+        const q=(document.getElementById('fmcg-m-search')?.value||'').trim().toLowerCase();
+        const st=document.getElementById('fmcg-m-status')?.value||'all';
+        const filtered=items.filter(r=>{if(st!=='all'&&r.status!==st)return false;if(q&&!((r.st||'').toLowerCase().includes(q)||(r.store_name||'').toLowerCase().includes(q)||(r.pt||'').toLowerCase().includes(q)||(r.sku||'').toLowerCase().includes(q)||(r.sku_name||'').toLowerCase().includes(q)||(r.note||'').toLowerCase().includes(q)))return false;return true;});
+        const totVal=filtered.reduce((a,r)=>a+(r.val||0),0);
+        const sumEl=document.getElementById('fmcg-m-sum');
+        if(sumEl)sumEl.innerHTML=`<strong>${filtered.length}</strong> dòng • Tổng tiền: <strong style="color:#38bdf8;">${progFmtVND(totVal)}</strong>`;
+        const tbody=document.getElementById('fmcg-m-tbody');
+        if(!tbody)return;
+        tbody.innerHTML=filtered.map((r,i)=>`<tr style="border-bottom:1px solid rgba(148,163,184,0.1);"><td style="padding:7px 8px;text-align:center;color:#94a3b8;">${i+1}</td><td style="padding:7px 8px;"><strong>${r.st}</strong>${r.store_name?' - '+r.store_name:''}</td><td style="padding:7px 8px;color:#38bdf8;"><code>${r.pt||'-'}</code></td><td style="padding:7px 8px;"><div><strong>${r.sku}</strong></div>${r.sku_name?`<div style="color:#94a3b8;font-size:0.73rem;">${r.sku_name}</div>`:''}</td><td style="padding:7px 8px;text-align:right;">${progFmtN(r.wms)}</td><td style="padding:7px 8px;text-align:right;">${progFmtN(r.kdb)}</td><td style="padding:7px 8px;text-align:right;color:#f87171;"><strong>${progFmtN(r.lech)}</strong></td><td style="padding:7px 8px;text-align:right;">${progFmtVND(r.cost)}</td><td style="padding:7px 8px;text-align:right;color:#38bdf8;"><strong>${progFmtVND(r.val)}</strong></td><td style="padding:7px 8px;text-align:center;">${r.status==='Chưa XL'?`<span style="background:rgba(251,146,60,0.18);color:#fb923c;border:1px solid rgba(251,146,60,0.4);padding:2px 8px;border-radius:999px;font-size:0.71rem;font-weight:700;">🟡 ${r.dest}</span>`:`<span style="background:rgba(16,185,129,0.18);color:#34d399;border:1px solid rgba(16,185,129,0.4);padding:2px 8px;border-radius:999px;font-size:0.71rem;font-weight:700;">🟢 ${r.dest}</span>`}</td><td style="padding:7px 8px;color:#cbd5e1;font-size:0.75rem;">${r.note||'-'}</td></tr>`).join('')||`<tr><td colspan="11" style="padding:2rem;text-align:center;color:#94a3b8;">Không có dòng chi tiết phù hợp</td></tr>`;
+    };
+
+    // =========================================================================
+    // ĐỒNG BỘ REALTIME (CDC StarRocks + Google Sheet Seedlog)
+    // =========================================================================
     window.syncFmcgRealtime = async function () {
         const btn = document.getElementById('btn-fmcg-realtime');
         const origHtml = '<i class="fa-solid fa-bolt-lightning"></i> Cập Nhật Realtime (CDC & Seedlog)';
