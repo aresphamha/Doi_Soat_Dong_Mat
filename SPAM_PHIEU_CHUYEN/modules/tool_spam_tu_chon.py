@@ -22,29 +22,49 @@ import requests
 
 def convert_markdown_to_telegram_html(text: str) -> str:
     """
-    Chuyển đổi cú pháp định dạng người dùng gõ (**bold**, *bold*, _italic_, ~~strike~~, `code`)
-    sang chuẩn HTML Telegram an toàn tuyệt đối, tránh lỗi "can't parse entities".
+    Chuyển đổi cú pháp định dạng người dùng gõ (**bold**, *bold*, _italic_, ~~strike~~, `code`, [text](url/tg://user?id=...))
+    sang chuẩn HTML Telegram an toàn tuyệt đối, tránh lỗi "can't parse entities" và đảm bảo tag user hoạt động chuẩn.
     """
     if not text:
         return ""
     
     # 1. Thoát các ký tự HTML đặc biệt để tránh vỡ thẻ (&, <, >)
     res = html.escape(text)
+
+    # 2. Chuyển đổi Markdown link / Telegram mention: [Tên hiển thị](tg://user?id=...) hoặc [text](https://...)
+    #    Dùng placeholder tạm để các bước parse _italic_ / *bold* phía sau không làm hỏng tên user hay URL.
+    link_placeholders = []
+    def _replace_md_link(m):
+        label = m.group(1)
+        url = m.group(2).strip()
+        idx = len(link_placeholders)
+        link_placeholders.append(f'<a href="{url}">{label}</a>')
+        return f"\x00LINK{idx}\x00"
+
+    res = re.sub(
+        r'\[([^\[\]\n]+?)\]\(((?:tg://user\?id=\d+|https?://[^\s\)]+))\)',
+        _replace_md_link,
+        res
+    )
     
-    # 2. In đậm: **text** hoặc *text*
+    # 3. In đậm: **text** hoặc *text*
     res = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', res, flags=re.DOTALL)
     # Nếu người dùng gõ *text* đơn
     res = re.sub(r'(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)', r'<b>\1</b>', res)
     
-    # 3. In nghiêng: __text__ hoặc _text_
+    # 4. In nghiêng: __text__ hoặc _text_
     res = re.sub(r'__(.+?)__', r'<i>\1</i>', res, flags=re.DOTALL)
     res = re.sub(r'(?<!_)_(?!_)(.+?)(?<!_)_(?!_)', r'<i>\1</i>', res)
     
-    # 4. Gạch ngang: ~~text~~
+    # 5. Gạch ngang: ~~text~~
     res = re.sub(r'~~(.+?)~~', r'<s>\1</s>', res, flags=re.DOTALL)
     
-    # 5. Inline code: `text`
+    # 6. Inline code: `text`
     res = re.sub(r'`(.+?)`', r'<code>\1</code>', res)
+
+    # 7. Khôi phục các thẻ <a href="..."> đã bảo vệ
+    for idx, html_link in enumerate(link_placeholders):
+        res = res.replace(f"\x00LINK{idx}\x00", html_link)
     
     return res
 
