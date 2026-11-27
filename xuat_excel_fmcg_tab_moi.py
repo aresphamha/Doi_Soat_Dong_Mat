@@ -318,6 +318,8 @@ def fetch_seedlog(cost_day_map, cost_fb_map, cost_gl_map):
     df_nov['store_clean'] = df_nov[col_store].apply(norm_str).str.upper()
     df_nov['pt_clean'] = df_nov[col_pt].apply(lambda x: re.search(r'(PT\d+)', norm_str(x)).group(1) if re.search(r'(PT\d+)', norm_str(x)) else norm_str(x))
     df_nov['barcode_clean'] = df_nov[col_barcode].apply(norm_str)
+    col_sku_name = cols[8] if len(cols) > 8 else None
+    df_nov['sku_name_clean'] = df_nov[col_sku_name].apply(norm_str) if col_sku_name else ""
     df_nov['col_u_clean'] = df_nov[col_u].apply(norm_str) if col_u else ""
     df_nov['col_v_clean'] = df_nov[col_v].apply(norm_str) if col_v else ""
     df_nov['col_y_clean'] = df_nov[col_y].apply(norm_str) if col_y else ""
@@ -1516,6 +1518,109 @@ def export_web_js(all_dates, daily_metrics, df_cdc):
         print(f"    -> Đã ghi file Web JS: {tgt}")
 
 
+def export_fmcg_store_details_js(df_seed):
+    """Xuất dữ liệu cấp Siêu thị & SKU từ Seedlog (T11/2026+) cho Bảng 5 (Tab 8) -> daily_details/fmcg_store_details.js."""
+    print("[5b/5] Đang xuất dữ liệu cấp Siêu thị & SKU cho Bảng 5 (Tab 8)...")
+    store_names = {}
+    cfg_path = os.path.join(WORKSPACE_DIR, "CONFIG_DATA_STORES.json")
+    if os.path.exists(cfg_path):
+        try:
+            with open(cfg_path, "r", encoding="utf-8") as cf:
+                cfg = json.load(cf)
+            stores_map = cfg.get("stores", cfg) if isinstance(cfg, dict) else {}
+            if isinstance(stores_map, dict):
+                for code, info in stores_map.items():
+                    if isinstance(info, dict):
+                        store_names[str(code).strip().upper()] = str(info.get("name") or info.get("store_name") or "").strip()
+        except Exception:
+            pass
+
+    s = df_seed.copy()
+    v_lower = s['col_v_clean'].str.lower()
+    m_dc = v_lower.str.contains("trả tồn về dc", na=False)
+    m_st = v_lower.str.contains("trả tồn về st", na=False)
+    m_wo = v_lower.str.contains("lỗi hệ thống", na=False)
+
+    dests = np.full(len(s), "SCM chưa check", dtype=object)
+    dests[m_wo] = "Write - OFF"
+    dests[m_st] = "Trả ST"
+    dests[m_dc] = "Trả DC"
+    s['_dest'] = dests
+    s['_status'] = np.where(dests == "SCM chưa check", "Chưa XL", "Đã XL")
+
+    store_ranking = []
+    if len(s) > 0:
+        for (d_iso, st_code), grp in s.groupby(['d', 'store_clean'], sort=False):
+            if not st_code:
+                continue
+            parts = d_iso.split('-')
+            d_vn = f"{parts[2]}/{parts[1]}/{parts[0]}" if len(parts) == 3 else d_iso
+            val_tot = round(float(grp['gt_abs_cdc'].sum()), 0)
+            val_da = round(float(grp.loc[grp['_status'] == 'Đã XL', 'gt_abs_cdc'].sum()), 0)
+            val_chua = round(float(grp.loc[grp['_status'] == 'Chưa XL', 'gt_abs_cdc'].sum()), 0)
+            val_dc = round(float(grp.loc[grp['_dest'] == 'Trả DC', 'gt_abs_cdc'].sum()), 0)
+            val_st = round(float(grp.loc[grp['_dest'] == 'Trả ST', 'gt_abs_cdc'].sum()), 0)
+            val_wo = round(float(grp.loc[grp['_dest'] == 'Write - OFF', 'gt_abs_cdc'].sum()), 0)
+            pct_done = round((val_da / val_tot * 100.0), 1) if val_tot > 0 else 100.0
+            store_ranking.append({
+                "iso_date": d_iso,
+                "date": d_vn,
+                "st": st_code,
+                "store_name": store_names.get(st_code, ""),
+                "val_total": val_tot,
+                "sku_count": int(len(grp)),
+                "qty_lech": round(float(grp['sl_abs'].sum()), 2),
+                "val_da_xl": val_da,
+                "val_chua_xl": val_chua,
+                "val_dc": val_dc,
+                "val_st": val_st,
+                "val_wo": val_wo,
+                "pct_done": pct_done,
+            })
+
+    sku_by_date = {}
+    if len(s) > 0:
+        for d_iso, grp in s.groupby('d', sort=False):
+            items = []
+            for _, row in grp.sort_values(by='gt_abs_cdc', ascending=False).iterrows():
+                st_code = row['store_clean']
+                items.append({
+                    "st": st_code,
+                    "store_name": store_names.get(st_code, ""),
+                    "pt": row['pt_clean'],
+                    "sku": row['barcode_clean'],
+                    "sku_name": row.get('sku_name_clean', ''),
+                    "wms": round(float(row['wms_num']), 2),
+                    "kdb": round(float(row['kdb_num']), 2),
+                    "lech": round(float(row['sl_abs']), 2),
+                    "cost": round(float(row['gia_cost_cdc']), 0),
+                    "val": round(float(row['gt_abs_cdc']), 0),
+                    "dest": row['_dest'],
+                    "status": row['_status'],
+                    "note": row.get('col_y_clean', ''),
+                })
+            sku_by_date[d_iso] = items
+
+    detail_payload = {
+        "updated_at": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+        "store_ranking": store_ranking,
+        "sku_by_date": sku_by_date,
+    }
+    js_text = (
+        "// Dữ liệu cấp Siêu thị & SKU FMCG (T11/2026+) cho Bảng 5 Tab 8\n"
+        f"window.FMCG_STORE_DETAILS = {json.dumps(detail_payload, ensure_ascii=False)};\n"
+    )
+    targets = [
+        os.path.join(WORKSPACE_DIR, "daily_details", "fmcg_store_details.js"),
+        os.path.join(WORKSPACE_DIR, "DONG_MAT_DASHBOARD", "daily_details", "fmcg_store_details.js"),
+    ]
+    for tgt in targets:
+        os.makedirs(os.path.dirname(tgt), exist_ok=True)
+        with open(tgt, "w", encoding="utf-8") as f:
+            f.write(js_text)
+        print(f"    -> Đã ghi file chi tiết ST/SKU: {tgt} ({len(store_ranking)} ST-ngày)")
+
+
 def main():
     df_cdc, cost_day_map, cost_fb_map, cost_gl_map = fetch_cdc_starrocks()
     df_seed = fetch_seedlog(cost_day_map, cost_fb_map, cost_gl_map)
@@ -1523,6 +1628,7 @@ def main():
     all_dates, daily_metrics = compute_matrix(df_cdc, df_seed)
     export_excel(all_dates, daily_metrics, df_cdc, df_seed, old_ref)
     export_web_js(all_dates, daily_metrics, df_cdc)
+    export_fmcg_store_details_js(df_seed)
 
 
 if __name__ == "__main__":

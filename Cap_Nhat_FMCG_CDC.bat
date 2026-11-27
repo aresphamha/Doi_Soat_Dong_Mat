@@ -15,7 +15,7 @@ if %ERRORLEVEL% NEQ 0 (
 
 echo.
 echo [2/2] DANG DAY DU LIEU TAB 8 MOI LEN GITHUB PAGES...
-git add daily_details/fmcg_matrix.js DONG_MAT_DASHBOARD/daily_details/fmcg_matrix.js BAO_CAO_FMCG_TAB_MOI_VA_LOGIC.xlsx
+git add daily_details/fmcg_matrix.js DONG_MAT_DASHBOARD/daily_details/fmcg_matrix.js daily_details/fmcg_store_details.js DONG_MAT_DASHBOARD/daily_details/fmcg_store_details.js BAO_CAO_FMCG_TAB_MOI_VA_LOGIC.xlsx
 git commit -m "Realtime: Dong bo du lieu Bao cao Logistics FMCG tu CDC StarRocks + Seedlog"
 git pull --rebase origin main
 git push origin main

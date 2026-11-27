@@ -674,7 +674,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
                 def _bg_push_fmcg():
                     try:
                         from push_to_github import sync_and_push
-                        sync_and_push("🤖 [Realtime] Cập nhật Báo cáo Logistics FMCG (CDC StarRocks + Seedlog)", ["daily_details/fmcg_matrix.js", "DONG_MAT_DASHBOARD/daily_details/fmcg_matrix.js"])
+                        sync_and_push("🤖 [Realtime] Cập nhật Báo cáo Logistics FMCG (CDC StarRocks + Seedlog)", ["daily_details/fmcg_matrix.js", "DONG_MAT_DASHBOARD/daily_details/fmcg_matrix.js", "daily_details/fmcg_store_details.js", "DONG_MAT_DASHBOARD/daily_details/fmcg_store_details.js"])
                     except Exception as pe:
                         print(f"Push FMCG error: {pe}")
                 threading.Thread(target=_bg_push_fmcg, daemon=True).start()
@@ -868,7 +868,7 @@ class SCMRequestHandler(BaseHTTPRequestHandler):
                 def _bg_push_fmcg_post():
                     try:
                         from push_to_github import sync_and_push
-                        sync_and_push("🤖 [Realtime] Cập nhật Báo cáo Logistics FMCG (CDC StarRocks + Seedlog)", ["daily_details/fmcg_matrix.js", "DONG_MAT_DASHBOARD/daily_details/fmcg_matrix.js"])
+                        sync_and_push("🤖 [Realtime] Cập nhật Báo cáo Logistics FMCG (CDC StarRocks + Seedlog)", ["daily_details/fmcg_matrix.js", "DONG_MAT_DASHBOARD/daily_details/fmcg_matrix.js", "daily_details/fmcg_store_details.js", "DONG_MAT_DASHBOARD/daily_details/fmcg_store_details.js"])
                     except Exception as pe:
                         print(f"Push FMCG error: {pe}")
                 threading.Thread(target=_bg_push_fmcg_post, daemon=True).start()
