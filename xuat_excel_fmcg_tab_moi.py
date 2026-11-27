@@ -1548,16 +1548,38 @@ def export_fmcg_store_details_js(df_seed):
 
     s = df_seed.copy()
     v_lower = s['col_v_clean'].str.lower()
+    u_lower = s['col_u_clean'].str.lower()
     m_dc = v_lower.str.contains("trả tồn về dc", na=False)
     m_st = v_lower.str.contains("trả tồn về st", na=False)
     m_wo = v_lower.str.contains("lỗi hệ thống", na=False)
+    m_chua_tao_phieu = u_lower.str.contains("chưa tạo phiếu", na=False)
 
     dests = np.full(len(s), "SCM chưa check", dtype=object)
     dests[m_wo] = "Write - OFF"
     dests[m_st] = "Trả ST"
     dests[m_dc] = "Trả DC"
     s['_dest'] = dests
-    s['_status'] = np.where(dests == "SCM chưa check", "Chưa XL", "Đã XL")
+    # Đã xác định điểm nhận (Trả DC / Trả ST) nhưng Cột U đang là "Chưa tạo phiếu" -> vẫn tính là Chưa XL
+    is_chua_xl = (dests == "SCM chưa check") | ((m_dc | m_st) & m_chua_tao_phieu)
+    s['_status'] = np.where(is_chua_xl, "Chưa XL", "Đã XL")
+    s['_chua_tao_phieu'] = (m_dc | m_st) & m_chua_tao_phieu
+
+    daily_progress = {}
+    if len(s) > 0:
+        for d_iso, grp in s.groupby('d', sort=False):
+            m_done = grp['_status'] == 'Đã XL'
+            m_pend = grp['_status'] == 'Chưa XL'
+            m_ctp  = grp['_chua_tao_phieu']
+            daily_progress[d_iso] = {
+                "sl_da_xl": round(float(grp.loc[m_done, 'sl_abs'].sum()), 2),
+                "val_da_xl": round(float(grp.loc[m_done, 'gt_abs_cdc'].sum()), 0),
+                "sl_chua_xl": round(float(grp.loc[m_pend, 'sl_abs'].sum()), 2),
+                "val_chua_xl": round(float(grp.loc[m_pend, 'gt_abs_cdc'].sum()), 0),
+                "sl_chua_tao_phieu": round(float(grp.loc[m_ctp, 'sl_abs'].sum()), 2),
+                "val_chua_tao_phieu": round(float(grp.loc[m_ctp, 'gt_abs_cdc'].sum()), 0),
+                "st_da_xl": int(grp.loc[m_done, 'store_clean'].replace("", np.nan).dropna().nunique()),
+                "st_chua_xl": int(grp.loc[m_pend, 'store_clean'].replace("", np.nan).dropna().nunique()),
+            }
 
     store_ranking = []
     if len(s) > 0:
@@ -1586,6 +1608,7 @@ def export_fmcg_store_details_js(df_seed):
                 "val_dc": val_dc,
                 "val_st": val_st,
                 "val_wo": val_wo,
+                "chua_tao_phieu_cnt": int(grp['_chua_tao_phieu'].sum()),
                 "pct_done": pct_done,
             })
 
@@ -1607,6 +1630,7 @@ def export_fmcg_store_details_js(df_seed):
                     "cost": round(float(row['gia_cost_cdc']), 0),
                     "val": round(float(row['gt_abs_cdc']), 0),
                     "dest": row['_dest'],
+                    "phieu_chuyen": row.get('col_u_clean', ''),
                     "status": row['_status'],
                     "note": row.get('col_y_clean', ''),
                 })
@@ -1614,6 +1638,7 @@ def export_fmcg_store_details_js(df_seed):
 
     detail_payload = {
         "updated_at": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+        "daily_progress": daily_progress,
         "store_ranking": store_ranking,
         "sku_by_date": sku_by_date,
     }
