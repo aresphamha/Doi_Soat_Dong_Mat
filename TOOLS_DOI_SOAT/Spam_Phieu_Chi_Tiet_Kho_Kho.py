@@ -43,9 +43,10 @@ if not os.path.exists(SESSION_PATH + '.session'):
 
 FGA_BRANCHES = {
     '6aabb0a2f426e20007f80123': 'FGA10101 _ Bình Thắng _ Lưu Hàng',
-    '6aabb0d73c46470007f935ce': 'FGA10103 _ Bình Thắng _ Khai Trương'
+    '6aabb0d73c46470007f935ce': 'FGA10103 _ Bình Thắng _ Khai Trương',
+    '6aabb1d4055d2e0007eb8e16': 'FGA10199 _ Bình Thắng _ Hàng Hóa CCDC'
 }
-FGA_BRANCH_IDS = "('6aabb0a2f426e20007f80123', '6aabb0d73c46470007f935ce')"
+FGA_BRANCH_IDS = "('6aabb0a2f426e20007f80123', '6aabb0d73c46470007f935ce', '6aabb1d4055d2e0007eb8e16')"
 HIST_FILE = os.path.join(ROOT_DIR, 'CONFIG_DATA', 'sent_history.json')
 
 def get_db_connection():
@@ -185,6 +186,12 @@ def load_store_and_dc_chat_mappings():
     dc_code_map['A281'] = '-1005637312030' # DC - A281 (Phú Mỹ C2)
     dc_code_map['A276'] = '-1005959895477' # DC - A276 (La Astoria)
     dc_code_map['A284'] = '-1005638313741' # DC - A284 (Star Hill)
+    dc_code_map['A283'] = '-1005656282128' # DC - A283 (The Manor 2)
+
+    st_to_code['KFM_HCM_BTH - G0-08 The Manor 2'] = 'A283'
+    st_to_code['G0-08 The Manor 2'] = 'A283'
+    st_to_code['The Manor 2'] = 'A283'
+    st_to_code['The Manor'] = 'A283'
 
     st_to_code['KFM_HCM_TDU - LA1-V1 La Astoria'] = 'A276'
     st_to_code['LA1-V1 La Astoria'] = 'A276'
@@ -299,7 +306,14 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
     date_iso = vn_now.strftime('%Y-%m-%d')
 
     print(f"⏰ Thời điểm chạy (VN): {vn_now.strftime('%d/%m/%Y %H:%M:%S')}")
-    print(f"🎯 Lọc Ngày Chuyển (transfer_date): Từ ngày cũ nhất còn treo đến hết D-1 (< {vn_today_date.strftime('%d/%m/%Y')})")
+    if target_date:
+        try:
+            target_limit_date = datetime.strptime(str(target_date).strip(), '%Y-%m-%d').date()
+        except Exception:
+            target_limit_date = vn_today_date - timedelta(days=1)
+    else:
+        target_limit_date = vn_today_date - timedelta(days=1)
+    print(f"🎯 Lọc Ngày Chuyển (transfer_date): Từ ngày cũ nhất còn treo đến hết D-1 (<= {target_limit_date.strftime('%d/%m/%Y')})")
 
     try:
         conn = get_db_connection()
@@ -321,6 +335,7 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
         id_to_name['6ae2ebc6bc87f10007f086f6'] = 'KFM_HCM_Q07 - C14B Star Hill 34 Đường Raymondienne'
         id_to_name['6ad718d27cfd210007b3cb48'] = 'KFM_HCM_GVA - 112 Lê Văn Thọ'
         id_to_name['6ae012de9d6f520007689dc2'] = 'KFM_BDU_TDM - B.107 Chung Cư Phú Mỹ C2'
+        id_to_name['6adef61a7a9a350007c8f7fe'] = 'KFM_HCM_BTH - G0-08 The Manor 2'
 
         # Query phiếu chuyển của kho FGA10101 & FGA10103
         sql = f"""
@@ -356,7 +371,7 @@ async def run_spam_chi_tiet_kho_kho(target_date=None, dry_run=False, stores=None
         cat_date = pytz.UTC.localize(cat).astimezone(vn_tz).date() if cat else None
         target_eval_date = td_date or cat_date
 
-        if target_eval_date and target_eval_date <= vn_today_date:
+        if target_eval_date and target_eval_date <= target_limit_date:
             st_name = id_to_name.get(to_id, f"ST_{to_id}")
             
             # Trích xuất mã ST
